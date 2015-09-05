@@ -6,8 +6,112 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2015</rights>
-    <updated>2014-09-26 00:00:00 &#43;0000 UTC</updated>
+    <updated>2014-09-30 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>C/C&#43;&#43;获取精确到微秒级的系统时间</title>
+          <link>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp</link>
+          <pubDate>Tue, 30 Sep 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp</guid>
+          <description>
+
+&lt;p&gt;最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。&lt;/p&gt;
+
+&lt;p&gt;先贴一下这两个函数的说明&lt;/p&gt;
+
+&lt;h4 id=&#34;gettimeofday:9dfdc17010c4b06873ef31dbbc6dcd19&#34;&gt;gettimeofday&lt;/h4&gt;
+
+&lt;p&gt;头文件：&lt;code&gt;#include &amp;lt;sys/time.h&amp;gt;   #include &amp;lt;unistd.h&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;定义函数：&lt;code&gt;int gettimeofday (struct timeval * tv, struct timezone * tz);&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;函数说明：gettimeofday()会把目前的时间有tv 所指的结构返回，当地时区的信息则放到tz 所指的结构中。时间是从公元 1970 年1 月1 日的UTC 时间从0 时0 分0 秒算起到现在所经过的时间。&lt;/p&gt;
+
+&lt;p&gt;timeval 结构定义为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;struct timeval
+{
+    long tv_sec;     // 秒
+    long tv_usec;    // 微秒
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;timezone 结构定义为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;struct timezone
+{
+    int tz_minuteswest;  // 和格林威治时间差了多少分钟
+    int tz_dsttime;      // 日光节约时间的状态
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;localtime:9dfdc17010c4b06873ef31dbbc6dcd19&#34;&gt;localtime&lt;/h4&gt;
+
+&lt;p&gt;头文件：&lt;code&gt;#include &amp;lt;time.h&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;定义函数：&lt;code&gt;struct tm *localtime (const time_t *timep);&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;函数说明：localtime()将参数timep 所指的time_t 结构中的信息转换成真实世界所使用的时间日期表示方法，然后将结果由结构tm 返回。&lt;/p&gt;
+
+&lt;p&gt;结构tm 的定义为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;int tm_sec;   // 代表目前秒数, 正常范围为0-59, 但允许至61 秒
+int tm_min;   // 代表目前分数, 范围0-59
+int tm_hour;  // 从午夜算起的时数, 范围为0-23
+int tm_mday;  // 目前月份的日数, 范围1-31
+int tm_mon;   // 代表目前月份, 从一月算起, 范围从0-11
+int tm_year;  // 从1900 年算起至今的年数
+int tm_wday;  // 一星期的日数, 从星期一算起, 范围为0-6
+int tm_yday;  // 从今年1 月1 日算起至今的天数, 范围为0-365
+int tm_isdst; // 日光节约时间的旗标
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;使用localtime函数的时候需要注意计算年份的时候需要加上1900，计算月份的时候需要加1。&lt;/p&gt;
+
+&lt;h3 id=&#34;使用说明:9dfdc17010c4b06873ef31dbbc6dcd19&#34;&gt;使用说明&lt;/h3&gt;
+
+&lt;p&gt;我们先调用gettimeofday函数获取到从公元 1970年1 月1 日的UTC 时间从0 时0 分0 秒算起到现在所经过的秒数加上微秒数，然后将秒数作为参数再调用localtime函数，转换为本地时区的当前时间即可，之后可以使用localtime函数返回的tm结构体对象来获取具体的年月日时分秒等数据。&lt;/p&gt;
+
+&lt;h3 id=&#34;示例代码:9dfdc17010c4b06873ef31dbbc6dcd19&#34;&gt;示例代码&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;#include &amp;lt;iostream&amp;gt;
+#include &amp;lt;string&amp;gt;
+#include &amp;lt;stdio.h&amp;gt;
+#include &amp;lt;sys/time.h&amp;gt;
+#include &amp;lt;time.h&amp;gt;
+#include &amp;lt;unistd.h&amp;gt;
+using namespace std;
+ 
+string fa_getSysTime()
+{
+    struct timeval tv;
+    gettimeofday(&amp;amp;tv,NULL);
+    struct tm* pTime;
+    pTime = localtime(&amp;amp;tv.tv_sec);
+    
+    charsTemp[30] = {0};
+    snprintf(sTemp, sizeof(sTemp), &amp;quot;%04d%02d%02d%02d%02d%02d%03d%03d&amp;quot;, pTime-&amp;gt;tm_year+1900, \
+    pTime-&amp;gt;tm_mon+1, pTime-&amp;gt;tm_mday, pTime-&amp;gt;tm_hour, pTime-&amp;gt;tm_min, pTime-&amp;gt;tm_sec, \
+    tv.tv_usec/1000,tv.tv_usec%1000);
+    return (string)sTemp;
+}
+ 
+int main()
+{
+    cout&amp;lt;&amp;lt; &amp;quot;当前时间：&amp;quot; &amp;lt;&amp;lt; fa_getSysTime() &amp;lt;&amp;lt; endl;
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;输出为:9dfdc17010c4b06873ef31dbbc6dcd19&#34;&gt;输出为&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;当前时间：20140930110457794678&lt;/code&gt;&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

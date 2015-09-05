@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>fatedier&#39;s blog </title>
-    <link>http://blog.fatedier.tk/post/</link>
+    <link>http://blog.fatedier.com/post/</link>
     <language>en-us</language>
     <author></author>
     <rights>(C) 2015</rights>
@@ -12,10 +12,10 @@
       
         <item>
           <title>从简单实例开始，学会写Makefile（一）</title>
-          <link>http://blog.fatedier.tk/2014/09/08/learn-to-write-makefile-01</link>
+          <link>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01</link>
           <pubDate>Mon, 08 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.tk/2014/09/08/learn-to-write-makefile-01</guid>
+          <guid>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01</guid>
           <description>
 
 &lt;p&gt;作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。&lt;/p&gt;

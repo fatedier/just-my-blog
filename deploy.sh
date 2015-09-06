@@ -14,6 +14,12 @@ else
     git commit
 fi
 
+# push to github
 git push origin master
-
 git subtree push --prefix=public git@github.com:fatedier/just-my-blog.git gh-pages
+
+# push to gitcafe
+git remote add gitcafe git@gitcafe.com:fatedier/just-my-blog.git > /dev/null
+
+git push gitcafe master
+git subtree push --prefix=public git@gitcafe.com:fatedier/just-my-blog.git gh-pages

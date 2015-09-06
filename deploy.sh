@@ -4,7 +4,7 @@ echo "Deploying myblog to github..."
 
 hugo
 
-cp ./cp_to_public/* ./public/
+cp -rf ./cp_to_public/* ./public/
 
 git add -A
 

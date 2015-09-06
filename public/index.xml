@@ -13,6 +13,275 @@
     
       
         <item>
+          <title>使用Vim打造自己的IDE</title>
+          <link>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide</link>
+          <pubDate>Wed, 29 Oct 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide</guid>
+          <description>
+
+&lt;p&gt;之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。&lt;/p&gt;
+
+&lt;p&gt;配置自己的Vim过程中参考了以下的blog和文档：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.csdn.net/fbfsber008/article/details/7055842&#34;&gt;http://blog.csdn.net/fbfsber008/article/details/7055842&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.douban.com/note/257815917/&#34;&gt;http://www.douban.com/note/257815917/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/vim-scripts/vundle&#34;&gt;https://github.com/vim-scripts/vundle&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;最终的效果：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-29-use-vim-to-make-my-ide-overview.jpg&#34; alt=&#34;overview&#34; /&gt;
+&lt;/p&gt;
+
+&lt;p&gt;现在把整个配置的过程记录下来，方便以后参考。&lt;/p&gt;
+
+&lt;h3 id=&#34;前期准备:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;前期准备&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;有一个github帐号&lt;/li&gt;
+&lt;li&gt;Linux上安装git版本控制工具，可以使用命令安装，例如 yum install git&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;github是一个好地方，不仅可以浏览很多的开源程序，而且可以把自己正在开发的项目或者有用的文档托管在上面，不管在其他任何的计算机上都可以很容易的获取到。&lt;/p&gt;
+
+&lt;p&gt;比如我的 .vimrc 的配置文件就放在了Github上，有一个版本库是专门用来存放配置文件的。&lt;/p&gt;
+
+&lt;p&gt;地址为：&lt;a href=&#34;https://github.com/fatedier/dot_file&#34;&gt;https://github.com/fatedier/dot_file&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;vim常用配置:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;vim常用配置&lt;/h3&gt;
+
+&lt;p&gt;个人的vim配置文件一般是放在用户主目录下的.vimrc文件。&lt;/p&gt;
+
+&lt;p&gt;配置文件中 &lt;code&gt;&amp;quot;&lt;/code&gt; 之后的部分都被当作注释。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;if v:lang =~ &amp;quot;utf8$&amp;quot; || v:lang =~&amp;quot;UTF-8$&amp;quot;
+    set fileencodings=ucs-bom,utf-8,latin1
+endif
+       
+set nocompatible            &amp;quot; Use Vim defaults (much better!)
+set bs=indent,eol,start     &amp;quot; allow backspacing overeverything in insert mode
+set viminfo=&#39;20,\&amp;quot;50        &amp;quot; read/write a .viminfo file, don&#39;t store more
+                            &amp;quot; than 50 lines of registers
+set history=50              &amp;quot; keep 50 lines of command line history
+set ruler                   &amp;quot; show the cursor position all the time
+                                    
+&amp;quot; -----------个人设置-----------
+filetype off
+
+set ts=4          &amp;quot; tab所占空格数
+set shiftwidth=4  &amp;quot; 自动缩进所使用的空格数
+set expandtab     &amp;quot; 用空格替换tab
+set autoindent    &amp;quot; 自动缩进
+set smartindent   &amp;quot; C语言缩进
+set number        &amp;quot; 显示行号
+set ignorecase    &amp;quot; 搜索忽略大小写
+set incsearch     &amp;quot; 输入字符串就显示匹配点
+set showtabline=2 &amp;quot; 总是显示标签页
+                                      
+if has(&amp;quot;mouse&amp;quot;)
+    set mouse=iv  &amp;quot; 在 insert 和 visual 模式使用鼠标定位
+endif
+      
+&amp;quot; -------------颜色配置-------------
+&amp;quot; 补全弹出窗口
+hi Pmenu ctermbg=light magenta
+&amp;quot; 补全弹出窗口选中条目
+hi PmenuSel ctermbg=yellow ctermfg=black
+       
+&amp;quot; -------------键盘映射-------------
+&amp;quot; Ctrl+S 映射为保存
+nnoremap &amp;lt;C-S&amp;gt; :w&amp;lt;CR&amp;gt;
+inoremap &amp;lt;C-S&amp;gt;&amp;lt;Esc&amp;gt;:w&amp;lt;CR&amp;gt;a
+        
+&amp;quot; Ctrl+C 复制，Ctrl+V 粘贴
+inoremap &amp;lt;C-C&amp;gt; y
+inoremap &amp;lt;C-V&amp;gt; &amp;lt;Esc&amp;gt;pa
+vnoremap &amp;lt;C-C&amp;gt; y
+vnoremap &amp;lt;C-V&amp;gt; p
+nnoremap &amp;lt;C-V&amp;gt; p
+
+&amp;quot; F3 查找当前高亮的单词
+inoremap &amp;lt;F3&amp;gt;*&amp;lt;Esc&amp;gt;:noh&amp;lt;CR&amp;gt;:match Todo /\k*\%#\k*/&amp;lt;CR&amp;gt;v
+vnoremap &amp;lt;F3&amp;gt;*&amp;lt;Esc&amp;gt;:noh&amp;lt;CR&amp;gt;:match Todo /\k*\%#\k*/&amp;lt;CR&amp;gt;v
+
+&amp;quot; Ctrl+\ 取消缩进
+inoremap &amp;lt;C-\&amp;gt; &amp;lt;Esc&amp;gt;&amp;lt;&amp;lt;i
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;使用vundle管理vim插件:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;使用vundle管理vim插件&lt;/h3&gt;
+
+&lt;p&gt;很多时候我们的vim都需要安装大量的插件，需要进行各种配置，而且插件路径下面的文件也会变的非常混乱，这个时候使用 &lt;strong&gt;vundle&lt;/strong&gt; 就是一个不错的选择。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/vim-scripts/vundle&#34;&gt;vundle&lt;/a&gt; 是可以算是一个用来管理各种vim插件的插件。&lt;/p&gt;
+
+&lt;h4 id=&#34;安装ctags:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;安装ctags&lt;/h4&gt;
+
+&lt;p&gt;直接使用命令 yuminstall ctags 进行安装。&lt;/p&gt;
+
+&lt;p&gt;之后在你的项目文件的根目录中执行如下的命令：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ ctags -R&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;会发现当前目录下生成了一个名为tags的文件。&lt;/p&gt;
+
+&lt;p&gt;tags文件是由ctags程序产生的一个索引文件，如果你在读程序时看了一个函数调用, 或者一个变量, 或者一个宏等等, 你想知道它们的定义在哪儿，tags文件就起作用了。使用把光标移动到你想查的地方，按下&amp;rdquo;Ctrl + ]&amp;ldquo;，就可以跳转到定义处。&lt;/p&gt;
+
+&lt;p&gt;最后需要在vim配置文件中将tags文件加入到vim中来：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;set tags=~/tags&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;注：这里需要填具体的tags文件所在路径。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;先安装vundle这个插件:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;先安装vundle这个插件&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;之后其他的插件也都会被放在~/.vim/bundle这个目录下。&lt;/p&gt;
+
+&lt;h4 id=&#34;安装其他需要的插件:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;安装其他需要的插件&lt;/h4&gt;
+
+&lt;p&gt;以后当你需要安装其他的vim插件的时候，直接在.vimrc中加上如下部分：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;filetype off
+ 
+setrtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+&amp;quot; Bundles
+&amp;quot; 显示变量、函数列表等
+Bundle&amp;quot;taglist.vim&amp;quot;
+&amp;quot; 窗口管理器
+Bundle&amp;quot;winmanager&amp;quot;
+&amp;quot; 标签工具
+Bundle&amp;quot;Visual-Mark&amp;quot;
+&amp;quot; 代码补全工具
+Bundle&amp;quot;neocomplcache&amp;quot;
+  
+filetype pluginindent on
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Bundle 后面的插件名称用引号引起来，最后在vim中输入:BundleInstall就会完成自动安装，实际上是也是从github上下载各种插件，因为大多数的插件已经备份在了github上的vim-scripts上。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;:PluginSearch&lt;/code&gt; 命令可以查看有哪些插件可以直接使用插件名下载的。&lt;/p&gt;
+
+&lt;p&gt;如果你需要的插件在这个里面没有找到，那么在.vimrc配置文件中可以直接用git远程仓库的地址，例如要安装command-t这个插件，可以在配置文件中加上：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Bundle &amp;quot;git://git.wincent.com/command-t.git&amp;quot;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这样就会直接从这个地址上下载所需插件。&lt;/p&gt;
+
+&lt;h3 id=&#34;其他插件的配置与使用:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;其他插件的配置与使用&lt;/h3&gt;
+
+&lt;h4 id=&#34;快速浏览源码-taglist:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;快速浏览源码：TagList&lt;/h4&gt;
+
+&lt;p&gt;在Windows平台我经常用来浏览项目源码的工具就是SourceInsight，会在窗口左边列出当前文件中的变量、宏、函数名等等，点击以后就会快速跳转到页面相应的地方，使用taglist就可以在vim中实现相同的效果。&lt;/p&gt;
+
+&lt;p&gt;通过vundle安装完成后，在vim中使用 &lt;code&gt;:Tlist&lt;/code&gt; 命令就可以打开TagList窗口。&lt;/p&gt;
+
+&lt;h4 id=&#34;窗口管理器-winmanager:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;窗口管理器：WinManager&lt;/h4&gt;
+
+&lt;p&gt;WinManager可以帮助我们管理在屏幕上显示的多个窗口。&lt;/p&gt;
+
+&lt;p&gt;之后我们需要设置一下在normal模式下可以直接输入wm来打开文件管理窗口以及TagList，.vimrc文件增加如下命令：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;let g:winManagerWindowLayout=&#39;FileExplorer|TagList&#39;
+nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;注：nnoremap是设置键盘映射。第一个字母n是normal模式，i是insert模式，v是visual模式。加上nore表示不会递归替换命令，比如a映射到b，b映射到c，那么按a不会得到按c的效果。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;高亮标签-visualmark:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;高亮标签：VisualMark&lt;/h4&gt;
+
+&lt;p&gt;这个插件的作用就是在浏览代码的时候在指定的行上添加标签，之后可以快速跳转回来，方便快捷。&lt;/p&gt;
+
+&lt;p&gt;安装完成之后直接就可以在vim中使用。&lt;/p&gt;
+
+&lt;p&gt;&amp;ldquo;mm&amp;rdquo; 命令会在当前行添加标签，再次按 &amp;ldquo;mm&amp;rdquo; 会取消标签。&lt;/p&gt;
+
+&lt;p&gt;按下“F2”可以在多个标签之间进行快速跳转。&lt;/p&gt;
+
+&lt;h4 id=&#34;自动补全-neocomplcache:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;自动补全：neocomplcache&lt;/h4&gt;
+
+&lt;p&gt;这个补全插件需要tags文件的支持，所以需要安装ctags，并且在项目根目录生成tags文件，之后在.vimrc中加入这个tags文件。&lt;/p&gt;
+
+&lt;p&gt;并且在配置文件中加上如下配置：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;let g:neocomplcache_enable_at_startup = 1&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这一行是设置是否自动启用补全，为1代表启用。这样就不需要每次都使用Ctrl+P或者Ctrl+N来弹出补全列表。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;let g:neocomplcache_enable_auto_select = 1&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>vimdiff常用命令</title>
+          <link>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands</link>
+          <pubDate>Fri, 24 Oct 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands</guid>
+          <description>&lt;p&gt;整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。&lt;/p&gt;
+
+&lt;p&gt;可以有多种方式使用vimdiff，例如：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;vimdiff [file1] [file2]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;vim -d [file1] [file2]&lt;/code&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;其他的一些的编辑命令与vim相同，这里主要记录一些常用的合并文件需要用到的命令：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Ctrl+w之后按w&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;可以切换到另外一个文件&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;[c&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;跳转到上一个差异点&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;]c&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;跳转到下一个差一点&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;zo或者i&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;展开折叠区域，或者使用i进入插入模式也会进行展开&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;zc&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;重新折叠，可以把使用zo展开折叠的区域恢复原样&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;dp（diff put的意思）&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;把当前文件的差异点内容复制到另一个文件&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;do（diff obtain的意思）&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;把另一个文件的差异点内容复制到当前文件&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;:diffupdate&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;有时候修改了文件之后不会立即刷新重新比对，使用该命令可以重新进行文件比较。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;qa&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;退出所有打开的文件，但是不保存&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;wqa&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;退出并保存所有已打开的文件&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
           <title>Git常用命令</title>
           <link>http://blog.fatedier.com/2014/10/17/git-usually-command</link>
           <pubDate>Fri, 17 Oct 2014 00:00:00 UTC</pubDate>

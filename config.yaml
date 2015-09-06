@@ -1,10 +1,14 @@
-disablePathToLower: true
-baseurl: "http://192.168.2.128/"
+baseurl: "http://fatedier.github.io/just-my-blog"
 languageCode: "zh-CN"
 title: "fatedier's blog"
 copyright: "Copyright (c) 2015. All rights reserved."
 MetaDataFormat: "yaml"
 builddrafts: false
+canonifyurls: true
+contentdir: "content"
+layoutdir: "layouts"
+publishdir: "public"
+
 permalinks:
     posts: /:year/:month/:day/:slug/
 Taxonomies:
@@ -35,12 +39,3 @@ menu:
           URL: "/about/"
 author:
     name: "fatedier"
-
-images:
-  - 480x
-  - 768x
-  - 960x
-  - 1024x
-  - 1920x
-  - 720x340
-  - 520x245

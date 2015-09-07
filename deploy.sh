@@ -16,7 +16,7 @@ fi
 
 # push to github
 git push origin master
-git subtree push --prefix=public git@github.com:fatedier/just-my-blog.git gh-pages
+# git subtree push --prefix=public git@github.com:fatedier/just-my-blog.git gh-pages
 
 # push to gitcafe
 git remote add gitcafe git@gitcafe.com:fatedier/just-my-blog.git 1> /dev/null 2>&1

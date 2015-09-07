@@ -51,9 +51,9 @@ public:
 
 int main()
 {
-	cout << "vector:" << endl;
+    cout << "vector:" << endl;
 
-	long number = 20000000;
+    long number = 20000000;
     vector<A> tmpList;
     A temp;
     temp.a = 1;
@@ -68,9 +68,9 @@ int main()
     gettimeofday(&tv_begin, NULL);
     for(long i=0; i<number*5; i++)
     {
-    	if(tmpList.size() == 0)
-    	{
-    	}
+        if(tmpList.size() == 0)
+        {
+        }
     }
     gettimeofday(&tv_end, NULL);
     cout << "size() msec: " << (tv_end.tv_sec - tv_begin.tv_sec)*1000 + (tv_end.tv_usec - tv_begin.tv_usec)/1000 << endl;
@@ -79,9 +79,9 @@ int main()
     gettimeofday(&tv_begin, NULL);
     for(long i=0; i<number*5; i++)
     {
-    	if(tmpList.empty())
-    	{
-    	}
+        if(tmpList.empty())
+        {
+        }
     }
     gettimeofday(&tv_end, NULL);
     cout << "empty() msec: " << (tv_end.tv_sec - tv_begin.tv_sec)*1000 + (tv_end.tv_usec - tv_begin.tv_usec)/1000 << endl;
@@ -195,10 +195,10 @@ empty() msec: 304
 
 ```cpp
 size_type size() const
-	{return (_Size); }
+    {return (_Size); }
  
 bool empty() const
-	{return (size() == 0); }
+    {return (size() == 0); }
 ```
 
 可以看出Aix上vector的empty()函数实际上是调用了size()函数进行判断，size()函数返回的是表示当前容器数量的一个变量，所以，显然，size() == 0的效率是要高于empty()的，因为少了函数调用部分的耗时。
@@ -207,10 +207,10 @@ bool empty() const
 
 ```cpp
 size_type size() const
-	{ return size_type(this->_M_impl._M_finish -this->_M_impl._M_start); }
+    { return size_type(this->_M_impl._M_finish -this->_M_impl._M_start); }
  
 bool empty() const
-	{ return begin() == end(); }
+    { return begin() == end(); }
 ```
 
 这里size()是尾指针减去头指针得到的，而empty()是比较头指针和尾指针是否相等。在empty()里多了函数调用以及临时变量赋值等操作。
@@ -221,10 +221,10 @@ bool empty() const
 
 ```cpp
 size_type size() const
-	{return (_Size); }
+    {return (_Size); }
  
 bool empty() const
-	{return (size() == 0); }
+    {return (size() == 0); }
 ```
 
 Aix上对于在list中的处理方式依然和vector一样，维护了一个_Size变量，empty()多了一层函数调用，效率较低。
@@ -233,10 +233,10 @@ Aix上对于在list中的处理方式依然和vector一样，维护了一个_Siz
 
 ```cpp
 size_type size() const
-	{ return std::distance(begin(), end()); }
+    { return std::distance(begin(), end()); }
  
 bool empty() const
-	{ return this->_M_impl._M_node._M_next ==&this->_M_impl._M_node; }
+    { return this->_M_impl._M_node._M_next ==&this->_M_impl._M_node; }
 ```
 
 size()函数调用了distance函数用遍历的方法取得两个指针间的元素个数，然后返回。而empty()函数则是判断头指针的下一个节点是否是自己本身，只需要进行一次判断。所以，当list容器元素个数较多的时候，这里的empty()效率远大于size() == 0。
@@ -247,10 +247,10 @@ size()函数调用了distance函数用遍历的方法取得两个指针间的元
 
 ```cpp
 size_type size() const
-	{return (_Size); }
+    {return (_Size); }
  
 bool empty() const
-	{return (size() == 0); }
+    {return (size() == 0); }
 ```
 
 不出意外，可以看出Aix上依然维护了一个_Size变量，在判断的时候都是用这个变量来判断，但是empty()多了一层函数调用，所以效率上会稍微低一些。
@@ -259,10 +259,10 @@ bool empty() const
 
 ```cpp
 bool empty() const
-	{ return _M_impl._M_node_count == 0; }
+    { return _M_impl._M_node_count == 0; }
  
 size_type size() const
-	{ return _M_impl._M_node_count; }
+    { return _M_impl._M_node_count; }
 ```
 
 这里的map用到了红黑树，就不详细解释了，有兴趣的同学可以自己查阅相关资料。代码中empty()和size()用到的都是保存红黑树的节点数的变量，可以看出empty()和size() == 0两者其实是等价的。

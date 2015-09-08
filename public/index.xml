@@ -352,6 +352,28 @@ $ git merge testing
     
       
         <item>
+          <title>学习Git的常用网站</title>
+          <link>http://blog.fatedier.com/2014/10/16/learn-git-website</link>
+          <pubDate>Thu, 16 Oct 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2014/10/16/learn-git-website</guid>
+          <description>
+
+&lt;p&gt;学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。&lt;/p&gt;
+
+&lt;h4 id=&#34;git官方文档:8a2c50993806c604dc839fed7e1197e9&#34;&gt;Git官方文档&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://git-scm.com/book/zh/&#34;&gt;http://git-scm.com/book/zh/&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;廖雪峰git教程:8a2c50993806c604dc839fed7e1197e9&#34;&gt;廖雪峰Git教程&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&#34;&gt;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
           <title>主机使用代理上网，虚拟机Linux的shell如何连外网</title>
           <link>http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent</link>
           <pubDate>Tue, 14 Oct 2014 00:00:00 UTC</pubDate>

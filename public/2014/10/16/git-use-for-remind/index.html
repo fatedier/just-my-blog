@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+<meta property="og:url" content="http://blog.fatedier.com">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git使用备忘 &middot; fatedier&#39;s blog">
+
+<meta property="og:site_name" content="fatedier&#39;s blog">
+
+<title>
+    
+    Git使用备忘
+    
+</title>
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/styles/default.min.css">
+<link rel="stylesheet" href="http://blog.fatedier.com/css/styles.css">
+<link rel="stylesheet" href="http://blog.fatedier.com/css/custom.css">
+
+
+<link rel="shortcut icon" href="http://blog.fatedier.com/assets/favicon.ico">
+
+
+<link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.fatedier.com/index.xml">
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="http://blog.fatedier.com">fatedier&#39;s blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
+                        <li><a href="http://blog.fatedier.com/tags">Tags</a></li>
+                        
+                        <li><a href="http://blog.fatedier.com/about">关于我</a></li>
+                        
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post">
+
+            <header>
+                <div class="post-date">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                    <time datetime="2014年10月16日">
+                        2014年10月16日
+                    </time>
+                </div>
+                <h1 class="post-title">
+                    <a href="http://blog.fatedier.com/2014/10/16/git-use-for-remind">Git使用备忘</a>
+                </h1>
+            </header>
+
+            <div class="post-content">
+                
+
+<p>Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。</p>
+
+<p>Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。</p>
+
+<h3 id="git的配置:7aa84c832c9ae9742e6d9b7e8364eeab">Git的配置</h3>
+
+<ul>
+<li><p>/etc/gitconfig 文件：系统中对所有用户都普遍适用的配置。若使用 git config 时用 &ndash;system 选项，读写的就是这个文件。</p></li>
+
+<li><p>~/.gitconfig 文件：用户目录下的配置文件只适用于该用户。若使用 git config 时用 &ndash;global 选项，读写的就是这个文件。</p></li>
+</ul>
+
+<p>当前项目的 Git 目录中的配置文件（也就是工作目录中的 .git/config 文件）：这里的配置仅仅针对当前项目有效。每一个级别的配置都会覆盖上层的相同配置，所.git/config 里的配置会覆盖 /etc/gitconfig 中的同名变量。</p>
+
+<h4 id="设置用户信息:7aa84c832c9ae9742e6d9b7e8364eeab">设置用户信息</h4>
+
+<pre><code class="language-bash">$ git config --globaluser.name  &quot;your-uasername&quot;
+$ git config --global user.email example@example.com
+$ git config --global core.editor vim
+</code></pre>
+
+<h4 id="设置差异分析工具:7aa84c832c9ae9742e6d9b7e8364eeab">设置差异分析工具</h4>
+
+<pre><code class="language-bash">$ git config --global merge.tool vimdiff
+</code></pre>
+
+<h4 id="如何获取帮助文档:7aa84c832c9ae9742e6d9b7e8364eeab">如何获取帮助文档</h4>
+
+<pre><code class="language-bash">$ git help &lt;verb&gt;
+$ git &lt;verb&gt; --help
+$ man git-&lt;verb&gt;
+</code></pre>
+
+<p>例如 <code>man git-config</code></p>
+
+<h3 id="git基础操作:7aa84c832c9ae9742e6d9b7e8364eeab">Git基础操作</h3>
+
+<h4 id="取得git仓库-从现有仓库克隆:7aa84c832c9ae9742e6d9b7e8364eeab">取得Git仓库（从现有仓库克隆）</h4>
+
+<p><code>$ git clone https://github.com/schacon/fatest.git</code></p>
+
+<p>这个命令会在当前目录下创建一个fatest的目录，其中的.git目录保存所有的版本记录。fatest下是项目的所有文件。</p>
+
+<p>如果要自定义目录名称，可以在末尾指定，例如：</p>
+
+<p><code>$ git clone https://github.com/schacon/fatest.git fatestnew</code></p>
+
+<p>现在创建的目录就是fatestnew而不是fatest了，其他的都一样。</p>
+
+<h4 id="检查当前项目文件状态:7aa84c832c9ae9742e6d9b7e8364eeab">检查当前项目文件状态</h4>
+
+<p><code>$ git status</code></p>
+
+<p>可以看到有哪些文件是没有加入到版本中的，哪些是修改了还没提交的等等。</p>
+
+<h4 id="将新文件加入到版本中:7aa84c832c9ae9742e6d9b7e8364eeab">将新文件加入到版本中</h4>
+
+<p><code>$ git add test.cpp</code></p>
+
+<p>注：<code>git add</code>命令对于不同状态的文件有不同的效果，可以用它开始跟踪新文件，或者把已跟踪的文件放到暂存区，还能用于合并时把有冲突的文件标记为已解决状态等。</p>
+
+<p>*注意*修改过后的文件处于未暂存状态，提交的时候处于未暂存状态的文件将不会提交，需要使用git add命令更改为暂存状态，之后再提交就会提交到仓库中了。</p>
+
+<h4 id="忽略某些文件:7aa84c832c9ae9742e6d9b7e8364eeab">忽略某些文件</h4>
+
+<p>对于不需要加入到版本中，并且使用git status时不再提示的文件。</p>
+
+<p>在 .gitignore 文件中进行配置，例如*.exe</p>
+
+<p>那么所有的以.exe结尾的文件都会被忽略，而不再提醒。</p>
+
+<p>例子：</p>
+
+<pre><code class="language-bash"># 此为注释，将被 Git 忽略
+# 忽略所有 .a 结尾的文件
+*.a
+# 但 lib.a 除外
+!lib.a
+# 仅仅忽略项目根目录下的 TODO 文件，不包括 subdir/TODO
+/TODO
+# 忽略 build/ 目录下的所有文件
+build/
+# 会忽略 doc/notes.txt 但不包括 doc/server/arch.txt
+doc/*.txt
+# ignore all .txt files in the doc/ directory
+doc/**/*.txt
+</code></pre>
+
+<h4 id="查看已暂存和未暂存的更新文件差异:7aa84c832c9ae9742e6d9b7e8364eeab">查看已暂存和未暂存的更新文件差异</h4>
+
+<p>未暂存：</p>
+
+<p><code>$ git diff</code></p>
+
+<p>已暂存：</p>
+
+<p><code>$ git diff --staged</code></p>
+
+<h4 id="提交更新:7aa84c832c9ae9742e6d9b7e8364eeab">提交更新</h4>
+
+<p><code>$ git commit</code></p>
+
+<p>之后进入vim编辑提交说明，保存即可。</p>
+
+<p><code>$ git commit --m &quot;comment&quot;</code></p>
+
+<p>使用 <em>-m</em> 命令可以直接在一行命令中写说明。</p>
+
+<p><code>$ git commit -a</code></p>
+
+<p>使用 <em>-a</em> 命令，会把未暂存和已暂存的文件一起提交，不然只会提交已暂存的文件。</p>
+
+<h4 id="删除文件和取消跟踪:7aa84c832c9ae9742e6d9b7e8364eeab">删除文件和取消跟踪</h4>
+
+<p>可以先本地使用rm命令删掉，这时候放在未暂存区域，之后用“git rm文件名”删掉。</p>
+
+<p>也可以直接使用 <code>git rm 文件名</code> 删掉。</p>
+
+<p>另外一种情况是，我们想把文件从 Git 仓库中删除（亦即从暂存区域移除），但仍然希望保留在当前工作目录中。换句话说，仅是从跟踪清单中删除。比如一些大型日志文件或者一堆 .a 编译文件，不小心纳入仓库后，要移除跟踪但不删除文件，以便稍后在 .gitignore 文件中补上，用 &ndash;cached 选项即可：</p>
+
+<p><code>$ git rm --cached readme.txt</code></p>
+
+<h4 id="移动文件:7aa84c832c9ae9742e6d9b7e8364eeab">移动文件</h4>
+
+<p>例如要把 test.cpp 改为 tt.cpp</p>
+
+<p><code>$ git mv test.cpp tt.cpp</code></p>
+
+<p>就相当于是</p>
+
+<pre><code class="language-bash">$ mv README.txt README
+$ git rm README.txt
+$ git add README
+</code></pre>
+
+<h4 id="查看提交历史:7aa84c832c9ae9742e6d9b7e8364eeab">查看提交历史</h4>
+
+<p><code>$ git log</code></p>
+
+<h4 id="撤销操作:7aa84c832c9ae9742e6d9b7e8364eeab">撤销操作</h4>
+
+<h5 id="覆盖上一次的提交:7aa84c832c9ae9742e6d9b7e8364eeab">覆盖上一次的提交</h5>
+
+<p><code>$ git commit --amend</code></p>
+
+<p>会将上次提交和这次提交合并起来，算作一次提交。</p>
+
+<h5 id="取消已暂存文件:7aa84c832c9ae9742e6d9b7e8364eeab">取消已暂存文件</h5>
+
+<p><code>$ git reset HEAD &lt;file&gt;</code></p>
+
+<p>这个时候文件状态就从已暂存变为未暂存</p>
+
+<h5 id="取消对文件的修改-还没有放到暂存区:7aa84c832c9ae9742e6d9b7e8364eeab">取消对文件的修改（还没有放到暂存区）</h5>
+
+<p><code>$ git checkout -- &lt;file&gt;</code></p>
+
+<h4 id="运程仓库的使用:7aa84c832c9ae9742e6d9b7e8364eeab">运程仓库的使用</h4>
+
+<h5 id="查看当前的远程库:7aa84c832c9ae9742e6d9b7e8364eeab">查看当前的远程库</h5>
+
+<p><code>$ git remote</code></p>
+
+<p>会列出每个远程库的简短的名字，默认使用origin表示原始仓库</p>
+
+<p><code>$ git remote -v</code></p>
+
+<p>会额外列出远程库对应的克隆地址</p>
+
+<h5 id="添加远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab">添加远程仓库</h5>
+
+<p><code>$ git remote add [shortname] [url]</code></p>
+
+<h5 id="从远程仓库抓取数据:7aa84c832c9ae9742e6d9b7e8364eeab">从远程仓库抓取数据</h5>
+
+<p><code>$ git fetch [remote-name]</code></p>
+
+<p>抓取数据，但并不合并到当前分支</p>
+
+<p><code>$ git pull</code></p>
+
+<p>自动抓取数据，并自动合并到当前分支</p>
+
+<p><code>$ git branch -r</code></p>
+
+<p>查看所有远程分支</p>
+
+<p><code>$ git checkout -b test origin/test</code></p>
+
+<p>获取远程分支到本地新的分支上，并切换到新分支</p>
+
+<h5 id="推送数据到远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab">推送数据到远程仓库</h5>
+
+<p><code>$ git push [remote-name] [branch-name]</code></p>
+
+<p>推送操作会默认使用origin和master名字</p>
+
+<h5 id="查看远程仓库信息:7aa84c832c9ae9742e6d9b7e8364eeab">查看远程仓库信息</h5>
+
+<p><code>$ git remote show [remote-name]</code></p>
+
+<p>除了对应的克隆地址外，它还给出了许多额外的信息。它友善地告诉你如果是在 master 分支，就可以用 git pull 命令抓取数据合并到本地。另外还列出了所有处于跟踪状态中的远端分支。</p>
+
+<h5 id="远程仓库的删除:7aa84c832c9ae9742e6d9b7e8364eeab">远程仓库的删除</h5>
+
+<p><code>$ git remote rm [remote-name]</code></p>
+
+<h4 id="标签的使用:7aa84c832c9ae9742e6d9b7e8364eeab">标签的使用</h4>
+
+<h5 id="显示已有的标签:7aa84c832c9ae9742e6d9b7e8364eeab">显示已有的标签</h5>
+
+<p><code>$ git tag</code></p>
+
+<h5 id="新建标签:7aa84c832c9ae9742e6d9b7e8364eeab">新建标签</h5>
+
+<p><code>$ git tag v1.0</code></p>
+
+<p>新建一个简单的标签</p>
+
+<p><code>$ git tag -a v1.0 -m 'my version 1.0'</code></p>
+
+<p>-m 指定了对应标签的说明</p>
+
+<h5 id="后期加注标签:7aa84c832c9ae9742e6d9b7e8364eeab">后期加注标签</h5>
+
+<p><code>$ git log --pretty=oneline --abbrev-commit</code></p>
+
+<p>先显示提交历史</p>
+
+<p><code>$ git tag -a v1.1 9fceb02</code></p>
+
+<p>补加标签</p>
+
+<h5 id="推送标签:7aa84c832c9ae9742e6d9b7e8364eeab">推送标签</h5>
+
+<p><code>$ git push origin [tagname]</code></p>
+
+<h4 id="设置命令别名:7aa84c832c9ae9742e6d9b7e8364eeab">设置命令别名</h4>
+
+<p><code>$ git config --global alias.co checkout</code></p>
+
+<h3 id="git分支:7aa84c832c9ae9742e6d9b7e8364eeab">Git分支</h3>
+
+<h4 id="新建分支:7aa84c832c9ae9742e6d9b7e8364eeab">新建分支</h4>
+
+<p><code>$ git branch testing</code></p>
+
+<p>会在当前commit对象上新建一个分支指针</p>
+
+<p><em>注：HEAD这个特别的指针是指向正在工作中的本地分支的指针</em></p>
+
+<h4 id="切换分支:7aa84c832c9ae9742e6d9b7e8364eeab">切换分支</h4>
+
+<p><code>$ git checkout testing</code></p>
+
+<p>切换到testing分支上</p>
+
+<h4 id="分支的合并:7aa84c832c9ae9742e6d9b7e8364eeab">分支的合并</h4>
+
+<p>在master分支上，执行：</p>
+
+<p><code>$ git merge testing</code></p>
+
+<p>将tesing分支合并回master</p>
+
+<h4 id="使用合并工具-可以自己设置-例如设置成vimdiff:7aa84c832c9ae9742e6d9b7e8364eeab">使用合并工具（可以自己设置，例如设置成vimdiff）</h4>
+
+<p><code>$ git mergetool</code></p>
+
+<h4 id="分支的管理:7aa84c832c9ae9742e6d9b7e8364eeab">分支的管理</h4>
+
+<p><code>$ git branch --merged</code></p>
+
+<p>查看哪些分支已经被并入当前分支，通常这些都可以删除了。</p>
+
+<p><code>$ git branch -d testing</code></p>
+
+<p>删除一个分支</p>
+
+<p><code>$ git branch -D testing</code></p>
+
+<p>如果该分支尚没有合并，可以使用-D选项强制删除。</p>
+
+<h4 id="推送本地分支:7aa84c832c9ae9742e6d9b7e8364eeab">推送本地分支</h4>
+
+<p><code>$ git push origin testing</code></p>
+
+<h4 id="分支的衍合:7aa84c832c9ae9742e6d9b7e8364eeab">分支的衍合</h4>
+
+<p>例如现在有两个分支，一个master，一个testing</p>
+
+<pre><code class="language-bash">$ git checkout testing
+$ git rebase master
+$ git checkout master
+$ git merge testing
+</code></pre>
+
+<p>通常在贡献自己的代码之前先衍合，再提交，会让历史提交记录更清晰。</p>
+
+<h3 id="git调试:7aa84c832c9ae9742e6d9b7e8364eeab">Git调试</h3>
+
+<h4 id="文件标注:7aa84c832c9ae9742e6d9b7e8364eeab">文件标注</h4>
+
+<p><code>$ git blame -L 12,22 test.cpp</code></p>
+
+<p>查看test.cpp文件对每一行进行修改的最近一次提交。</p>
+
+<h4 id="查看文件的历史提交:7aa84c832c9ae9742e6d9b7e8364eeab">查看文件的历史提交</h4>
+
+<p><code>$ git log --pretty=oneline test.cpp</code></p>
+
+<p>查看test.cpp文件的历史提交记录</p>
+
+<h4 id="查看文件的历史版本:7aa84c832c9ae9742e6d9b7e8364eeab">查看文件的历史版本</h4>
+
+<p><code>$ git show [commit] [file]</code></p>
+
+<p>例如：<code>$ git show 7da7c23 test.cpp</code></p>
+
+<p>查看7da7c23这次提交的test.cpp文件。</p>
+
+<h4 id="查看历史提交的详细文件变化:7aa84c832c9ae9742e6d9b7e8364eeab">查看历史提交的详细文件变化</h4>
+
+<p><code>$ git log -p -2</code></p>
+
+<p>通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 &ldquo;-&rdquo; 开头，新增的部分会以 &ldquo;+&rdquo; 开头，方便查看。</p>
+
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="http://blog.fatedier.com/tags/git">
+                            <i class="fa fa-tags"></i>
+                            git
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7">
+                            <i class="fa fa-tags"></i>
+                            开发工具
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+            
+            <footer>
+
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="http://blog.fatedier.com/about"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        
+
+                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+
+                
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+    <div class="row">
+
+        <div class="col-xs-12 col-sm-4 col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Recent Posts</h2>
+                </div>
+                <div class="list-group">
+                    
+                    <a href="http://blog.fatedier.com/about" class="list-group-item">关于我</a>
+                    
+                    <a href="http://blog.fatedier.com/2014/10/16/git-use-for-remind" class="list-group-item">Git使用备忘</a>
+                    
+                    <a href="http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent" class="list-group-item">主机使用代理上网，虚拟机Linux的shell如何连外网</a>
+                    
+                    <a href="http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp" class="list-group-item">C/C&#43;&#43;获取精确到微秒级的系统时间</a>
+                    
+                    <a href="http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty" class="list-group-item">size() == 0和empty()的比较</a>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-4 col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Tags</h2>
+                </div>
+                <div class="list-group">
+                    
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/c/cpp" class="list-group-item">
+                        <span class="badge">4</span>
+                        c/cpp
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/git" class="list-group-item">
+                        <span class="badge">1</span>
+                        git
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/linux" class="list-group-item">
+                        <span class="badge">4</span>
+                        linux
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/stl" class="list-group-item">
+                        <span class="badge">1</span>
+                        stl
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7" class="list-group-item">
+                        <span class="badge">1</span>
+                        开发工具
+                    </a>
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2015  fatedier&#39;s blog </p>
+	<p>Powered by <a href="http://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script src="//code.jquery.com/jquery-2.1.3.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.7/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="http://s11.cnzz.com/z_stat.php?id=1256273693&web_id=1256273693" language="JavaScript"></script>
+

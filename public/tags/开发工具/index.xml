@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fatedier&#39;s blog </title>
+    <link>http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/</link>
+    <language>en-us</language>
+    <author></author>
+    <rights>(C) 2015</rights>
+    <updated>2014-10-16 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Git使用备忘</title>
+          <link>http://blog.fatedier.com/2014/10/16/git-use-for-remind</link>
+          <pubDate>Thu, 16 Oct 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2014/10/16/git-use-for-remind</guid>
+          <description>
+
+&lt;p&gt;Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。&lt;/p&gt;
+
+&lt;p&gt;Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。&lt;/p&gt;
+
+&lt;h3 id=&#34;git的配置:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;Git的配置&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;/etc/gitconfig 文件：系统中对所有用户都普遍适用的配置。若使用 git config 时用 &amp;ndash;system 选项，读写的就是这个文件。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;~/.gitconfig 文件：用户目录下的配置文件只适用于该用户。若使用 git config 时用 &amp;ndash;global 选项，读写的就是这个文件。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;当前项目的 Git 目录中的配置文件（也就是工作目录中的 .git/config 文件）：这里的配置仅仅针对当前项目有效。每一个级别的配置都会覆盖上层的相同配置，所.git/config 里的配置会覆盖 /etc/gitconfig 中的同名变量。&lt;/p&gt;
+
+&lt;h4 id=&#34;设置用户信息:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;设置用户信息&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git config --globaluser.name  &amp;quot;your-uasername&amp;quot;
+$ git config --global user.email example@example.com
+$ git config --global core.editor vim
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;设置差异分析工具:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;设置差异分析工具&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git config --global merge.tool vimdiff
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;如何获取帮助文档:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;如何获取帮助文档&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git help &amp;lt;verb&amp;gt;
+$ git &amp;lt;verb&amp;gt; --help
+$ man git-&amp;lt;verb&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;例如 &lt;code&gt;man git-config&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;git基础操作:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;Git基础操作&lt;/h3&gt;
+
+&lt;h4 id=&#34;取得git仓库-从现有仓库克隆:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;取得Git仓库（从现有仓库克隆）&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git clone https://github.com/schacon/fatest.git&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这个命令会在当前目录下创建一个fatest的目录，其中的.git目录保存所有的版本记录。fatest下是项目的所有文件。&lt;/p&gt;
+
+&lt;p&gt;如果要自定义目录名称，可以在末尾指定，例如：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git clone https://github.com/schacon/fatest.git fatestnew&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;现在创建的目录就是fatestnew而不是fatest了，其他的都一样。&lt;/p&gt;
+
+&lt;h4 id=&#34;检查当前项目文件状态:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;检查当前项目文件状态&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git status&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;可以看到有哪些文件是没有加入到版本中的，哪些是修改了还没提交的等等。&lt;/p&gt;
+
+&lt;h4 id=&#34;将新文件加入到版本中:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;将新文件加入到版本中&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git add test.cpp&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;注：&lt;code&gt;git add&lt;/code&gt;命令对于不同状态的文件有不同的效果，可以用它开始跟踪新文件，或者把已跟踪的文件放到暂存区，还能用于合并时把有冲突的文件标记为已解决状态等。&lt;/p&gt;
+
+&lt;p&gt;*注意*修改过后的文件处于未暂存状态，提交的时候处于未暂存状态的文件将不会提交，需要使用git add命令更改为暂存状态，之后再提交就会提交到仓库中了。&lt;/p&gt;
+
+&lt;h4 id=&#34;忽略某些文件:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;忽略某些文件&lt;/h4&gt;
+
+&lt;p&gt;对于不需要加入到版本中，并且使用git status时不再提示的文件。&lt;/p&gt;
+
+&lt;p&gt;在 .gitignore 文件中进行配置，例如*.exe&lt;/p&gt;
+
+&lt;p&gt;那么所有的以.exe结尾的文件都会被忽略，而不再提醒。&lt;/p&gt;
+
+&lt;p&gt;例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# 此为注释，将被 Git 忽略
+# 忽略所有 .a 结尾的文件
+*.a
+# 但 lib.a 除外
+!lib.a
+# 仅仅忽略项目根目录下的 TODO 文件，不包括 subdir/TODO
+/TODO
+# 忽略 build/ 目录下的所有文件
+build/
+# 会忽略 doc/notes.txt 但不包括 doc/server/arch.txt
+doc/*.txt
+# ignore all .txt files in the doc/ directory
+doc/**/*.txt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;查看已暂存和未暂存的更新文件差异:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看已暂存和未暂存的更新文件差异&lt;/h4&gt;
+
+&lt;p&gt;未暂存：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git diff&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;已暂存：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git diff --staged&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;提交更新:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;提交更新&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git commit&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;之后进入vim编辑提交说明，保存即可。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git commit --m &amp;quot;comment&amp;quot;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;使用 &lt;em&gt;-m&lt;/em&gt; 命令可以直接在一行命令中写说明。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git commit -a&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;使用 &lt;em&gt;-a&lt;/em&gt; 命令，会把未暂存和已暂存的文件一起提交，不然只会提交已暂存的文件。&lt;/p&gt;
+
+&lt;h4 id=&#34;删除文件和取消跟踪:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;删除文件和取消跟踪&lt;/h4&gt;
+
+&lt;p&gt;可以先本地使用rm命令删掉，这时候放在未暂存区域，之后用“git rm文件名”删掉。&lt;/p&gt;
+
+&lt;p&gt;也可以直接使用 &lt;code&gt;git rm 文件名&lt;/code&gt; 删掉。&lt;/p&gt;
+
+&lt;p&gt;另外一种情况是，我们想把文件从 Git 仓库中删除（亦即从暂存区域移除），但仍然希望保留在当前工作目录中。换句话说，仅是从跟踪清单中删除。比如一些大型日志文件或者一堆 .a 编译文件，不小心纳入仓库后，要移除跟踪但不删除文件，以便稍后在 .gitignore 文件中补上，用 &amp;ndash;cached 选项即可：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git rm --cached readme.txt&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;移动文件:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;移动文件&lt;/h4&gt;
+
+&lt;p&gt;例如要把 test.cpp 改为 tt.cpp&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git mv test.cpp tt.cpp&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;就相当于是&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ mv README.txt README
+$ git rm README.txt
+$ git add README
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;查看提交历史:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看提交历史&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git log&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;撤销操作:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;撤销操作&lt;/h4&gt;
+
+&lt;h5 id=&#34;覆盖上一次的提交:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;覆盖上一次的提交&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git commit --amend&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;会将上次提交和这次提交合并起来，算作一次提交。&lt;/p&gt;
+
+&lt;h5 id=&#34;取消已暂存文件:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;取消已暂存文件&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git reset HEAD &amp;lt;file&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这个时候文件状态就从已暂存变为未暂存&lt;/p&gt;
+
+&lt;h5 id=&#34;取消对文件的修改-还没有放到暂存区:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;取消对文件的修改（还没有放到暂存区）&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git checkout -- &amp;lt;file&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;运程仓库的使用:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;运程仓库的使用&lt;/h4&gt;
+
+&lt;h5 id=&#34;查看当前的远程库:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看当前的远程库&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git remote&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;会列出每个远程库的简短的名字，默认使用origin表示原始仓库&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git remote -v&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;会额外列出远程库对应的克隆地址&lt;/p&gt;
+
+&lt;h5 id=&#34;添加远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;添加远程仓库&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git remote add [shortname] [url]&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;从远程仓库抓取数据:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;从远程仓库抓取数据&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git fetch [remote-name]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;抓取数据，但并不合并到当前分支&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git pull&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;自动抓取数据，并自动合并到当前分支&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git branch -r&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;查看所有远程分支&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git checkout -b test origin/test&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;获取远程分支到本地新的分支上，并切换到新分支&lt;/p&gt;
+
+&lt;h5 id=&#34;推送数据到远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;推送数据到远程仓库&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git push [remote-name] [branch-name]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;推送操作会默认使用origin和master名字&lt;/p&gt;
+
+&lt;h5 id=&#34;查看远程仓库信息:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看远程仓库信息&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git remote show [remote-name]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;除了对应的克隆地址外，它还给出了许多额外的信息。它友善地告诉你如果是在 master 分支，就可以用 git pull 命令抓取数据合并到本地。另外还列出了所有处于跟踪状态中的远端分支。&lt;/p&gt;
+
+&lt;h5 id=&#34;远程仓库的删除:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;远程仓库的删除&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git remote rm [remote-name]&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;标签的使用:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;标签的使用&lt;/h4&gt;
+
+&lt;h5 id=&#34;显示已有的标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;显示已有的标签&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git tag&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;新建标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;新建标签&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git tag v1.0&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;新建一个简单的标签&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git tag -a v1.0 -m &#39;my version 1.0&#39;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;-m 指定了对应标签的说明&lt;/p&gt;
+
+&lt;h5 id=&#34;后期加注标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;后期加注标签&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git log --pretty=oneline --abbrev-commit&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;先显示提交历史&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git tag -a v1.1 9fceb02&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;补加标签&lt;/p&gt;
+
+&lt;h5 id=&#34;推送标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;推送标签&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;$ git push origin [tagname]&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;设置命令别名:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;设置命令别名&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git config --global alias.co checkout&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;git分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;Git分支&lt;/h3&gt;
+
+&lt;h4 id=&#34;新建分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;新建分支&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git branch testing&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;会在当前commit对象上新建一个分支指针&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;注：HEAD这个特别的指针是指向正在工作中的本地分支的指针&lt;/em&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;切换分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;切换分支&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git checkout testing&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;切换到testing分支上&lt;/p&gt;
+
+&lt;h4 id=&#34;分支的合并:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;分支的合并&lt;/h4&gt;
+
+&lt;p&gt;在master分支上，执行：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git merge testing&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;将tesing分支合并回master&lt;/p&gt;
+
+&lt;h4 id=&#34;使用合并工具-可以自己设置-例如设置成vimdiff:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;使用合并工具（可以自己设置，例如设置成vimdiff）&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git mergetool&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;分支的管理:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;分支的管理&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git branch --merged&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;查看哪些分支已经被并入当前分支，通常这些都可以删除了。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git branch -d testing&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;删除一个分支&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git branch -D testing&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;如果该分支尚没有合并，可以使用-D选项强制删除。&lt;/p&gt;
+
+&lt;h4 id=&#34;推送本地分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;推送本地分支&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git push origin testing&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;分支的衍合:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;分支的衍合&lt;/h4&gt;
+
+&lt;p&gt;例如现在有两个分支，一个master，一个testing&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git checkout testing
+$ git rebase master
+$ git checkout master
+$ git merge testing
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;通常在贡献自己的代码之前先衍合，再提交，会让历史提交记录更清晰。&lt;/p&gt;
+
+&lt;h3 id=&#34;git调试:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;Git调试&lt;/h3&gt;
+
+&lt;h4 id=&#34;文件标注:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;文件标注&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git blame -L 12,22 test.cpp&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;查看test.cpp文件对每一行进行修改的最近一次提交。&lt;/p&gt;
+
+&lt;h4 id=&#34;查看文件的历史提交:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看文件的历史提交&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git log --pretty=oneline test.cpp&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;查看test.cpp文件的历史提交记录&lt;/p&gt;
+
+&lt;h4 id=&#34;查看文件的历史版本:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看文件的历史版本&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git show [commit] [file]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;例如：&lt;code&gt;$ git show 7da7c23 test.cpp&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;查看7da7c23这次提交的test.cpp文件。&lt;/p&gt;
+
+&lt;h4 id=&#34;查看历史提交的详细文件变化:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看历史提交的详细文件变化&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;$ git log -p -2&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 &amp;ldquo;-&amp;rdquo; 开头，新增的部分会以 &amp;ldquo;+&amp;rdquo; 开头，方便查看。&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

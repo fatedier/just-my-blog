@@ -6,8 +6,95 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2015</rights>
-    <updated>2014-10-16 00:00:00 &#43;0000 UTC</updated>
+    <updated>2014-10-17 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>Git常用命令</title>
+          <link>http://blog.fatedier.com/2014/10/17/git-usually-command</link>
+          <pubDate>Fri, 17 Oct 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2014/10/17/git-usually-command</guid>
+          <description>
+
+&lt;p&gt;在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。&lt;/p&gt;
+
+&lt;h3 id=&#34;修改某一次提交的说明信息:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;修改某一次提交的说明信息&lt;/h3&gt;
+
+&lt;p&gt;有时候我们需要修改之前提交的时候的说明信息，没有操作命令可以直接完成，但是使用rebase命令可以实现。&lt;/p&gt;
+
+&lt;p&gt;例如我们要修改倒数第二次的提交的说明信息：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git rebase -i HEAD~3&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;之后会进入到文本编辑界面，如下图&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg&#34; alt=&#34;reset-commit-message&#34; /&gt;
+&lt;/p&gt;
+
+&lt;p&gt;将要修改的提交前面的 &lt;em&gt;pick&lt;/em&gt; 改为 &lt;em&gt;edit&lt;/em&gt; ，保存后退出。&lt;/p&gt;
+
+&lt;p&gt;这个时候执行&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git commit --amend&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;就可以修改该次提交的说明了，修改完成后保存并退出。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git rebase --continue&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;执行这条命令后，后续的提交说明将不会改变。&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;注：不要修改已经push到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！&lt;/em&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;合并多个提交:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;合并多个提交&lt;/h3&gt;
+
+&lt;p&gt;比如要合并最后两次的提交，其实和修改某一次提交的说明信息有点类似。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git rebase -i HEAD~2&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;之后同样会进入到文本编辑界面，将第二行开头的 &lt;em&gt;pick&lt;/em&gt; 改为 &lt;em&gt;squash&lt;/em&gt; 或 *s*，保存后退出。&lt;/p&gt;
+
+&lt;p&gt;这时git会把两次提交合并，并且提示让你输入新的提交信息，保存后退出就成功完成两次提交的合并了。&lt;/p&gt;
+
+&lt;h3 id=&#34;强制回退远程仓库到指定提交:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;强制回退远程仓库到指定提交&lt;/h3&gt;
+
+&lt;p&gt;当我们在开发的时候出现一些关键性的错误，并且确认现在已经做的开发工作是无意义的时候，可能需要回退到之前的版本。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git reset --hard &amp;lt;commit_id&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git push origin HEAD --force&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;另外，reset命令还有几个可选参数&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;git reset &amp;ndash;mixed：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;git reset &amp;ndash;soft：回退到某个版本，只回退了commit的信息，不会恢复到indexfile一级。如果还要提交，直接commit即可。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;git reset &amp;ndash;hard：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;reset-hard之后的恢复:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;reset &amp;ndash;hard之后的恢复&lt;/h3&gt;
+
+&lt;p&gt;使用 &lt;code&gt;git reset --hard&lt;/code&gt; 之后，也许才发现这是一次错误的操作，那么我们就想要恢复到之前的版本。&lt;/p&gt;
+
+&lt;p&gt;这个时候用git log是看不到之前的提交历史记录的。&lt;/p&gt;
+
+&lt;p&gt;需要使用 &lt;code&gt;$ git reflog&lt;/code&gt; 找到我们需要恢复的HEAD的ID，然后使用reset命令恢复回去。&lt;/p&gt;
+
+&lt;h3 id=&#34;查看指定版本的某个文件的内容:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;查看指定版本的某个文件的内容&lt;/h3&gt;
+
+&lt;p&gt;例如要查看 f4869b0 这次提交的 test.cpp 文件的内容，test.cpp的路径需要使用相对于git目录的路径名，使用如下命令：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;$ git show f4869b0:test.cpp&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

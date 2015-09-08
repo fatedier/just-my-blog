@@ -133,7 +133,7 @@ w3.o:w3.cpp
 
 这里需要注意的是，我们写的第一个规则的目标，将会成为“终极目标”，也就是我们最终希望生成的程序，这里是“test”文件。根据我们的“终极目标”，make会进行自动推导，例如“终极目标”依赖于的.o文件，make就会寻找生成这些.o文件的规则，然后执行相应的命令去生成这些文件，这样一层一层递归地进行下去，直到最终生成了“终极目标”。
 
-![gmake-target](../../../../pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg)
+![gmake-target](/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg)
 
 如上图所示，虽然生成test文件的规则写在最前面，但是由于依赖于w1.o、w2.o、w3.o，make会先执行生成w1.o、w2.o、w3.o所需的命令，然后才会执行g++ -o test test.cpp w1.o w2.o w3.o 来生成test文件。
 

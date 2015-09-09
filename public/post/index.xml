@@ -28,14 +28,14 @@
 
 &lt;p&gt;&lt;code&gt;$ git rebase -i HEAD~3&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;em&gt;注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;之后会进入到文本编辑界面，如下图&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg&#34; alt=&#34;reset-commit-message&#34; /&gt;
 &lt;/p&gt;
 
-&lt;p&gt;将要修改的提交前面的 &lt;em&gt;pick&lt;/em&gt; 改为 &lt;em&gt;edit&lt;/em&gt; ，保存后退出。&lt;/p&gt;
+&lt;p&gt;将要修改的提交前面的 &lt;strong&gt;pick&lt;/strong&gt; 改为 &lt;strong&gt;edit&lt;/strong&gt; ，保存后退出。&lt;/p&gt;
 
 &lt;p&gt;这个时候执行&lt;/p&gt;
 
@@ -47,7 +47,7 @@
 
 &lt;p&gt;执行这条命令后，后续的提交说明将不会改变。&lt;/p&gt;
 
-&lt;p&gt;&lt;em&gt;注：不要修改已经push到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注：不要修改已经push到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;合并多个提交:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;合并多个提交&lt;/h3&gt;
 
@@ -55,7 +55,7 @@
 
 &lt;p&gt;&lt;code&gt;$ git rebase -i HEAD~2&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;之后同样会进入到文本编辑界面，将第二行开头的 &lt;em&gt;pick&lt;/em&gt; 改为 &lt;em&gt;squash&lt;/em&gt; 或 *s*，保存后退出。&lt;/p&gt;
+&lt;p&gt;之后同样会进入到文本编辑界面，将第二行开头的 &lt;strong&gt;pick&lt;/strong&gt; 改为 &lt;strong&gt;squash&lt;/strong&gt; 或 &lt;strong&gt;s&lt;/strong&gt;，保存后退出。&lt;/p&gt;
 
 &lt;p&gt;这时git会把两次提交合并，并且提示让你输入新的提交信息，保存后退出就成功完成两次提交的合并了。&lt;/p&gt;
 

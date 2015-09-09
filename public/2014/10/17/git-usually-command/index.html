@@ -99,14 +99,14 @@
 
 <p><code>$ git rebase -i HEAD~3</code></p>
 
-<p><em>注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。</em></p>
+<p><strong>注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。</strong></p>
 
 <p>之后会进入到文本编辑界面，如下图</p>
 
 <p><img src="http://blog.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg" alt="reset-commit-message" />
 </p>
 
-<p>将要修改的提交前面的 <em>pick</em> 改为 <em>edit</em> ，保存后退出。</p>
+<p>将要修改的提交前面的 <strong>pick</strong> 改为 <strong>edit</strong> ，保存后退出。</p>
 
 <p>这个时候执行</p>
 
@@ -118,7 +118,7 @@
 
 <p>执行这条命令后，后续的提交说明将不会改变。</p>
 
-<p><em>注：不要修改已经push到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！</em></p>
+<p><strong>注：不要修改已经push到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！</strong></p>
 
 <h3 id="合并多个提交:3ad87c55fc5af115fc9b1721031d1adf">合并多个提交</h3>
 
@@ -126,7 +126,7 @@
 
 <p><code>$ git rebase -i HEAD~2</code></p>
 
-<p>之后同样会进入到文本编辑界面，将第二行开头的 <em>pick</em> 改为 <em>squash</em> 或 *s*，保存后退出。</p>
+<p>之后同样会进入到文本编辑界面，将第二行开头的 <strong>pick</strong> 改为 <strong>squash</strong> 或 <strong>s</strong>，保存后退出。</p>
 
 <p>这时git会把两次提交合并，并且提示让你输入新的提交信息，保存后退出就成功完成两次提交的合并了。</p>
 

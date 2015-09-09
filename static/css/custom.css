@@ -1,1 +1,5 @@
 /* Please override here. */
+
+code {
+    font-family: Hack, monospace;
+}

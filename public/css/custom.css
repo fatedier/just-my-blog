@@ -1,5 +1,36 @@
 /* Please override here. */
 
+/* 全局字体 */
+body {
+    font-family: "Helvetica Neue",Helvetica,"Microsoft Yahei",Arial,Verdana,"Hiragino Sans GB",STHeiti,sans-serif;
+}
+
+/* 代码 */
 code {
     font-family: Hack, monospace;
+}
+
+p {
+    line-height: 1.8;
+    font-size: 115%;
+}
+
+/* 文章标题 */
+.post-title a {
+    color: #444;
+}
+
+/* 日期时间 */
+.post-date {
+    color: #999;
+}
+
+
+/* 列表中的摘要 */
+.li .post-content p {
+    margin: 0px;
+}
+
+/* 单篇文章的标题 */
+.single h1 {
 }

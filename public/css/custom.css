@@ -10,9 +10,10 @@ code {
     font-family: Hack, monospace;
 }
 
-p {
+p,.single li {
     line-height: 1.8;
     font-size: 115%;
+    color: #666;
 }
 
 /* 文章标题 */
@@ -33,4 +34,10 @@ p {
 
 /* 单篇文章的标题 */
 .single h1 {
+}
+
+/* 文章内容大标题 */
+.single h3 {
+    padding-left: 9px;
+    border-left: 6px solid #ff7e79;
 }

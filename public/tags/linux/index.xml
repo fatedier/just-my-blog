@@ -64,7 +64,7 @@ export ftp_proxy=&amp;quot;http://proxy_addr:port&amp;quot;
 
 &lt;p&gt;如果代理需要用户名和密码的话，这样设置：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;exporthttp_proxy=”http://username:password@proxy_addr:port”
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;export http_proxy=&amp;quot;http://username:password@proxy_addr:port&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;现在就可以使用yum命令安装需要的软件了。&lt;/p&gt;

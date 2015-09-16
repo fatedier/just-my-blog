@@ -501,7 +501,7 @@ $ git merge testing
 
 &lt;p&gt;添加代码如下：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;export http_proxy=”http://proxy_addr:port”
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;export http_proxy=&amp;quot;http://proxy_addr:port&amp;quot;
 export https_proxy=&amp;quot;http://proxy_addr:port&amp;quot;
 export ftp_proxy=&amp;quot;http://proxy_addr:port&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;

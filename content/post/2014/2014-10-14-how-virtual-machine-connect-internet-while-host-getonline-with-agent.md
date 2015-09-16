@@ -45,7 +45,7 @@ url: "/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with
 添加代码如下：
 
 ```bash
-export http_proxy=”http://proxy_addr:port”
+export http_proxy="http://proxy_addr:port"
 export https_proxy="http://proxy_addr:port"
 export ftp_proxy="http://proxy_addr:port"
 ```

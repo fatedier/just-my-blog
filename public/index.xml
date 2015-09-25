@@ -13,6 +13,134 @@
     
       
         <item>
+          <title>Linux下如何进行文件编码格式转换</title>
+          <link>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux</link>
+          <pubDate>Mon, 03 Nov 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux</guid>
+          <description>
+
+&lt;p&gt;最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。&lt;/p&gt;
+
+&lt;p&gt;查了资料后发现可以使用 &lt;code&gt;iconv&lt;/code&gt; 命令。&lt;/p&gt;
+
+&lt;p&gt;首先使用 &lt;code&gt;file&lt;/code&gt; 命令来检测文件的类型&lt;/p&gt;
+
+&lt;p&gt;例如：&lt;code&gt;filetest.cpp&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;输出：&lt;code&gt;ISO-8859 Cprogram text&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;iconv命令的参数说明:4b6e91e70ba8114fa93e8a42dc052691&#34;&gt;iconv命令的参数说明&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;-l 列出所有已知的字符集&lt;/li&gt;
+&lt;li&gt;-f 原始文本编码&lt;/li&gt;
+&lt;li&gt;-t 输出文本编码&lt;/li&gt;
+&lt;li&gt;-o 输出文件名&lt;/li&gt;
+&lt;li&gt;-s 关闭警告&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;例子:4b6e91e70ba8114fa93e8a42dc052691&#34;&gt;例子&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;iconv -f GB2312 -t UTF-8 test.cpp &amp;gt; test_utf.cpp&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;因为iconv默认输出到标准输出，所以我们需要重定向到一个其他文件。&lt;strong&gt;（这里不能重定向到自身，否则会清空文件内容）&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;如果想要把输出内容直接输出到当前文件，可以这样用：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;iconv -f GB2312 -t UTF-8 -o test.cpp test.cpp&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;附上我自己用的编码转换脚本-iconvfa-sh:4b6e91e70ba8114fa93e8a42dc052691&#34;&gt;附上我自己用的编码转换脚本 iconvfa.sh&lt;/h3&gt;
+
+&lt;h4 id=&#34;使用说明:4b6e91e70ba8114fa93e8a42dc052691&#34;&gt;使用说明&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;Usage:
+    iconvfa.sh [option] [file|dir]
+    from GB2312 to UTF-8, the old file will be replaced by the new converted file
+
+Options:
+    -R: convert files recursively, the following parameter should be the directory name
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;脚本代码:4b6e91e70ba8114fa93e8a42dc052691&#34;&gt;脚本代码&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/bin/env bash
+
+function show_help
+{
+    echo &amp;quot;Usage:&amp;quot;
+    echo &amp;quot;  iconvfa.sh [option] [file|dir]&amp;quot;
+    echo -e &amp;quot;  from GB2312 to UTF-8, the old file will be replaced by the new converted file\n&amp;quot;
+    echo &amp;quot;Options:&amp;quot;
+    echo &amp;quot;  -R: convert files recursively, the following parameter should be the directory name&amp;quot;
+}
+
+# param 1: directory name
+function convert_rescursive()
+{
+   local dir_path=`echo $1 | sed &#39;s/\(.*\)\/$/\1/g&#39;`
+   local dir_names=`ls ${dir_path} -l | awk &#39;/^d/{print $NF}&#39;`
+   
+   # convert files in this directory
+   local file_names=`ls ${dir_path} -l | awk &#39;/^-/{print $NF}&#39;`
+   for file in ${file_names}
+   do
+       iconv -f ${from_code} -t ${to_code} ${dir_path}/${file} &amp;amp;&amp;gt; /dev/null
+       if [ $? == 0 ]; then
+           iconv -f ${from_code} -t ${to_code} &amp;lt; ${dir_path}/${file} &amp;gt; $@.$$$$
+           cp $@.$$$$ ${dir_path}/${file}
+           rm -f $@.$$$$
+           echo &amp;quot;File ${dir_path}/${file} is formatted.&amp;quot;
+       fi
+   done
+
+   # if the directory has no other directory, return 0
+   if [ &amp;quot;${dir_names}X&amp;quot; == &amp;quot;X&amp;quot; ]; then
+       return 0
+   fi
+
+   # continue convert files in directories recursively
+   for dir in ${dir_names}
+   do
+       convert_rescursive &amp;quot;${dir_path}/${dir}&amp;quot;
+   done 
+}
+
+# defines
+from_code=&amp;quot;GB2312&amp;quot;
+to_code=&amp;quot;UTF-8&amp;quot;
+
+case &amp;quot;$1&amp;quot; in
+&amp;quot;-R&amp;quot;)
+    ls $2 &amp;amp;&amp;gt; /dev/null
+    if [ $? != 0 -o &amp;quot;$2X&amp;quot; == &amp;quot;X&amp;quot; ]; then
+        echo &amp;quot;#### error: please check the directory name following the &#39;-R&#39; option!&amp;quot;
+        exit 1
+    fi
+    convert_rescursive $2
+    ;;
+&amp;quot;&amp;quot;)
+    show_help
+    ;;
+*)
+    iconv -f ${from_code} -t ${to_code} $1 &amp;amp;&amp;gt; /dev/null
+    if [ $? == 0 ]; then
+        iconv -f ${from_code} -t ${to_code} &amp;lt; $1 &amp;gt; $@.$$$$
+        cp $@.$$$$ $1
+        rm -f $@.$$$$
+        echo &amp;quot;File $1 is formatted.&amp;quot;
+    else
+        echo &amp;quot;Convert wrong!&amp;quot;
+    fi
+    ;;
+esac
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
           <title>使用Vim打造自己的IDE</title>
           <link>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide</link>
           <pubDate>Wed, 29 Oct 2014 00:00:00 UTC</pubDate>

@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="学习Git的常用网站 &middot; fatedier&#39;s blog">
+<meta property="og:title" content="Linux下如何进行文件编码格式转换 &middot; fatedier&#39;s blog">
 
 <meta property="og:site_name" content="fatedier&#39;s blog">
 
 <title>
     
-    学习Git的常用网站
+    Linux下如何进行文件编码格式转换
     
 </title>
 
@@ -77,27 +77,133 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2014年10月16日">
-                        2014年10月16日
+                    <time datetime="2014年11月03日">
+                        2014年11月03日
                     </time>
                 </div>
                 <h1 class="post-title">
-                    <a href="http://blog.fatedier.com/2014/10/16/learn-git-website">学习Git的常用网站</a>
+                    <a href="http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux">Linux下如何进行文件编码格式转换</a>
                 </h1>
             </header>
 
             <div class="post-content">
                 
 
-<p>学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。</p>
+<p>最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。</p>
 
-<h4 id="git官方文档:8a2c50993806c604dc839fed7e1197e9">Git官方文档</h4>
+<p>查了资料后发现可以使用 <code>iconv</code> 命令。</p>
 
-<p><a href="http://git-scm.com/book/zh/">http://git-scm.com/book/zh/</a></p>
+<p>首先使用 <code>file</code> 命令来检测文件的类型</p>
 
-<h4 id="廖雪峰git教程:8a2c50993806c604dc839fed7e1197e9">廖雪峰Git教程</h4>
+<p>例如：<code>filetest.cpp</code></p>
 
-<p><a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000">http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000</a></p>
+<p>输出：<code>ISO-8859 Cprogram text</code></p>
+
+<h3 id="iconv命令的参数说明:4b6e91e70ba8114fa93e8a42dc052691">iconv命令的参数说明</h3>
+
+<ul>
+<li>-l 列出所有已知的字符集</li>
+<li>-f 原始文本编码</li>
+<li>-t 输出文本编码</li>
+<li>-o 输出文件名</li>
+<li>-s 关闭警告</li>
+</ul>
+
+<h3 id="例子:4b6e91e70ba8114fa93e8a42dc052691">例子</h3>
+
+<p><code>iconv -f GB2312 -t UTF-8 test.cpp &gt; test_utf.cpp</code></p>
+
+<p>因为iconv默认输出到标准输出，所以我们需要重定向到一个其他文件。<strong>（这里不能重定向到自身，否则会清空文件内容）</strong></p>
+
+<p>如果想要把输出内容直接输出到当前文件，可以这样用：</p>
+
+<p><code>iconv -f GB2312 -t UTF-8 -o test.cpp test.cpp</code></p>
+
+<h3 id="附上我自己用的编码转换脚本-iconvfa-sh:4b6e91e70ba8114fa93e8a42dc052691">附上我自己用的编码转换脚本 iconvfa.sh</h3>
+
+<h4 id="使用说明:4b6e91e70ba8114fa93e8a42dc052691">使用说明</h4>
+
+<pre><code class="language-bash">Usage:
+    iconvfa.sh [option] [file|dir]
+    from GB2312 to UTF-8, the old file will be replaced by the new converted file
+
+Options:
+    -R: convert files recursively, the following parameter should be the directory name
+</code></pre>
+
+<h4 id="脚本代码:4b6e91e70ba8114fa93e8a42dc052691">脚本代码</h4>
+
+<pre><code class="language-bash">#!/bin/env bash
+
+function show_help
+{
+    echo &quot;Usage:&quot;
+    echo &quot;  iconvfa.sh [option] [file|dir]&quot;
+    echo -e &quot;  from GB2312 to UTF-8, the old file will be replaced by the new converted file\n&quot;
+    echo &quot;Options:&quot;
+    echo &quot;  -R: convert files recursively, the following parameter should be the directory name&quot;
+}
+
+# param 1: directory name
+function convert_rescursive()
+{
+   local dir_path=`echo $1 | sed 's/\(.*\)\/$/\1/g'`
+   local dir_names=`ls ${dir_path} -l | awk '/^d/{print $NF}'`
+   
+   # convert files in this directory
+   local file_names=`ls ${dir_path} -l | awk '/^-/{print $NF}'`
+   for file in ${file_names}
+   do
+       iconv -f ${from_code} -t ${to_code} ${dir_path}/${file} &amp;&gt; /dev/null
+       if [ $? == 0 ]; then
+           iconv -f ${from_code} -t ${to_code} &lt; ${dir_path}/${file} &gt; $@.$$$$
+           cp $@.$$$$ ${dir_path}/${file}
+           rm -f $@.$$$$
+           echo &quot;File ${dir_path}/${file} is formatted.&quot;
+       fi
+   done
+
+   # if the directory has no other directory, return 0
+   if [ &quot;${dir_names}X&quot; == &quot;X&quot; ]; then
+       return 0
+   fi
+
+   # continue convert files in directories recursively
+   for dir in ${dir_names}
+   do
+       convert_rescursive &quot;${dir_path}/${dir}&quot;
+   done 
+}
+
+# defines
+from_code=&quot;GB2312&quot;
+to_code=&quot;UTF-8&quot;
+
+case &quot;$1&quot; in
+&quot;-R&quot;)
+    ls $2 &amp;&gt; /dev/null
+    if [ $? != 0 -o &quot;$2X&quot; == &quot;X&quot; ]; then
+        echo &quot;#### error: please check the directory name following the '-R' option!&quot;
+        exit 1
+    fi
+    convert_rescursive $2
+    ;;
+&quot;&quot;)
+    show_help
+    ;;
+*)
+    iconv -f ${from_code} -t ${to_code} $1 &amp;&gt; /dev/null
+    if [ $? == 0 ]; then
+        iconv -f ${from_code} -t ${to_code} &lt; $1 &gt; $@.$$$$
+        cp $@.$$$$ $1
+        rm -f $@.$$$$
+        echo &quot;File $1 is formatted.&quot;
+    else
+        echo &quot;Convert wrong!&quot;
+    fi
+    ;;
+esac
+</code></pre>
 
             </div>
 
@@ -106,16 +212,9 @@
                 <ul class="list-inline post-tags">
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/git">
+                        <a href="http://blog.fatedier.com/tags/linux">
                             <i class="fa fa-tags"></i>
-                            git
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7">
-                            <i class="fa fa-tags"></i>
-                            开发工具
+                            linux
                         </a>
                     </li>
                     
@@ -129,13 +228,13 @@
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2014/10/16/git-use-for-remind"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="http://blog.fatedier.com/about"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

@@ -223,7 +223,9 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
           <pubDate>Fri, 24 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
           <guid>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands</guid>
-          <description>&lt;p&gt;整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。&lt;/p&gt;
+          <description>
+
+&lt;p&gt;整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。&lt;/p&gt;
 
 &lt;p&gt;可以有多种方式使用vimdiff，例如：&lt;/p&gt;
 
@@ -235,43 +237,43 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;其他的一些的编辑命令与vim相同，这里主要记录一些常用的合并文件需要用到的命令：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;Ctrl+w之后按w&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;ctrl-w之后按w:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;Ctrl+w之后按w&lt;/h4&gt;
 
 &lt;p&gt;可以切换到另外一个文件&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;[c&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;c:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;[c&lt;/h4&gt;
 
 &lt;p&gt;跳转到上一个差异点&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;]c&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;c-1:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;]c&lt;/h4&gt;
 
 &lt;p&gt;跳转到下一个差一点&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;zo或者i&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;zo或者i:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;zo或者i&lt;/h4&gt;
 
 &lt;p&gt;展开折叠区域，或者使用i进入插入模式也会进行展开&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;zc&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;zc:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;zc&lt;/h4&gt;
 
 &lt;p&gt;重新折叠，可以把使用zo展开折叠的区域恢复原样&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;dp（diff put的意思）&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;dp-diff-put的意思:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;dp（diff put的意思）&lt;/h4&gt;
 
 &lt;p&gt;把当前文件的差异点内容复制到另一个文件&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;do（diff obtain的意思）&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;do-diff-obtain的意思:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;do（diff obtain的意思）&lt;/h4&gt;
 
 &lt;p&gt;把另一个文件的差异点内容复制到当前文件&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;:diffupdate&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;diffupdate:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;:diffupdate&lt;/h4&gt;
 
 &lt;p&gt;有时候修改了文件之后不会立即刷新重新比对，使用该命令可以重新进行文件比较。&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;qa&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;qa:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;qa&lt;/h4&gt;
 
 &lt;p&gt;退出所有打开的文件，但是不保存&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;wqa&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;wqa:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;wqa&lt;/h4&gt;
 
 &lt;p&gt;退出并保存所有已打开的文件&lt;/p&gt;
 </description>

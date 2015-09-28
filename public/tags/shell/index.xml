@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fatedier&#39;s blog </title>
+    <link>http://blog.fatedier.com/tags/shell/</link>
+    <language>en-us</language>
+    <author></author>
+    <rights>(C) 2015</rights>
+    <updated>2014-11-24 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>linux shell中的条件判断</title>
+          <link>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell</link>
+          <pubDate>Mon, 24 Nov 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell</guid>
+          <description>
+
+&lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;
+
+&lt;h3 id=&#34;退出状态:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;退出状态&lt;/h3&gt;
+
+&lt;p&gt;在Linux系统中，每当一条命令执行完成后，系统都会返回一个退出状态，这个状态被存放在$? 这个变量中，是一个整数值，我们可以根据这个值来判断命令运行的结果是否正确。&lt;/p&gt;
+
+&lt;p&gt;通常情况下，退出状态值为0，表示执行成功，不为0的时候表示执行失败。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;POSIX规定的退出状态和退出状态的含义&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;0 （运行成功）&lt;/p&gt;
+
+&lt;p&gt;1-255 （运行失败，脚本命令、系统命令错误或参数传递错误）&lt;/p&gt;
+
+&lt;p&gt;126 （找到了该命令但无法执行）&lt;/p&gt;
+
+&lt;p&gt;127 （未找到要运行的命令）&lt;/p&gt;
+
+&lt;p&gt;128 （命令被系统强行结束）&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&#34;测试命令:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;测试命令&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;test expression&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;用test命令进行测试，expression是一个表达式&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;[ expression ]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;为了提高可读性，可以使用简化的这种格式&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;需要注意的是大括号和表达式之间需要有一个空格，不能省略。这种方式和if、case、while等语句结合，可以作为shell脚本中的判断条件。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;整数比较运算符:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;整数比较运算符&lt;/h3&gt;
+
+&lt;p&gt;在shell中对两个数进行比较，不像在C/C++中可以使用 &amp;ldquo;&amp;gt;&amp;rdquo; 之类的运算符，而是使用类似参数选项的格式。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;-eq  # 如果等于则为真
+-ge  # 如果大于或等于则为真
+-gt  # 如果大于则为真
+-le  # 如果小于或等于则为真
+-lt  # 如果小于则为真
+-ne  # 如果不等于则为真
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;其中的参数可以这样理解e(equal)，g(greater)，t(than)，l(less)，n(not)，这样方便记忆。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;字符串相关运算符:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;字符串相关运算符&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;-n string            # 字符串不为空则为真
+-z string            # 字符串为空则为真
+string1 = string2    # 字符串相等则为真 （或者 == 也可以）
+string1 != string2   # 字符串不等则为真
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;这里有一个需要注意的地方，就是使用 -n 这个运算符进行判断的时候需要注意在变量两边加上双引号。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;例如 if [ -n $string ] 应该写成 if [ -n “$string” ] ，不然该表达式总是会返回真，因为当string变量为空的时候就相当于是 if [ -n ]。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;文件操作符:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;文件操作符&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;-d file # 测试file是否为目录
+-e file # 测试file是否存在
+-f file # 测试file是否为普通文件
+-r file # 测试file是否是进程可读文件
+-s file # 测试file的长度是否不为0
+-w file # 测试file是否是进程可写文件
+-x file # 测试file是否是进程可执行文件
+-L file # 测试file是否符号化链接
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;逻辑运算符:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;逻辑运算符&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;! expression                # 非
+expression1 -a expression2  # 与
+expression1 -o expression2  # 或
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;多重的嵌套 &lt;code&gt;if [ $a == 1 ] &amp;amp;&amp;amp; [ $b == 1 -o $b == 3 ]&lt;/code&gt;&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

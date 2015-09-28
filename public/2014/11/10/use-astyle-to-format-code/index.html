@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="主机使用代理上网，虚拟机Linux的shell如何连外网 &middot; fatedier&#39;s blog">
+<meta property="og:title" content="使用astyle进行代码格式化 &middot; fatedier&#39;s blog">
 
 <meta property="og:site_name" content="fatedier&#39;s blog">
 
 <title>
     
-    主机使用代理上网，虚拟机Linux的shell如何连外网
+    使用astyle进行代码格式化
     
 </title>
 
@@ -77,68 +77,128 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2014年10月14日">
-                        2014年10月14日
+                    <time datetime="2014年11月10日">
+                        2014年11月10日
                     </time>
                 </div>
                 <h1 class="post-title">
-                    <a href="http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent">主机使用代理上网，虚拟机Linux的shell如何连外网</a>
+                    <a href="http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code">使用astyle进行代码格式化</a>
                 </h1>
             </header>
 
             <div class="post-content">
-                <p>在公司电脑上网都需要使用代理，虚拟机里面装的Linux系统需要使用yum命令来安装软件，所以需要在shell界面能连上外网才行。</p>
+                
 
-<p>因为公司限制了每个人只能用一个IP，所以虚拟机中的Linux系统使用NAT方式和主机相连。主机是Win7操作系统，会发现网络里面多了VMnet8这个网络。</p>
+<p>在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &ndash; &ldquo;astyle&rdquo;。</p>
 
-<p><img src="http://blog.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg" alt="vmware-net" />
-</p>
+<p>astyle这个工具可以将现有的代码格式转换为指定的风格，当你将乱七八糟的代码用astyle转换一下之后，就会感觉整个世界都清静了……</p>
 
-<p>在VMware界面，点击“编辑”，“虚拟网络编辑器”</p>
+<h3 id="如何获取:699e4d34b5ad72c6fd24a2cffb5c24a4">如何获取</h3>
 
-<p>可以看到子网地址分配的是192.168.131.0</p>
+<p>astyle是一个开放源码的项目，支持C/C++、C#和java的代码格式化</p>
 
-<hr />
+<p>SourceForge地址: <a href="http://sourceforge.net/projects/astyle/">http://sourceforge.net/projects/astyle/</a></p>
 
-<p>一般来说这时我们的主机会自动分配一个IP类似192.168.131.1这样的，子网掩码为255.255.255.0，如下图所示。</p>
+<p>我的Github拷贝: <a href="https://github.com/fatedier/fatedier-tools/tree/master/astyle">https://github.com/fatedier/fatedier-tools/tree/master/astyle</a></p>
 
-<p><img src="http://blog.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-host-net.jpg" alt="host-net" />
-</p>
+<h3 id="编译:699e4d34b5ad72c6fd24a2cffb5c24a4">编译</h3>
 
-<p>现在进入虚拟机的Linux进行设置。</p>
+<p>直接写一个Makefile编译下源码，我的Github的拷贝里有写好的Makefile，直接用gmake命令编译一下就可以用了。</p>
 
-<p><img src="http://blog.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-network-configuration.jpg" alt="network-configuration" />
-</p>
+<h3 id="示例:699e4d34b5ad72c6fd24a2cffb5c24a4">示例</h3>
 
-<p>注意IP需要设置成192.168.131.x的形势，网关是192.168.131.2。</p>
+<p><code>./astyle --style=ansi test.cpp</code></p>
 
-<p>之后使用 <code>service network restart</code> 命令重启网络服务。</p>
+<p>执行之后会提示</p>
 
-<p>然后可以用 <code>ifconfig</code> 命令检查配置是否正确。</p>
+<p><code>Formatted  xxx/test.cpp</code></p>
 
-<hr />
+<p><strong>astyle</strong> 会在当前目录下生成一个备份文件，以 <strong>.orig</strong> 结尾，例如 &ldquo;test.cpp.orig&rdquo;。</p>
 
-<p>最后，修改自己目录下的配置文件，使用“cd”命令进入自己的根目录。</p>
+<p>而 <strong>test.cpp</strong> 就已经转换为了 <strong>ansi</strong> 代码风格了。</p>
 
-<p>比如我的是.bash_profile</p>
+<h3 id="常用选项:699e4d34b5ad72c6fd24a2cffb5c24a4">常用选项</h3>
 
-<p>添加代码如下：</p>
+<p><strong>注：使用 &ndash;help 选项可以查看astyle的帮助文档</strong></p>
 
-<pre><code class="language-bash">export http_proxy=&quot;http://proxy_addr:port&quot;
-export https_proxy=&quot;http://proxy_addr:port&quot;
-export ftp_proxy=&quot;http://proxy_addr:port&quot;
-</code></pre>
+<h4 id="style风格设置:699e4d34b5ad72c6fd24a2cffb5c24a4">style风格设置</h4>
 
-<p><strong>proxy_addr</strong> 就是代理的IP地址</p>
+<p>常用的代码风格主要有三种: <strong>ansi</strong> 和 <strong>k&amp;r</strong> 以及 <strong>java</strong></p>
 
-<p><strong>port</strong> 是代理的款口号</p>
+<ol>
+<li><p>&ndash;style=allman  OR &ndash;style=ansi OR &ndash;style=bsd OR &ndash;style=break OR -A1</p>
 
-<p>如果代理需要用户名和密码的话，这样设置：</p>
+<pre><code class="language-cpp">int Foo()
+{
+   if (isBar)
+    {
+       bar();
+       return 1;
+    }
+   else
+    {
+       return 0;
+    }
+}
+</code></pre></li>
 
-<pre><code class="language-bash">export http_proxy=&quot;http://username:password@proxy_addr:port&quot;
-</code></pre>
+<li><p>&ndash;style=kr OR &ndash;style=k&amp;r OR &ndash;style=k/r OR -A3</p>
 
-<p>现在就可以使用yum命令安装需要的软件了。</p>
+<pre><code class="language-cpp">int Foo()
+{
+   if (isBar) {
+       bar();
+       return 1;
+    }else {
+       return 0;
+    }
+}
+</code></pre></li>
+
+<li><p>&ndash;style=java OR &ndash;style=attach OR -A2</p>
+
+<pre><code class="language-cpp">int Foo() {
+   if (isBar) {
+       bar();
+       return 1;
+    }else {
+       return 0;
+    }
+}
+</code></pre></li>
+</ol>
+
+<h4 id="tab选项:699e4d34b5ad72c6fd24a2cffb5c24a4">Tab选项</h4>
+
+<p>默认是使用4个空格替换一个tab。</p>
+
+<ol>
+<li><p>&ndash;indent=spaces=# OR -s#</p>
+
+<p>指定用几个空格替换一个tab，例如 &ndash;indent=spaces=8 ，指定用8个空格替换一个tab。</p></li>
+
+<li><p>&ndash;indent=tab OR &ndash;indent=tab=# OR -t OR -t#</p>
+
+<p>指定缩进使用tab，=#同上，指定一个tab占几个空格，不说明的话默认是4个。</p></li>
+</ol>
+
+<h4 id="递归处理:699e4d34b5ad72c6fd24a2cffb5c24a4">递归处理</h4>
+
+<p>&ndash;recursive OR -r OR -R</p>
+
+<p>可以递归处理所有子目录的文件。</p>
+
+<h4 id="排除不处理的文件:699e4d34b5ad72c6fd24a2cffb5c24a4">排除不处理的文件</h4>
+
+<p>&ndash;exclude=####</p>
+
+<p>指定哪些文件或者文件夹不需要进行处理。</p>
+
+<h4 id="指定配置文件:699e4d34b5ad72c6fd24a2cffb5c24a4">指定配置文件</h4>
+
+<p>&ndash;options=####</p>
+
+<p>可以指定读取某个文件的内容作为参数选项。</p>
 
             </div>
 
@@ -153,6 +213,13 @@ export ftp_proxy=&quot;http://proxy_addr:port&quot;
                         </a>
                     </li>
                     
+                    <li>
+                        <a href="http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7">
+                            <i class="fa fa-tags"></i>
+                            开发工具
+                        </a>
+                    </li>
+                    
                 </ul>
 
                 
@@ -163,13 +230,13 @@ export ftp_proxy=&quot;http://proxy_addr:port&quot;
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2014/10/16/learn-git-website"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="http://blog.fatedier.com/about"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

@@ -6,8 +6,131 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2015</rights>
-    <updated>2014-10-29 00:00:00 &#43;0000 UTC</updated>
+    <updated>2014-11-10 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>使用astyle进行代码格式化</title>
+          <link>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code</link>
+          <pubDate>Mon, 10 Nov 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code</guid>
+          <description>
+
+&lt;p&gt;在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &amp;ndash; &amp;ldquo;astyle&amp;rdquo;。&lt;/p&gt;
+
+&lt;p&gt;astyle这个工具可以将现有的代码格式转换为指定的风格，当你将乱七八糟的代码用astyle转换一下之后，就会感觉整个世界都清静了……&lt;/p&gt;
+
+&lt;h3 id=&#34;如何获取:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;如何获取&lt;/h3&gt;
+
+&lt;p&gt;astyle是一个开放源码的项目，支持C/C++、C#和java的代码格式化&lt;/p&gt;
+
+&lt;p&gt;SourceForge地址: &lt;a href=&#34;http://sourceforge.net/projects/astyle/&#34;&gt;http://sourceforge.net/projects/astyle/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;我的Github拷贝: &lt;a href=&#34;https://github.com/fatedier/fatedier-tools/tree/master/astyle&#34;&gt;https://github.com/fatedier/fatedier-tools/tree/master/astyle&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;编译:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;编译&lt;/h3&gt;
+
+&lt;p&gt;直接写一个Makefile编译下源码，我的Github的拷贝里有写好的Makefile，直接用gmake命令编译一下就可以用了。&lt;/p&gt;
+
+&lt;h3 id=&#34;示例:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;示例&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;./astyle --style=ansi test.cpp&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;执行之后会提示&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Formatted  xxx/test.cpp&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;astyle&lt;/strong&gt; 会在当前目录下生成一个备份文件，以 &lt;strong&gt;.orig&lt;/strong&gt; 结尾，例如 &amp;ldquo;test.cpp.orig&amp;rdquo;。&lt;/p&gt;
+
+&lt;p&gt;而 &lt;strong&gt;test.cpp&lt;/strong&gt; 就已经转换为了 &lt;strong&gt;ansi&lt;/strong&gt; 代码风格了。&lt;/p&gt;
+
+&lt;h3 id=&#34;常用选项:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;常用选项&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;注：使用 &amp;ndash;help 选项可以查看astyle的帮助文档&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;style风格设置:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;style风格设置&lt;/h4&gt;
+
+&lt;p&gt;常用的代码风格主要有三种: &lt;strong&gt;ansi&lt;/strong&gt; 和 &lt;strong&gt;k&amp;amp;r&lt;/strong&gt; 以及 &lt;strong&gt;java&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;&amp;ndash;style=allman  OR &amp;ndash;style=ansi OR &amp;ndash;style=bsd OR &amp;ndash;style=break OR -A1&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;int Foo()
+{
+   if (isBar)
+    {
+       bar();
+       return 1;
+    }
+   else
+    {
+       return 0;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&amp;ndash;style=kr OR &amp;ndash;style=k&amp;amp;r OR &amp;ndash;style=k/r OR -A3&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;int Foo()
+{
+   if (isBar) {
+       bar();
+       return 1;
+    }else {
+       return 0;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&amp;ndash;style=java OR &amp;ndash;style=attach OR -A2&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;int Foo() {
+   if (isBar) {
+       bar();
+       return 1;
+    }else {
+       return 0;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&#34;tab选项:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;Tab选项&lt;/h4&gt;
+
+&lt;p&gt;默认是使用4个空格替换一个tab。&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;&amp;ndash;indent=spaces=# OR -s#&lt;/p&gt;
+
+&lt;p&gt;指定用几个空格替换一个tab，例如 &amp;ndash;indent=spaces=8 ，指定用8个空格替换一个tab。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&amp;ndash;indent=tab OR &amp;ndash;indent=tab=# OR -t OR -t#&lt;/p&gt;
+
+&lt;p&gt;指定缩进使用tab，=#同上，指定一个tab占几个空格，不说明的话默认是4个。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&#34;递归处理:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;递归处理&lt;/h4&gt;
+
+&lt;p&gt;&amp;ndash;recursive OR -r OR -R&lt;/p&gt;
+
+&lt;p&gt;可以递归处理所有子目录的文件。&lt;/p&gt;
+
+&lt;h4 id=&#34;排除不处理的文件:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;排除不处理的文件&lt;/h4&gt;
+
+&lt;p&gt;&amp;ndash;exclude=####&lt;/p&gt;
+
+&lt;p&gt;指定哪些文件或者文件夹不需要进行处理。&lt;/p&gt;
+
+&lt;h4 id=&#34;指定配置文件:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;指定配置文件&lt;/h4&gt;
+
+&lt;p&gt;&amp;ndash;options=####&lt;/p&gt;
+
+&lt;p&gt;可以指定读取某个文件的内容作为参数选项。&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

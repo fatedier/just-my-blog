@@ -1,6 +1,6 @@
 baseurl: "http://blog.fatedier.com"
 languageCode: "zh-CN"
-title: "fatedier's blog"
+title: "fatedier blog"
 copyright: "Copyright (c) 2015. All rights reserved."
 MetaDataFormat: "yaml"
 builddrafts: false

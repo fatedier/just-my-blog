@@ -6,8 +6,194 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2015</rights>
-    <updated>2015-01-25 00:00:00 &#43;0000 UTC</updated>
+    <updated>2015-03-04 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</title>
+          <link>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp</link>
+          <pubDate>Wed, 04 Mar 2015 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp</guid>
+          <description>
+
+&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;
+
+&lt;h3 id=&#34;业务说明:b843d88db977db74e59764a23a86a6c0&#34;&gt;业务说明&lt;/h3&gt;
+
+&lt;p&gt;为了便于说明，举一个简单的例子。假设现在有一个项目需要建立一个和银行交互的平台，目前只接入工商银行，后续接入其他银行，每个银行的业务都有差异，报文格式可能也不一致。&lt;/p&gt;
+
+&lt;p&gt;这里只列举几个简要的流程，仅包括拼报文，发送报文，接收报文，解析报文，其余整体架构以及后续处理等内容省略。&lt;/p&gt;
+
+&lt;h3 id=&#34;初步设计:b843d88db977db74e59764a23a86a6c0&#34;&gt;初步设计&lt;/h3&gt;
+
+&lt;p&gt;创建一个银行交互类 BankOpt，包括四个函数&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;int setMsg();       // 拼报文
+int sendMsg();      // 发送报文
+int getMsg();       // 接收报文
+int parseMsg();     // 解析报文
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;然后在每个函数中通过if-else来判断具体是哪一个银行，之后进行相应的处理。&lt;/p&gt;
+
+&lt;p&gt;这种设计在刚开发的时候非常方便，代码量少，但是如果后续需要接入另外一个银行时就需要改动 &lt;strong&gt;BankOpt&lt;/strong&gt; 类，不符合设计模式中的开放-封闭原则。而且单个函数中将来可能会有大量的 &lt;strong&gt;if-else&lt;/strong&gt;，使代码可读性下降。&lt;/p&gt;
+
+&lt;h3 id=&#34;简单工厂模式:b843d88db977db74e59764a23a86a6c0&#34;&gt;简单工厂模式&lt;/h3&gt;
+
+&lt;p&gt;通过简单工厂模式，我们可以创建一个专门的工厂类用于实例化一个合适的银行交互类，只需要这个银行交互类具有共同的接口即可。&lt;/p&gt;
+
+&lt;p&gt;首先，为了实现更好的复用，把各个银行交互类中相同的部分抽象出来，形成一个银行交互基类，代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;class BaseBank
+{
+public:
+    virtual int setMsg() = 0;
+    virtual int sendMsg() = 0;
+    virtual int getMsg() = 0;
+    virtual int parseMsg() = 0;
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里仅仅声明了四个纯虚函数，具体的业务逻辑在子类中实现。&lt;/p&gt;
+
+&lt;p&gt;创建两个银行交互子类GSBank（工商银行）和RMBank（人民银行），继承BaseBank，实现四个虚函数。&lt;/p&gt;
+
+&lt;h4 id=&#34;创建一个工厂类:b843d88db977db74e59764a23a86a6c0&#34;&gt;创建一个工厂类&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;class BankFactory
+{
+public:
+    BaseBank* createBank(const string&amp;amp; bank_name) {
+    if (bank_name == “GSBank”) 
+        return new GSBank();
+    else if (bank_name == “RMBank”)
+        return new RMBank();
+    }
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;工厂类中有一个 &lt;strong&gt;createBank&lt;/strong&gt; 函数，用于根据银行编码创建相应的实例并返回其基类指针，这样我们只需要通过基类指针调用相关函数即可。&lt;/p&gt;
+
+&lt;h4 id=&#34;在主流程中调用:b843d88db977db74e59764a23a86a6c0&#34;&gt;在主流程中调用&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;BankFactory bf;
+BaseBank* t = (BaseBank*)bf.createBank(bank_name);
+if (t == NULL) {
+    cout &amp;lt;&amp;lt; &amp;quot;银行编码错误！&amp;quot; &amp;lt;&amp;lt; endl;
+    return 2;
+}
+t-&amp;gt;setMsg();
+t-&amp;gt;sendMsg();
+t-&amp;gt;getMsg();
+t-&amp;gt;parseMsg();
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;优缺点:b843d88db977db74e59764a23a86a6c0&#34;&gt;优缺点&lt;/h4&gt;
+
+&lt;p&gt;利用简单工厂模式，当我们后续接入另外的银行时，只需要添加具体的银行交互类，实现业务函数，然后在工厂类的 &lt;strong&gt;createBank&lt;/strong&gt; 函数中添加一个 &lt;strong&gt;else if&lt;/strong&gt; 子句。相对于原来的设计已经改进很多了，但是仍然需要修改原来的工厂类的代码，没有彻底实现解耦。&lt;/p&gt;
+
+&lt;h3 id=&#34;反射:b843d88db977db74e59764a23a86a6c0&#34;&gt;反射&lt;/h3&gt;
+
+&lt;p&gt;反射在java的一些框架中使用的比较多，而且用起来非常方便。C++本身并不支持，但是我们可以模拟一些简单的特性。&lt;/p&gt;
+
+&lt;p&gt;我们需要一种能够根据字符串动态获取对应的银行交互类的实例的方法。这样在工厂类的 &lt;strong&gt;createBank&lt;/strong&gt; 方法中就可以根据字符串直接获取对应银行交互类的实例，而不需要再每次通过新增 &lt;strong&gt;else if&lt;/strong&gt; 子句来新增一个银行接口。&lt;/p&gt;
+
+&lt;p&gt;也就是说，利用反射和简单工厂模式，下次当我们需要新增一个银行接口的时候只需要新增一个银行交互类即可，不需要修改原来的任何代码，实现了业务上的解耦。&lt;/p&gt;
+
+&lt;h4 id=&#34;如何在c-中实现反射:b843d88db977db74e59764a23a86a6c0&#34;&gt;如何在C++中实现反射&lt;/h4&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;需要一个全局的map用于存储类的信息以及创建实例的函数&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;需要反射的类需要提供一个用于创建自身实例的函数&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;利用类的静态变量在程序启动的时候会进行初始化来在全局map中将类名及创建实例的函数存入map中&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;相关代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;typedef void* (*register_func)();
+
+class Class
+{
+public:
+static void* newInstance(const string&amp;amp; class_name) {
+    map&amp;lt;string, register_func&amp;gt;::iterator it = m_register.find(class_name);
+    if (it == m_register.end())
+        return NULL;
+    else
+        return it-&amp;gt;second();
+}
+static void registerClass(const string&amp;amp; class_name, register_func func) {
+    m_register[class_name] = func;
+}
+
+private:
+    /* key is class name and value is function to create instance of class */
+    static map&amp;lt;string, register_func&amp;gt; m_register;
+};
+
+
+class Register
+{
+public:
+    Register(const string&amp;amp; class_name, register_func func) {
+        Class::registerClass(class_name, func);
+    }
+};
+
+#define REGISTER_CLASS(class_name) \
+    class class_name##Register { \
+    public: \
+        static void* newInstance() { \
+            return new class_name; \
+        } \
+    private: \
+        static const Register reg; \
+    };\
+const Register class_name##Register::reg(#class_name,class_name##Register::newInstance);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;还需要修改工厂类的 &lt;strong&gt;createBank&lt;/strong&gt; 函数，利用Class的 &lt;strong&gt;newInstance&lt;/strong&gt; 函数来创建实例：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;BaseBank* createBank(const string&amp;amp; bank_name) {
+    return (BaseBank*)Class::newInstance(bank_name);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Class类中的 &lt;strong&gt;m_register&lt;/strong&gt; 变量是 &lt;strong&gt;static&lt;/strong&gt; 类型的map，相当于全局变量。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;newInstance&lt;/strong&gt; 函数，传入类名，查找map，调用回调函数，返回一个对应类的实例。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;registerClass&lt;/strong&gt; 函数传入类名和用于创建实例的回调函数并将信息存入全局的map中。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Register&lt;/strong&gt; 类只有一个构造函数，会调用Class的 &lt;strong&gt;registerClass&lt;/strong&gt; 函数完成注册。&lt;/p&gt;
+
+&lt;p&gt;利用宏定义，在每一个需要反射的类后面额外增加一个类，其中有一个 &lt;strong&gt;Register&lt;/strong&gt; 类型的 &lt;strong&gt;static const&lt;/strong&gt; 变量，这样在程序启动的时候就会完成初始化调用 &lt;strong&gt;Register&lt;/strong&gt; 类的构造函数，完成注册。&lt;/p&gt;
+
+&lt;p&gt;之后只需要在需要反射的类，例如在工商银行交互类 GSBank 后面加上一条宏定义：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;REGISTER_CLASS(GSBank)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;就可以通过工厂类传入 &amp;ldquo;GSBank&amp;rdquo; 字符串获得工商银行交互类的实例。&lt;/p&gt;
+
+&lt;h3 id=&#34;测试:b843d88db977db74e59764a23a86a6c0&#34;&gt;测试&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg&#34; alt=&#34;GSBANK&#34; /&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg&#34; alt=&#34;RMBANK&#34; /&gt;
+&lt;/p&gt;
+
+&lt;p&gt;通过传入不同的银行编码，会实例化不同的银行交互类，并且执行其对应的函数。&lt;/p&gt;
+
+&lt;p&gt;如果需要增加新的银行接口，例如农业银行，只需要新增一个 &lt;strong&gt;NYBank&lt;/strong&gt; 类，实现具体的业务逻辑，不需要改动原来的任何代码，传入 &lt;strong&gt;NYBank&lt;/strong&gt; 字符串，就会执行农业银行相关的处理流程。&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

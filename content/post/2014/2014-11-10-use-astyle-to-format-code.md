@@ -29,11 +29,15 @@ SourceForge地址: [http://sourceforge.net/projects/astyle/](http://sourceforge.
 
 ### 示例
 
-`./astyle --style=ansi test.cpp`
+```bash
+./astyle --style=ansi test.cpp
+```
 
 执行之后会提示
 
-`Formatted  xxx/test.cpp`
+```bash
+Formatted  xxx/test.cpp
+```
 
 **astyle** 会在当前目录下生成一个备份文件，以 **.orig** 结尾，例如 "test.cpp.orig"。
 

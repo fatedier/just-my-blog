@@ -128,25 +128,29 @@ $ man git-&lt;verb&gt;
 
 <h4 id="取得git仓库-从现有仓库克隆:7aa84c832c9ae9742e6d9b7e8364eeab">取得Git仓库（从现有仓库克隆）</h4>
 
-<p><code>$ git clone https://github.com/schacon/fatest.git</code></p>
+<pre><code class="language-bash">$ git clone https://github.com/schacon/fatest.git
+</code></pre>
 
 <p>这个命令会在当前目录下创建一个fatest的目录，其中的.git目录保存所有的版本记录。fatest下是项目的所有文件。</p>
 
 <p>如果要自定义目录名称，可以在末尾指定，例如：</p>
 
-<p><code>$ git clone https://github.com/schacon/fatest.git fatestnew</code></p>
+<pre><code class="language-bash">$ git clone https://github.com/schacon/fatest.git fatestnew
+</code></pre>
 
 <p>现在创建的目录就是fatestnew而不是fatest了，其他的都一样。</p>
 
 <h4 id="检查当前项目文件状态:7aa84c832c9ae9742e6d9b7e8364eeab">检查当前项目文件状态</h4>
 
-<p><code>$ git status</code></p>
+<pre><code class="language-bash">$ git status
+</code></pre>
 
 <p>可以看到有哪些文件是没有加入到版本中的，哪些是修改了还没提交的等等。</p>
 
 <h4 id="将新文件加入到版本中:7aa84c832c9ae9742e6d9b7e8364eeab">将新文件加入到版本中</h4>
 
-<p><code>$ git add test.cpp</code></p>
+<pre><code class="language-bash">$ git add test.cpp
+</code></pre>
 
 <p>注：<code>git add</code>命令对于不同状态的文件有不同的效果，可以用它开始跟踪新文件，或者把已跟踪的文件放到暂存区，还能用于合并时把有冲突的文件标记为已解决状态等。</p>
 
@@ -181,23 +185,28 @@ doc/**/*.txt
 
 <p>未暂存：</p>
 
-<p><code>$ git diff</code></p>
+<pre><code class="language-bash">$ git diff
+</code></pre>
 
 <p>已暂存：</p>
 
-<p><code>$ git diff --staged</code></p>
+<pre><code class="language-bash">$ git diff --staged
+</code></pre>
 
 <h4 id="提交更新:7aa84c832c9ae9742e6d9b7e8364eeab">提交更新</h4>
 
-<p><code>$ git commit</code></p>
+<pre><code class="language-bash">$ git commit
+</code></pre>
 
 <p>之后进入vim编辑提交说明，保存即可。</p>
 
-<p><code>$ git commit --m &quot;comment&quot;</code></p>
+<pre><code class="language-bash">$ git commit --m &quot;comment&quot;
+</code></pre>
 
 <p>使用 <em>-m</em> 命令可以直接在一行命令中写说明。</p>
 
-<p><code>$ git commit -a</code></p>
+<pre><code class="language-bash">$ git commit -a
+</code></pre>
 
 <p>使用 <em>-a</em> 命令，会把未暂存和已暂存的文件一起提交，不然只会提交已暂存的文件。</p>
 
@@ -209,13 +218,15 @@ doc/**/*.txt
 
 <p>另外一种情况是，我们想把文件从 Git 仓库中删除（亦即从暂存区域移除），但仍然希望保留在当前工作目录中。换句话说，仅是从跟踪清单中删除。比如一些大型日志文件或者一堆 .a 编译文件，不小心纳入仓库后，要移除跟踪但不删除文件，以便稍后在 .gitignore 文件中补上，用 &ndash;cached 选项即可：</p>
 
-<p><code>$ git rm --cached readme.txt</code></p>
+<pre><code class="language-bash">$ git rm --cached readme.txt
+</code></pre>
 
 <h4 id="移动文件:7aa84c832c9ae9742e6d9b7e8364eeab">移动文件</h4>
 
 <p>例如要把 test.cpp 改为 tt.cpp</p>
 
-<p><code>$ git mv test.cpp tt.cpp</code></p>
+<pre><code class="language-bash">$ git mv test.cpp tt.cpp
+</code></pre>
 
 <p>就相当于是</p>
 
@@ -226,115 +237,137 @@ $ git add README
 
 <h4 id="查看提交历史:7aa84c832c9ae9742e6d9b7e8364eeab">查看提交历史</h4>
 
-<p><code>$ git log</code></p>
+<pre><code class="language-bash">$ git log
+</code></pre>
 
 <h4 id="撤销操作:7aa84c832c9ae9742e6d9b7e8364eeab">撤销操作</h4>
 
 <h5 id="覆盖上一次的提交:7aa84c832c9ae9742e6d9b7e8364eeab">覆盖上一次的提交</h5>
 
-<p><code>$ git commit --amend</code></p>
+<pre><code class="language-bash">$ git commit --amend
+</code></pre>
 
 <p>会将上次提交和这次提交合并起来，算作一次提交。</p>
 
 <h5 id="取消已暂存文件:7aa84c832c9ae9742e6d9b7e8364eeab">取消已暂存文件</h5>
 
-<p><code>$ git reset HEAD &lt;file&gt;</code></p>
+<pre><code class="language-bash">$ git reset HEAD &lt;file&gt;
+</code></pre>
 
 <p>这个时候文件状态就从已暂存变为未暂存</p>
 
 <h5 id="取消对文件的修改-还没有放到暂存区:7aa84c832c9ae9742e6d9b7e8364eeab">取消对文件的修改（还没有放到暂存区）</h5>
 
-<p><code>$ git checkout -- &lt;file&gt;</code></p>
+<pre><code class="language-bash">$ git checkout -- &lt;file&gt;
+</code></pre>
 
 <h4 id="运程仓库的使用:7aa84c832c9ae9742e6d9b7e8364eeab">运程仓库的使用</h4>
 
 <h5 id="查看当前的远程库:7aa84c832c9ae9742e6d9b7e8364eeab">查看当前的远程库</h5>
 
-<p><code>$ git remote</code></p>
+<pre><code class="language-bash">$ git remote
+</code></pre>
 
 <p>会列出每个远程库的简短的名字，默认使用origin表示原始仓库</p>
 
-<p><code>$ git remote -v</code></p>
+<pre><code class="language-bash">$ git remote -v
+</code></pre>
 
 <p>会额外列出远程库对应的克隆地址</p>
 
 <h5 id="添加远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab">添加远程仓库</h5>
 
-<p><code>$ git remote add [shortname] [url]</code></p>
+<pre><code class="language-bash">$ git remote add [shortname] [url]
+</code></pre>
 
 <h5 id="从远程仓库抓取数据:7aa84c832c9ae9742e6d9b7e8364eeab">从远程仓库抓取数据</h5>
 
-<p><code>$ git fetch [remote-name]</code></p>
+<pre><code class="language-bash">$ git fetch [remote-name]
+</code></pre>
 
 <p>抓取数据，但并不合并到当前分支</p>
 
-<p><code>$ git pull</code></p>
+<pre><code class="language-bash">$ git pull
+</code></pre>
 
 <p>自动抓取数据，并自动合并到当前分支</p>
 
-<p><code>$ git branch -r</code></p>
+<pre><code class="language-bash">$ git branch -r
+</code></pre>
 
 <p>查看所有远程分支</p>
 
-<p><code>$ git checkout -b test origin/test</code></p>
+<pre><code class="language-bash">$ git checkout -b test origin/test`
+</code></pre>
 
 <p>获取远程分支到本地新的分支上，并切换到新分支</p>
 
 <h5 id="推送数据到远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab">推送数据到远程仓库</h5>
 
-<p><code>$ git push [remote-name] [branch-name]</code></p>
+<pre><code class="language-bash">$ git push [remote-name] [branch-name]
+</code></pre>
 
 <p>推送操作会默认使用origin和master名字</p>
 
 <h5 id="查看远程仓库信息:7aa84c832c9ae9742e6d9b7e8364eeab">查看远程仓库信息</h5>
 
-<p><code>$ git remote show [remote-name]</code></p>
+<pre><code class="language-bash">$ git remote show [remote-name]
+</code></pre>
 
 <p>除了对应的克隆地址外，它还给出了许多额外的信息。它友善地告诉你如果是在 master 分支，就可以用 git pull 命令抓取数据合并到本地。另外还列出了所有处于跟踪状态中的远端分支。</p>
 
 <h5 id="远程仓库的删除:7aa84c832c9ae9742e6d9b7e8364eeab">远程仓库的删除</h5>
 
-<p><code>$ git remote rm [remote-name]</code></p>
+<pre><code class="language-bash">$ git remote rm [remote-name]
+</code></pre>
 
 <h4 id="标签的使用:7aa84c832c9ae9742e6d9b7e8364eeab">标签的使用</h4>
 
 <h5 id="显示已有的标签:7aa84c832c9ae9742e6d9b7e8364eeab">显示已有的标签</h5>
 
-<p><code>$ git tag</code></p>
+<pre><code class="language-bash">$ git tag
+</code></pre>
 
 <h5 id="新建标签:7aa84c832c9ae9742e6d9b7e8364eeab">新建标签</h5>
 
-<p><code>$ git tag v1.0</code></p>
+<pre><code class="language-bash">$ git tag v1.0
+</code></pre>
 
 <p>新建一个简单的标签</p>
 
-<p><code>$ git tag -a v1.0 -m 'my version 1.0'</code></p>
+<pre><code class="language-bash">$ git tag -a v1.0 -m 'my version 1.0'
+</code></pre>
 
 <p>-m 指定了对应标签的说明</p>
 
 <h5 id="后期加注标签:7aa84c832c9ae9742e6d9b7e8364eeab">后期加注标签</h5>
 
-<p><code>$ git log --pretty=oneline --abbrev-commit</code></p>
+<pre><code class="language-bash">$ git log --pretty=oneline --abbrev-commit
+</code></pre>
 
 <p>先显示提交历史</p>
 
-<p><code>$ git tag -a v1.1 9fceb02</code></p>
+<pre><code class="language-bash">$ git tag -a v1.1 9fceb02
+</code></pre>
 
 <p>补加标签</p>
 
 <h5 id="推送标签:7aa84c832c9ae9742e6d9b7e8364eeab">推送标签</h5>
 
-<p><code>$ git push origin [tagname]</code></p>
+<pre><code class="language-bash">$ git push origin [tagname]
+</code></pre>
 
 <h4 id="设置命令别名:7aa84c832c9ae9742e6d9b7e8364eeab">设置命令别名</h4>
 
-<p><code>$ git config --global alias.co checkout</code></p>
+<pre><code class="language-bash">$ git config --global alias.co checkout
+</code></pre>
 
 <h3 id="git分支:7aa84c832c9ae9742e6d9b7e8364eeab">Git分支</h3>
 
 <h4 id="新建分支:7aa84c832c9ae9742e6d9b7e8364eeab">新建分支</h4>
 
-<p><code>$ git branch testing</code></p>
+<pre><code class="language-bash">$ git branch testing
+</code></pre>
 
 <p>会在当前commit对象上新建一个分支指针</p>
 
@@ -342,7 +375,8 @@ $ git add README
 
 <h4 id="切换分支:7aa84c832c9ae9742e6d9b7e8364eeab">切换分支</h4>
 
-<p><code>$ git checkout testing</code></p>
+<pre><code class="language-bash">$ git checkout testing
+</code></pre>
 
 <p>切换到testing分支上</p>
 
@@ -350,31 +384,37 @@ $ git add README
 
 <p>在master分支上，执行：</p>
 
-<p><code>$ git merge testing</code></p>
+<pre><code class="language-bash">$ git merge testing
+</code></pre>
 
 <p>将tesing分支合并回master</p>
 
 <h4 id="使用合并工具-可以自己设置-例如设置成vimdiff:7aa84c832c9ae9742e6d9b7e8364eeab">使用合并工具（可以自己设置，例如设置成vimdiff）</h4>
 
-<p><code>$ git mergetool</code></p>
+<pre><code class="language-bash">$ git mergetool
+</code></pre>
 
 <h4 id="分支的管理:7aa84c832c9ae9742e6d9b7e8364eeab">分支的管理</h4>
 
-<p><code>$ git branch --merged</code></p>
+<pre><code class="language-bash">$ git branch --merged
+</code></pre>
 
 <p>查看哪些分支已经被并入当前分支，通常这些都可以删除了。</p>
 
-<p><code>$ git branch -d testing</code></p>
+<pre><code class="language-bash">$ git branch -d testing
+</code></pre>
 
 <p>删除一个分支</p>
 
-<p><code>$ git branch -D testing</code></p>
+<pre><code class="language-bash">$ git branch -D testing
+</code></pre>
 
 <p>如果该分支尚没有合并，可以使用-D选项强制删除。</p>
 
 <h4 id="推送本地分支:7aa84c832c9ae9742e6d9b7e8364eeab">推送本地分支</h4>
 
-<p><code>$ git push origin testing</code></p>
+<pre><code class="language-bash">$ git push origin testing
+</code></pre>
 
 <h4 id="分支的衍合:7aa84c832c9ae9742e6d9b7e8364eeab">分支的衍合</h4>
 
@@ -392,19 +432,22 @@ $ git merge testing
 
 <h4 id="文件标注:7aa84c832c9ae9742e6d9b7e8364eeab">文件标注</h4>
 
-<p><code>$ git blame -L 12,22 test.cpp</code></p>
+<pre><code class="language-bash">$ git blame -L 12,22 test.cpp
+</code></pre>
 
 <p>查看test.cpp文件对每一行进行修改的最近一次提交。</p>
 
 <h4 id="查看文件的历史提交:7aa84c832c9ae9742e6d9b7e8364eeab">查看文件的历史提交</h4>
 
-<p><code>$ git log --pretty=oneline test.cpp</code></p>
+<pre><code class="language-bash">$ git log --pretty=oneline test.cpp
+</code></pre>
 
 <p>查看test.cpp文件的历史提交记录</p>
 
 <h4 id="查看文件的历史版本:7aa84c832c9ae9742e6d9b7e8364eeab">查看文件的历史版本</h4>
 
-<p><code>$ git show [commit] [file]</code></p>
+<pre><code class="language-bash">$ git show [commit] [file]
+</code></pre>
 
 <p>例如：<code>$ git show 7da7c23 test.cpp</code></p>
 
@@ -412,7 +455,8 @@ $ git merge testing
 
 <h4 id="查看历史提交的详细文件变化:7aa84c832c9ae9742e6d9b7e8364eeab">查看历史提交的详细文件变化</h4>
 
-<p><code>$ git log -p -2</code></p>
+<pre><code class="language-bash">$ git log -p -2
+</code></pre>
 
 <p>通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 &ldquo;-&rdquo; 开头，新增的部分会以 &ldquo;+&rdquo; 开头，方便查看。</p>
 

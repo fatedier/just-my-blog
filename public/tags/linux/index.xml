@@ -390,11 +390,13 @@ Aborted (core dumped)
 
 &lt;h3 id=&#34;测试命令:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;测试命令&lt;/h3&gt;
 
-&lt;p&gt;&lt;code&gt;test expression&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;test expression
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;用test命令进行测试，expression是一个表达式&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;[ expression ]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;[ expression ]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;为了提高可读性，可以使用简化的这种格式&lt;/p&gt;
 
@@ -445,7 +447,10 @@ expression1 -a expression2  # 与
 expression1 -o expression2  # 或
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;多重的嵌套 &lt;code&gt;if [ $a == 1 ] &amp;amp;&amp;amp; [ $b == 1 -o $b == 3 ]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;多重的嵌套&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;if [ $a == 1 ] &amp;amp;&amp;amp; [ $b == 1 -o $b == 3 ]
+&lt;/code&gt;&lt;/pre&gt;
 </description>
         </item>
       
@@ -477,11 +482,13 @@ expression1 -o expression2  # 或
 
 &lt;h3 id=&#34;示例:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;示例&lt;/h3&gt;
 
-&lt;p&gt;&lt;code&gt;./astyle --style=ansi test.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;./astyle --style=ansi test.cpp
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;执行之后会提示&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;Formatted  xxx/test.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;Formatted  xxx/test.cpp
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;strong&gt;astyle&lt;/strong&gt; 会在当前目录下生成一个备份文件，以 &lt;strong&gt;.orig&lt;/strong&gt; 结尾，例如 &amp;ldquo;test.cpp.orig&amp;rdquo;。&lt;/p&gt;
 
@@ -584,33 +591,40 @@ expression1 -o expression2  # 或
 
 &lt;p&gt;最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。&lt;/p&gt;
 
-&lt;p&gt;查了资料后发现可以使用 &lt;code&gt;iconv&lt;/code&gt; 命令。&lt;/p&gt;
+&lt;p&gt;查了资料后发现可以使用 &lt;strong&gt;iconv&lt;/strong&gt; 命令。&lt;/p&gt;
 
-&lt;p&gt;首先使用 &lt;code&gt;file&lt;/code&gt; 命令来检测文件的类型&lt;/p&gt;
+&lt;p&gt;首先使用 &lt;strong&gt;file&lt;/strong&gt; 命令来检测文件的类型&lt;/p&gt;
 
-&lt;p&gt;例如：&lt;code&gt;filetest.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;例如&lt;/p&gt;
 
-&lt;p&gt;输出：&lt;code&gt;ISO-8859 Cprogram text&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;file test.cpp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;ISO-8859 Cprogram text
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&#34;iconv命令的参数说明:4b6e91e70ba8114fa93e8a42dc052691&#34;&gt;iconv命令的参数说明&lt;/h3&gt;
 
-&lt;ul&gt;
-&lt;li&gt;-l 列出所有已知的字符集&lt;/li&gt;
-&lt;li&gt;-f 原始文本编码&lt;/li&gt;
-&lt;li&gt;-t 输出文本编码&lt;/li&gt;
-&lt;li&gt;-o 输出文件名&lt;/li&gt;
-&lt;li&gt;-s 关闭警告&lt;/li&gt;
-&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;-l  列出所有已知的字符集
+-f  原始文本编码
+-t  输出文本编码
+-o  输出文件名
+-s  关闭警告
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&#34;例子:4b6e91e70ba8114fa93e8a42dc052691&#34;&gt;例子&lt;/h3&gt;
 
-&lt;p&gt;&lt;code&gt;iconv -f GB2312 -t UTF-8 test.cpp &amp;gt; test_utf.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;iconv -f GB2312 -t UTF-8 test.cpp &amp;gt; test_utf.cpp
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;因为iconv默认输出到标准输出，所以我们需要重定向到一个其他文件。&lt;strong&gt;（这里不能重定向到自身，否则会清空文件内容）&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;如果想要把输出内容直接输出到当前文件，可以这样用：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;iconv -f GB2312 -t UTF-8 -o test.cpp test.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;iconv -f GB2312 -t UTF-8 -o test.cpp test.cpp
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&#34;附上我自己用的编码转换脚本-iconvfa-sh:4b6e91e70ba8114fa93e8a42dc052691&#34;&gt;附上我自己用的编码转换脚本 iconvfa.sh&lt;/h3&gt;
 
@@ -812,7 +826,8 @@ inoremap &amp;lt;C-\&amp;gt; &amp;lt;Esc&amp;gt;&amp;lt;&amp;lt;i
 
 &lt;p&gt;之后在你的项目文件的根目录中执行如下的命令：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ ctags -R&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ ctags -R
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;会发现当前目录下生成了一个名为tags的文件。&lt;/p&gt;
 
@@ -820,13 +835,15 @@ inoremap &amp;lt;C-\&amp;gt; &amp;lt;Esc&amp;gt;&amp;lt;&amp;lt;i
 
 &lt;p&gt;最后需要在vim配置文件中将tags文件加入到vim中来：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;set tags=~/tags&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;set tags=~/tags
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;strong&gt;注：这里需要填具体的tags文件所在路径。&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;先安装vundle这个插件:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;先安装vundle这个插件&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;之后其他的插件也都会被放在~/.vim/bundle这个目录下。&lt;/p&gt;
 
@@ -834,7 +851,7 @@ inoremap &amp;lt;C-\&amp;gt; &amp;lt;Esc&amp;gt;&amp;lt;&amp;lt;i
 
 &lt;p&gt;以后当你需要安装其他的vim插件的时候，直接在.vimrc中加上如下部分：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;filetype off
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;filetype off
  
 setrtp+=~/.vim/bundle/vundle/
 call vundle#rc()
@@ -857,7 +874,8 @@ filetype pluginindent on
 
 &lt;p&gt;如果你需要的插件在这个里面没有找到，那么在.vimrc配置文件中可以直接用git远程仓库的地址，例如要安装command-t这个插件，可以在配置文件中加上：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;Bundle &amp;quot;git://git.wincent.com/command-t.git&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;Bundle &amp;quot;git://git.wincent.com/command-t.git&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这样就会直接从这个地址上下载所需插件。&lt;/p&gt;
 
@@ -875,7 +893,7 @@ filetype pluginindent on
 
 &lt;p&gt;之后我们需要设置一下在normal模式下可以直接输入wm来打开文件管理窗口以及TagList，.vimrc文件增加如下命令：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;let g:winManagerWindowLayout=&#39;FileExplorer|TagList&#39;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;let g:winManagerWindowLayout=&#39;FileExplorer|TagList&#39;
 nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -897,11 +915,13 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;并且在配置文件中加上如下配置：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;let g:neocomplcache_enable_at_startup = 1&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;let g:neocomplcache_enable_at_startup = 1
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这一行是设置是否自动启用补全，为1代表启用。这样就不需要每次都使用Ctrl+P或者Ctrl+N来弹出补全列表。&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;let g:neocomplcache_enable_auto_select = 1&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;let g:neocomplcache_enable_auto_select = 1
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。&lt;/p&gt;
 </description>
@@ -921,9 +941,10 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;可以有多种方式使用vimdiff，例如：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;vimdiff [file1] [file2]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;vimdiff [file1] [file2]
 
-&lt;p&gt;&lt;code&gt;vim -d [file1] [file2]&lt;/code&gt;&lt;/p&gt;
+vim -d [file1] [file2]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;hr /&gt;
 

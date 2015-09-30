@@ -19,7 +19,9 @@ url: "/2014/10/17/git-usually-command"
 
 例如我们要修改倒数第二次的提交的说明信息：
 
-`$ git rebase -i HEAD~3`
+```bash
+$ git rebase -i HEAD~3
+```
 
 **注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。**
 
@@ -31,11 +33,15 @@ url: "/2014/10/17/git-usually-command"
 
 这个时候执行
 
-`$ git commit --amend`
+```bash
+$ git commit --amend
+```
 
 就可以修改该次提交的说明了，修改完成后保存并退出。
 
-`$ git rebase --continue`
+```bash
+$ git rebase --continue
+```
 
 执行这条命令后，后续的提交说明将不会改变。
 
@@ -46,7 +52,9 @@ url: "/2014/10/17/git-usually-command"
 
 比如要合并最后两次的提交，其实和修改某一次提交的说明信息有点类似。
 
-`$ git rebase -i HEAD~2`
+```bash
+$ git rebase -i HEAD~2
+```
 
 之后同样会进入到文本编辑界面，将第二行开头的 **pick** 改为 **squash** 或 **s**，保存后退出。
 
@@ -57,17 +65,19 @@ url: "/2014/10/17/git-usually-command"
 
 当我们在开发的时候出现一些关键性的错误，并且确认现在已经做的开发工作是无意义的时候，可能需要回退到之前的版本。
 
-`$ git reset --hard <commit_id>`
+```bash
+$ git reset --hard <commit_id>
 
-`$ git push origin HEAD --force`
+$ git push origin HEAD --force
+```
 
 另外，reset命令还有几个可选参数
 
-* git reset --mixed：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息。
+* **git reset --mixed**：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息。
 
-* git reset --soft：回退到某个版本，只回退了commit的信息，不会恢复到indexfile一级。如果还要提交，直接commit即可。
+* **git reset --soft**：回退到某个版本，只回退了commit的信息，不会恢复到indexfile一级。如果还要提交，直接commit即可。
 
-* git reset --hard：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。
+* **git reset --hard**：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。
 
 
 ### reset --hard之后的恢复
@@ -83,6 +93,8 @@ url: "/2014/10/17/git-usually-command"
 
 例如要查看 f4869b0 这次提交的 test.cpp 文件的内容，test.cpp的路径需要使用相对于git目录的路径名，使用如下命令：
 
-`$ git show f4869b0:test.cpp`
+```bash
+$ git show f4869b0:test.cpp
+```
 
 文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。

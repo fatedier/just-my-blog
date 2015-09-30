@@ -109,7 +109,9 @@ inoremap <C-\> <Esc><<i
 
 之后在你的项目文件的根目录中执行如下的命令：
 
-`$ ctags -R`
+```bash
+$ ctags -R
+```
 
 会发现当前目录下生成了一个名为tags的文件。
 
@@ -117,13 +119,17 @@ tags文件是由ctags程序产生的一个索引文件，如果你在读程序�
 
 最后需要在vim配置文件中将tags文件加入到vim中来：
 
-`set tags=~/tags`
+```bash
+set tags=~/tags
+```
 
 **注：这里需要填具体的tags文件所在路径。**
 
 #### 先安装vundle这个插件
 
-`$ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle`
+```bash
+$ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+```
 
 之后其他的插件也都会被放在~/.vim/bundle这个目录下。
 
@@ -131,7 +137,7 @@ tags文件是由ctags程序产生的一个索引文件，如果你在读程序�
 
 以后当你需要安装其他的vim插件的时候，直接在.vimrc中加上如下部分：
 
-```shell
+```bash
 filetype off
  
 setrtp+=~/.vim/bundle/vundle/
@@ -155,7 +161,9 @@ Bundle 后面的插件名称用引号引起来，最后在vim中输入:BundleIns
 
 如果你需要的插件在这个里面没有找到，那么在.vimrc配置文件中可以直接用git远程仓库的地址，例如要安装command-t这个插件，可以在配置文件中加上：
 
-`Bundle "git://git.wincent.com/command-t.git"`
+```bash
+Bundle "git://git.wincent.com/command-t.git"
+```
 
 这样就会直接从这个地址上下载所需插件。
 
@@ -173,7 +181,7 @@ WinManager可以帮助我们管理在屏幕上显示的多个窗口。
 
 之后我们需要设置一下在normal模式下可以直接输入wm来打开文件管理窗口以及TagList，.vimrc文件增加如下命令：
 
-```shell
+```bash
 let g:winManagerWindowLayout='FileExplorer|TagList'
 nnoremap wm:WMToggle<cr>
 ```
@@ -196,10 +204,14 @@ nnoremap wm:WMToggle<cr>
 
 并且在配置文件中加上如下配置：
 
-`let g:neocomplcache_enable_at_startup = 1`
+```bash
+let g:neocomplcache_enable_at_startup = 1
+```
 
 这一行是设置是否自动启用补全，为1代表启用。这样就不需要每次都使用Ctrl+P或者Ctrl+N来弹出补全列表。
 
-`let g:neocomplcache_enable_auto_select = 1`
+```bash
+let g:neocomplcache_enable_auto_select = 1
+```
 
 这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。

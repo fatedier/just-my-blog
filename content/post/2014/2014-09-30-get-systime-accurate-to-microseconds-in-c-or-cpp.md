@@ -16,9 +16,9 @@ url: "/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp"
 
 #### gettimeofday
 
-头文件：`#include <sys/time.h>   #include <unistd.h>`
+头文件：**#include <sys/time.h>   #include <unistd.h>**
 
-定义函数：`int gettimeofday (struct timeval * tv, struct timezone * tz);`
+函数定义：**int gettimeofday (struct timeval * tv, struct timezone * tz);**
 
 函数说明：gettimeofday()会把目前的时间有tv 所指的结构返回，当地时区的信息则放到tz 所指的结构中。时间是从公元 1970 年1 月1 日的UTC 时间从0 时0 分0 秒算起到现在所经过的时间。
 
@@ -44,9 +44,9 @@ struct timezone
 
 #### localtime
 
-头文件：`#include <time.h>`
+头文件：**#include <time.h>**
 
-定义函数：`struct tm *localtime (const time_t *timep);`
+函数定义：**struct tm *localtime (const time_t *timep);**
 
 函数说明：localtime()将参数timep 所指的time_t 结构中的信息转换成真实世界所使用的时间日期表示方法，然后将结果由结构tm 返回。
 
@@ -104,4 +104,6 @@ int main()
 
 ### 输出为
 
-`当前时间：20140930110457794678`
+```bash
+当前时间：20140930110457794678
+```

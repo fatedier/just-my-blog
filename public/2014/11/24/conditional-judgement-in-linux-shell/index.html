@@ -113,11 +113,13 @@
 
 <h3 id="测试命令:289ce1ced731ab87d58afb0f0a69b270">测试命令</h3>
 
-<p><code>test expression</code></p>
+<pre><code class="language-bash">test expression
+</code></pre>
 
 <p>用test命令进行测试，expression是一个表达式</p>
 
-<p><code>[ expression ]</code></p>
+<pre><code class="language-bash">[ expression ]
+</code></pre>
 
 <p>为了提高可读性，可以使用简化的这种格式</p>
 
@@ -168,7 +170,10 @@ expression1 -a expression2  # 与
 expression1 -o expression2  # 或
 </code></pre>
 
-<p>多重的嵌套 <code>if [ $a == 1 ] &amp;&amp; [ $b == 1 -o $b == 3 ]</code></p>
+<p>多重的嵌套</p>
+
+<pre><code class="language-bash">if [ $a == 1 ] &amp;&amp; [ $b == 1 -o $b == 3 ]
+</code></pre>
 
             </div>
 

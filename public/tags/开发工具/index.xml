@@ -227,11 +227,13 @@ Aborted (core dumped)
 
 &lt;h3 id=&#34;示例:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;示例&lt;/h3&gt;
 
-&lt;p&gt;&lt;code&gt;./astyle --style=ansi test.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;./astyle --style=ansi test.cpp
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;执行之后会提示&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;Formatted  xxx/test.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;Formatted  xxx/test.cpp
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;strong&gt;astyle&lt;/strong&gt; 会在当前目录下生成一个备份文件，以 &lt;strong&gt;.orig&lt;/strong&gt; 结尾，例如 &amp;ldquo;test.cpp.orig&amp;rdquo;。&lt;/p&gt;
 
@@ -434,7 +436,8 @@ inoremap &amp;lt;C-\&amp;gt; &amp;lt;Esc&amp;gt;&amp;lt;&amp;lt;i
 
 &lt;p&gt;之后在你的项目文件的根目录中执行如下的命令：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ ctags -R&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ ctags -R
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;会发现当前目录下生成了一个名为tags的文件。&lt;/p&gt;
 
@@ -442,13 +445,15 @@ inoremap &amp;lt;C-\&amp;gt; &amp;lt;Esc&amp;gt;&amp;lt;&amp;lt;i
 
 &lt;p&gt;最后需要在vim配置文件中将tags文件加入到vim中来：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;set tags=~/tags&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;set tags=~/tags
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;strong&gt;注：这里需要填具体的tags文件所在路径。&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;先安装vundle这个插件:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;先安装vundle这个插件&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;之后其他的插件也都会被放在~/.vim/bundle这个目录下。&lt;/p&gt;
 
@@ -456,7 +461,7 @@ inoremap &amp;lt;C-\&amp;gt; &amp;lt;Esc&amp;gt;&amp;lt;&amp;lt;i
 
 &lt;p&gt;以后当你需要安装其他的vim插件的时候，直接在.vimrc中加上如下部分：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;filetype off
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;filetype off
  
 setrtp+=~/.vim/bundle/vundle/
 call vundle#rc()
@@ -479,7 +484,8 @@ filetype pluginindent on
 
 &lt;p&gt;如果你需要的插件在这个里面没有找到，那么在.vimrc配置文件中可以直接用git远程仓库的地址，例如要安装command-t这个插件，可以在配置文件中加上：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;Bundle &amp;quot;git://git.wincent.com/command-t.git&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;Bundle &amp;quot;git://git.wincent.com/command-t.git&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这样就会直接从这个地址上下载所需插件。&lt;/p&gt;
 
@@ -497,7 +503,7 @@ filetype pluginindent on
 
 &lt;p&gt;之后我们需要设置一下在normal模式下可以直接输入wm来打开文件管理窗口以及TagList，.vimrc文件增加如下命令：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;let g:winManagerWindowLayout=&#39;FileExplorer|TagList&#39;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;let g:winManagerWindowLayout=&#39;FileExplorer|TagList&#39;
 nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -519,11 +525,13 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;并且在配置文件中加上如下配置：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;let g:neocomplcache_enable_at_startup = 1&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;let g:neocomplcache_enable_at_startup = 1
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这一行是设置是否自动启用补全，为1代表启用。这样就不需要每次都使用Ctrl+P或者Ctrl+N来弹出补全列表。&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;let g:neocomplcache_enable_auto_select = 1&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;let g:neocomplcache_enable_auto_select = 1
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。&lt;/p&gt;
 </description>
@@ -543,9 +551,10 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;可以有多种方式使用vimdiff，例如：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;vimdiff [file1] [file2]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;vimdiff [file1] [file2]
 
-&lt;p&gt;&lt;code&gt;vim -d [file1] [file2]&lt;/code&gt;&lt;/p&gt;
+vim -d [file1] [file2]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;hr /&gt;
 
@@ -611,7 +620,8 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;例如我们要修改倒数第二次的提交的说明信息：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git rebase -i HEAD~3&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git rebase -i HEAD~3
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;strong&gt;注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。&lt;/strong&gt;&lt;/p&gt;
 
@@ -624,11 +634,13 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;这个时候执行&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git commit --amend&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git commit --amend
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;就可以修改该次提交的说明了，修改完成后保存并退出。&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git rebase --continue&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git rebase --continue
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;执行这条命令后，后续的提交说明将不会改变。&lt;/p&gt;
 
@@ -638,7 +650,8 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;比如要合并最后两次的提交，其实和修改某一次提交的说明信息有点类似。&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git rebase -i HEAD~2&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git rebase -i HEAD~2
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;之后同样会进入到文本编辑界面，将第二行开头的 &lt;strong&gt;pick&lt;/strong&gt; 改为 &lt;strong&gt;squash&lt;/strong&gt; 或 &lt;strong&gt;s&lt;/strong&gt;，保存后退出。&lt;/p&gt;
 
@@ -648,18 +661,19 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;当我们在开发的时候出现一些关键性的错误，并且确认现在已经做的开发工作是无意义的时候，可能需要回退到之前的版本。&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git reset --hard &amp;lt;commit_id&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git reset --hard &amp;lt;commit_id&amp;gt;
 
-&lt;p&gt;&lt;code&gt;$ git push origin HEAD --force&lt;/code&gt;&lt;/p&gt;
+$ git push origin HEAD --force
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;另外，reset命令还有几个可选参数&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;git reset &amp;ndash;mixed：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;git reset &amp;ndash;mixed&lt;/strong&gt;：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息。&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;git reset &amp;ndash;soft：回退到某个版本，只回退了commit的信息，不会恢复到indexfile一级。如果还要提交，直接commit即可。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;git reset &amp;ndash;soft&lt;/strong&gt;：回退到某个版本，只回退了commit的信息，不会恢复到indexfile一级。如果还要提交，直接commit即可。&lt;/p&gt;&lt;/li&gt;
 
-&lt;li&gt;&lt;p&gt;git reset &amp;ndash;hard：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;git reset &amp;ndash;hard&lt;/strong&gt;：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h3 id=&#34;reset-hard之后的恢复:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;reset &amp;ndash;hard之后的恢复&lt;/h3&gt;
@@ -674,7 +688,8 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;例如要查看 f4869b0 这次提交的 test.cpp 文件的内容，test.cpp的路径需要使用相对于git目录的路径名，使用如下命令：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git show f4869b0:test.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git show f4869b0:test.cpp
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。&lt;/p&gt;
 </description>
@@ -729,25 +744,29 @@ $ man git-&amp;lt;verb&amp;gt;
 
 &lt;h4 id=&#34;取得git仓库-从现有仓库克隆:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;取得Git仓库（从现有仓库克隆）&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git clone https://github.com/schacon/fatest.git&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git clone https://github.com/schacon/fatest.git
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这个命令会在当前目录下创建一个fatest的目录，其中的.git目录保存所有的版本记录。fatest下是项目的所有文件。&lt;/p&gt;
 
 &lt;p&gt;如果要自定义目录名称，可以在末尾指定，例如：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git clone https://github.com/schacon/fatest.git fatestnew&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git clone https://github.com/schacon/fatest.git fatestnew
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;现在创建的目录就是fatestnew而不是fatest了，其他的都一样。&lt;/p&gt;
 
 &lt;h4 id=&#34;检查当前项目文件状态:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;检查当前项目文件状态&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git status&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git status
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;可以看到有哪些文件是没有加入到版本中的，哪些是修改了还没提交的等等。&lt;/p&gt;
 
 &lt;h4 id=&#34;将新文件加入到版本中:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;将新文件加入到版本中&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git add test.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git add test.cpp
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;注：&lt;code&gt;git add&lt;/code&gt;命令对于不同状态的文件有不同的效果，可以用它开始跟踪新文件，或者把已跟踪的文件放到暂存区，还能用于合并时把有冲突的文件标记为已解决状态等。&lt;/p&gt;
 
@@ -782,23 +801,28 @@ doc/**/*.txt
 
 &lt;p&gt;未暂存：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git diff&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git diff
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;已暂存：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git diff --staged&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git diff --staged
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;提交更新:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;提交更新&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git commit&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git commit
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;之后进入vim编辑提交说明，保存即可。&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git commit --m &amp;quot;comment&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git commit --m &amp;quot;comment&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;使用 &lt;em&gt;-m&lt;/em&gt; 命令可以直接在一行命令中写说明。&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git commit -a&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git commit -a
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;使用 &lt;em&gt;-a&lt;/em&gt; 命令，会把未暂存和已暂存的文件一起提交，不然只会提交已暂存的文件。&lt;/p&gt;
 
@@ -810,13 +834,15 @@ doc/**/*.txt
 
 &lt;p&gt;另外一种情况是，我们想把文件从 Git 仓库中删除（亦即从暂存区域移除），但仍然希望保留在当前工作目录中。换句话说，仅是从跟踪清单中删除。比如一些大型日志文件或者一堆 .a 编译文件，不小心纳入仓库后，要移除跟踪但不删除文件，以便稍后在 .gitignore 文件中补上，用 &amp;ndash;cached 选项即可：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git rm --cached readme.txt&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git rm --cached readme.txt
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;移动文件:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;移动文件&lt;/h4&gt;
 
 &lt;p&gt;例如要把 test.cpp 改为 tt.cpp&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git mv test.cpp tt.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git mv test.cpp tt.cpp
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;就相当于是&lt;/p&gt;
 
@@ -827,115 +853,137 @@ $ git add README
 
 &lt;h4 id=&#34;查看提交历史:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看提交历史&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git log&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git log
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;撤销操作:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;撤销操作&lt;/h4&gt;
 
 &lt;h5 id=&#34;覆盖上一次的提交:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;覆盖上一次的提交&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git commit --amend&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git commit --amend
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;会将上次提交和这次提交合并起来，算作一次提交。&lt;/p&gt;
 
 &lt;h5 id=&#34;取消已暂存文件:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;取消已暂存文件&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git reset HEAD &amp;lt;file&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git reset HEAD &amp;lt;file&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这个时候文件状态就从已暂存变为未暂存&lt;/p&gt;
 
 &lt;h5 id=&#34;取消对文件的修改-还没有放到暂存区:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;取消对文件的修改（还没有放到暂存区）&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git checkout -- &amp;lt;file&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git checkout -- &amp;lt;file&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;运程仓库的使用:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;运程仓库的使用&lt;/h4&gt;
 
 &lt;h5 id=&#34;查看当前的远程库:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看当前的远程库&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git remote&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git remote
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;会列出每个远程库的简短的名字，默认使用origin表示原始仓库&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git remote -v&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git remote -v
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;会额外列出远程库对应的克隆地址&lt;/p&gt;
 
 &lt;h5 id=&#34;添加远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;添加远程仓库&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git remote add [shortname] [url]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git remote add [shortname] [url]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h5 id=&#34;从远程仓库抓取数据:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;从远程仓库抓取数据&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git fetch [remote-name]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git fetch [remote-name]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;抓取数据，但并不合并到当前分支&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git pull&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git pull
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;自动抓取数据，并自动合并到当前分支&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git branch -r&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git branch -r
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;查看所有远程分支&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git checkout -b test origin/test&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git checkout -b test origin/test`
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;获取远程分支到本地新的分支上，并切换到新分支&lt;/p&gt;
 
 &lt;h5 id=&#34;推送数据到远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;推送数据到远程仓库&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git push [remote-name] [branch-name]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git push [remote-name] [branch-name]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;推送操作会默认使用origin和master名字&lt;/p&gt;
 
 &lt;h5 id=&#34;查看远程仓库信息:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看远程仓库信息&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git remote show [remote-name]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git remote show [remote-name]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;除了对应的克隆地址外，它还给出了许多额外的信息。它友善地告诉你如果是在 master 分支，就可以用 git pull 命令抓取数据合并到本地。另外还列出了所有处于跟踪状态中的远端分支。&lt;/p&gt;
 
 &lt;h5 id=&#34;远程仓库的删除:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;远程仓库的删除&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git remote rm [remote-name]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git remote rm [remote-name]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;标签的使用:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;标签的使用&lt;/h4&gt;
 
 &lt;h5 id=&#34;显示已有的标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;显示已有的标签&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git tag&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git tag
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h5 id=&#34;新建标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;新建标签&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git tag v1.0&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git tag v1.0
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;新建一个简单的标签&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git tag -a v1.0 -m &#39;my version 1.0&#39;&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git tag -a v1.0 -m &#39;my version 1.0&#39;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;-m 指定了对应标签的说明&lt;/p&gt;
 
 &lt;h5 id=&#34;后期加注标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;后期加注标签&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git log --pretty=oneline --abbrev-commit&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git log --pretty=oneline --abbrev-commit
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;先显示提交历史&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git tag -a v1.1 9fceb02&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git tag -a v1.1 9fceb02
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;补加标签&lt;/p&gt;
 
 &lt;h5 id=&#34;推送标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;推送标签&lt;/h5&gt;
 
-&lt;p&gt;&lt;code&gt;$ git push origin [tagname]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git push origin [tagname]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;设置命令别名:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;设置命令别名&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git config --global alias.co checkout&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git config --global alias.co checkout
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h3 id=&#34;git分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;Git分支&lt;/h3&gt;
 
 &lt;h4 id=&#34;新建分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;新建分支&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git branch testing&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git branch testing
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;会在当前commit对象上新建一个分支指针&lt;/p&gt;
 
@@ -943,7 +991,8 @@ $ git add README
 
 &lt;h4 id=&#34;切换分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;切换分支&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git checkout testing&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git checkout testing
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;切换到testing分支上&lt;/p&gt;
 
@@ -951,31 +1000,37 @@ $ git add README
 
 &lt;p&gt;在master分支上，执行：&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git merge testing&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git merge testing
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;将tesing分支合并回master&lt;/p&gt;
 
 &lt;h4 id=&#34;使用合并工具-可以自己设置-例如设置成vimdiff:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;使用合并工具（可以自己设置，例如设置成vimdiff）&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git mergetool&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git mergetool
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;分支的管理:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;分支的管理&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git branch --merged&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git branch --merged
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;查看哪些分支已经被并入当前分支，通常这些都可以删除了。&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git branch -d testing&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git branch -d testing
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;删除一个分支&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;$ git branch -D testing&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git branch -D testing
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;如果该分支尚没有合并，可以使用-D选项强制删除。&lt;/p&gt;
 
 &lt;h4 id=&#34;推送本地分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;推送本地分支&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git push origin testing&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git push origin testing
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;h4 id=&#34;分支的衍合:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;分支的衍合&lt;/h4&gt;
 
@@ -993,19 +1048,22 @@ $ git merge testing
 
 &lt;h4 id=&#34;文件标注:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;文件标注&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git blame -L 12,22 test.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git blame -L 12,22 test.cpp
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;查看test.cpp文件对每一行进行修改的最近一次提交。&lt;/p&gt;
 
 &lt;h4 id=&#34;查看文件的历史提交:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看文件的历史提交&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git log --pretty=oneline test.cpp&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git log --pretty=oneline test.cpp
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;查看test.cpp文件的历史提交记录&lt;/p&gt;
 
 &lt;h4 id=&#34;查看文件的历史版本:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看文件的历史版本&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git show [commit] [file]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git show [commit] [file]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;例如：&lt;code&gt;$ git show 7da7c23 test.cpp&lt;/code&gt;&lt;/p&gt;
 
@@ -1013,7 +1071,8 @@ $ git merge testing
 
 &lt;h4 id=&#34;查看历史提交的详细文件变化:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看历史提交的详细文件变化&lt;/h4&gt;
 
-&lt;p&gt;&lt;code&gt;$ git log -p -2&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git log -p -2
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 &amp;ldquo;-&amp;rdquo; 开头，新增的部分会以 &amp;ldquo;+&amp;rdquo; 开头，方便查看。&lt;/p&gt;
 </description>

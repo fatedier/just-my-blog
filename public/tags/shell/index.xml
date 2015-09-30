@@ -42,11 +42,13 @@
 
 &lt;h3 id=&#34;测试命令:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;测试命令&lt;/h3&gt;
 
-&lt;p&gt;&lt;code&gt;test expression&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;test expression
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;用test命令进行测试，expression是一个表达式&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;[ expression ]&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;[ expression ]
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;为了提高可读性，可以使用简化的这种格式&lt;/p&gt;
 
@@ -97,7 +99,10 @@ expression1 -a expression2  # 与
 expression1 -o expression2  # 或
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;多重的嵌套 &lt;code&gt;if [ $a == 1 ] &amp;amp;&amp;amp; [ $b == 1 -o $b == 3 ]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;多重的嵌套&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;if [ $a == 1 ] &amp;amp;&amp;amp; [ $b == 1 -o $b == 3 ]
+&lt;/code&gt;&lt;/pre&gt;
 </description>
         </item>
       

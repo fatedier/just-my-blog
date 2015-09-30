@@ -52,25 +52,33 @@ $ man git-<verb>
 
 #### 取得Git仓库（从现有仓库克隆）
 
-`$ git clone https://github.com/schacon/fatest.git`
+```bash
+$ git clone https://github.com/schacon/fatest.git
+```
 
 这个命令会在当前目录下创建一个fatest的目录，其中的.git目录保存所有的版本记录。fatest下是项目的所有文件。
 
 如果要自定义目录名称，可以在末尾指定，例如：
 
-`$ git clone https://github.com/schacon/fatest.git fatestnew`
+```bash
+$ git clone https://github.com/schacon/fatest.git fatestnew
+```
 
 现在创建的目录就是fatestnew而不是fatest了，其他的都一样。
 
 #### 检查当前项目文件状态
 
-`$ git status`
+```bash
+$ git status
+```
 
 可以看到有哪些文件是没有加入到版本中的，哪些是修改了还没提交的等等。
 
 #### 将新文件加入到版本中
 
-`$ git add test.cpp`
+```bash
+$ git add test.cpp
+```
 
 注：`git add`命令对于不同状态的文件有不同的效果，可以用它开始跟踪新文件，或者把已跟踪的文件放到暂存区，还能用于合并时把有冲突的文件标记为已解决状态等。
 
@@ -106,23 +114,33 @@ doc/**/*.txt
 
 未暂存：
 
-`$ git diff`
+```bash
+$ git diff
+```
        
 已暂存：
 
-`$ git diff --staged`
+```bash
+$ git diff --staged
+```
  
 #### 提交更新
 
-`$ git commit`
+```bash
+$ git commit
+```
 
 之后进入vim编辑提交说明，保存即可。
  
-`$ git commit --m "comment"`
+```bash
+$ git commit --m "comment"
+```
 
 使用 *-m* 命令可以直接在一行命令中写说明。
  
-`$ git commit -a`
+```bash
+$ git commit -a
+```
 
 使用 *-a* 命令，会把未暂存和已暂存的文件一起提交，不然只会提交已暂存的文件。
  
@@ -134,13 +152,17 @@ doc/**/*.txt
  
 另外一种情况是，我们想把文件从 Git 仓库中删除（亦即从暂存区域移除），但仍然希望保留在当前工作目录中。换句话说，仅是从跟踪清单中删除。比如一些大型日志文件或者一堆 .a 编译文件，不小心纳入仓库后，要移除跟踪但不删除文件，以便稍后在 .gitignore 文件中补上，用 --cached 选项即可：
  
-`$ git rm --cached readme.txt`
+```bash
+$ git rm --cached readme.txt
+```
  
 #### 移动文件
 
 例如要把 test.cpp 改为 tt.cpp
 
-`$ git mv test.cpp tt.cpp`
+```bash
+$ git mv test.cpp tt.cpp
+```
  
 就相当于是
 
@@ -152,116 +174,160 @@ $ git add README
  
 #### 查看提交历史
 
-`$ git log`
+```bash
+$ git log
+```
  
 #### 撤销操作
 
 ##### 覆盖上一次的提交
 
-`$ git commit --amend`
+```bash
+$ git commit --amend
+```
 
 会将上次提交和这次提交合并起来，算作一次提交。
  
 ##### 取消已暂存文件
 
-`$ git reset HEAD <file>`
+```bash
+$ git reset HEAD <file>
+```
 
 这个时候文件状态就从已暂存变为未暂存
  
 ##### 取消对文件的修改（还没有放到暂存区）
 
-`$ git checkout -- <file>`
+```bash
+$ git checkout -- <file>
+```
  
 #### 运程仓库的使用
 
 ##### 查看当前的远程库
 
-`$ git remote`
+```bash
+$ git remote
+```
 
 会列出每个远程库的简短的名字，默认使用origin表示原始仓库
  
-`$ git remote -v`
+```bash
+$ git remote -v
+```
 
 会额外列出远程库对应的克隆地址
  
 ##### 添加远程仓库
 
-`$ git remote add [shortname] [url]`
+```bash
+$ git remote add [shortname] [url]
+```
  
 ##### 从远程仓库抓取数据
 
-`$ git fetch [remote-name]`
+```bash
+$ git fetch [remote-name]
+```
 
 抓取数据，但并不合并到当前分支
  
-`$ git pull`
+```bash
+$ git pull
+```
 
 自动抓取数据，并自动合并到当前分支
 
-`$ git branch -r`
+```bash
+$ git branch -r
+```
 
 查看所有远程分支
 
-`$ git checkout -b test origin/test`
+```bash
+$ git checkout -b test origin/test`
+```
 
 获取远程分支到本地新的分支上，并切换到新分支
  
 ##### 推送数据到远程仓库
 
-`$ git push [remote-name] [branch-name]`
+```bash
+$ git push [remote-name] [branch-name]
+```
 
 推送操作会默认使用origin和master名字
  
 ##### 查看远程仓库信息
 
-`$ git remote show [remote-name]`
+```bash
+$ git remote show [remote-name]
+```
 
 除了对应的克隆地址外，它还给出了许多额外的信息。它友善地告诉你如果是在 master 分支，就可以用 git pull 命令抓取数据合并到本地。另外还列出了所有处于跟踪状态中的远端分支。
  
 ##### 远程仓库的删除
 
-`$ git remote rm [remote-name]`
+```bash
+$ git remote rm [remote-name]
+```
  
 #### 标签的使用
 
 ##### 显示已有的标签
 
-`$ git tag`
+```bash
+$ git tag
+```
  
 ##### 新建标签
 
-`$ git tag v1.0`
+```bash
+$ git tag v1.0
+```
 
 新建一个简单的标签
  
-`$ git tag -a v1.0 -m 'my version 1.0'`
+```bash
+$ git tag -a v1.0 -m 'my version 1.0'
+```
 
 -m 指定了对应标签的说明
 
 ##### 后期加注标签
 
-`$ git log --pretty=oneline --abbrev-commit`
+```bash
+$ git log --pretty=oneline --abbrev-commit
+```
 
 先显示提交历史
 
-`$ git tag -a v1.1 9fceb02`
+```bash
+$ git tag -a v1.1 9fceb02
+```
 
 补加标签
  
 ##### 推送标签
 
-`$ git push origin [tagname]`
+```bash
+$ git push origin [tagname]
+```
  
 #### 设置命令别名
 
-`$ git config --global alias.co checkout`
- 
+```bash
+$ git config --global alias.co checkout
+```
+
 
 ### Git分支
 
 #### 新建分支
 
-`$ git branch testing`
+```bash
+$ git branch testing
+```
 
 会在当前commit对象上新建一个分支指针
  
@@ -269,7 +335,9 @@ $ git add README
 
 #### 切换分支
 
-`$ git checkout testing`
+```bash
+$ git checkout testing
+```
 
 切换到testing分支上
  
@@ -277,31 +345,43 @@ $ git add README
 
 在master分支上，执行：
 
-`$ git merge testing`
+```bash
+$ git merge testing
+```
 
 将tesing分支合并回master
  
 #### 使用合并工具（可以自己设置，例如设置成vimdiff）
 
-`$ git mergetool`
+```bash
+$ git mergetool
+```
  
 #### 分支的管理
 
-`$ git branch --merged`
+```bash
+$ git branch --merged
+```
 
 查看哪些分支已经被并入当前分支，通常这些都可以删除了。
  
-`$ git branch -d testing`
+```bash
+$ git branch -d testing
+```
 
 删除一个分支
  
-`$ git branch -D testing`
+```bash
+$ git branch -D testing
+```
 
 如果该分支尚没有合并，可以使用-D选项强制删除。
  
 #### 推送本地分支
 
-`$ git push origin testing`
+```bash
+$ git push origin testing
+```
  
 #### 分支的衍合
 
@@ -321,19 +401,25 @@ $ git merge testing
 
 #### 文件标注
 
-`$ git blame -L 12,22 test.cpp`
+```bash
+$ git blame -L 12,22 test.cpp
+```
 
 查看test.cpp文件对每一行进行修改的最近一次提交。
  
 #### 查看文件的历史提交
 
-`$ git log --pretty=oneline test.cpp`
+```bash
+$ git log --pretty=oneline test.cpp
+```
 
 查看test.cpp文件的历史提交记录
  
 #### 查看文件的历史版本
 
-`$ git show [commit] [file]`
+```bash
+$ git show [commit] [file]
+```
 
 例如：`$ git show 7da7c23 test.cpp`
 
@@ -341,6 +427,8 @@ $ git merge testing
 
 #### 查看历史提交的详细文件变化
 
-`$ git log -p -2`
+```bash
+$ git log -p -2
+```
 
 通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 "-" 开头，新增的部分会以 "+" 开头，方便查看。

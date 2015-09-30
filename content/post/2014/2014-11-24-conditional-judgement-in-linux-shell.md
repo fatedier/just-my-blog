@@ -33,11 +33,15 @@ url: "/2014/11/24/conditional-judgement-in-linux-shell"
 
 ### 测试命令
 
-`test expression`
+```bash
+test expression
+```
 
 用test命令进行测试，expression是一个表达式
 
-`[ expression ]`
+```bash
+[ expression ]
+```
 
 为了提高可读性，可以使用简化的这种格式
 
@@ -92,4 +96,8 @@ expression1 -a expression2  # 与
 expression1 -o expression2  # 或
 ```
 
-多重的嵌套 `if [ $a == 1 ] && [ $b == 1 -o $b == 3 ]`
+多重的嵌套
+
+```bash
+if [ $a == 1 ] && [ $b == 1 -o $b == 3 ]
+```

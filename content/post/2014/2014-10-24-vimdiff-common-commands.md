@@ -15,9 +15,11 @@ url: "/2014/10/24/vimdiff-common-commands"
 
 可以有多种方式使用vimdiff，例如：
 
-`vimdiff [file1] [file2]`
+```bash
+vimdiff [file1] [file2]
 
-`vim -d [file1] [file2]`
+vim -d [file1] [file2]
+```
 
 ----
 

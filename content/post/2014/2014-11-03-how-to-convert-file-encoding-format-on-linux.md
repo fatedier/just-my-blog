@@ -12,31 +12,44 @@ url: "/2014/11/03/how-to-convert-file-encoding-format-on-linux"
 
 <!--more-->
 
-查了资料后发现可以使用 `iconv` 命令。
+查了资料后发现可以使用 **iconv** 命令。
 
-首先使用 `file` 命令来检测文件的类型
+首先使用 **file** 命令来检测文件的类型
 
-例如：`filetest.cpp`
+例如
 
-输出：`ISO-8859 Cprogram text`
+```bash
+file test.cpp
+```
+
+输出
+```bash
+ISO-8859 Cprogram text
+```
 
 ### iconv命令的参数说明
 
-* -l 列出所有已知的字符集
-* -f 原始文本编码
-* -t 输出文本编码
-* -o 输出文件名
-* -s 关闭警告
+```bash
+-l  列出所有已知的字符集
+-f  原始文本编码
+-t  输出文本编码
+-o  输出文件名
+-s  关闭警告
+```
 
 ### 例子
 
-`iconv -f GB2312 -t UTF-8 test.cpp > test_utf.cpp`
+```bash
+iconv -f GB2312 -t UTF-8 test.cpp > test_utf.cpp
+```
 
 因为iconv默认输出到标准输出，所以我们需要重定向到一个其他文件。**（这里不能重定向到自身，否则会清空文件内容）**
 
 如果想要把输出内容直接输出到当前文件，可以这样用：
 
-`iconv -f GB2312 -t UTF-8 -o test.cpp test.cpp`
+```bash
+iconv -f GB2312 -t UTF-8 -o test.cpp test.cpp
+```
 
 ### 附上我自己用的编码转换脚本 iconvfa.sh
 

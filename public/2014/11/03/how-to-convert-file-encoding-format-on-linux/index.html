@@ -91,33 +91,40 @@
 
 <p>最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。</p>
 
-<p>查了资料后发现可以使用 <code>iconv</code> 命令。</p>
+<p>查了资料后发现可以使用 <strong>iconv</strong> 命令。</p>
 
-<p>首先使用 <code>file</code> 命令来检测文件的类型</p>
+<p>首先使用 <strong>file</strong> 命令来检测文件的类型</p>
 
-<p>例如：<code>filetest.cpp</code></p>
+<p>例如</p>
 
-<p>输出：<code>ISO-8859 Cprogram text</code></p>
+<pre><code class="language-bash">file test.cpp
+</code></pre>
+
+<p>输出</p>
+
+<pre><code class="language-bash">ISO-8859 Cprogram text
+</code></pre>
 
 <h3 id="iconv命令的参数说明:4b6e91e70ba8114fa93e8a42dc052691">iconv命令的参数说明</h3>
 
-<ul>
-<li>-l 列出所有已知的字符集</li>
-<li>-f 原始文本编码</li>
-<li>-t 输出文本编码</li>
-<li>-o 输出文件名</li>
-<li>-s 关闭警告</li>
-</ul>
+<pre><code class="language-bash">-l  列出所有已知的字符集
+-f  原始文本编码
+-t  输出文本编码
+-o  输出文件名
+-s  关闭警告
+</code></pre>
 
 <h3 id="例子:4b6e91e70ba8114fa93e8a42dc052691">例子</h3>
 
-<p><code>iconv -f GB2312 -t UTF-8 test.cpp &gt; test_utf.cpp</code></p>
+<pre><code class="language-bash">iconv -f GB2312 -t UTF-8 test.cpp &gt; test_utf.cpp
+</code></pre>
 
 <p>因为iconv默认输出到标准输出，所以我们需要重定向到一个其他文件。<strong>（这里不能重定向到自身，否则会清空文件内容）</strong></p>
 
 <p>如果想要把输出内容直接输出到当前文件，可以这样用：</p>
 
-<p><code>iconv -f GB2312 -t UTF-8 -o test.cpp test.cpp</code></p>
+<pre><code class="language-bash">iconv -f GB2312 -t UTF-8 -o test.cpp test.cpp
+</code></pre>
 
 <h3 id="附上我自己用的编码转换脚本-iconvfa-sh:4b6e91e70ba8114fa93e8a42dc052691">附上我自己用的编码转换脚本 iconvfa.sh</h3>
 

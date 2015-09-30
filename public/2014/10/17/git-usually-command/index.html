@@ -97,7 +97,8 @@
 
 <p>例如我们要修改倒数第二次的提交的说明信息：</p>
 
-<p><code>$ git rebase -i HEAD~3</code></p>
+<pre><code class="language-bash">$ git rebase -i HEAD~3
+</code></pre>
 
 <p><strong>注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。</strong></p>
 
@@ -110,11 +111,13 @@
 
 <p>这个时候执行</p>
 
-<p><code>$ git commit --amend</code></p>
+<pre><code class="language-bash">$ git commit --amend
+</code></pre>
 
 <p>就可以修改该次提交的说明了，修改完成后保存并退出。</p>
 
-<p><code>$ git rebase --continue</code></p>
+<pre><code class="language-bash">$ git rebase --continue
+</code></pre>
 
 <p>执行这条命令后，后续的提交说明将不会改变。</p>
 
@@ -124,7 +127,8 @@
 
 <p>比如要合并最后两次的提交，其实和修改某一次提交的说明信息有点类似。</p>
 
-<p><code>$ git rebase -i HEAD~2</code></p>
+<pre><code class="language-bash">$ git rebase -i HEAD~2
+</code></pre>
 
 <p>之后同样会进入到文本编辑界面，将第二行开头的 <strong>pick</strong> 改为 <strong>squash</strong> 或 <strong>s</strong>，保存后退出。</p>
 
@@ -134,18 +138,19 @@
 
 <p>当我们在开发的时候出现一些关键性的错误，并且确认现在已经做的开发工作是无意义的时候，可能需要回退到之前的版本。</p>
 
-<p><code>$ git reset --hard &lt;commit_id&gt;</code></p>
+<pre><code class="language-bash">$ git reset --hard &lt;commit_id&gt;
 
-<p><code>$ git push origin HEAD --force</code></p>
+$ git push origin HEAD --force
+</code></pre>
 
 <p>另外，reset命令还有几个可选参数</p>
 
 <ul>
-<li><p>git reset &ndash;mixed：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息。</p></li>
+<li><p><strong>git reset &ndash;mixed</strong>：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息。</p></li>
 
-<li><p>git reset &ndash;soft：回退到某个版本，只回退了commit的信息，不会恢复到indexfile一级。如果还要提交，直接commit即可。</p></li>
+<li><p><strong>git reset &ndash;soft</strong>：回退到某个版本，只回退了commit的信息，不会恢复到indexfile一级。如果还要提交，直接commit即可。</p></li>
 
-<li><p>git reset &ndash;hard：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。</p></li>
+<li><p><strong>git reset &ndash;hard</strong>：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。</p></li>
 </ul>
 
 <h3 id="reset-hard之后的恢复:3ad87c55fc5af115fc9b1721031d1adf">reset &ndash;hard之后的恢复</h3>
@@ -160,7 +165,8 @@
 
 <p>例如要查看 f4869b0 这次提交的 test.cpp 文件的内容，test.cpp的路径需要使用相对于git目录的路径名，使用如下命令：</p>
 
-<p><code>$ git show f4869b0:test.cpp</code></p>
+<pre><code class="language-bash">$ git show f4869b0:test.cpp
+</code></pre>
 
 <p>文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。</p>
 

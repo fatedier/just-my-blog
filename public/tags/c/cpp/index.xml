@@ -286,9 +286,9 @@ int main()
 
 &lt;h4 id=&#34;gettimeofday:9dfdc17010c4b06873ef31dbbc6dcd19&#34;&gt;gettimeofday&lt;/h4&gt;
 
-&lt;p&gt;头文件：&lt;code&gt;#include &amp;lt;sys/time.h&amp;gt;   #include &amp;lt;unistd.h&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;头文件：&lt;strong&gt;#include &lt;sys/time.h&gt;   #include &lt;unistd.h&gt;&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;定义函数：&lt;code&gt;int gettimeofday (struct timeval * tv, struct timezone * tz);&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;函数定义：&lt;strong&gt;int gettimeofday (struct timeval * tv, struct timezone * tz);&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;函数说明：gettimeofday()会把目前的时间有tv 所指的结构返回，当地时区的信息则放到tz 所指的结构中。时间是从公元 1970 年1 月1 日的UTC 时间从0 时0 分0 秒算起到现在所经过的时间。&lt;/p&gt;
 
@@ -312,9 +312,9 @@ int main()
 
 &lt;h4 id=&#34;localtime:9dfdc17010c4b06873ef31dbbc6dcd19&#34;&gt;localtime&lt;/h4&gt;
 
-&lt;p&gt;头文件：&lt;code&gt;#include &amp;lt;time.h&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;头文件：&lt;strong&gt;#include &lt;time.h&gt;&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;定义函数：&lt;code&gt;struct tm *localtime (const time_t *timep);&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;函数定义：&lt;strong&gt;struct tm *localtime (const time_t *timep);&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;函数说明：localtime()将参数timep 所指的time_t 结构中的信息转换成真实世界所使用的时间日期表示方法，然后将结果由结构tm 返回。&lt;/p&gt;
 
@@ -370,7 +370,8 @@ int main()
 
 &lt;h3 id=&#34;输出为:9dfdc17010c4b06873ef31dbbc6dcd19&#34;&gt;输出为&lt;/h3&gt;
 
-&lt;p&gt;&lt;code&gt;当前时间：20140930110457794678&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;当前时间：20140930110457794678
+&lt;/code&gt;&lt;/pre&gt;
 </description>
         </item>
       

@@ -113,12 +113,11 @@
 
 <p>用于对epoll实例执行不同的操作的函数。</p>
 
-<ol>
-<li><p><strong>epfd</strong></p>
+<p><strong>epfd</strong></p>
 
-<p>使用epoll_create()返回的文件描述符</p></li>
+<p>使用epoll_create()返回的文件描述符</p>
 
-<li><p><strong>op</strong></p>
+<p><strong>op</strong></p>
 
 <p>用三个宏表示不同的操作</p>
 
@@ -128,16 +127,15 @@
 <li><p>EPOLL_CTL_MOD：修改已经注册的fd的监听事件；</p></li>
 
 <li><p>EPOLL_CTL_DEL：从epfd中删除指定fd；</p></li>
-</ul></li>
+</ul>
 
-<li><p><strong>fd</strong></p>
+<p><strong>fd</strong></p>
 
-<p>要监听的文件描述符</p></li>
+<p>要监听的文件描述符</p>
 
-<li><p><strong>event</strong></p>
+<p><strong>event</strong></p>
 
-<p>event 是与指定fd关联的epoll_event结构，包含了监听事件，附加数据</p></li>
-</ol>
+<p>event 是与指定fd关联的epoll_event结构，包含了监听事件，附加数据</p>
 
 <p><strong>struct epoll_event</strong> 的结构如下</p>
 

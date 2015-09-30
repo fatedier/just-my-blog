@@ -44,12 +44,11 @@
 
 &lt;p&gt;用于对epoll实例执行不同的操作的函数。&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;epfd&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;epfd&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;使用epoll_create()返回的文件描述符&lt;/p&gt;&lt;/li&gt;
+&lt;p&gt;使用epoll_create()返回的文件描述符&lt;/p&gt;
 
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;op&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;op&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;用三个宏表示不同的操作&lt;/p&gt;
 
@@ -59,16 +58,15 @@
 &lt;li&gt;&lt;p&gt;EPOLL_CTL_MOD：修改已经注册的fd的监听事件；&lt;/p&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;EPOLL_CTL_DEL：从epfd中删除指定fd；&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
 
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;fd&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;fd&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;要监听的文件描述符&lt;/p&gt;&lt;/li&gt;
+&lt;p&gt;要监听的文件描述符&lt;/p&gt;
 
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;event&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;event&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;event 是与指定fd关联的epoll_event结构，包含了监听事件，附加数据&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;p&gt;event 是与指定fd关联的epoll_event结构，包含了监听事件，附加数据&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;struct epoll_event&lt;/strong&gt; 的结构如下&lt;/p&gt;
 

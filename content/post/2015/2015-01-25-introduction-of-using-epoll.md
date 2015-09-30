@@ -33,27 +33,27 @@ epoll相对于select/poll来说有很大优势：
 
 用于对epoll实例执行不同的操作的函数。
 
-1. **epfd**
+**epfd**
 
-    使用epoll_create()返回的文件描述符
+使用epoll_create()返回的文件描述符
 
-2. **op**
+**op**
 
-    用三个宏表示不同的操作
+用三个宏表示不同的操作
 
-    * EPOLL_CTL_ADD：注册新的fd到epfd中；
-    
-    * EPOLL_CTL_MOD：修改已经注册的fd的监听事件；
-    
-    * EPOLL_CTL_DEL：从epfd中删除指定fd；
+* EPOLL_CTL_ADD：注册新的fd到epfd中；
 
-3. **fd**
+* EPOLL_CTL_MOD：修改已经注册的fd的监听事件；
 
-    要监听的文件描述符
+* EPOLL_CTL_DEL：从epfd中删除指定fd；
 
-4. **event**
+**fd**
 
-    event 是与指定fd关联的epoll_event结构，包含了监听事件，附加数据
+要监听的文件描述符
+
+**event**
+
+event 是与指定fd关联的epoll_event结构，包含了监听事件，附加数据
     
 **struct epoll_event** 的结构如下
 

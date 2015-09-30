@@ -6,8 +6,165 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2015</rights>
-    <updated>2014-11-13 00:00:00 &#43;0000 UTC</updated>
+    <updated>2014-12-16 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>如何处理僵尸进程</title>
+          <link>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process</link>
+          <pubDate>Tue, 16 Dec 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process</guid>
+          <description>
+
+&lt;p&gt;在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。&lt;/p&gt;
+
+&lt;h3 id=&#34;什么是僵尸进程:ca7adc33bb0a44c1352770269765644c&#34;&gt;什么是僵尸进程&lt;/h3&gt;
+
+&lt;p&gt;如果父进程在子进程之前终止，则所有的子进程的父进程都会改变为init进程，我们称这些进程由init进程领养。这时使用ps命令查看后可以看到子进程的父进程ppid已经变为了1。&lt;/p&gt;
+
+&lt;p&gt;而当子进程在父进程之前终止时，&lt;strong&gt;内核为每个终止子进程保存了一定量的信息，所以当终止进程的父进程调用wait或waitpid时&lt;/strong&gt;，可以得到这些信息。这些信息至少包括进程ID、该进程的终止状态、以及该进程使用的CPU时间总量。其他的进程所使用的存储区，打开的文件都会被内核释放。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;一个已经终止、但是其父进程尚未对其进行善后处理（获取终止子进程的有关信息，释放它仍占用的资源）的进程被称为僵尸进程。&lt;/strong&gt; ps命令将僵尸进程的状态打印为Z。&lt;/p&gt;
+
+&lt;p&gt;可以设想一下，比如一个web服务器端，假如每次接收到一个连接都创建一个子进程去处理，处理完毕后结束子进程。假如在父进程中没有使用wait或waitpid函数进行善后，这些子进程将全部变为僵尸进程，Linux系统的进程数一般有一个固定限制值，僵尸进程将会逐渐耗尽系统资源。&lt;/p&gt;
+
+&lt;h3 id=&#34;查看僵尸进程的例子:ca7adc33bb0a44c1352770269765644c&#34;&gt;查看僵尸进程的例子&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;#include &amp;lt;stdio.h&amp;gt;
+#include &amp;lt;string.h&amp;gt;
+#include &amp;lt;unistd.h&amp;gt;
+#include &amp;lt;stdlib.h&amp;gt;
+#include &amp;lt;errno.h&amp;gt;
+ 
+int main(int argc, char **argv)
+{
+    pid_t pid;
+    for (int i=0; i&amp;lt;5; i++) {
+        if ((pid = fork()) &amp;lt; 0) {
+            printf(&amp;quot;fork error,%s\n&amp;quot;, strerror(errno));
+            return -1;
+        }
+        
+        /* child */
+        if (pid == 0) {
+            sleep(1);
+            exit(0);
+        }
+    }  
+    /* parent */
+    sleep(20);
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;编译完成后，在执行程序的命令后加上 &amp;ldquo;&amp;amp;&amp;rdquo; 符号，表示让当前程序在后台运行。&lt;/p&gt;
+
+&lt;p&gt;之后输入&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;ps –e –o pid,ppid,stat,command|grep [程序名]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到如下的结果&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;2915  1961 S    ./dd
+2917  2915 Z    [dd] &amp;lt;defunct&amp;gt;
+2918  2915 Z    [dd] &amp;lt;defunct&amp;gt;
+2919  2915 Z    [dd] &amp;lt;defunct&amp;gt;
+2920  2915 Z    [dd] &amp;lt;defunct&amp;gt;
+2921  2915 Z    [dd] &amp;lt;defunct&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到5个子进程都已经是僵尸进程了。&lt;/p&gt;
+
+&lt;h3 id=&#34;sigchld信号和处理僵尸进程:ca7adc33bb0a44c1352770269765644c&#34;&gt;SIGCHLD信号和处理僵尸进程&lt;/h3&gt;
+
+&lt;p&gt;当子进程终止时，内核就会向它的父进程发送一个SIGCHLD信号，父进程可以选择忽略该信号，&lt;strong&gt;也可以提供一个接收到信号以后的处理函数&lt;/strong&gt;。对于这种信号的系统默认动作是忽略它。&lt;/p&gt;
+
+&lt;p&gt;我们不希望有过多的僵尸进程产生，所以当父进程接收到SIGCHLD信号后就应该调用 wait 或 waitpid 函数对子进程进行善后处理，释放子进程占用的资源。&lt;/p&gt;
+
+&lt;p&gt;下面是一个捕获SIGCHLD信号以后使用wait函数进行处理的简单例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;#include &amp;lt;stdio.h&amp;gt;
+#include &amp;lt;string.h&amp;gt;
+#include &amp;lt;unistd.h&amp;gt;
+#include &amp;lt;stdlib.h&amp;gt;
+#include &amp;lt;errno.h&amp;gt;
+#include &amp;lt;signal.h&amp;gt;
+#include &amp;lt;sys/wait.h&amp;gt;
+ 
+void deal_child(int sig_no)
+{
+    wait(NULL);
+}
+ 
+int main(int argc, char **argv)
+{
+    signal(SIGCHLD, deal_child);
+ 
+    pid_t pid;
+    for (int i=0; i&amp;lt;5; i++) {
+        if ((pid = fork()) &amp;lt; 0) {
+            printf(&amp;quot;fork error,%s\n&amp;quot;,strerror(errno));
+            return -1;
+        }  
+ 
+        /* child */
+        if (pid == 0) {
+            sleep(1);
+            exit(0);
+        }  
+    }  
+    /* parent */
+    for(int i=0; i&amp;lt;100000; i++) {
+        for (int j=0; j&amp;lt;100000; j++) {
+            int temp = 0;
+        }  
+    }  
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;同样在后台运行后使用ps命令查看进程状态，结果如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;6622  1961 R    ./dd
+6627  6622 Z    [dd] &amp;lt;defunct&amp;gt;
+6628  6622 Z    [dd] &amp;lt;defunct&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;发现创建的5个进程，有3个已经被彻底销毁，但是还有2个仍然处于僵尸进程的状态。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;这是因为当5个进程同时终止的时候，内核都会向父进程发送SIGCHLD信号，而父进程此时有可能仍然处于信号处理的deal_child函数中，那么在处理完之前，中间接收到的SIGCHLD信号就会丢失，内核并没有使用队列等方式来存储同一种信号。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;正确地处理僵尸进程的方法:ca7adc33bb0a44c1352770269765644c&#34;&gt;正确地处理僵尸进程的方法&lt;/h3&gt;
+
+&lt;p&gt;为了解决上面出现的这种问题，我们需要使用waitpid函数。&lt;/p&gt;
+
+&lt;p&gt;函数原型&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;pid_t waitpid(pid_t pid, int *statloc, int options);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;若成功则返回进程ID，如果设置为非阻塞方式，返回0表示子进程状态未改变，出错时返回-1。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;options参数可以设置为WNOHANG常量，表示waitpid不阻塞，如果由pid指定的子进程不是立即可用的，则立即返回0。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;只需要修改一下SIGCHLD信号的处理函数即可:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;void deal_child(int sig_no)
+{
+    for (;;) {
+        if (waitpid(-1, NULL, WNOHANG) == 0)
+            break;
+    }  
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

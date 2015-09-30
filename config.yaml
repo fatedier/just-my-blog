@@ -17,7 +17,7 @@ Taxonomies:
 params:
     CopyrightHTML: "Copyright &#xA9; 2015. All Rights Reserved."
     GitHubUser: "fatedier"
-    SidebarRecentLimit: 5
+    SidebarRecentLimit: 8
     DateForm: "2006年01月02日"
     Description: "一场雨，一场梦"
     Categories:

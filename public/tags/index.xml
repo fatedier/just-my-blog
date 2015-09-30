@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fatedier&#39;s blog </title>
+    <link>http://192.168.177.130:8000/tags/</link>
+    <language>en-us</language>
+    <author></author>
+    <rights>(C) 2015</rights>
+    <updated>2014-12-16 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>如何处理僵尸进程</title>
+          <link>http://192.168.177.130:8000/2014/12/16/how-to-deal-with-zombie-process</link>
+          <pubDate>Tue, 16 Dec 2014 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://192.168.177.130:8000/2014/12/16/how-to-deal-with-zombie-process</guid>
+          <description></description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

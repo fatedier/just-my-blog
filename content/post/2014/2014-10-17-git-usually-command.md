@@ -47,6 +47,31 @@ $ git rebase --continue
 
 **注：不要修改已经push到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！**
 
+### 查看、删除、重命名远程分支
+
+查看所有的分支（包括远程分支）
+
+```bash
+$ git branch -a
+```
+
+当一个分支已经被合并到主分支后，我们通常会删除这个分支，如果仅仅 git branch -d 是删除本地分支
+
+删除远程分支的话可以使用如下命令
+
+```bash
+$ git push origin --delete <branchName>
+```
+
+重命名一个分支不是很常用，可以先删除远程分支，再重命名本地分支，之后将重命名后的本地分支推送到远程仓库
+
+```bash
+$ git push --delete origin <branchName>
+
+$ git branch -m <branchName> <newBranchName>
+
+$ git push origin <newBranchName>
+```
 
 ### 合并多个提交
 

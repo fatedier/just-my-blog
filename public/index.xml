@@ -1439,6 +1439,29 @@ vim -d [file1] [file2]
 
 &lt;p&gt;&lt;strong&gt;注：不要修改已经push到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！&lt;/strong&gt;&lt;/p&gt;
 
+&lt;h3 id=&#34;查看-删除-重命名远程分支:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;查看、删除、重命名远程分支&lt;/h3&gt;
+
+&lt;p&gt;查看所有的分支（包括远程分支）&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git branch -a
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当一个分支已经被合并到主分支后，我们通常会删除这个分支，如果仅仅 git branch -d 是删除本地分支&lt;/p&gt;
+
+&lt;p&gt;删除远程分支的话可以使用如下命令&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git push origin --delete &amp;lt;branchName&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;重命名一个分支不是很常用，可以先删除远程分支，再重命名本地分支，之后将重命名后的本地分支推送到远程仓库&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git push --delete origin &amp;lt;branchName&amp;gt;
+
+$ git branch -m &amp;lt;branchName&amp;gt; &amp;lt;newBranchName&amp;gt;
+
+$ git push origin &amp;lt;newBranchName&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
 &lt;h3 id=&#34;合并多个提交:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;合并多个提交&lt;/h3&gt;
 
 &lt;p&gt;比如要合并最后两次的提交，其实和修改某一次提交的说明信息有点类似。&lt;/p&gt;

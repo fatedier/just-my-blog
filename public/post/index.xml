@@ -1727,7 +1727,7 @@ $ git add README
 
 &lt;p&gt;查看所有远程分支&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git checkout -b test origin/test`
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git checkout -b test origin/test
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;获取远程分支到本地新的分支上，并切换到新分支&lt;/p&gt;

@@ -245,7 +245,7 @@ $ git branch -r
 查看所有远程分支
 
 ```bash
-$ git checkout -b test origin/test`
+$ git checkout -b test origin/test
 ```
 
 获取远程分支到本地新的分支上，并切换到新分支

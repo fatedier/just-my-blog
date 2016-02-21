@@ -210,8 +210,7 @@ w3.o:w3.cpp
 
 <p>这里需要注意的是，我们写的第一个规则的目标，将会成为“终极目标”，也就是我们最终希望生成的程序，这里是“test”文件。根据我们的“终极目标”，make会进行自动推导，例如“终极目标”依赖于的.o文件，make就会寻找生成这些.o文件的规则，然后执行相应的命令去生成这些文件，这样一层一层递归地进行下去，直到最终生成了“终极目标”。</p>
 
-<p><img src="http://blog.fatedier.com/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg" alt="gmake-target" />
-</p>
+<p><img src="http://blog.fatedier.com/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg" alt="gmake-target" /></p>
 
 <p>如上图所示，虽然生成test文件的规则写在最前面，但是由于依赖于w1.o、w2.o、w3.o，make会先执行生成w1.o、w2.o、w3.o所需的命令，然后才会执行g++ -o test test.cpp w1.o w2.o w3.o 来生成test文件。</p>
 
@@ -418,6 +417,8 @@ clean:
                     
                     <a href="http://blog.fatedier.com/about" class="list-group-item">关于我</a>
                     
+                    <a href="http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl" class="list-group-item">python中使用pycurl库上传文件</a>
+                    
                     <a href="http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp" class="list-group-item">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>
                     
                     <a href="http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll" class="list-group-item">epoll使用说明</a>
@@ -429,8 +430,6 @@ clean:
                     <a href="http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell" class="list-group-item">linux shell中的条件判断</a>
                     
                     <a href="http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight" class="list-group-item">能否被8整除</a>
-                    
-                    <a href="http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code" class="list-group-item">使用astyle进行代码格式化</a>
                     
                 </div>
             </div>
@@ -458,8 +457,14 @@ clean:
                     
                     
                     <a href="http://blog.fatedier.com/tags/linux" class="list-group-item">
-                        <span class="badge">12</span>
+                        <span class="badge">13</span>
                         linux
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/python" class="list-group-item">
+                        <span class="badge">1</span>
+                        python
                     </a>
                     
                     

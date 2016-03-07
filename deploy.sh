@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Deploying myblog to github..."
+echo "Deploying myblog to github and coding.net..."
 
 hugo
 
@@ -16,10 +16,11 @@ fi
 
 # push to github
 git push origin master
+# now i use coding.net, so comment this line
 # git subtree push --prefix=public git@github.com:fatedier/just-my-blog.git gh-pages
 
-# push to gitcafe
-git remote add gitcafe git@gitcafe.com:fatedier/just-my-blog.git 1> /dev/null 2>&1
+# push to coding.net
+git remote add coding git@git.coding.net:fatedier/just-my-blog.git 1> /dev/null 2>&1
 
-git push gitcafe master
-git subtree push --prefix=public git@gitcafe.com:fatedier/just-my-blog.git gh-pages
+git push coding master
+git subtree push --prefix=public git@git.coding.net:fatedier/just-my-blog.git gh-pages

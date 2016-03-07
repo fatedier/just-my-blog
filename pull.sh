@@ -1,5 +1,5 @@
 # github
 git pull origin master
 
-# gitcafe
-git pull git@gitcafe.com:fatedier/just-my-blog.git master
+# coding
+git pull git@git.coding.net:fatedier/just-my-blog.git master

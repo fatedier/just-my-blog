@@ -62,9 +62,9 @@ class BankFactory
 {
 public:
     BaseBank* createBank(const string& bank_name) {
-    if (bank_name == “GSBank”) 
+    if (bank_name == "SBank") 
         return new GSBank();
-    else if (bank_name == “RMBank”)
+    else if (bank_name == "MBank")
         return new RMBank();
     }
 };

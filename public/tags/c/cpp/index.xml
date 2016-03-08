@@ -66,9 +66,9 @@ public:
 {
 public:
     BaseBank* createBank(const string&amp;amp; bank_name) {
-    if (bank_name == “GSBank”) 
+    if (bank_name == &amp;quot;SBank&amp;quot;) 
         return new GSBank();
-    else if (bank_name == “RMBank”)
+    else if (bank_name == &amp;quot;MBank&amp;quot;)
         return new RMBank();
     }
 };

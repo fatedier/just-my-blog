@@ -82,9 +82,7 @@
                         2014年12月07日
                     </time>
                 </div>
-                <h1 class="post-title">
-                    <a href="http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file">linux core文件调试</a>
-                </h1>
+                <h1 class="post-title">linux core文件调试</h1>
             </header>
 
             <div class="post-content">
@@ -269,6 +267,15 @@ Aborted (core dumped)
 
 <p>可以很明显的看出是在main函数中调用fun函数，之后delete指针的时候出错了，后面的函数调用栈就是程序输出错误信息的部分了，和我们的用户代码无关。到这一步，我们就能推断是是fun()这个函数中delete某个指针的时候出现了错误，就可以有的放矢地查找具体的问题了。</p>
 
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file">http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
             </div>
 
             <aside>

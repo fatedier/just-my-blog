@@ -369,7 +369,7 @@ Aborted (core dumped)
 
 &lt;p&gt;配置文件中 &lt;code&gt;&amp;quot;&lt;/code&gt; 之后的部分都被当作注释。&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;if v:lang =~ &amp;quot;utf8$&amp;quot; || v:lang =~&amp;quot;UTF-8$&amp;quot;
+&lt;pre&gt;&lt;code&gt;if v:lang =~ &amp;quot;utf8$&amp;quot; || v:lang =~&amp;quot;UTF-8$&amp;quot;
     set fileencodings=ucs-bom,utf-8,latin1
 endif
        

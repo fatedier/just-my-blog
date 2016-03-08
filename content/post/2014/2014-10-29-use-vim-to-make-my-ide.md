@@ -42,7 +42,7 @@ github是一个好地方，不仅可以浏览很多的开源程序，而且可�
 
 配置文件中 `"` 之后的部分都被当作注释。
 
-```shell
+```
 if v:lang =~ "utf8$" || v:lang =~"UTF-8$"
     set fileencodings=ucs-bom,utf-8,latin1
 endif

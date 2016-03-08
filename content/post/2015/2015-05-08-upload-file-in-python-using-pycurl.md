@@ -2,7 +2,6 @@
 categories:
     - "技术文章"
 tags:
-    - "linux"
     - "python"
 date: 2015-05-08
 title: "python中使用pycurl库上传文件"

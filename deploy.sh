@@ -17,7 +17,7 @@ fi
 # push to github
 git push origin master
 # now i use coding.net, so comment this line
-# git subtree push --prefix=public git@github.com:fatedier/just-my-blog.git gh-pages
+git subtree push --prefix=public git@github.com:fatedier/just-my-blog.git gh-pages
 
 # push to coding.net
 git remote add coding git@git.coding.net:fatedier/just-my-blog.git 1> /dev/null 2>&1

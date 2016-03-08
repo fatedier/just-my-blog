@@ -1,7 +1,7 @@
 baseurl: "http://blog.fatedier.com"
 languageCode: "zh-CN"
 title: "fatedier blog"
-copyright: "Copyright (c) 2015. All rights reserved."
+copyright: "Copyright (c) 2016. All rights reserved."
 MetaDataFormat: "yaml"
 builddrafts: false
 canonifyurls: true
@@ -15,7 +15,7 @@ Taxonomies:
     tag: "tags"
     category: "categories"
 params:
-    CopyrightHTML: "Copyright &#xA9; 2015. All Rights Reserved."
+    CopyrightHTML: "Copyright &#xA9; 2016. All Rights Reserved."
     GitHubUser: "fatedier"
     SidebarRecentLimit: 8
     DateForm: "2006年01月02日"

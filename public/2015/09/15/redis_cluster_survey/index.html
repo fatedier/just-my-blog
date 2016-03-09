@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+<meta property="og:url" content="http://blog.fatedier.com">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis集群调研 &middot; fatedier blog">
+
+<meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Redis集群调研
+    
+</title>
+
+
+<link rel="stylesheet" href="http://blog.fatedier.com/bs/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://blog.fatedier.com/bs/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="http://blog.fatedier.com/css/hightlight/tomorrow-night.min.css">
+
+<link rel="stylesheet" href="http://blog.fatedier.com/bs/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="http://blog.fatedier.com/css/styles.css">
+<link rel="stylesheet" href="http://blog.fatedier.com/css/custom.css">
+
+
+<link rel="shortcut icon" href="http://blog.fatedier.com/assets/favicon.ico">
+
+
+<link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.fatedier.com/index.xml">
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="http://blog.fatedier.com">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
+                        <li><a href="http://blog.fatedier.com/tags">Tags</a></li>
+                        
+                        <li><a href="http://blog.fatedier.com/about">关于我</a></li>
+                        
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                    <time datetime="2015年09月15日">
+                        2015年09月15日
+                    </time>
+                </div>
+                <h1 class="post-title">Redis集群调研</h1>
+            </header>
+
+            <div class="post-content">
+                
+
+<p>Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。</p>
+
+<p>单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。</p>
+
+<h3 id="为什么需要集群:51fa3b005f880190963d473247382d62">为什么需要集群</h3>
+
+<ul>
+<li>Redis单线程特性，多请求顺序执行，单个耗时的操作会阻塞后续的操作</li>
+<li>单机内存有限</li>
+<li>某些特殊业务，带宽压力较大</li>
+<li>单点问题，缺乏高可用性</li>
+<li>不能动态扩容</li>
+</ul>
+
+<p>Redis集群的目标就是为了实现高可用性，避免性能瓶颈，可动态扩容，易于做监控告警。</p>
+
+<h3 id="三种主流的集群解决方案:51fa3b005f880190963d473247382d62">三种主流的集群解决方案</h3>
+
+<h4 id="客户端静态分片:51fa3b005f880190963d473247382d62">客户端静态分片</h4>
+
+<p>通常需要 smart-client 支持，在业务程序端根据预先设置的路由规则进行分片，从而实现对多个redis实例的分布式访问。</p>
+
+<p><img src="http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-jedis.png" alt="jedis" /></p>
+
+<p>鉴于redis本身的高性能，并且有一些设计良好的第三方库，例如java开发者可以使用jedis，所以很多小公司使用此方案。</p>
+
+<p><strong>优点：</strong> 相比于使用代理，减少了一层网络传输的消耗，效率较高。
+<strong>缺点：</strong> 当redis实例需要扩容或切换的情况下，需要修改业务端的程序，较为麻烦。并且需  要维护各个语言的客户端版本，如果要升级客户端成本也会比较高。出现故障时难以及时定位问题。（有些smart-client借助于zookeeper维护客户端访问redis实例的一致性）</p>
+
+<h4 id="proxy分片:51fa3b005f880190963d473247382d62">Proxy分片</h4>
+
+<p>通过统一的代理程序访问多个redis实例，比如业内曾广泛使用的 twemproxy 以及 豌豆荚开源的 codis。（twemproxy是twitter开源的一个redis和memcache代理服务器，只用于作为简单的代理中间件，目前twitter内部已经不再使用）</p>
+
+<p><strong>优点：</strong> 业务程序端只需要使用普通的api去访问代理程序即可。各种组件分离，以后升级较为容易。也避免了客户端需要维持和每个redis实例的长连接导致连接数过多。
+<strong>缺点：</strong> 增加了一层中间件，增加了网络和数据处理的消耗，性能下降。</p>
+
+<h4 id="official-redis-cluster:51fa3b005f880190963d473247382d62">Official Redis Cluster</h4>
+
+<p>Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：
+* <strong>性能：</strong>Redis作者比较看重性能，增加集群不能对性能有较大影响，所以Redis采用了P2P而非Proxy方式、异步复制、客户端重定向等设计，而牺牲了部分的一致性、使用性。
+* <strong>水平扩展：</strong>官方文档中称目标是能线性扩展到1000结点。
+* <strong>可用性：</strong>集群具有了以前Sentinel的监控和自动Failover能力。</p>
+
+<h3 id="基于twemproxy的redis集群环境:51fa3b005f880190963d473247382d62">基于twemproxy的redis集群环境</h3>
+
+<h4 id="整体架构图:51fa3b005f880190963d473247382d62">整体架构图</h4>
+
+<p><img src="http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-twemproxy-architecture.png" alt="twemproxy_architecture" /></p>
+
+<h4 id="twemproxy的特点:51fa3b005f880190963d473247382d62">twemproxy的特点</h4>
+
+<ul>
+<li>支持失败的节点自动摘除（仅作为缓存时）</li>
+<li>所有的key通过一致性哈希算法分布到集群中所有的redis实例中</li>
+<li>代理与每个redis实例维持长连接，减少客户端和redis实例的连接数</li>
+<li>代理是无状态的，可以任意部署多套，避免单点问题</li>
+<li>默认启用pipeline，连接复用，提高效率，性能损失在 10% - 20%</li>
+</ul>
+
+<h4 id="集群组件:51fa3b005f880190963d473247382d62">集群组件</h4>
+
+<p>由于twemproxy本身只是简单的代理，所以需要依赖于一些其他的程序组件。</p>
+
+<p><strong>Redis Sentinel：</strong> 管理主从备份，用于主从切换，当主服务器挂掉后，自动将从服务器提升为主服务器</p>
+
+<p><strong>Redis-Twemproxy Agent：</strong> nodejs写的一个监控程序，用于监听 redis-sentinel 的 master 切换事件，并且及时更新twemproxy的配置文件后将其重新启动</p>
+
+<h4 id="why-not-twemproxy:51fa3b005f880190963d473247382d62">Why not Twemproxy</h4>
+
+<ul>
+<li>虽然使用 c 开发，性能损失较小，但同样是单线程。所以基本上twemproxy的数量需要和后端redis实例一样甚至更多才能充分发挥多实例的并发能力，造成运维困难。</li>
+<li>twemproxy更改配置文件需要重新启动，比较坑，需要修改代码使其支持动态加载。</li>
+<li><strong>无法动态扩容</strong>，如果需要实现这个功能，要么自己写迁移脚本，手动迁移，比较繁琐，还会影响到当前服务的正常运行。或者二次开发，增加对zookeeper的依赖，将redis节点信息以及hash域相关的数据存储在zookeeper上，然后增加动态迁移数据的模块，可以在不影响现有服务运行的情况下完成增删实例。</li>
+</ul>
+
+<h3 id="redis-cluster:51fa3b005f880190963d473247382d62">Redis Cluster</h3>
+
+<h4 id="数据分布-预分片:51fa3b005f880190963d473247382d62">数据分布：预分片</h4>
+
+<p><img src="http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-pre-sharding.png" alt="redis-cluster-pre-sharding" /></p>
+
+<ul>
+<li>预先分配好 16384 个slot</li>
+<li>slot 和 server 的映射关系存储每一个 server 的路由表中</li>
+<li>根据 CRC16(key) mod 16384 的值，决定将一个key放到哪一个slot中</li>
+<li>数据迁移时就是调整 slot 的分布</li>
+</ul>
+
+<h4 id="架构-去中心化:51fa3b005f880190963d473247382d62">架构：去中心化</h4>
+
+<p><img src="http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-architecture.png" alt="redis-cluster-architecture" /></p>
+
+<ul>
+<li>无中心结构，每个节点都保存数据和整个集群的状态。</li>
+<li>采用 gossip 协议传播信息以及发现新节点（最终一致性）。
+
+<ul>
+<li>每个节点都和其他所有节点连接，并保持活跃。</li>
+<li>PING/PONG：心跳，附加上自己以及一些其他节点数据，每个节点每秒随机PING几个节点。会选择那些超过cluster-node-timeout一半的时间还未PING过或未收到PONG的节点。</li>
+<li>UPDATE消息：计数戳，如果收到server的计数为3，自己的为4，则发UPDATE更新对方路由表，反之更新自己的路由表，最终集群路由状态会和计数戳最大的实例一样。</li>
+<li>如果 cluster-node-timeout 设置较小，或者节点较多，数据传输量将比较可观。</li>
+</ul></li>
+<li>Broadcast：有状态变动时先broadcast，后PING； 发布/订阅。</li>
+<li>Redis node 不作为client请求的代理（不转发请求），client根据node返回的错误信息重定向请求?（需要 smart-client 支持），所以client连接集群中任意一个节点都可以。</li>
+</ul>
+
+<h4 id="可用性-master-slave:51fa3b005f880190963d473247382d62">可用性：Master-Slave</h4>
+
+<ul>
+<li>每个Redis Node可以有一个或者多个Slave，当Master挂掉时，选举一个Slave形成新的Master。</li>
+<li>Master Slave 之间异步复制（可能会丢数据）。</li>
+<li>采用 gossip 协议探测其他节点存活状态，超过 cluster-node-timeout，标记为 PFAIL，PING中附加此数据。当 Node A发现半数以上master将失效节点标记为PFAIL，将其标记为FAIL，broadcast FAIL。</li>
+<li>各 slave 等待一个随机时间后 发起选举，向其他 master broadcast，半数以上同意则赢得选举否则发起下一次选举</li>
+<li>当 slave 成为 master，先broadcast，后持续PING，最终集群实例都获知此消息</li>
+</ul>
+
+<h4 id="存在的问题:51fa3b005f880190963d473247382d62">存在的问题</h4>
+
+<ul>
+<li>Gossip协议通信开销</li>
+<li>严重依赖于smart-client的成熟度
+
+<ul>
+<li>如果smart-client支持缓存slot路由，需要额外占用内存空间，为了效率需要建立和所有 redis server 的长连接（每一个使用该库的程序都需要建立这么多连接）。</li>
+<li>如果不支持缓存路由信息，会先访问任意一台 redis server，之后重定向到新的节点。</li>
+<li>需要更新当前所有的client。</li>
+</ul></li>
+<li>官方只提供了一个ruby程序 redis-trib 完成集群的所有操作，缺乏监控管理工具，很难清楚目前集群的状态</li>
+<li>数据迁移以Key为单位，速度较慢</li>
+<li>某些操作不支持，MultiOp和Pipeline都被限定在命令中的所有Key必须都在同一Slot内</li>
+</ul>
+
+<h3 id="codis:51fa3b005f880190963d473247382d62">Codis</h3>
+
+<h4 id="what-is-codis:51fa3b005f880190963d473247382d62">What is Codis ？</h4>
+
+<p>Go语言开发的分布式 Redis 解决方案，?对于上层的应用来说，访问codis和原生的 redis server 没有明显区别（不支持发布订阅等某些命令，支持pipeline）。</p>
+
+<p><img src="http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png" alt="codis-architecture" /></p>
+
+<p>Codis由四部分组成：
+* Codis Proxy (codis-proxy)
+* Codis Dashboard (codis-config)
+* Codis Redis (codis-server)
+* ZooKeeper/Etcd</p>
+
+<p>codis-proxy 是客户端连接的 Redis 代理服务, codis-proxy 本身实现了 Redis 协议, 表现得和一个原生的 Redis 没什么区别 (就像 Twemproxy), 对于一个业务来说, 可以部署多个 codis-proxy, codis-proxy 本身是无状态的。</p>
+
+<p>codis-config 是 Codis 的管理工具, 支持包括, 添加/删除 Redis 节点, 添加/删除 Proxy 节点, 发起数据迁移等操作. codis-config 本身还自带了一个 http server, 会启动一个 dashboard, 用户可以直接在浏览器上观察 Codis 集群的运行状态。</p>
+
+<p>codis-server 是 Codis 项目维护的一个 Redis 分支, 基于 2.8.21 开发, 加入了 slot 的支持和原子的数据迁移指令. Codis 上层的 codis-proxy 和 codis-config 只能和这个版本的 Redis 交互才能正常运行。</p>
+
+<p>Codis 依赖 ZooKeeper 来存放数据路由表和 codis-proxy 节点的元信息, codis-config 发起的命令都会通过 ZooKeeper 同步到各个存活的 codis-proxy。</p>
+
+<p>Codis 支持按照 Namespace 区分不同的产品, 拥有不同的 product name 的产品, 各项配置都不会冲突。</p>
+
+<h4 id="整体设计:51fa3b005f880190963d473247382d62">整体设计</h4>
+
+<ul>
+<li>预分片，1024 slot， key =&gt; crc32(key)%1024</li>
+<li>proxy无状态，便于负载均衡，启动时在 Zookeeper 上注册一个临时节点，方便做 HA</li>
+<li>Redis 只作为存储引擎</li>
+<li>Go语言开发，可以充分利用多核，不必像 twemproxy 一样部署很多套</li>
+<li>性能损失，在不开启pipeline的情况下会损失大概40%，通过加实例线性扩展</li>
+</ul>
+
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2015/09/15/redis_cluster_survey">http://blog.fatedier.com/2015/09/15/redis_cluster_survey</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="http://blog.fatedier.com/tags/redis">
+                            <i class="fa fa-tags"></i>
+                            redis
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8">
+                            <i class="fa fa-tags"></i>
+                            分布式存储
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+            
+            <footer>
+
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        
+
+                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="http://blog.fatedier.com/about">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+
+                
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+    <div class="row">
+
+        <div class="col-xs-12 col-sm-4 col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Recent Posts</h2>
+                </div>
+                <div class="list-group">
+                    
+                    <a href="http://blog.fatedier.com/2015/09/15/redis_cluster_survey" class="list-group-item">Redis集群调研</a>
+                    
+                    <a href="http://blog.fatedier.com/about" class="list-group-item">关于我</a>
+                    
+                    <a href="http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl" class="list-group-item">python中使用pycurl库上传文件</a>
+                    
+                    <a href="http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp" class="list-group-item">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>
+                    
+                    <a href="http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll" class="list-group-item">epoll使用说明</a>
+                    
+                    <a href="http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process" class="list-group-item">如何处理僵尸进程</a>
+                    
+                    <a href="http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file" class="list-group-item">linux core文件调试</a>
+                    
+                    <a href="http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell" class="list-group-item">linux shell中的条件判断</a>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-4 col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Tags</h2>
+                </div>
+                <div class="list-group">
+                    
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/c/cpp" class="list-group-item">
+                        <span class="badge">8</span>
+                        c/cpp
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/git" class="list-group-item">
+                        <span class="badge">3</span>
+                        git
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/linux" class="list-group-item">
+                        <span class="badge">12</span>
+                        linux
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/python" class="list-group-item">
+                        <span class="badge">1</span>
+                        python
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/redis" class="list-group-item">
+                        <span class="badge">1</span>
+                        redis
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/shell" class="list-group-item">
+                        <span class="badge">1</span>
+                        shell
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/stl" class="list-group-item">
+                        <span class="badge">1</span>
+                        stl
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8" class="list-group-item">
+                        <span class="badge">1</span>
+                        分布式存储
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7" class="list-group-item">
+                        <span class="badge">7</span>
+                        开发工具
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E7%AE%97%E6%B3%95" class="list-group-item">
+                        <span class="badge">1</span>
+                        算法
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F" class="list-group-item">
+                        <span class="badge">1</span>
+                        设计模式
+                    </a>
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2015  fatedier blog </p>
+	<p>Powered by <a href="http://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script src="http://blog.fatedier.com/js/jquery-2.2.1.min.js"></script>
+<script src="http://blog.fatedier.com/js/bootstrap.min.js"></script>
+<script src="http://blog.fatedier.com/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+

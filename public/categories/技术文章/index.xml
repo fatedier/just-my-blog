@@ -12,10 +12,10 @@
       
         <item>
           <title>Redis集群调研</title>
-          <link>http://blog.fatedier.com/2015/09/15/redis_cluster_survey</link>
+          <link>http://blog.fatedier.com/2015/09/15/redis-cluster-survey</link>
           <pubDate>Tue, 15 Sep 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/09/15/redis_cluster_survey</guid>
+          <guid>http://blog.fatedier.com/2015/09/15/redis-cluster-survey</guid>
           <description>
 
 &lt;p&gt;Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。&lt;/p&gt;

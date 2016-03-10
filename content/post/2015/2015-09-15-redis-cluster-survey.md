@@ -6,7 +6,7 @@ tags:
     - "分布式存储"
 date: 2015-09-15
 title: "Redis集群调研"
-url: "/2015/09/15/redis_cluster_survey"
+url: "/2015/09/15/redis-cluster-survey"
 ---
 
 Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。

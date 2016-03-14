@@ -130,7 +130,7 @@ Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：
 
 #### What is Codis ？
 
-Go语言开发的分布式 Redis 解决方案，?对于上层的应用来说，访问codis和原生的 redis server 没有明显区别（不支持发布订阅等某些命令，支持pipeline）。
+Go语言开发的分布式 Redis 解决方案，对于上层的应用来说，访问codis和原生的 redis server 没有明显区别（不支持发布订阅等某些命令，支持pipeline）。
 
 ![codis-architecture](/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png)
 

@@ -36,6 +36,7 @@ Redis集群的目标就是为了实现高可用性，避免性能瓶颈，可动
 鉴于redis本身的高性能，并且有一些设计良好的第三方库，例如java开发者可以使用jedis，所以很多小公司使用此方案。
 
 **优点：** 相比于使用代理，减少了一层网络传输的消耗，效率较高。
+
 **缺点：** 当redis实例需要扩容或切换的情况下，需要修改业务端的程序，较为麻烦。并且需  要维护各个语言的客户端版本，如果要升级客户端成本也会比较高。出现故障时难以及时定位问题。（有些smart-client借助于zookeeper维护客户端访问redis实例的一致性）
 
 #### Proxy分片
@@ -43,10 +44,13 @@ Redis集群的目标就是为了实现高可用性，避免性能瓶颈，可动
 通过统一的代理程序访问多个redis实例，比如业内曾广泛使用的 twemproxy 以及 豌豆荚开源的 codis。（twemproxy是twitter开源的一个redis和memcache代理服务器，只用于作为简单的代理中间件，目前twitter内部已经不再使用）
 
 **优点：** 业务程序端只需要使用普通的api去访问代理程序即可。各种组件分离，以后升级较为容易。也避免了客户端需要维持和每个redis实例的长连接导致连接数过多。
+
 **缺点：** 增加了一层中间件，增加了网络和数据处理的消耗，性能下降。
 
 #### Official Redis Cluster
+
 Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：
+
 * **性能：**Redis作者比较看重性能，增加集群不能对性能有较大影响，所以Redis采用了P2P而非Proxy方式、异步复制、客户端重定向等设计，而牺牲了部分的一致性、使用性。
 * **水平扩展：**官方文档中称目标是能线性扩展到1000结点。
 * **可用性：**集群具有了以前Sentinel的监控和自动Failover能力。
@@ -131,6 +135,7 @@ Go语言开发的分布式 Redis 解决方案，?对于上层的应用来说，�
 ![codis-architecture](/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png)
 
 Codis由四部分组成：
+
 * Codis Proxy (codis-proxy)
 * Codis Dashboard (codis-config)
 * Codis Redis (codis-server)

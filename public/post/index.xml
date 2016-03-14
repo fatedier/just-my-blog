@@ -101,22 +101,27 @@ godep go fmt
 
 &lt;p&gt;鉴于redis本身的高性能，并且有一些设计良好的第三方库，例如java开发者可以使用jedis，所以很多小公司使用此方案。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;优点：&lt;/strong&gt; 相比于使用代理，减少了一层网络传输的消耗，效率较高。
-&lt;strong&gt;缺点：&lt;/strong&gt; 当redis实例需要扩容或切换的情况下，需要修改业务端的程序，较为麻烦。并且需  要维护各个语言的客户端版本，如果要升级客户端成本也会比较高。出现故障时难以及时定位问题。（有些smart-client借助于zookeeper维护客户端访问redis实例的一致性）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;优点：&lt;/strong&gt; 相比于使用代理，减少了一层网络传输的消耗，效率较高。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;缺点：&lt;/strong&gt; 当redis实例需要扩容或切换的情况下，需要修改业务端的程序，较为麻烦。并且需  要维护各个语言的客户端版本，如果要升级客户端成本也会比较高。出现故障时难以及时定位问题。（有些smart-client借助于zookeeper维护客户端访问redis实例的一致性）&lt;/p&gt;
 
 &lt;h4 id=&#34;proxy分片:51fa3b005f880190963d473247382d62&#34;&gt;Proxy分片&lt;/h4&gt;
 
 &lt;p&gt;通过统一的代理程序访问多个redis实例，比如业内曾广泛使用的 twemproxy 以及 豌豆荚开源的 codis。（twemproxy是twitter开源的一个redis和memcache代理服务器，只用于作为简单的代理中间件，目前twitter内部已经不再使用）&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;优点：&lt;/strong&gt; 业务程序端只需要使用普通的api去访问代理程序即可。各种组件分离，以后升级较为容易。也避免了客户端需要维持和每个redis实例的长连接导致连接数过多。
-&lt;strong&gt;缺点：&lt;/strong&gt; 增加了一层中间件，增加了网络和数据处理的消耗，性能下降。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;优点：&lt;/strong&gt; 业务程序端只需要使用普通的api去访问代理程序即可。各种组件分离，以后升级较为容易。也避免了客户端需要维持和每个redis实例的长连接导致连接数过多。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;缺点：&lt;/strong&gt; 增加了一层中间件，增加了网络和数据处理的消耗，性能下降。&lt;/p&gt;
 
 &lt;h4 id=&#34;official-redis-cluster:51fa3b005f880190963d473247382d62&#34;&gt;Official Redis Cluster&lt;/h4&gt;
 
-&lt;p&gt;Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：
-* &lt;strong&gt;性能：&lt;/strong&gt;Redis作者比较看重性能，增加集群不能对性能有较大影响，所以Redis采用了P2P而非Proxy方式、异步复制、客户端重定向等设计，而牺牲了部分的一致性、使用性。
-* &lt;strong&gt;水平扩展：&lt;/strong&gt;官方文档中称目标是能线性扩展到1000结点。
-* &lt;strong&gt;可用性：&lt;/strong&gt;集群具有了以前Sentinel的监控和自动Failover能力。&lt;/p&gt;
+&lt;p&gt;Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;性能：&lt;/strong&gt;Redis作者比较看重性能，增加集群不能对性能有较大影响，所以Redis采用了P2P而非Proxy方式、异步复制、客户端重定向等设计，而牺牲了部分的一致性、使用性。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;水平扩展：&lt;/strong&gt;官方文档中称目标是能线性扩展到1000结点。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;可用性：&lt;/strong&gt;集群具有了以前Sentinel的监控和自动Failover能力。&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;h3 id=&#34;基于twemproxy的redis集群环境:51fa3b005f880190963d473247382d62&#34;&gt;基于twemproxy的redis集群环境&lt;/h3&gt;
 
@@ -215,11 +220,14 @@ godep go fmt
 
 &lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png&#34; alt=&#34;codis-architecture&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Codis由四部分组成：
-* Codis Proxy (codis-proxy)
-* Codis Dashboard (codis-config)
-* Codis Redis (codis-server)
-* ZooKeeper/Etcd&lt;/p&gt;
+&lt;p&gt;Codis由四部分组成：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Codis Proxy (codis-proxy)&lt;/li&gt;
+&lt;li&gt;Codis Dashboard (codis-config)&lt;/li&gt;
+&lt;li&gt;Codis Redis (codis-server)&lt;/li&gt;
+&lt;li&gt;ZooKeeper/Etcd&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;p&gt;codis-proxy 是客户端连接的 Redis 代理服务, codis-proxy 本身实现了 Redis 协议, 表现得和一个原生的 Redis 没什么区别 (就像 Twemproxy), 对于一个业务来说, 可以部署多个 codis-proxy, codis-proxy 本身是无状态的。&lt;/p&gt;
 

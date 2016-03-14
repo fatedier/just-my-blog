@@ -114,22 +114,27 @@
 
 <p>鉴于redis本身的高性能，并且有一些设计良好的第三方库，例如java开发者可以使用jedis，所以很多小公司使用此方案。</p>
 
-<p><strong>优点：</strong> 相比于使用代理，减少了一层网络传输的消耗，效率较高。
-<strong>缺点：</strong> 当redis实例需要扩容或切换的情况下，需要修改业务端的程序，较为麻烦。并且需  要维护各个语言的客户端版本，如果要升级客户端成本也会比较高。出现故障时难以及时定位问题。（有些smart-client借助于zookeeper维护客户端访问redis实例的一致性）</p>
+<p><strong>优点：</strong> 相比于使用代理，减少了一层网络传输的消耗，效率较高。</p>
+
+<p><strong>缺点：</strong> 当redis实例需要扩容或切换的情况下，需要修改业务端的程序，较为麻烦。并且需  要维护各个语言的客户端版本，如果要升级客户端成本也会比较高。出现故障时难以及时定位问题。（有些smart-client借助于zookeeper维护客户端访问redis实例的一致性）</p>
 
 <h4 id="proxy分片:51fa3b005f880190963d473247382d62">Proxy分片</h4>
 
 <p>通过统一的代理程序访问多个redis实例，比如业内曾广泛使用的 twemproxy 以及 豌豆荚开源的 codis。（twemproxy是twitter开源的一个redis和memcache代理服务器，只用于作为简单的代理中间件，目前twitter内部已经不再使用）</p>
 
-<p><strong>优点：</strong> 业务程序端只需要使用普通的api去访问代理程序即可。各种组件分离，以后升级较为容易。也避免了客户端需要维持和每个redis实例的长连接导致连接数过多。
-<strong>缺点：</strong> 增加了一层中间件，增加了网络和数据处理的消耗，性能下降。</p>
+<p><strong>优点：</strong> 业务程序端只需要使用普通的api去访问代理程序即可。各种组件分离，以后升级较为容易。也避免了客户端需要维持和每个redis实例的长连接导致连接数过多。</p>
+
+<p><strong>缺点：</strong> 增加了一层中间件，增加了网络和数据处理的消耗，性能下降。</p>
 
 <h4 id="official-redis-cluster:51fa3b005f880190963d473247382d62">Official Redis Cluster</h4>
 
-<p>Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：
-* <strong>性能：</strong>Redis作者比较看重性能，增加集群不能对性能有较大影响，所以Redis采用了P2P而非Proxy方式、异步复制、客户端重定向等设计，而牺牲了部分的一致性、使用性。
-* <strong>水平扩展：</strong>官方文档中称目标是能线性扩展到1000结点。
-* <strong>可用性：</strong>集群具有了以前Sentinel的监控和自动Failover能力。</p>
+<p>Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：</p>
+
+<ul>
+<li><strong>性能：</strong>Redis作者比较看重性能，增加集群不能对性能有较大影响，所以Redis采用了P2P而非Proxy方式、异步复制、客户端重定向等设计，而牺牲了部分的一致性、使用性。</li>
+<li><strong>水平扩展：</strong>官方文档中称目标是能线性扩展到1000结点。</li>
+<li><strong>可用性：</strong>集群具有了以前Sentinel的监控和自动Failover能力。</li>
+</ul>
 
 <h3 id="基于twemproxy的redis集群环境:51fa3b005f880190963d473247382d62">基于twemproxy的redis集群环境</h3>
 
@@ -228,11 +233,14 @@
 
 <p><img src="http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png" alt="codis-architecture" /></p>
 
-<p>Codis由四部分组成：
-* Codis Proxy (codis-proxy)
-* Codis Dashboard (codis-config)
-* Codis Redis (codis-server)
-* ZooKeeper/Etcd</p>
+<p>Codis由四部分组成：</p>
+
+<ul>
+<li>Codis Proxy (codis-proxy)</li>
+<li>Codis Dashboard (codis-config)</li>
+<li>Codis Redis (codis-server)</li>
+<li>ZooKeeper/Etcd</li>
+</ul>
 
 <p>codis-proxy 是客户端连接的 Redis 代理服务, codis-proxy 本身实现了 Redis 协议, 表现得和一个原生的 Redis 没什么区别 (就像 Twemproxy), 对于一个业务来说, 可以部署多个 codis-proxy, codis-proxy 本身是无状态的。</p>
 

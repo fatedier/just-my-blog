@@ -5,9 +5,66 @@
     <link>http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2015</rights>
-    <updated>2014-12-07 00:00:00 &#43;0000 UTC</updated>
+    <rights>(C) 2016</rights>
+    <updated>2016-01-15 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>使用godep管理golang项目的第三方包</title>
+          <link>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects</link>
+          <pubDate>Fri, 15 Jan 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects</guid>
+          <description>
+
+&lt;p&gt;go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。&lt;/p&gt;
+
+&lt;p&gt;目前 go 自身的包管理体系比较薄弱，go 1.5 以后开始使用 vendor 机制来管理，但是依然缺乏对第三方包的版本的管理。&lt;/p&gt;
+
+&lt;h3 id=&#34;安装:3d8a685e3f913849abb783937da83deb&#34;&gt;安装&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;确保已经有go语言的环境并且设置好了 GOPATH 环境变量。&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;go get -u github.com/tools/godep&lt;/code&gt; 下载 godep 包并自动安装。&lt;/li&gt;
+&lt;li&gt;godep 可执行程序会放在 $GOPATH/bin 目录下。所以想直接用 godep 执行命令的话需要将该路径加入到全局的环境变量 PATH 中，可以将&lt;code&gt;export PATH=&amp;quot;$PATH:$GOPATH/bin&amp;quot;&lt;/code&gt;加入到系统启动脚本中。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;使用:3d8a685e3f913849abb783937da83deb&#34;&gt;使用&lt;/h3&gt;
+
+&lt;p&gt;进入go项目的根目录，需要该项目已经可以使用 go build 正常编译。&lt;/p&gt;
+
+&lt;h4 id=&#34;godep-save:3d8a685e3f913849abb783937da83deb&#34;&gt;godep save&lt;/h4&gt;
+
+&lt;p&gt;执行 &lt;code&gt;godep save&lt;/code&gt; 或者 &lt;code&gt;godep save ./...&lt;/code&gt;，后者会递归地查找所有引用的第三方包。&lt;/p&gt;
+
+&lt;p&gt;如果加上 -r 参数，则会替换原来代码中的第三包的路径为 godep 在该项目下copy过后的路径，例如 &lt;code&gt;C/Godeps/_workspace/src/D&lt;/code&gt;， 这样一来，以后直接执行 &lt;code&gt;go build&lt;/code&gt; 等就可以了，不需要使用 &lt;code&gt;godep go build&lt;/code&gt;。&lt;strong&gt;（这个特性在最新版本中已经被移除了）&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;这个命令做了以下几件事：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;查找项目中所用到的所有的第三方包&lt;/li&gt;
+&lt;li&gt;在项目目录下创建 &lt;code&gt;Godeps&lt;/code&gt; 目录，&lt;code&gt;Godeps/Godeps.json&lt;/code&gt; 是依赖文件，包括了go的版本，用到的第三包的引入路径，版本号等信息，json文件需要一并加入到版本控制里。&lt;/li&gt;
+&lt;li&gt;所有依赖的第三包的代码会被拷贝到 &lt;code&gt;Godeps/_workspace/src&lt;/code&gt; 下，并且移除了 &lt;code&gt;.git&lt;/code&gt; 这样的版本控制信息。&lt;code&gt;Godeps/_workspace&lt;/code&gt; 里的内容如果加到版本控制里，别人下载代码后可以直接编译，不需要另外再下依赖包，但是项目大小会变大。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;godep-restore:3d8a685e3f913849abb783937da83deb&#34;&gt;godep restore&lt;/h4&gt;
+
+&lt;p&gt;这个命令是根据 &lt;code&gt;Godeps/Godeps.json&lt;/code&gt; 文件把项目的依赖包下载到 &lt;code&gt;$GOPATH&lt;/code&gt; 目录下，需要注意这个命令是会修改 &lt;code&gt;$GOPATH&lt;/code&gt; 下依赖包的状态的，所以最好还是将 &lt;code&gt;Godeps/_workspace&lt;/code&gt; 里的内容直接加到自己项目的版本控制里。&lt;/p&gt;
+
+&lt;h4 id=&#34;其他命令:3d8a685e3f913849abb783937da83deb&#34;&gt;其他命令&lt;/h4&gt;
+
+&lt;p&gt;其他的 go 命令基本上都可以通过 godep 执行，例如&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;godep go build
+godep go install
+godep go fmt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

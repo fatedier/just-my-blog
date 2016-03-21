@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="Git常用命令 &middot; fatedier blog">
+<meta property="og:title" content="如何使golang项目可以在任意目录下编译 &middot; fatedier blog">
 
 <meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    Git常用命令
+    如何使golang项目可以在任意目录下编译
     
 </title>
 
@@ -78,125 +78,48 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2014年10月17日">
-                        2014年10月17日
+                    <time datetime="2016年02月25日">
+                        2016年02月25日
                     </time>
                 </div>
-                <h1 class="post-title">Git常用命令</h1>
+                <h1 class="post-title">如何使golang项目可以在任意目录下编译</h1>
             </header>
 
             <div class="post-content">
                 
 
-<p>在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。</p>
+<p>通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。</p>
 
-<h3 id="修改某一次提交的说明信息:3ad87c55fc5af115fc9b1721031d1adf">修改某一次提交的说明信息</h3>
+<h3 id="背景:ab38b6c3b1bcedcc11f7400cd407aaf7">背景</h3>
 
-<p>有时候我们需要修改之前提交的时候的说明信息，没有操作命令可以直接完成，但是使用rebase命令可以实现。</p>
+<p><a href="https://github.com/fatedier/frp">frp</a> 是我业余时间写的一个用于穿透内网的反向代理工具，可以将防火墙内或内网环境的机器对外暴露指定的服务，例如22端口提供ssh服务或者80端口提供一个临时的web测试环境。</p>
 
-<p>例如我们要修改倒数第二次的提交的说明信息：</p>
+<p>一开始项目是直接放在 <code>$GOPATH/src</code> 目录下的，第三方包的引用是 <code>import github.com/xxx/xxx</code>，内部包的引用 <code>import frp/xxx</code>，这样编译时内部包的查找路径实际上就是 <code>$GOPATH/src/frp/xxx</code>。</p>
 
-<pre><code class="language-bash">$ git rebase -i HEAD~3
-</code></pre>
+<p>后来由于使用了 <a href="https://travis-ci.org/">travis-ci</a> 做持续集成，travis-ci 中是直接使用 <code>go get github.com/fatedier/frp</code> 下载代码，然后编译运行。这样问题就来了，通过 go get 下载的源码在本地的路径是 <code>$GOPATH/src/github.com/fatedier/frp</code>，内部包就找不到了，导致编译失败。</p>
 
-<p><strong>注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。</strong></p>
+<h3 id="使用类似第三方包的引用方式:ab38b6c3b1bcedcc11f7400cd407aaf7">使用类似第三方包的引用方式</h3>
 
-<p>之后会进入到文本编辑界面，如下图</p>
+<p>解决这个问题最直接的方法就是将内部包的引用方式修改成 <code>import github.com/fatedier/frp/xxx</code>，在 travis-ci 中编译的时候就可以通过了，同时需要注意把自己本地的项目路径也更换成<code>$GOPATH/src/github.com/fatedier/frp</code>，很多开源项目都是用的这种方式引用内部包。</p>
 
-<p><img src="http://blog.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg" alt="reset-commit-message" /></p>
+<p><strong>注：不推荐使用 ./ ../ 等相对路径来引用内部包，这样管理和定位问题其实都不是很方便。</strong></p>
 
-<p>将要修改的提交前面的 <strong>pick</strong> 改为 <strong>edit</strong> ，保存后退出。</p>
+<p>之后由于需要其他人共同开发，fork了我的项目之后，他们也使用 go get 下载他们fork后的项目源码，这样 <code>fatedier</code> 就替换成了他们自己的用户名，但是代码中 import 的包名并没有改变，会导致他们无法编译通过。当然，他们可以将项目再放到正确的目录，但是多了一部操作总归不方便。</p>
 
-<p>这个时候执行</p>
+<h3 id="比较tricky的做法-修改gopath:ab38b6c3b1bcedcc11f7400cd407aaf7">比较tricky的做法，修改GOPATH</h3>
 
-<pre><code class="language-bash">$ git commit --amend
-</code></pre>
+<p>其实问题的关键就在于 <code>GOPATH</code> 这个环境变量，这个变量决定了查找包的绝对路径。我们在项目根目录下建立 <code>src/frp</code> 这样的目录结构，之后将原来的源代码放到这个目录下，然后内部包的应用方式还是改成 <code>import frp/xxx</code> 这种简洁的格式。</p>
 
-<p>就可以修改该次提交的说明了，修改完成后保存并退出。</p>
+<p>编译的时候，把项目根目录加到 <code>GOPATH</code> 中去，例如 <code>GOPATH=\</code>pwd`:${GOPATH}`，这样就会在自己的目录里查找内部包。</p>
 
-<pre><code class="language-bash">$ git rebase --continue
-</code></pre>
-
-<p>执行这条命令后，后续的提交说明将不会改变。</p>
-
-<p><strong>注：不要修改已经push到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！</strong></p>
-
-<h3 id="查看-删除-重命名远程分支:3ad87c55fc5af115fc9b1721031d1adf">查看、删除、重命名远程分支</h3>
-
-<p>查看所有的分支（包括远程分支）</p>
-
-<pre><code class="language-bash">$ git branch -a
-</code></pre>
-
-<p>当一个分支已经被合并到主分支后，我们通常会删除这个分支，如果仅仅 git branch -d 是删除本地分支</p>
-
-<p>删除远程分支的话可以使用如下命令</p>
-
-<pre><code class="language-bash">$ git push origin --delete &lt;branchName&gt;
-</code></pre>
-
-<p>重命名一个分支不是很常用，可以先删除远程分支，再重命名本地分支，之后将重命名后的本地分支推送到远程仓库</p>
-
-<pre><code class="language-bash">$ git push --delete origin &lt;branchName&gt;
-
-$ git branch -m &lt;branchName&gt; &lt;newBranchName&gt;
-
-$ git push origin &lt;newBranchName&gt;
-</code></pre>
-
-<h3 id="合并多个提交:3ad87c55fc5af115fc9b1721031d1adf">合并多个提交</h3>
-
-<p>比如要合并最后两次的提交，其实和修改某一次提交的说明信息有点类似。</p>
-
-<pre><code class="language-bash">$ git rebase -i HEAD~2
-</code></pre>
-
-<p>之后同样会进入到文本编辑界面，将第二行开头的 <strong>pick</strong> 改为 <strong>squash</strong> 或 <strong>s</strong>，保存后退出。</p>
-
-<p>这时git会把两次提交合并，并且提示让你输入新的提交信息，保存后退出就成功完成两次提交的合并了。</p>
-
-<h3 id="强制回退远程仓库到指定提交:3ad87c55fc5af115fc9b1721031d1adf">强制回退远程仓库到指定提交</h3>
-
-<p>当我们在开发的时候出现一些关键性的错误，并且确认现在已经做的开发工作是无意义的时候，可能需要回退到之前的版本。</p>
-
-<pre><code class="language-bash">$ git reset --hard &lt;commit_id&gt;
-
-$ git push origin HEAD --force
-</code></pre>
-
-<p>另外，reset命令还有几个可选参数</p>
-
-<ul>
-<li><p><strong>git reset &ndash;mixed</strong>：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息。</p></li>
-
-<li><p><strong>git reset &ndash;soft</strong>：回退到某个版本，只回退了commit的信息，不会恢复到indexfile一级。如果还要提交，直接commit即可。</p></li>
-
-<li><p><strong>git reset &ndash;hard</strong>：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。</p></li>
-</ul>
-
-<h3 id="reset-hard之后的恢复:3ad87c55fc5af115fc9b1721031d1adf">reset &ndash;hard之后的恢复</h3>
-
-<p>使用 <code>git reset --hard</code> 之后，也许才发现这是一次错误的操作，那么我们就想要恢复到之前的版本。</p>
-
-<p>这个时候用git log是看不到之前的提交历史记录的。</p>
-
-<p>需要使用 <code>$ git reflog</code> 找到我们需要恢复的HEAD的ID，然后使用reset命令恢复回去。</p>
-
-<h3 id="查看指定版本的某个文件的内容:3ad87c55fc5af115fc9b1721031d1adf">查看指定版本的某个文件的内容</h3>
-
-<p>例如要查看 f4869b0 这次提交的 test.cpp 文件的内容，test.cpp的路径需要使用相对于git目录的路径名，使用如下命令：</p>
-
-<pre><code class="language-bash">$ git show f4869b0:test.cpp
-</code></pre>
-
-<p>文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。</p>
+<p>可以看到，通过这样的方式不管把你把项目放到哪一个目录下，都可以编译成功，当然，为了便于管理，推荐还是放在 <code>$GOPATH/src</code> 目录下，同时使用 <a href="https://github.com/tools/godep">godep</a> 来管理第三方包。</p>
 
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2014/10/17/git-usually-command">http://blog.fatedier.com/2014/10/17/git-usually-command</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory">http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>
@@ -207,16 +130,9 @@ $ git push origin HEAD --force
                 <ul class="list-inline post-tags">
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/git">
+                        <a href="http://blog.fatedier.com/tags/golang">
                             <i class="fa fa-tags"></i>
-                            git
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7">
-                            <i class="fa fa-tags"></i>
-                            开发工具
+                            golang
                         </a>
                     </li>
                     
@@ -230,13 +146,13 @@ $ git push origin HEAD --force
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2014/10/24/vimdiff-common-commands"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2014/10/16/git-use-for-remind">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

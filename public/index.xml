@@ -6,8 +6,46 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2016</rights>
-    <updated>2016-01-15 00:00:00 &#43;0000 UTC</updated>
+    <updated>2016-02-25 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>如何使golang项目可以在任意目录下编译</title>
+          <link>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory</link>
+          <pubDate>Thu, 25 Feb 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory</guid>
+          <description>
+
+&lt;p&gt;通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。&lt;/p&gt;
+
+&lt;h3 id=&#34;背景:ab38b6c3b1bcedcc11f7400cd407aaf7&#34;&gt;背景&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/fatedier/frp&#34;&gt;frp&lt;/a&gt; 是我业余时间写的一个用于穿透内网的反向代理工具，可以将防火墙内或内网环境的机器对外暴露指定的服务，例如22端口提供ssh服务或者80端口提供一个临时的web测试环境。&lt;/p&gt;
+
+&lt;p&gt;一开始项目是直接放在 &lt;code&gt;$GOPATH/src&lt;/code&gt; 目录下的，第三方包的引用是 &lt;code&gt;import github.com/xxx/xxx&lt;/code&gt;，内部包的引用 &lt;code&gt;import frp/xxx&lt;/code&gt;，这样编译时内部包的查找路径实际上就是 &lt;code&gt;$GOPATH/src/frp/xxx&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;后来由于使用了 &lt;a href=&#34;https://travis-ci.org/&#34;&gt;travis-ci&lt;/a&gt; 做持续集成，travis-ci 中是直接使用 &lt;code&gt;go get github.com/fatedier/frp&lt;/code&gt; 下载代码，然后编译运行。这样问题就来了，通过 go get 下载的源码在本地的路径是 &lt;code&gt;$GOPATH/src/github.com/fatedier/frp&lt;/code&gt;，内部包就找不到了，导致编译失败。&lt;/p&gt;
+
+&lt;h3 id=&#34;使用类似第三方包的引用方式:ab38b6c3b1bcedcc11f7400cd407aaf7&#34;&gt;使用类似第三方包的引用方式&lt;/h3&gt;
+
+&lt;p&gt;解决这个问题最直接的方法就是将内部包的引用方式修改成 &lt;code&gt;import github.com/fatedier/frp/xxx&lt;/code&gt;，在 travis-ci 中编译的时候就可以通过了，同时需要注意把自己本地的项目路径也更换成&lt;code&gt;$GOPATH/src/github.com/fatedier/frp&lt;/code&gt;，很多开源项目都是用的这种方式引用内部包。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;注：不推荐使用 ./ ../ 等相对路径来引用内部包，这样管理和定位问题其实都不是很方便。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;之后由于需要其他人共同开发，fork了我的项目之后，他们也使用 go get 下载他们fork后的项目源码，这样 &lt;code&gt;fatedier&lt;/code&gt; 就替换成了他们自己的用户名，但是代码中 import 的包名并没有改变，会导致他们无法编译通过。当然，他们可以将项目再放到正确的目录，但是多了一部操作总归不方便。&lt;/p&gt;
+
+&lt;h3 id=&#34;比较tricky的做法-修改gopath:ab38b6c3b1bcedcc11f7400cd407aaf7&#34;&gt;比较tricky的做法，修改GOPATH&lt;/h3&gt;
+
+&lt;p&gt;其实问题的关键就在于 &lt;code&gt;GOPATH&lt;/code&gt; 这个环境变量，这个变量决定了查找包的绝对路径。我们在项目根目录下建立 &lt;code&gt;src/frp&lt;/code&gt; 这样的目录结构，之后将原来的源代码放到这个目录下，然后内部包的应用方式还是改成 &lt;code&gt;import frp/xxx&lt;/code&gt; 这种简洁的格式。&lt;/p&gt;
+
+&lt;p&gt;编译的时候，把项目根目录加到 &lt;code&gt;GOPATH&lt;/code&gt; 中去，例如 &lt;code&gt;GOPATH=\&lt;/code&gt;pwd`:${GOPATH}`，这样就会在自己的目录里查找内部包。&lt;/p&gt;
+
+&lt;p&gt;可以看到，通过这样的方式不管把你把项目放到哪一个目录下，都可以编译成功，当然，为了便于管理，推荐还是放在 &lt;code&gt;$GOPATH/src&lt;/code&gt; 目录下，同时使用 &lt;a href=&#34;https://github.com/tools/godep&#34;&gt;godep&lt;/a&gt; 来管理第三方包。&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

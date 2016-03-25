@@ -6,8 +6,241 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2016</rights>
-    <updated>2015-01-25 00:00:00 &#43;0000 UTC</updated>
+    <updated>2015-12-18 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>终端利器 Tmux</title>
+          <link>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux</link>
+          <pubDate>Fri, 18 Dec 2015 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux</guid>
+          <description>
+
+&lt;p&gt;开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。&lt;/p&gt;
+
+&lt;h3 id=&#34;界面:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;界面&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-12-18-terminal-multiplexer-tmux-tmux-overview.png&#34; alt=&#34;tmux&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;我用了自己的配置文件，对界面做过一些优化，左下角是 &lt;strong&gt;session&lt;/strong&gt; 名称，中间是各个 &lt;strong&gt;window&lt;/strong&gt; 的名称，可以理解为一般 IDE 中的 Tab 页，右下角显示时间，这个窗口中打开了3个 &lt;strong&gt;pane&lt;/strong&gt;，通过快捷键，我就可以在不同的 &lt;strong&gt;session&lt;/strong&gt;, &lt;strong&gt;window&lt;/strong&gt;, &lt;strong&gt;pane&lt;/strong&gt; 之间来回切换，基本上脱离了鼠标的使用。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;session： 可以用于区分不同的项目，为每个项目建立一个 session。&lt;/li&gt;
+&lt;li&gt;window： 对应于其他 IDE 的 Tab 标签页，一个 window 占据一个显示屏幕，一个 session 可以有多个 window。&lt;/li&gt;
+&lt;li&gt;pane： 在一个 window 中可以有多个 pane，便于大屏幕显示屏将屏幕切分成多块。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;安装:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;安装&lt;/h3&gt;
+
+&lt;p&gt;Centos下直接通过 &lt;code&gt;yum install -y tmux&lt;/code&gt; 来安装，其他系统也一样可以使用相应的包管理工具安装。&lt;/p&gt;
+
+&lt;h3 id=&#34;常用命令:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;常用命令&lt;/h3&gt;
+
+&lt;h4 id=&#34;快捷键前缀:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;快捷键前缀&lt;/h4&gt;
+
+&lt;p&gt;为了避免按键冲突，使用 tmux 的快捷键都需要加上一个&lt;strong&gt;前缀按键&lt;/strong&gt;，默认是 &lt;strong&gt;Ctrl-b&lt;/strong&gt; 的组合，可以通过配置修改为自定义的按键。&lt;/p&gt;
+
+&lt;p&gt;例如要退出 tmux 的快捷键是前缀键 + d，那么就需要按 Ctrl-b + d：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;按下组合键 Ctrl-b&lt;/li&gt;
+&lt;li&gt;放开组合键 Ctrl-b&lt;/li&gt;
+&lt;li&gt;按下 s 键&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;我自己将 Ctrl-b 改成了 Ctrl-x ，感觉这样操作顺手一些。&lt;/p&gt;
+
+&lt;h4 id=&#34;基本操作:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;基本操作&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;创建一个叫做 &amp;ldquo;test&amp;rdquo; 的 session，并且进入 tmux 界面&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;tmux new -s test&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;查看开启了哪些 session&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;tmux ls&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;进入 session &amp;ldquo;test&amp;rdquo;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;tmux attach -t test&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;退出 tmux 环境&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Ctrl-b + d  // 退出后 session 并不会被关闭，之后通过 attach 进入仍然会看到原来的界面&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;切换 session&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Ctrl-b + s，之后按序号切换，或者通过方向键选择后按 Enter 键切换&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;切换 window&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Ctrl-b + &amp;lt;窗口号&amp;gt;
+Ctrl-b + n  // 切换到下一个窗口
+Ctrl-b + p  // 切换到上一个窗口
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;切换 pane&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;这个我在配置文件中修改过，修改成了 vim 的使用习惯，具体配置见下节
+Ctrl-b + h  // 左
+Ctrl-b + j  // 下
+Ctrl-b + k  // 上
+Ctrl-b + l  // 右
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;关闭 pane&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Ctrl-b + x  // 焦点在要关闭的 pane 内&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;关闭 window&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Ctrl-b + &amp;amp; // 焦点在要关闭的 window 内&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;分割 window 成多个 pane&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;这个为了记忆方便也修改了原有的配置
+Ctrl-b + _  // 竖直分割
+Ctrl-b + |  // 水平分割
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;重新加载配置文件&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;这个被我映射到了 r 键，修改完配置文件后不用关闭所有 session 重新打开，直接重新加载即可
+Ctrl-b + r
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;小技巧:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;小技巧&lt;/h3&gt;
+
+&lt;h4 id=&#34;复制模式:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;复制模式&lt;/h4&gt;
+
+&lt;p&gt;如果要在不同 &lt;strong&gt;window&lt;/strong&gt; 或者 &lt;strong&gt;pane&lt;/strong&gt; 之间复制内容，又想实现全键盘的操作，就需要借助于 tmux 的复制功能。&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Ctrl-b + [&lt;/strong&gt; 进入复制模式&lt;/li&gt;
+&lt;li&gt;移动光标到要复制的地方，这里我配置成了 vim 的操作方式&lt;/li&gt;
+&lt;li&gt;按下&lt;strong&gt;空格&lt;/strong&gt;开始复制&lt;/li&gt;
+&lt;li&gt;再移动到结束的地方，按下 &lt;strong&gt;Enter&lt;/strong&gt; 键退出&lt;/li&gt;
+&lt;li&gt;在需要粘贴的地方按下 &lt;strong&gt;Ctrl-b + ]&lt;/strong&gt; 粘贴&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&#34;多-pane-批量操作:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;多 pane 批量操作&lt;/h4&gt;
+
+&lt;p&gt;有时候同时登录了多台机器，需要执行一样的命令来进行批量操作，借助于 tmux 同样可以实现。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;:setw synchronize-panes&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这个是设置批量操作的开关，如果原来功能是关闭的，则打开，反之亦然，可以将其映射到一个快捷键方便操作。开启这个功能后，在当前 window 任意一个 pane 输入的命令，都会同时作用于该 window 中的其他 pane。&lt;/p&gt;
+
+&lt;h3 id=&#34;配置文件:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;配置文件&lt;/h3&gt;
+
+&lt;p&gt;配置文件需要自己在 $HOME 目录下创建，命名为 .tmux.conf，具体内容如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# Use something easier to type as the prefix.
+set -g prefix C-x
+unbind C-b
+bind C-x send-prefix
+
+# 窗口计数从1开始，方便切换
+set -g base-index 1
+setw -g pane-base-index 1
+
+# 启用和关闭status bar
+bind S set status on
+bind D set status off 
+
+# 消息背景色
+set -g message-bg white
+
+set -g mode-keys vi
+
+# 关闭自动重命名窗口
+setw -g allow-rename off 
+setw -g automatic-rename off 
+
+# bind a reload key
+bind r source-file ~/.tmux.conf \; display-message &amp;quot;Config reloaded...&amp;quot;
+
+# I personally rebind the keys so &amp;quot;|&amp;quot; splits the current window vertically, and &amp;quot;-&amp;quot; splits it horizontally. Not the easiest things to type, though easy to remember.
+bind | split-window -h
+bind _ split-window -v
+
+# fixes the delay problem
+set -sg escape-time 0
+
+# 面板切换
+bind-key k select-pane -U
+bind-key j select-pane -D
+bind-key h select-pane -L
+bind-key l select-pane -R
+
+# 面板大小调整
+bind -r ^k resizep -U 10  
+bind -r ^j resizep -D 10
+bind -r ^h resizep -L 10
+bind -r ^l resizep -R 10
+
+# 状态栏
+# 颜色
+set -g status-bg black
+set -g status-fg white
+
+# 对齐方式
+set-option -g status-justify centre
+
+# 左下角
+set-option -g status-left &#39;#[bg=black,fg=green][#[fg=cyan]#S#[fg=green]]&#39;
+set-option -g status-left-length 20
+
+# 窗口列表
+set-window-option -g window-status-format &#39;#[dim]#I:#[default]#W#[fg=grey,dim]&#39;
+set-window-option -g window-status-current-format &#39;#[fg=cyan,bold]#I#[fg=blue]:#[fg=cyan]#W#[fg=dim]&#39;
+
+# 右下角
+set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;配套工具:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;配套工具&lt;/h3&gt;
+
+&lt;h4 id=&#34;tmuxinator:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;tmuxinator&lt;/h4&gt;
+
+&lt;p&gt;使用 tmux 可以让我们不管在什么时候，什么地点登录服务器都能得到同样的工作界面，不用因为担心网络暂时中断而需要重新打开一大堆的 tab 页。&lt;/p&gt;
+
+&lt;p&gt;但是如果有的时候服务器重启了，那么所有的 session 就都没了，必须重新打开，可以想象一下我开发时有4-5个 session，每个 session 中有多个 window，然后每个 winodw 中通常又有2-3个 pane，要重新一个个建立开发环境是一件多么痛苦的事。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/tmuxinator/tmuxinator&#34;&gt;tmuxinator&lt;/a&gt; 可以稍微缓解一下这个问题，但是不彻底。tmuxinator 可以用于管理 tmux 的 session 和 window 布局等，便于在机器重启后能够快速恢复自己的工作环境。&lt;/p&gt;
+
+&lt;h5 id=&#34;安装-1:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;安装&lt;/h5&gt;
+
+&lt;p&gt;先安装 gem， &lt;code&gt;yum install -y rubygems&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;由于天朝特殊的网络环境，gem的第三方包可能安装不了，可以替换成阿里提供的镜像源。&lt;/strong&gt;
+&lt;code&gt;gem sources --add [https://ruby.taobao.org/](https://ruby.taobao.org/) --remove [https://rubygems.org/](https://rubygems.org/)&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;使用:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;使用&lt;/h5&gt;
+
+&lt;p&gt;创建一个 tmuxinator 的 project： &lt;code&gt;tmuxinator new [project]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;之后编写项目的配置文件，以后重新打开这个项目所显示的界面就是根据这个配置文件来生成。具体用法可以参考项目文档： &lt;a href=&#34;https://github.com/tmuxinator/tmuxinator。&#34;&gt;https://github.com/tmuxinator/tmuxinator。&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;当服务器重启了以后，执行 &lt;code&gt;tmuxinator start [project]&lt;/code&gt;，tmuxinator 就会自动根据配置文件创建一个指定布局的 tmux session。&lt;/p&gt;
+
+&lt;h5 id=&#34;缺点:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;缺点&lt;/h5&gt;
+
+&lt;p&gt;布局是预先在配置文件中指定好的，你在使用 tmux 过程中修改了的布局是不会记录下来的。&lt;/p&gt;
+
+&lt;h4 id=&#34;tmux-resurrect:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;Tmux Resurrect&lt;/h4&gt;
+
+&lt;p&gt;Tmux Resurrect 用于保存当前的session环境到磁盘上，用于以后恢复。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;由于这个插件需要 tmux 1.9 及以上的版本，而 centos7 的 yum 源里现在是1.8的版本，我的开发环境全是自动构建，不方便升级，所以暂时还没有尝试。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;关于 Tmux Resurrect 的相关文档： &lt;a href=&#34;http://www.linuxidc.com/Linux/2015-07/120304.htm&#34;&gt;http://www.linuxidc.com/Linux/2015-07/120304.htm&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

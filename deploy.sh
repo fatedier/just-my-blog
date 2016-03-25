@@ -14,6 +14,11 @@ else
     git commit
 fi
 
+# if no commit messager found
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
 # push to github
 git push origin master
 # now i use coding.net, so comment this line

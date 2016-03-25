@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何处理僵尸进程 &middot; fatedier blog">
+<meta property="og:title" content="终端利器 Tmux &middot; fatedier blog">
 
 <meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    如何处理僵尸进程
+    终端利器 Tmux
     
 </title>
 
@@ -78,167 +78,243 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2014年12月16日">
-                        2014年12月16日
+                    <time datetime="2015年12月18日">
+                        2015年12月18日
                     </time>
                 </div>
-                <h1 class="post-title">如何处理僵尸进程</h1>
+                <h1 class="post-title">终端利器 Tmux</h1>
             </header>
 
             <div class="post-content">
                 
 
-<p>在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。</p>
+<p>开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。</p>
 
-<h3 id="什么是僵尸进程:ca7adc33bb0a44c1352770269765644c">什么是僵尸进程</h3>
+<h3 id="界面:8c207b1fc9d64d5edf1b83e5544a1de6">界面</h3>
 
-<p>如果父进程在子进程之前终止，则所有的子进程的父进程都会改变为init进程，我们称这些进程由init进程领养。这时使用ps命令查看后可以看到子进程的父进程ppid已经变为了1。</p>
+<p><img src="http://blog.fatedier.com/pic/2015/2015-12-18-terminal-multiplexer-tmux-tmux-overview.png" alt="tmux" /></p>
 
-<p>而当子进程在父进程之前终止时，<strong>内核为每个终止子进程保存了一定量的信息，所以当终止进程的父进程调用wait或waitpid时</strong>，可以得到这些信息。这些信息至少包括进程ID、该进程的终止状态、以及该进程使用的CPU时间总量。其他的进程所使用的存储区，打开的文件都会被内核释放。</p>
+<p>我用了自己的配置文件，对界面做过一些优化，左下角是 <strong>session</strong> 名称，中间是各个 <strong>window</strong> 的名称，可以理解为一般 IDE 中的 Tab 页，右下角显示时间，这个窗口中打开了3个 <strong>pane</strong>，通过快捷键，我就可以在不同的 <strong>session</strong>, <strong>window</strong>, <strong>pane</strong> 之间来回切换，基本上脱离了鼠标的使用。</p>
 
-<p><strong>一个已经终止、但是其父进程尚未对其进行善后处理（获取终止子进程的有关信息，释放它仍占用的资源）的进程被称为僵尸进程。</strong> ps命令将僵尸进程的状态打印为Z。</p>
+<ul>
+<li>session： 可以用于区分不同的项目，为每个项目建立一个 session。</li>
+<li>window： 对应于其他 IDE 的 Tab 标签页，一个 window 占据一个显示屏幕，一个 session 可以有多个 window。</li>
+<li>pane： 在一个 window 中可以有多个 pane，便于大屏幕显示屏将屏幕切分成多块。</li>
+</ul>
 
-<p>可以设想一下，比如一个web服务器端，假如每次接收到一个连接都创建一个子进程去处理，处理完毕后结束子进程。假如在父进程中没有使用wait或waitpid函数进行善后，这些子进程将全部变为僵尸进程，Linux系统的进程数一般有一个固定限制值，僵尸进程将会逐渐耗尽系统资源。</p>
+<h3 id="安装:8c207b1fc9d64d5edf1b83e5544a1de6">安装</h3>
 
-<h3 id="查看僵尸进程的例子:ca7adc33bb0a44c1352770269765644c">查看僵尸进程的例子</h3>
+<p>Centos下直接通过 <code>yum install -y tmux</code> 来安装，其他系统也一样可以使用相应的包管理工具安装。</p>
 
-<pre><code class="language-cpp">#include &lt;stdio.h&gt;
-#include &lt;string.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;errno.h&gt;
- 
-int main(int argc, char **argv)
-{
-    pid_t pid;
-    for (int i=0; i&lt;5; i++) {
-        if ((pid = fork()) &lt; 0) {
-            printf(&quot;fork error,%s\n&quot;, strerror(errno));
-            return -1;
-        }
-        
-        /* child */
-        if (pid == 0) {
-            sleep(1);
-            exit(0);
-        }
-    }  
-    /* parent */
-    sleep(20);
-    return 0;
-}
+<h3 id="常用命令:8c207b1fc9d64d5edf1b83e5544a1de6">常用命令</h3>
+
+<h4 id="快捷键前缀:8c207b1fc9d64d5edf1b83e5544a1de6">快捷键前缀</h4>
+
+<p>为了避免按键冲突，使用 tmux 的快捷键都需要加上一个<strong>前缀按键</strong>，默认是 <strong>Ctrl-b</strong> 的组合，可以通过配置修改为自定义的按键。</p>
+
+<p>例如要退出 tmux 的快捷键是前缀键 + d，那么就需要按 Ctrl-b + d：</p>
+
+<ul>
+<li>按下组合键 Ctrl-b</li>
+<li>放开组合键 Ctrl-b</li>
+<li>按下 s 键</li>
+</ul>
+
+<p>我自己将 Ctrl-b 改成了 Ctrl-x ，感觉这样操作顺手一些。</p>
+
+<h4 id="基本操作:8c207b1fc9d64d5edf1b83e5544a1de6">基本操作</h4>
+
+<p><strong>创建一个叫做 &ldquo;test&rdquo; 的 session，并且进入 tmux 界面</strong></p>
+
+<p><code>tmux new -s test</code></p>
+
+<p><strong>查看开启了哪些 session</strong></p>
+
+<p><code>tmux ls</code></p>
+
+<p><strong>进入 session &ldquo;test&rdquo;</strong></p>
+
+<p><code>tmux attach -t test</code></p>
+
+<p><strong>退出 tmux 环境</strong></p>
+
+<p><code>Ctrl-b + d  // 退出后 session 并不会被关闭，之后通过 attach 进入仍然会看到原来的界面</code></p>
+
+<p><strong>切换 session</strong></p>
+
+<p><code>Ctrl-b + s，之后按序号切换，或者通过方向键选择后按 Enter 键切换</code></p>
+
+<p><strong>切换 window</strong></p>
+
+<pre><code>Ctrl-b + &lt;窗口号&gt;
+Ctrl-b + n  // 切换到下一个窗口
+Ctrl-b + p  // 切换到上一个窗口
 </code></pre>
 
-<p>编译完成后，在执行程序的命令后加上 &ldquo;&amp;&rdquo; 符号，表示让当前程序在后台运行。</p>
+<p><strong>切换 pane</strong></p>
 
-<p>之后输入</p>
-
-<pre><code class="language-bash">ps –e –o pid,ppid,stat,command|grep [程序名]
+<pre><code>这个我在配置文件中修改过，修改成了 vim 的使用习惯，具体配置见下节
+Ctrl-b + h  // 左
+Ctrl-b + j  // 下
+Ctrl-b + k  // 上
+Ctrl-b + l  // 右
 </code></pre>
 
-<p>可以看到如下的结果</p>
+<p><strong>关闭 pane</strong></p>
 
-<pre><code class="language-bash">2915  1961 S    ./dd
-2917  2915 Z    [dd] &lt;defunct&gt;
-2918  2915 Z    [dd] &lt;defunct&gt;
-2919  2915 Z    [dd] &lt;defunct&gt;
-2920  2915 Z    [dd] &lt;defunct&gt;
-2921  2915 Z    [dd] &lt;defunct&gt;
+<p><code>Ctrl-b + x  // 焦点在要关闭的 pane 内</code></p>
+
+<p><strong>关闭 window</strong></p>
+
+<p><code>Ctrl-b + &amp; // 焦点在要关闭的 window 内</code></p>
+
+<p><strong>分割 window 成多个 pane</strong></p>
+
+<pre><code>这个为了记忆方便也修改了原有的配置
+Ctrl-b + _  // 竖直分割
+Ctrl-b + |  // 水平分割
 </code></pre>
 
-<p>可以看到5个子进程都已经是僵尸进程了。</p>
+<p><strong>重新加载配置文件</strong></p>
 
-<h3 id="sigchld信号和处理僵尸进程:ca7adc33bb0a44c1352770269765644c">SIGCHLD信号和处理僵尸进程</h3>
-
-<p>当子进程终止时，内核就会向它的父进程发送一个SIGCHLD信号，父进程可以选择忽略该信号，<strong>也可以提供一个接收到信号以后的处理函数</strong>。对于这种信号的系统默认动作是忽略它。</p>
-
-<p>我们不希望有过多的僵尸进程产生，所以当父进程接收到SIGCHLD信号后就应该调用 wait 或 waitpid 函数对子进程进行善后处理，释放子进程占用的资源。</p>
-
-<p>下面是一个捕获SIGCHLD信号以后使用wait函数进行处理的简单例子：</p>
-
-<pre><code class="language-cpp">#include &lt;stdio.h&gt;
-#include &lt;string.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;errno.h&gt;
-#include &lt;signal.h&gt;
-#include &lt;sys/wait.h&gt;
- 
-void deal_child(int sig_no)
-{
-    wait(NULL);
-}
- 
-int main(int argc, char **argv)
-{
-    signal(SIGCHLD, deal_child);
- 
-    pid_t pid;
-    for (int i=0; i&lt;5; i++) {
-        if ((pid = fork()) &lt; 0) {
-            printf(&quot;fork error,%s\n&quot;,strerror(errno));
-            return -1;
-        }  
- 
-        /* child */
-        if (pid == 0) {
-            sleep(1);
-            exit(0);
-        }  
-    }  
-    /* parent */
-    for(int i=0; i&lt;100000; i++) {
-        for (int j=0; j&lt;100000; j++) {
-            int temp = 0;
-        }  
-    }  
-    return 0;
-}
+<pre><code>这个被我映射到了 r 键，修改完配置文件后不用关闭所有 session 重新打开，直接重新加载即可
+Ctrl-b + r
 </code></pre>
 
-<p>同样在后台运行后使用ps命令查看进程状态，结果如下：</p>
+<h3 id="小技巧:8c207b1fc9d64d5edf1b83e5544a1de6">小技巧</h3>
 
-<pre><code class="language-bash">6622  1961 R    ./dd
-6627  6622 Z    [dd] &lt;defunct&gt;
-6628  6622 Z    [dd] &lt;defunct&gt;
+<h4 id="复制模式:8c207b1fc9d64d5edf1b83e5544a1de6">复制模式</h4>
+
+<p>如果要在不同 <strong>window</strong> 或者 <strong>pane</strong> 之间复制内容，又想实现全键盘的操作，就需要借助于 tmux 的复制功能。</p>
+
+<ol>
+<li><strong>Ctrl-b + [</strong> 进入复制模式</li>
+<li>移动光标到要复制的地方，这里我配置成了 vim 的操作方式</li>
+<li>按下<strong>空格</strong>开始复制</li>
+<li>再移动到结束的地方，按下 <strong>Enter</strong> 键退出</li>
+<li>在需要粘贴的地方按下 <strong>Ctrl-b + ]</strong> 粘贴</li>
+</ol>
+
+<h4 id="多-pane-批量操作:8c207b1fc9d64d5edf1b83e5544a1de6">多 pane 批量操作</h4>
+
+<p>有时候同时登录了多台机器，需要执行一样的命令来进行批量操作，借助于 tmux 同样可以实现。</p>
+
+<p><code>:setw synchronize-panes</code></p>
+
+<p>这个是设置批量操作的开关，如果原来功能是关闭的，则打开，反之亦然，可以将其映射到一个快捷键方便操作。开启这个功能后，在当前 window 任意一个 pane 输入的命令，都会同时作用于该 window 中的其他 pane。</p>
+
+<h3 id="配置文件:8c207b1fc9d64d5edf1b83e5544a1de6">配置文件</h3>
+
+<p>配置文件需要自己在 $HOME 目录下创建，命名为 .tmux.conf，具体内容如下</p>
+
+<pre><code># Use something easier to type as the prefix.
+set -g prefix C-x
+unbind C-b
+bind C-x send-prefix
+
+# 窗口计数从1开始，方便切换
+set -g base-index 1
+setw -g pane-base-index 1
+
+# 启用和关闭status bar
+bind S set status on
+bind D set status off 
+
+# 消息背景色
+set -g message-bg white
+
+set -g mode-keys vi
+
+# 关闭自动重命名窗口
+setw -g allow-rename off 
+setw -g automatic-rename off 
+
+# bind a reload key
+bind r source-file ~/.tmux.conf \; display-message &quot;Config reloaded...&quot;
+
+# I personally rebind the keys so &quot;|&quot; splits the current window vertically, and &quot;-&quot; splits it horizontally. Not the easiest things to type, though easy to remember.
+bind | split-window -h
+bind _ split-window -v
+
+# fixes the delay problem
+set -sg escape-time 0
+
+# 面板切换
+bind-key k select-pane -U
+bind-key j select-pane -D
+bind-key h select-pane -L
+bind-key l select-pane -R
+
+# 面板大小调整
+bind -r ^k resizep -U 10  
+bind -r ^j resizep -D 10
+bind -r ^h resizep -L 10
+bind -r ^l resizep -R 10
+
+# 状态栏
+# 颜色
+set -g status-bg black
+set -g status-fg white
+
+# 对齐方式
+set-option -g status-justify centre
+
+# 左下角
+set-option -g status-left '#[bg=black,fg=green][#[fg=cyan]#S#[fg=green]]'
+set-option -g status-left-length 20
+
+# 窗口列表
+set-window-option -g window-status-format '#[dim]#I:#[default]#W#[fg=grey,dim]'
+set-window-option -g window-status-current-format '#[fg=cyan,bold]#I#[fg=blue]:#[fg=cyan]#W#[fg=dim]'
+
+# 右下角
+set -g status-right '#[fg=green][#[fg=cyan]%H:%M#[fg=green]]'
+
 </code></pre>
 
-<p>发现创建的5个进程，有3个已经被彻底销毁，但是还有2个仍然处于僵尸进程的状态。</p>
+<h3 id="配套工具:8c207b1fc9d64d5edf1b83e5544a1de6">配套工具</h3>
 
-<p><strong>这是因为当5个进程同时终止的时候，内核都会向父进程发送SIGCHLD信号，而父进程此时有可能仍然处于信号处理的deal_child函数中，那么在处理完之前，中间接收到的SIGCHLD信号就会丢失，内核并没有使用队列等方式来存储同一种信号。</strong></p>
+<h4 id="tmuxinator:8c207b1fc9d64d5edf1b83e5544a1de6">tmuxinator</h4>
 
-<h3 id="正确地处理僵尸进程的方法:ca7adc33bb0a44c1352770269765644c">正确地处理僵尸进程的方法</h3>
+<p>使用 tmux 可以让我们不管在什么时候，什么地点登录服务器都能得到同样的工作界面，不用因为担心网络暂时中断而需要重新打开一大堆的 tab 页。</p>
 
-<p>为了解决上面出现的这种问题，我们需要使用waitpid函数。</p>
+<p>但是如果有的时候服务器重启了，那么所有的 session 就都没了，必须重新打开，可以想象一下我开发时有4-5个 session，每个 session 中有多个 window，然后每个 winodw 中通常又有2-3个 pane，要重新一个个建立开发环境是一件多么痛苦的事。</p>
 
-<p>函数原型</p>
+<p><a href="https://github.com/tmuxinator/tmuxinator">tmuxinator</a> 可以稍微缓解一下这个问题，但是不彻底。tmuxinator 可以用于管理 tmux 的 session 和 window 布局等，便于在机器重启后能够快速恢复自己的工作环境。</p>
 
-<pre><code class="language-cpp">pid_t waitpid(pid_t pid, int *statloc, int options);
-</code></pre>
+<h5 id="安装-1:8c207b1fc9d64d5edf1b83e5544a1de6">安装</h5>
 
-<p>若成功则返回进程ID，如果设置为非阻塞方式，返回0表示子进程状态未改变，出错时返回-1。</p>
+<p>先安装 gem， <code>yum install -y rubygems</code></p>
 
-<p><strong>options参数可以设置为WNOHANG常量，表示waitpid不阻塞，如果由pid指定的子进程不是立即可用的，则立即返回0。</strong></p>
+<p><strong>由于天朝特殊的网络环境，gem的第三方包可能安装不了，可以替换成阿里提供的镜像源。</strong>
+<code>gem sources --add [https://ruby.taobao.org/](https://ruby.taobao.org/) --remove [https://rubygems.org/](https://rubygems.org/)</code></p>
 
-<p>只需要修改一下SIGCHLD信号的处理函数即可:</p>
+<h5 id="使用:8c207b1fc9d64d5edf1b83e5544a1de6">使用</h5>
 
-<pre><code class="language-cpp">void deal_child(int sig_no)
-{
-    for (;;) {
-        if (waitpid(-1, NULL, WNOHANG) == 0)
-            break;
-    }  
-}
-</code></pre>
+<p>创建一个 tmuxinator 的 project： <code>tmuxinator new [project]</code></p>
 
-<p>再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。</p>
+<p>之后编写项目的配置文件，以后重新打开这个项目所显示的界面就是根据这个配置文件来生成。具体用法可以参考项目文档： <a href="https://github.com/tmuxinator/tmuxinator。">https://github.com/tmuxinator/tmuxinator。</a></p>
+
+<p>当服务器重启了以后，执行 <code>tmuxinator start [project]</code>，tmuxinator 就会自动根据配置文件创建一个指定布局的 tmux session。</p>
+
+<h5 id="缺点:8c207b1fc9d64d5edf1b83e5544a1de6">缺点</h5>
+
+<p>布局是预先在配置文件中指定好的，你在使用 tmux 过程中修改了的布局是不会记录下来的。</p>
+
+<h4 id="tmux-resurrect:8c207b1fc9d64d5edf1b83e5544a1de6">Tmux Resurrect</h4>
+
+<p>Tmux Resurrect 用于保存当前的session环境到磁盘上，用于以后恢复。</p>
+
+<p><strong>由于这个插件需要 tmux 1.9 及以上的版本，而 centos7 的 yum 源里现在是1.8的版本，我的开发环境全是自动构建，不方便升级，所以暂时还没有尝试。</strong></p>
+
+<p>关于 Tmux Resurrect 的相关文档： <a href="http://www.linuxidc.com/Linux/2015-07/120304.htm">http://www.linuxidc.com/Linux/2015-07/120304.htm</a></p>
 
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process">http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux">http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>
@@ -256,9 +332,9 @@ int main(int argc, char **argv)
                     </li>
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/c/cpp">
+                        <a href="http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7">
                             <i class="fa fa-tags"></i>
-                            c/cpp
+                            开发工具
                         </a>
                     </li>
                     
@@ -272,13 +348,13 @@ int main(int argc, char **argv)
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2015/09/15/redis-cluster-survey">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

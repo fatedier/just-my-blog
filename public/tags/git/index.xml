@@ -33,7 +33,7 @@
 
 &lt;p&gt;之后会进入到文本编辑界面，如下图&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg&#34; alt=&#34;reset-commit-message&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg&#34; alt=&#34;reset-commit-message&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;将要修改的提交前面的 &lt;strong&gt;pick&lt;/strong&gt; 改为 &lt;strong&gt;edit&lt;/strong&gt; ，保存后退出。&lt;/p&gt;
 

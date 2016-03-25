@@ -182,9 +182,9 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
 
 &lt;h3 id=&#34;测试:b843d88db977db74e59764a23a86a6c0&#34;&gt;测试&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg&#34; alt=&#34;GSBANK&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg&#34; alt=&#34;GSBANK&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg&#34; alt=&#34;RMBANK&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg&#34; alt=&#34;RMBANK&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;通过传入不同的银行编码，会实例化不同的银行交互类，并且执行其对应的函数。&lt;/p&gt;
 
@@ -1409,7 +1409,7 @@ w3.o:w3.cpp
 
 &lt;p&gt;这里需要注意的是，我们写的第一个规则的目标，将会成为“终极目标”，也就是我们最终希望生成的程序，这里是“test”文件。根据我们的“终极目标”，make会进行自动推导，例如“终极目标”依赖于的.o文件，make就会寻找生成这些.o文件的规则，然后执行相应的命令去生成这些文件，这样一层一层递归地进行下去，直到最终生成了“终极目标”。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg&#34; alt=&#34;gmake-target&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg&#34; alt=&#34;gmake-target&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;如上图所示，虽然生成test文件的规则写在最前面，但是由于依赖于w1.o、w2.o、w3.o，make会先执行生成w1.o、w2.o、w3.o所需的命令，然后才会执行g++ -o test test.cpp w1.o w2.o w3.o 来生成test文件。&lt;/p&gt;
 

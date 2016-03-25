@@ -22,7 +22,7 @@
 
 &lt;h3 id=&#34;界面:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;界面&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-12-18-terminal-multiplexer-tmux-tmux-overview.png&#34; alt=&#34;tmux&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-12-18-terminal-multiplexer-tmux-tmux-overview.png&#34; alt=&#34;tmux&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;我用了自己的配置文件，对界面做过一些优化，左下角是 &lt;strong&gt;session&lt;/strong&gt; 名称，中间是各个 &lt;strong&gt;window&lt;/strong&gt; 的名称，可以理解为一般 IDE 中的 Tab 页，右下角显示时间，这个窗口中打开了3个 &lt;strong&gt;pane&lt;/strong&gt;，通过快捷键，我就可以在不同的 &lt;strong&gt;session&lt;/strong&gt;, &lt;strong&gt;window&lt;/strong&gt;, &lt;strong&gt;pane&lt;/strong&gt; 之间来回切换，基本上脱离了鼠标的使用。&lt;/p&gt;
 
@@ -1080,7 +1080,7 @@ esac
 
 &lt;p&gt;最终的效果：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-29-use-vim-to-make-my-ide-overview.jpg&#34; alt=&#34;overview&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-29-use-vim-to-make-my-ide-overview.jpg&#34; alt=&#34;overview&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;现在把整个配置的过程记录下来，方便以后参考。&lt;/p&gt;
 
@@ -1347,7 +1347,7 @@ vim -d [file1] [file2]
 
 &lt;p&gt;因为公司限制了每个人只能用一个IP，所以虚拟机中的Linux系统使用NAT方式和主机相连。主机是Win7操作系统，会发现网络里面多了VMnet8这个网络。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg&#34; alt=&#34;vmware-net&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg&#34; alt=&#34;vmware-net&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;在VMware界面，点击“编辑”，“虚拟网络编辑器”&lt;/p&gt;
 
@@ -1357,11 +1357,11 @@ vim -d [file1] [file2]
 
 &lt;p&gt;一般来说这时我们的主机会自动分配一个IP类似192.168.131.1这样的，子网掩码为255.255.255.0，如下图所示。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-host-net.jpg&#34; alt=&#34;host-net&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-host-net.jpg&#34; alt=&#34;host-net&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;现在进入虚拟机的Linux进行设置。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-network-configuration.jpg&#34; alt=&#34;network-configuration&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-network-configuration.jpg&#34; alt=&#34;network-configuration&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;注意IP需要设置成192.168.131.x的形势，网关是192.168.131.2。&lt;/p&gt;
 
@@ -2135,7 +2135,7 @@ w3.o:w3.cpp
 
 &lt;p&gt;这里需要注意的是，我们写的第一个规则的目标，将会成为“终极目标”，也就是我们最终希望生成的程序，这里是“test”文件。根据我们的“终极目标”，make会进行自动推导，例如“终极目标”依赖于的.o文件，make就会寻找生成这些.o文件的规则，然后执行相应的命令去生成这些文件，这样一层一层递归地进行下去，直到最终生成了“终极目标”。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg&#34; alt=&#34;gmake-target&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg&#34; alt=&#34;gmake-target&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;如上图所示，虽然生成test文件的规则写在最前面，但是由于依赖于w1.o、w2.o、w3.o，make会先执行生成w1.o、w2.o、w3.o所需的命令，然后才会执行g++ -o test test.cpp w1.o w2.o w3.o 来生成test文件。&lt;/p&gt;
 

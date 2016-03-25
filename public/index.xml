@@ -117,7 +117,7 @@ godep go fmt
 
 &lt;h3 id=&#34;界面:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;界面&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-12-18-terminal-multiplexer-tmux-tmux-overview.png&#34; alt=&#34;tmux&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-12-18-terminal-multiplexer-tmux-tmux-overview.png&#34; alt=&#34;tmux&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;我用了自己的配置文件，对界面做过一些优化，左下角是 &lt;strong&gt;session&lt;/strong&gt; 名称，中间是各个 &lt;strong&gt;window&lt;/strong&gt; 的名称，可以理解为一般 IDE 中的 Tab 页，右下角显示时间，这个窗口中打开了3个 &lt;strong&gt;pane&lt;/strong&gt;，通过快捷键，我就可以在不同的 &lt;strong&gt;session&lt;/strong&gt;, &lt;strong&gt;window&lt;/strong&gt;, &lt;strong&gt;pane&lt;/strong&gt; 之间来回切换，基本上脱离了鼠标的使用。&lt;/p&gt;
 
@@ -369,7 +369,7 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;通常需要 smart-client 支持，在业务程序端根据预先设置的路由规则进行分片，从而实现对多个redis实例的分布式访问。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-jedis.png&#34; alt=&#34;jedis&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-jedis.png&#34; alt=&#34;jedis&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;鉴于redis本身的高性能，并且有一些设计良好的第三方库，例如java开发者可以使用jedis，所以很多小公司使用此方案。&lt;/p&gt;
 
@@ -399,7 +399,7 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;h4 id=&#34;整体架构图:51fa3b005f880190963d473247382d62&#34;&gt;整体架构图&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-twemproxy-architecture.png&#34; alt=&#34;twemproxy_architecture&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-twemproxy-architecture.png&#34; alt=&#34;twemproxy_architecture&#34; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;twemproxy的特点:51fa3b005f880190963d473247382d62&#34;&gt;twemproxy的特点&lt;/h4&gt;
 
@@ -431,7 +431,7 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;h4 id=&#34;数据分布-预分片:51fa3b005f880190963d473247382d62&#34;&gt;数据分布：预分片&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-pre-sharding.png&#34; alt=&#34;redis-cluster-pre-sharding&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-pre-sharding.png&#34; alt=&#34;redis-cluster-pre-sharding&#34; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;预先分配好 16384 个slot&lt;/li&gt;
@@ -442,7 +442,7 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;h4 id=&#34;架构-去中心化:51fa3b005f880190963d473247382d62&#34;&gt;架构：去中心化&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-architecture.png&#34; alt=&#34;redis-cluster-architecture&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-architecture.png&#34; alt=&#34;redis-cluster-architecture&#34; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;无中心结构，每个节点都保存数据和整个集群的状态。&lt;/li&gt;
@@ -490,7 +490,7 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;Go语言开发的分布式 Redis 解决方案，对于上层的应用来说，访问codis和原生的 redis server 没有明显区别（不支持发布订阅等某些命令，支持pipeline）。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png&#34; alt=&#34;codis-architecture&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png&#34; alt=&#34;codis-architecture&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Codis由四部分组成：&lt;/p&gt;
 
@@ -752,9 +752,9 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
 
 &lt;h3 id=&#34;测试:b843d88db977db74e59764a23a86a6c0&#34;&gt;测试&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg&#34; alt=&#34;GSBANK&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg&#34; alt=&#34;GSBANK&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg&#34; alt=&#34;RMBANK&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg&#34; alt=&#34;RMBANK&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;通过传入不同的银行编码，会实例化不同的银行交互类，并且执行其对应的函数。&lt;/p&gt;
 
@@ -1705,7 +1705,7 @@ esac
 
 &lt;p&gt;最终的效果：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-29-use-vim-to-make-my-ide-overview.jpg&#34; alt=&#34;overview&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-29-use-vim-to-make-my-ide-overview.jpg&#34; alt=&#34;overview&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;现在把整个配置的过程记录下来，方便以后参考。&lt;/p&gt;
 
@@ -1985,7 +1985,7 @@ vim -d [file1] [file2]
 
 &lt;p&gt;之后会进入到文本编辑界面，如下图&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg&#34; alt=&#34;reset-commit-message&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg&#34; alt=&#34;reset-commit-message&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;将要修改的提交前面的 &lt;strong&gt;pick&lt;/strong&gt; 改为 &lt;strong&gt;edit&lt;/strong&gt; ，保存后退出。&lt;/p&gt;
 
@@ -2492,7 +2492,7 @@ $ git merge testing
 
 &lt;p&gt;因为公司限制了每个人只能用一个IP，所以虚拟机中的Linux系统使用NAT方式和主机相连。主机是Win7操作系统，会发现网络里面多了VMnet8这个网络。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg&#34; alt=&#34;vmware-net&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg&#34; alt=&#34;vmware-net&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;在VMware界面，点击“编辑”，“虚拟网络编辑器”&lt;/p&gt;
 
@@ -2502,11 +2502,11 @@ $ git merge testing
 
 &lt;p&gt;一般来说这时我们的主机会自动分配一个IP类似192.168.131.1这样的，子网掩码为255.255.255.0，如下图所示。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-host-net.jpg&#34; alt=&#34;host-net&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-host-net.jpg&#34; alt=&#34;host-net&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;现在进入虚拟机的Linux进行设置。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-network-configuration.jpg&#34; alt=&#34;network-configuration&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-network-configuration.jpg&#34; alt=&#34;network-configuration&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;注意IP需要设置成192.168.131.x的形势，网关是192.168.131.2。&lt;/p&gt;
 
@@ -3385,7 +3385,7 @@ w3.o:w3.cpp
 
 &lt;p&gt;这里需要注意的是，我们写的第一个规则的目标，将会成为“终极目标”，也就是我们最终希望生成的程序，这里是“test”文件。根据我们的“终极目标”，make会进行自动推导，例如“终极目标”依赖于的.o文件，make就会寻找生成这些.o文件的规则，然后执行相应的命令去生成这些文件，这样一层一层递归地进行下去，直到最终生成了“终极目标”。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://blog.fatedier.com/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg&#34; alt=&#34;gmake-target&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg&#34; alt=&#34;gmake-target&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;如上图所示，虽然生成test文件的规则写在最前面，但是由于依赖于w1.o、w2.o、w3.o，make会先执行生成w1.o、w2.o、w3.o所需的命令，然后才会执行g++ -o test test.cpp w1.o w2.o w3.o 来生成test文件。&lt;/p&gt;
 

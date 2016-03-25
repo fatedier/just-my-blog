@@ -52,3 +52,7 @@ p,.single li {
 .single h5 {
     font-size: 18px;
 }
+
+.single strong {
+    color: #3C4650;
+}

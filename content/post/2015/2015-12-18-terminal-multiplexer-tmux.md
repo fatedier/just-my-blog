@@ -210,7 +210,9 @@ set -g status-right '#[fg=green][#[fg=cyan]%H:%M#[fg=green]]'
 
 **由于天朝特殊的网络环境，gem的第三方包可能安装不了，可以替换成阿里提供的镜像源。**
 
-`gem sources --add [https://ruby.taobao.org/](https://ruby.taobao.org/) --remove [https://rubygems.org/](https://rubygems.org/)`
+```
+gem sources --add [https://ruby.taobao.org/](https://ruby.taobao.org/) --remove [https://rubygems.org/](https://rubygems.org/)
+```
 
 ##### 使用
 

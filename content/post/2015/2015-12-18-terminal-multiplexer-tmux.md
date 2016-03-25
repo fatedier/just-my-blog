@@ -209,6 +209,7 @@ set -g status-right '#[fg=green][#[fg=cyan]%H:%M#[fg=green]]'
 先安装 gem， `yum install -y rubygems`
 
 **由于天朝特殊的网络环境，gem的第三方包可能安装不了，可以替换成阿里提供的镜像源。**
+
 `gem sources --add [https://ruby.taobao.org/](https://ruby.taobao.org/) --remove [https://rubygems.org/](https://rubygems.org/)`
 
 ##### 使用
@@ -229,4 +230,4 @@ Tmux Resurrect 用于保存当前的session环境到磁盘上，用于以后恢�
 
 **由于这个插件需要 tmux 1.9 及以上的版本，而 centos7 的 yum 源里现在是1.8的版本，我的开发环境全是自动构建，不方便升级，所以暂时还没有尝试。**
 
-关于 Tmux Resurrect 的相关文档： http://www.linuxidc.com/Linux/2015-07/120304.htm
+关于 Tmux Resurrect 使用的相关文档： http://www.linuxidc.com/Linux/2015-07/120304.htm

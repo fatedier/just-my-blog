@@ -216,8 +216,9 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;先安装 gem， &lt;code&gt;yum install -y rubygems&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;由于天朝特殊的网络环境，gem的第三方包可能安装不了，可以替换成阿里提供的镜像源。&lt;/strong&gt;
-&lt;code&gt;gem sources --add [https://ruby.taobao.org/](https://ruby.taobao.org/) --remove [https://rubygems.org/](https://rubygems.org/)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;由于天朝特殊的网络环境，gem的第三方包可能安装不了，可以替换成阿里提供的镜像源。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;gem sources --add [https://ruby.taobao.org/](https://ruby.taobao.org/) --remove [https://rubygems.org/](https://rubygems.org/)&lt;/code&gt;&lt;/p&gt;
 
 &lt;h5 id=&#34;使用:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;使用&lt;/h5&gt;
 
@@ -237,7 +238,7 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;&lt;strong&gt;由于这个插件需要 tmux 1.9 及以上的版本，而 centos7 的 yum 源里现在是1.8的版本，我的开发环境全是自动构建，不方便升级，所以暂时还没有尝试。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;关于 Tmux Resurrect 的相关文档： &lt;a href=&#34;http://www.linuxidc.com/Linux/2015-07/120304.htm&#34;&gt;http://www.linuxidc.com/Linux/2015-07/120304.htm&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;关于 Tmux Resurrect 使用的相关文档： &lt;a href=&#34;http://www.linuxidc.com/Linux/2015-07/120304.htm&#34;&gt;http://www.linuxidc.com/Linux/2015-07/120304.htm&lt;/a&gt;&lt;/p&gt;
 </description>
         </item>
       

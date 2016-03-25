@@ -44,3 +44,11 @@ p,.single li {
     border-left: 6px solid #ff7e79;
     margin-bottom: 20px;
 }
+
+.single h4 {
+    font-size: 20px;
+}
+
+.single h5 {
+    font-size: 18px;
+}

@@ -123,7 +123,7 @@
 
 <p>配置文件中 <code>&quot;</code> 之后的部分都被当作注释。</p>
 
-<pre><code>if v:lang =~ &quot;utf8$&quot; || v:lang =~&quot;UTF-8$&quot;
+<pre><code class="language-vim">if v:lang =~ &quot;utf8$&quot; || v:lang =~&quot;UTF-8$&quot;
     set fileencodings=ucs-bom,utf-8,latin1
 endif
        
@@ -198,7 +198,7 @@ inoremap &lt;C-\&gt; &lt;Esc&gt;&lt;&lt;i
 
 <p>最后需要在vim配置文件中将tags文件加入到vim中来：</p>
 
-<pre><code class="language-bash">set tags=~/tags
+<pre><code class="language-vim">set tags=~/tags
 </code></pre>
 
 <p><strong>注：这里需要填具体的tags文件所在路径。</strong></p>
@@ -214,7 +214,7 @@ inoremap &lt;C-\&gt; &lt;Esc&gt;&lt;&lt;i
 
 <p>以后当你需要安装其他的vim插件的时候，直接在.vimrc中加上如下部分：</p>
 
-<pre><code class="language-bash">filetype off
+<pre><code class="language-vim">filetype off
  
 setrtp+=~/.vim/bundle/vundle/
 call vundle#rc()
@@ -237,7 +237,7 @@ filetype pluginindent on
 
 <p>如果你需要的插件在这个里面没有找到，那么在.vimrc配置文件中可以直接用git远程仓库的地址，例如要安装command-t这个插件，可以在配置文件中加上：</p>
 
-<pre><code class="language-bash">Bundle &quot;git://git.wincent.com/command-t.git&quot;
+<pre><code class="language-vim">Bundle &quot;git://git.wincent.com/command-t.git&quot;
 </code></pre>
 
 <p>这样就会直接从这个地址上下载所需插件。</p>
@@ -256,7 +256,7 @@ filetype pluginindent on
 
 <p>之后我们需要设置一下在normal模式下可以直接输入wm来打开文件管理窗口以及TagList，.vimrc文件增加如下命令：</p>
 
-<pre><code class="language-bash">let g:winManagerWindowLayout='FileExplorer|TagList'
+<pre><code class="language-vim">let g:winManagerWindowLayout='FileExplorer|TagList'
 nnoremap wm:WMToggle&lt;cr&gt;
 </code></pre>
 
@@ -278,12 +278,12 @@ nnoremap wm:WMToggle&lt;cr&gt;
 
 <p>并且在配置文件中加上如下配置：</p>
 
-<pre><code class="language-bash">let g:neocomplcache_enable_at_startup = 1
+<pre><code class="language-vim">let g:neocomplcache_enable_at_startup = 1
 </code></pre>
 
 <p>这一行是设置是否自动启用补全，为1代表启用。这样就不需要每次都使用Ctrl+P或者Ctrl+N来弹出补全列表。</p>
 
-<pre><code class="language-bash">let g:neocomplcache_enable_auto_select = 1
+<pre><code class="language-vim">let g:neocomplcache_enable_auto_select = 1
 </code></pre>
 
 <p>这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。</p>

@@ -42,7 +42,7 @@ github是一个好地方，不仅可以浏览很多的开源程序，而且可�
 
 配置文件中 `"` 之后的部分都被当作注释。
 
-```
+```vim
 if v:lang =~ "utf8$" || v:lang =~"UTF-8$"
     set fileencodings=ucs-bom,utf-8,latin1
 endif
@@ -119,7 +119,7 @@ tags文件是由ctags程序产生的一个索引文件，如果你在读程序�
 
 最后需要在vim配置文件中将tags文件加入到vim中来：
 
-```bash
+```vim
 set tags=~/tags
 ```
 
@@ -137,7 +137,7 @@ $ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 
 以后当你需要安装其他的vim插件的时候，直接在.vimrc中加上如下部分：
 
-```bash
+```vim
 filetype off
  
 setrtp+=~/.vim/bundle/vundle/
@@ -161,7 +161,7 @@ Bundle 后面的插件名称用引号引起来，最后在vim中输入:BundleIns
 
 如果你需要的插件在这个里面没有找到，那么在.vimrc配置文件中可以直接用git远程仓库的地址，例如要安装command-t这个插件，可以在配置文件中加上：
 
-```bash
+```vim
 Bundle "git://git.wincent.com/command-t.git"
 ```
 
@@ -181,7 +181,7 @@ WinManager可以帮助我们管理在屏幕上显示的多个窗口。
 
 之后我们需要设置一下在normal模式下可以直接输入wm来打开文件管理窗口以及TagList，.vimrc文件增加如下命令：
 
-```bash
+```vim
 let g:winManagerWindowLayout='FileExplorer|TagList'
 nnoremap wm:WMToggle<cr>
 ```
@@ -204,13 +204,13 @@ nnoremap wm:WMToggle<cr>
 
 并且在配置文件中加上如下配置：
 
-```bash
+```vim
 let g:neocomplcache_enable_at_startup = 1
 ```
 
 这一行是设置是否自动启用补全，为1代表启用。这样就不需要每次都使用Ctrl+P或者Ctrl+N来弹出补全列表。
 
-```bash
+```vim
 let g:neocomplcache_enable_auto_select = 1
 ```
 

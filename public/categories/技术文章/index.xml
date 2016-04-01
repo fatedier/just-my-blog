@@ -1784,7 +1784,7 @@ esac
 
 &lt;p&gt;配置文件中 &lt;code&gt;&amp;quot;&lt;/code&gt; 之后的部分都被当作注释。&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;if v:lang =~ &amp;quot;utf8$&amp;quot; || v:lang =~&amp;quot;UTF-8$&amp;quot;
+&lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;if v:lang =~ &amp;quot;utf8$&amp;quot; || v:lang =~&amp;quot;UTF-8$&amp;quot;
     set fileencodings=ucs-bom,utf-8,latin1
 endif
        
@@ -1859,7 +1859,7 @@ inoremap &amp;lt;C-\&amp;gt; &amp;lt;Esc&amp;gt;&amp;lt;&amp;lt;i
 
 &lt;p&gt;最后需要在vim配置文件中将tags文件加入到vim中来：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;set tags=~/tags
+&lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;set tags=~/tags
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;strong&gt;注：这里需要填具体的tags文件所在路径。&lt;/strong&gt;&lt;/p&gt;
@@ -1875,7 +1875,7 @@ inoremap &amp;lt;C-\&amp;gt; &amp;lt;Esc&amp;gt;&amp;lt;&amp;lt;i
 
 &lt;p&gt;以后当你需要安装其他的vim插件的时候，直接在.vimrc中加上如下部分：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;filetype off
+&lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;filetype off
  
 setrtp+=~/.vim/bundle/vundle/
 call vundle#rc()
@@ -1898,7 +1898,7 @@ filetype pluginindent on
 
 &lt;p&gt;如果你需要的插件在这个里面没有找到，那么在.vimrc配置文件中可以直接用git远程仓库的地址，例如要安装command-t这个插件，可以在配置文件中加上：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;Bundle &amp;quot;git://git.wincent.com/command-t.git&amp;quot;
+&lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;Bundle &amp;quot;git://git.wincent.com/command-t.git&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这样就会直接从这个地址上下载所需插件。&lt;/p&gt;
@@ -1917,7 +1917,7 @@ filetype pluginindent on
 
 &lt;p&gt;之后我们需要设置一下在normal模式下可以直接输入wm来打开文件管理窗口以及TagList，.vimrc文件增加如下命令：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;let g:winManagerWindowLayout=&#39;FileExplorer|TagList&#39;
+&lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;let g:winManagerWindowLayout=&#39;FileExplorer|TagList&#39;
 nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -1939,12 +1939,12 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;并且在配置文件中加上如下配置：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;let g:neocomplcache_enable_at_startup = 1
+&lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;let g:neocomplcache_enable_at_startup = 1
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这一行是设置是否自动启用补全，为1代表启用。这样就不需要每次都使用Ctrl+P或者Ctrl+N来弹出补全列表。&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;let g:neocomplcache_enable_auto_select = 1
+&lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;let g:neocomplcache_enable_auto_select = 1
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。&lt;/p&gt;

@@ -110,7 +110,7 @@
 
 <p>其实问题的关键就在于 <code>GOPATH</code> 这个环境变量，这个变量决定了查找包的绝对路径。我们在项目根目录下建立 <code>src/frp</code> 这样的目录结构，之后将原来的源代码放到这个目录下，然后内部包的应用方式还是改成 <code>import frp/xxx</code> 这种简洁的格式。</p>
 
-<p>编译的时候，把项目根目录加到 <code>GOPATH</code> 中去，例如 <code>GOPATH=\</code>pwd`:${GOPATH}`，这样就会在自己的目录里查找内部包。</p>
+<p>编译的时候，把项目根目录加到 <code>GOPATH</code> 中去，例如 <code>GOPATH=`pwd`:${GOPATH}</code>，这样就会在自己的目录里查找内部包。</p>
 
 <p>可以看到，通过这样的方式不管把你把项目放到哪一个目录下，都可以编译成功，当然，为了便于管理，推荐还是放在 <code>$GOPATH/src</code> 目录下，同时使用 <a href="https://github.com/tools/godep">godep</a> 来管理第三方包。</p>
 
@@ -146,7 +146,7 @@
                     <ul class="pager">
 
                         
-                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
@@ -175,6 +175,8 @@
                 </div>
                 <div class="list-group">
                     
+                    <a href="http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files" class="list-group-item">简记用sed对文件执行批量替换字符串的方法</a>
+                    
                     <a href="http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory" class="list-group-item">如何使golang项目可以在任意目录下编译</a>
                     
                     <a href="http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects" class="list-group-item">使用godep管理golang项目的第三方包</a>
@@ -188,8 +190,6 @@
                     <a href="http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl" class="list-group-item">python中使用pycurl库上传文件</a>
                     
                     <a href="http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp" class="list-group-item">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>
-                    
-                    <a href="http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll" class="list-group-item">epoll使用说明</a>
                     
                 </div>
             </div>
@@ -223,7 +223,7 @@
                     
                     
                     <a href="http://blog.fatedier.com/tags/linux" class="list-group-item">
-                        <span class="badge">13</span>
+                        <span class="badge">14</span>
                         linux
                     </a>
                     
@@ -237,6 +237,12 @@
                     <a href="http://blog.fatedier.com/tags/redis" class="list-group-item">
                         <span class="badge">1</span>
                         redis
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/sed" class="list-group-item">
+                        <span class="badge">1</span>
+                        sed
                     </a>
                     
                     

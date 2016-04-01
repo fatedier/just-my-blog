@@ -32,6 +32,6 @@ url: "/2016/02/25/how-to-compile-go-project-in-any-directory"
 
 其实问题的关键就在于 `GOPATH` 这个环境变量，这个变量决定了查找包的绝对路径。我们在项目根目录下建立 `src/frp` 这样的目录结构，之后将原来的源代码放到这个目录下，然后内部包的应用方式还是改成 `import frp/xxx` 这种简洁的格式。
 
-编译的时候，把项目根目录加到 `GOPATH` 中去，例如 `GOPATH=\`pwd\`:${GOPATH}`，这样就会在自己的目录里查找内部包。
+编译的时候，把项目根目录加到 `GOPATH` 中去，例如 ``GOPATH=`pwd`:${GOPATH}``，这样就会在自己的目录里查找内部包。
 
 可以看到，通过这样的方式不管把你把项目放到哪一个目录下，都可以编译成功，当然，为了便于管理，推荐还是放在 `$GOPATH/src` 目录下，同时使用 [godep](https://github.com/tools/godep) 来管理第三方包。

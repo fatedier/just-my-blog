@@ -6,8 +6,63 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2016</rights>
-    <updated>2015-12-18 00:00:00 &#43;0000 UTC</updated>
+    <updated>2016-03-25 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>简记用sed对文件执行批量替换字符串的方法</title>
+          <link>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files</link>
+          <pubDate>Fri, 25 Mar 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files</guid>
+          <description>
+
+&lt;p&gt;每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。&lt;/p&gt;
+
+&lt;p&gt;因为 blog 的图片迁到了七牛云上（提供CDN加速服务），原来的图片链接必然要替换成七牛云提供的二级域名，在 markdown 文件中有很多图片的标签，也不可能一个一个手动改，最好是能一个命令下去直接全部修改完毕并且以后也可以很轻松地改成其他域名。&lt;/p&gt;
+
+&lt;p&gt;执行的命令如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;sed -i &amp;quot;s?(.*|pic|?(http://xxx.clouddn.com|pic|?g&amp;quot; `grep &amp;quot;|pic|&amp;quot; -rl ./`&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;注：本文中所有的 &lt;code&gt;|pic|&lt;/code&gt; 其实是 &lt;code&gt;/pic/&lt;/code&gt;，这样是为了避免被误替换。也可以通过 &lt;code&gt;grep -v&lt;/code&gt; 来手动指定不替换的文件。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;grep:e1c2ae8777bb46014c863fd3c79b29cd&#34;&gt;grep&lt;/h4&gt;
+
+&lt;p&gt;先看后面，&lt;code&gt;grep &amp;quot;|pic|&amp;quot; -rl ./&lt;/code&gt; 用于递归查找所有含有 &lt;code&gt;|pic|&lt;/code&gt; 这个字符串的文件所在路径的路径名，按行显示。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-r&lt;/code&gt; 参数表示会对目录进行递归查找。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-l&lt;/code&gt; 参数会输出匹配的文件名&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;sed:e1c2ae8777bb46014c863fd3c79b29cd&#34;&gt;sed&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;sed&lt;/strong&gt; 和 &lt;strong&gt;awk&lt;/strong&gt; 都是文本处理的利器。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;sed&lt;/code&gt; 进行文本替换的常用的格式是 &lt;code&gt;sed &amp;quot;s/aa/bb/g&amp;quot; ./testfile&lt;/code&gt;，表示将文件中所有的 &lt;strong&gt;aa&lt;/strong&gt; 替换成 &lt;strong&gt;bb&lt;/strong&gt;， 最后的 &lt;code&gt;g&lt;/code&gt; 表示作用域是全局。&lt;/p&gt;
+
+&lt;p&gt;这里分隔符用的 &lt;code&gt;/&lt;/code&gt;，也可以换成其他符号，比如上面我用的是 &lt;code&gt;?&lt;/code&gt;，只要保证这三个地方的符号一致并且没有歧义即可。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;(.*|pic|&lt;/code&gt; 是一个正则匹配， &lt;code&gt;.&lt;/code&gt; 表示匹配任意一个字符，&lt;code&gt;*&lt;/code&gt; 表示匹配0个或多个前面的字符，这里两个合起来就是匹配任意字符串。完整的意思就是匹配以 &lt;code&gt;(&lt;/code&gt; 开头，以 &lt;code&gt;|pic|&lt;/code&gt; 结尾的任意字符串。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;(http://xxx.clouddn.com|pic|&lt;/code&gt; 是替换后的字符串。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;-i&lt;/code&gt; 表示将替换后的结果写入文件中，而不是直接输出。&lt;/p&gt;
+
+&lt;h4 id=&#34;查看修改结果:e1c2ae8777bb46014c863fd3c79b29cd&#34;&gt;查看修改结果&lt;/h4&gt;
+
+&lt;p&gt;一开始不确定修改是否正确最好不要给予使用 &lt;code&gt;-i&lt;/code&gt; 参数将修改后的结果写入文件，可以将上面的命令换成如下的内容来检查是否替换正确：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;sed -n &amp;quot;s?(.*|pic|?(http://xxx.clouddn.com|pic|?gp&amp;quot; `grep &amp;quot;|pic|&amp;quot; -rl ./`&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;-n&lt;/code&gt; 表示静默模式，如果有输出内容的话，不会输出整个文件的内容，而仅仅是匹配的内容。&lt;/p&gt;
+
+&lt;p&gt;后面的 &lt;code&gt;gp&lt;/code&gt;，&lt;code&gt;g&lt;/code&gt; 前面说过是表示作用域是全局，&lt;code&gt;p&lt;/code&gt; 表示会输出匹配的内容。&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

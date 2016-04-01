@@ -40,7 +40,7 @@
 
 &lt;p&gt;其实问题的关键就在于 &lt;code&gt;GOPATH&lt;/code&gt; 这个环境变量，这个变量决定了查找包的绝对路径。我们在项目根目录下建立 &lt;code&gt;src/frp&lt;/code&gt; 这样的目录结构，之后将原来的源代码放到这个目录下，然后内部包的应用方式还是改成 &lt;code&gt;import frp/xxx&lt;/code&gt; 这种简洁的格式。&lt;/p&gt;
 
-&lt;p&gt;编译的时候，把项目根目录加到 &lt;code&gt;GOPATH&lt;/code&gt; 中去，例如 &lt;code&gt;GOPATH=\&lt;/code&gt;pwd`:${GOPATH}`，这样就会在自己的目录里查找内部包。&lt;/p&gt;
+&lt;p&gt;编译的时候，把项目根目录加到 &lt;code&gt;GOPATH&lt;/code&gt; 中去，例如 &lt;code&gt;GOPATH=`pwd`:${GOPATH}&lt;/code&gt;，这样就会在自己的目录里查找内部包。&lt;/p&gt;
 
 &lt;p&gt;可以看到，通过这样的方式不管把你把项目放到哪一个目录下，都可以编译成功，当然，为了便于管理，推荐还是放在 &lt;code&gt;$GOPATH/src&lt;/code&gt; 目录下，同时使用 &lt;a href=&#34;https://github.com/tools/godep&#34;&gt;godep&lt;/a&gt; 来管理第三方包。&lt;/p&gt;
 </description>

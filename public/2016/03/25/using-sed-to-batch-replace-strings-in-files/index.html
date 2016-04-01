@@ -94,9 +94,11 @@
 
 <p>执行的命令如下：</p>
 
-<p><code>sed -i &quot;s?(.*|pic|?(http://xxx.clouddn.com|pic|?g&quot; `grep &quot;|pic|&quot; -rl ./`</code></p>
+<p><code>sed -i &quot;s?](.*|pic|?](http://xxx.clouddn.com|pic|?g&quot; `grep &quot;|pic|&quot; -rl ./`</code></p>
 
 <p><strong>注：本文中所有的 <code>|pic|</code> 其实是 <code>/pic/</code>，这样是为了避免被误替换。也可以通过 <code>grep -v</code> 来手动指定不替换的文件。</strong></p>
+
+<p><strong>markdown 中的图片标签一般的格式是 <code>![label](http://www.xxx.com/a.jpg)</code>，我的图片链接则是都会有一个 <code>pic</code> 的目录前缀。</strong></p>
 
 <h4 id="grep:e1c2ae8777bb46014c863fd3c79b29cd">grep</h4>
 
@@ -115,9 +117,9 @@
 
 <p>这里分隔符用的 <code>/</code>，也可以换成其他符号，比如上面我用的是 <code>?</code>，只要保证这三个地方的符号一致并且没有歧义即可。</p>
 
-<p><code>(.*|pic|</code> 是一个正则匹配， <code>.</code> 表示匹配任意一个字符，<code>*</code> 表示匹配0个或多个前面的字符，这里两个合起来就是匹配任意字符串。完整的意思就是匹配以 <code>(</code> 开头，以 <code>|pic|</code> 结尾的任意字符串。</p>
+<p><code>](.*|pic|</code> 是一个正则匹配， <code>.</code> 表示匹配任意一个字符，<code>*</code> 表示匹配0个或多个前面的字符，这里两个合起来就是匹配任意字符串。完整的意思就是匹配以 <code>](</code> 开头，以 <code>|pic|</code> 结尾的任意字符串。</p>
 
-<p><code>(http://xxx.clouddn.com|pic|</code> 是替换后的字符串。</p>
+<p><code>](http://xxx.clouddn.com|pic|</code> 是替换后的字符串。</p>
 
 <p><code>-i</code> 表示将替换后的结果写入文件中，而不是直接输出。</p>
 
@@ -125,7 +127,7 @@
 
 <p>一开始不确定修改是否正确最好不要给予使用 <code>-i</code> 参数将修改后的结果写入文件，可以将上面的命令换成如下的内容来检查是否替换正确：</p>
 
-<p><code>sed -n &quot;s?(.*|pic|?(http://xxx.clouddn.com|pic|?gp&quot; `grep &quot;|pic|&quot; -rl ./`</code></p>
+<p><code>sed -n &quot;s?](.*|pic|?](http://xxx.clouddn.com|pic|?gp&quot; `grep &quot;|pic|&quot; -rl ./`</code></p>
 
 <p><code>-n</code> 表示静默模式，如果有输出内容的话，不会输出整个文件的内容，而仅仅是匹配的内容。</p>
 

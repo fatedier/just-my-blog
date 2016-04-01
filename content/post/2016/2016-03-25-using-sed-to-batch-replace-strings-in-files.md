@@ -17,9 +17,11 @@ url: "/2016/03/25/using-sed-to-batch-replace-strings-in-files"
 
 执行的命令如下：
 
-``sed -i "s?(.*|pic|?(http://xxx.clouddn.com|pic|?g" `grep "|pic|" -rl ./` ``
+``sed -i "s?](.*|pic|?](http://xxx.clouddn.com|pic|?g" `grep "|pic|" -rl ./` ``
 
 **注：本文中所有的 `|pic|` 其实是 `/pic/`，这样是为了避免被误替换。也可以通过 `grep -v` 来手动指定不替换的文件。**
+
+**markdown 中的图片标签一般的格式是 `![label](http://www.xxx.com/a.jpg)`，我的图片链接则是都会有一个 `pic` 的目录前缀。**
 
 #### grep
 
@@ -36,9 +38,9 @@ url: "/2016/03/25/using-sed-to-batch-replace-strings-in-files"
 
 这里分隔符用的 `/`，也可以换成其他符号，比如上面我用的是 `?`，只要保证这三个地方的符号一致并且没有歧义即可。
 
-`(.*|pic|` 是一个正则匹配， `.` 表示匹配任意一个字符，`*` 表示匹配0个或多个前面的字符，这里两个合起来就是匹配任意字符串。完整的意思就是匹配以 `(` 开头，以 `|pic|` 结尾的任意字符串。
+`](.*|pic|` 是一个正则匹配， `.` 表示匹配任意一个字符，`*` 表示匹配0个或多个前面的字符，这里两个合起来就是匹配任意字符串。完整的意思就是匹配以 `](` 开头，以 `|pic|` 结尾的任意字符串。
 
-`(http://xxx.clouddn.com|pic|` 是替换后的字符串。
+`](http://xxx.clouddn.com|pic|` 是替换后的字符串。
 
 `-i` 表示将替换后的结果写入文件中，而不是直接输出。
 
@@ -46,7 +48,7 @@ url: "/2016/03/25/using-sed-to-batch-replace-strings-in-files"
 
 一开始不确定修改是否正确最好不要给予使用 `-i` 参数将修改后的结果写入文件，可以将上面的命令换成如下的内容来检查是否替换正确：
 
-``sed -n "s?(.*|pic|?(http://xxx.clouddn.com|pic|?gp" `grep "|pic|" -rl ./` ``
+``sed -n "s?](.*|pic|?](http://xxx.clouddn.com|pic|?gp" `grep "|pic|" -rl ./` ``
 
 `-n` 表示静默模式，如果有输出内容的话，不会输出整个文件的内容，而仅仅是匹配的内容。
 

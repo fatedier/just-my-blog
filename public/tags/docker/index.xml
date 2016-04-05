@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fatedier blog </title>
+    <link>http://blog.fatedier.com/tags/docker/</link>
+    <language>en-us</language>
+    <author></author>
+    <rights>(C) 2016</rights>
+    <updated>2016-04-05 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>利用docker搭建gitlab及持续集成模块</title>
+          <link>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker</link>
+          <pubDate>Tue, 05 Apr 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker</guid>
+          <description>
+
+&lt;p&gt;版本控制的重要性应该是毋庸置疑了，git 作为现在最流行的版本控制工具，各种规模的公司都在用。通常开源项目都会放在 github 上，基础功能是免费的，私有项目收费。对于一个小团队来说，gitlab 就是另外一个替代品，可以用来搭建自己私有的git服务器。&lt;/p&gt;
+
+&lt;h3 id=&#34;为什么需要版本控制和持续继承:3563cae33094e7208a24a4600cb42f77&#34;&gt;为什么需要版本控制和持续继承？&lt;/h3&gt;
+
+&lt;p&gt;经常听到很多程序员说自己没有时间写测试用例，但其实很多人的时间都花在了手动测试，修复bug，调试程序上。如果写好测试用例，每次提交代码后都自动进行编译，然后将测试用例全部跑一遍，如果测试失败能够获取到足够的反馈信息，这样避免了重复构建测试环境，手动运行测试用例等低效率的工作，而这就是持续集成的好处。&lt;/p&gt;
+
+&lt;h3 id=&#34;准备工作:3563cae33094e7208a24a4600cb42f77&#34;&gt;准备工作&lt;/h3&gt;
+
+&lt;h4 id=&#34;docker-环境:3563cae33094e7208a24a4600cb42f77&#34;&gt;docker 环境&lt;/h4&gt;
+
+&lt;p&gt;安装 &lt;code&gt;docker&lt;/code&gt; 环境，&lt;code&gt;centos&lt;/code&gt; 的话可以使用 &lt;code&gt;sudo yum install -y docker&lt;/code&gt; 直接安装&lt;/p&gt;
+
+&lt;p&gt;之后启动 &lt;code&gt;docker&lt;/code&gt;，&lt;code&gt;sudo service docker start&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;docker-镜像加速:3563cae33094e7208a24a4600cb42f77&#34;&gt;docker 镜像加速&lt;/h4&gt;
+
+&lt;p&gt;由于国内的网络环境过于恶劣，多次尝试从 &lt;a href=&#34;https://gitlab.com/&#34;&gt;gitlab&lt;/a&gt; 官网下载源码安装包未果，之后发现  gitlab 还提供 docker 镜像，这样不仅部署方便，利用国内一些云服务商提供的镜像加速功能，可以加速 docker 镜像的下载。&lt;/p&gt;
+
+&lt;p&gt;推荐 daocloud 的镜像加速服务，&lt;a href=&#34;https://dashboard.daocloud.io/mirror&#34;&gt;https://dashboard.daocloud.io/mirror&lt;/a&gt;，安装之后，使用 &lt;code&gt;dao pull&lt;/code&gt; 替代 &lt;code&gt;docker pull&lt;/code&gt; 即可。&lt;/p&gt;
+
+&lt;h4 id=&#34;下载相关docker镜像:3563cae33094e7208a24a4600cb42f77&#34;&gt;下载相关docker镜像&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;gitlab/gitlab-ce:latest （gitlab 的 docker镜像）&lt;/li&gt;
+&lt;li&gt;gitlab/gitlab-runner:latest （用于持续集成，构建测试环境）&lt;/li&gt;
+&lt;li&gt;golang:1.5 （golang基础环境，用于编译代码，运行测试用例）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;启动-gitlab:3563cae33094e7208a24a4600cb42f77&#34;&gt;启动 gitlab&lt;/h3&gt;
+
+&lt;p&gt;具体的官方说明文档：&lt;a href=&#34;http://doc.gitlab.com/omnibus/docker/README.html&#34;&gt;http://doc.gitlab.com/omnibus/docker/README.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;启动 &lt;code&gt;gitlab&lt;/code&gt; 就是启动相应的 &lt;code&gt;docker&lt;/code&gt; 镜像，设置好相关配置参数，命令如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo docker run --detach \
+    --hostname x.x.x.x \
+    --publish 7000:443 --publish 80:80 --publish 7002:22 \
+    --name gitlab \
+    --restart always \
+    --volume /srv/gitlab/config:/etc/gitlab \
+    --volume /srv/gitlab/logs:/var/log/gitlab \
+    --volume /srv/gitlab/data:/var/opt/gitlab \
+    gitlab/gitlab-ce:latest
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果你的机器开启了 &lt;code&gt;SELINUX&lt;/code&gt;，需要使用如下的命令&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo docker run --detach \
+    --hostname x.x.x.x \
+    --publish 7000:443 --publish 80:80 --publish 7002:22 \
+    --name gitlab \
+    --restart always \
+    --volume /srv/gitlab/config:/etc/gitlab:Z \
+    --volume /srv/gitlab/logs:/var/log/gitlab:Z \
+    --volume /srv/gitlab/data:/var/opt/gitlab:Z \
+    gitlab/gitlab-ce:latest
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;hostname&lt;/code&gt; 可以是gitlab服务器的ip，也可以是绑定的域名，80端口需要映射到宿主机的80端口，因为之后 &lt;code&gt;github-ci-runner&lt;/code&gt; 会从这个端口下载测试源码。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;/srv/gitlab&lt;/code&gt; 是用于持久化 docker 容器中产生的数据，例如 &lt;strong&gt;redis&lt;/strong&gt;，&lt;strong&gt;postgresql&lt;/strong&gt; 等等，gitlab 的docker 镜像中已经内置了这些服务。&lt;/p&gt;
+
+&lt;p&gt;启动成功后，可以通过浏览器访问80端口来使用 gitlab 了，可能是由于我的测试服务器配置较低，等待约2分钟后才能访问。&lt;/p&gt;
+
+&lt;p&gt;初始帐号和密码为 &lt;code&gt;root&lt;/code&gt;  &lt;code&gt;5iveL!fe&lt;/code&gt;，第一次登录成功后需要修改密码。&lt;/p&gt;
+
+&lt;p&gt;gitlab 的具体使用文档比较多，这里就不详细介绍了。&lt;/p&gt;
+
+&lt;h3 id=&#34;创建测试项目:3563cae33094e7208a24a4600cb42f77&#34;&gt;创建测试项目&lt;/h3&gt;
+
+&lt;p&gt;简单创建一个 &lt;code&gt;test&lt;/code&gt; 项目，先不要提交到 gitlab 仓库。&lt;/p&gt;
+
+&lt;p&gt;包含一个 &lt;code&gt;a.go&lt;/code&gt; 文件，文件内容如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import fmt 
+
+func main() {
+    fmt.Printf(&amp;quot;aaa\n&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;可以看到 import 包名没有加双引号，显然编译时就会出错。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;添加-gitlab-ci-yml-文件:3563cae33094e7208a24a4600cb42f77&#34;&gt;添加 .gitlab-ci.yml 文件&lt;/h4&gt;
+
+&lt;p&gt;配置文件详细内容请参考 &lt;a href=&#34;http://doc.gitlab.com/ce/ci/yaml/README.html&#34;&gt;http://doc.gitlab.com/ce/ci/yaml/README.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;这里简单写一下，仅仅用于测试：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;image: golang:1.5
+
+job1:
+    script:
+        - go build a.go
+        - ./a
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;image&lt;/code&gt; 表示使用 &lt;code&gt;golang:1.5&lt;/code&gt; 的 docker 镜像来部署编译和测试代码，我们之前已经下好了。&lt;/p&gt;
+
+&lt;p&gt;测试命令有两条，&lt;code&gt;go build a.go&lt;/code&gt; 编译源码， &lt;code&gt;./a&lt;/code&gt; 执行编译后的程序。&lt;/p&gt;
+
+&lt;h3 id=&#34;获取-runner-registration-token:3563cae33094e7208a24a4600cb42f77&#34;&gt;获取 Runner registration token&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-registration-token.png&#34; alt=&#34;registration-token&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;在 &lt;code&gt;gitlab&lt;/code&gt; 的管理员配置界面，左边有一个 &lt;code&gt;Runners&lt;/code&gt;，点进去之后可以看到有一个 &lt;code&gt;Registration token&lt;/code&gt;，这个是用于之后创建的 &lt;code&gt;runner&lt;/code&gt; 服务与 &lt;code&gt;gitlab&lt;/code&gt; 通信的时候认证使用。&lt;/p&gt;
+
+&lt;p&gt;例如图中的 &lt;code&gt;Registration token&lt;/code&gt; 为 &lt;code&gt;XKZmVj9t8j4xj1e5k34N&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h3 id=&#34;启动-runner:3563cae33094e7208a24a4600cb42f77&#34;&gt;启动 Runner&lt;/h3&gt;
+
+&lt;p&gt;Runner 官方详细说明文档： &lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/docs/install/docker.md&#34;&gt;https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/docs/install/docker.md&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Runner&lt;/code&gt;其实就是用于编译和管理测试环境的服务，当 &lt;code&gt;gitlab&lt;/code&gt; 上的项目有 &lt;code&gt;commit&lt;/code&gt; 或 &lt;code&gt;merge&lt;/code&gt; 的时候，&lt;code&gt;Runner&lt;/code&gt; 可以 hook 到相关信息，然后从 &lt;code&gt;gitlab&lt;/code&gt; 上拉取代码，利用 &lt;code&gt;docker&lt;/code&gt; 创建一个新的测试环境，之后执行 &lt;code&gt;.gitlab-ci.yml&lt;/code&gt; 文件中预先配置好的命令。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;docker run -d --name gitlab-runner --restart always \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+      gitlab/gitlab-runner:latest
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果你的机器开启了 SELINUX，需要使用如下的命令：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;docker run -d --name gitlab-runner --restart always \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v /srv/gitlab-runner/config:/etc/gitlab-runner:Z \
+      gitlab/gitlab-runner:latest
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;关联-gitlab:3563cae33094e7208a24a4600cb42f77&#34;&gt;关联 gitlab&lt;/h4&gt;
+
+&lt;p&gt;启动成功后的 &lt;code&gt;Runner&lt;/code&gt; 需要在 &lt;code&gt;gitlab&lt;/code&gt; 上注册，通过在 &lt;code&gt;Runner&lt;/code&gt; 上执行注册命令，会调用 &lt;code&gt;gitlab&lt;/code&gt; 的相关接口注册。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;docker exec -it gitlab-runner gitlab-runner register
+
+Please enter the gitlab-ci coordinator URL (e.g. [https://gitlab.com/ci](https://gitlab.com/ci) )
+[https://gitlab.com/ci](https://gitlab.com/ci)（这里的gitlab.com替换成之前启动gitlab时填写的 hostname）
+
+Please enter the gitlab-ci token for this runner
+xxx（填写获取到的 runner registration token）
+
+Please enter the gitlab-ci description for this runner
+my
+INFO[0034] fcf5c619 Registering runner... succeeded
+
+Please enter the executor: shell, docker, docker-ssh, ssh?
+docker
+
+Please enter the Docker image (eg. ruby:2.1):
+golang:1.5
+INFO[0037] Runner registered successfully. Feel free to start it, but if it&#39;s
+running already the config should be automatically reloaded!
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;测试:3563cae33094e7208a24a4600cb42f77&#34;&gt;测试&lt;/h3&gt;
+
+&lt;p&gt;利用 &lt;code&gt;docker&lt;/code&gt; 来搭建这套环境还是非常简单的。&lt;/p&gt;
+
+&lt;p&gt;接着提交我们之前创建的两个文件，&lt;code&gt;a.go&lt;/code&gt; 和 &lt;code&gt;.gitlab-ci.yml&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;访问 &lt;code&gt;gitlab&lt;/code&gt; 查看 &lt;code&gt;build&lt;/code&gt; 的结果。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit.png&#34; alt=&#34;test-commit&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;可以看到提交记录右边有一个红叉，表示测试未通过，点击红叉，可以看到测试的摘要信息。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-info.png&#34; alt=&#34;test-info&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;继续点 红色的 &lt;code&gt;failed&lt;/code&gt; 按钮就可以看到详细的测试信息。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-deatil.png&#34; alt=&#34;test-deatil&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;从 &lt;code&gt;Runner&lt;/code&gt; 测试过程的输出信息可以看出来，&lt;code&gt;Runner&lt;/code&gt; 先 &lt;code&gt;pull&lt;/code&gt; 我们指定的 &lt;code&gt;docker&lt;/code&gt; 镜像，这里是 &lt;code&gt;golang:1.5&lt;/code&gt;，之后 &lt;code&gt;git clone&lt;/code&gt; 代码到测试环境，然后开始执行测试命令，在执行 &lt;code&gt;go build a.go&lt;/code&gt; 的时候出现了错误，并且显示了错误信息。&lt;/p&gt;
+
+&lt;p&gt;将错误的代码修改后再次提交&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import (
+    &amp;quot;fmt&amp;quot;
+)
+
+func main() {
+    fmt.Printf(&amp;quot;aaa\n&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到能够通过测试了，执行程序后的输出 &lt;code&gt;aaa&lt;/code&gt; 也能够看到。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit-all.png&#34; alt=&#34;test-commit-all&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png&#34; alt=&#34;test-succ-detail&#34; /&gt;&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

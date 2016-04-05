@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+<meta property="og:url" content="http://blog.fatedier.com">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用docker搭建gitlab及持续集成模块 &middot; fatedier blog">
+
+<meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    利用docker搭建gitlab及持续集成模块
+    
+</title>
+
+
+<link rel="stylesheet" href="http://blog.fatedier.com/bs/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://blog.fatedier.com/bs/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="http://blog.fatedier.com/css/hightlight/tomorrow-night.min.css">
+
+<link rel="stylesheet" href="http://blog.fatedier.com/bs/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="http://blog.fatedier.com/css/styles.css">
+<link rel="stylesheet" href="http://blog.fatedier.com/css/custom.css">
+
+
+<link rel="shortcut icon" href="http://blog.fatedier.com/assets/favicon.ico">
+
+
+<link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.fatedier.com/index.xml">
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="http://blog.fatedier.com">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
+                        <li><a href="http://blog.fatedier.com/tags">Tags</a></li>
+                        
+                        <li><a href="http://blog.fatedier.com/about">关于我</a></li>
+                        
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                    <time datetime="2016年04月05日">
+                        2016年04月05日
+                    </time>
+                </div>
+                <h1 class="post-title">利用docker搭建gitlab及持续集成模块</h1>
+            </header>
+
+            <div class="post-content">
+                
+
+<p>版本控制的重要性应该是毋庸置疑了，git 作为现在最流行的版本控制工具，各种规模的公司都在用。通常开源项目都会放在 github 上，基础功能是免费的，私有项目收费。对于一个小团队来说，gitlab 就是另外一个替代品，可以用来搭建自己私有的git服务器。</p>
+
+<h3 id="为什么需要版本控制和持续继承:3563cae33094e7208a24a4600cb42f77">为什么需要版本控制和持续继承？</h3>
+
+<p>经常听到很多程序员说自己没有时间写测试用例，但其实很多人的时间都花在了手动测试，修复bug，调试程序上。如果写好测试用例，每次提交代码后都自动进行编译，然后将测试用例全部跑一遍，如果测试失败能够获取到足够的反馈信息，这样避免了重复构建测试环境，手动运行测试用例等低效率的工作，而这就是持续集成的好处。</p>
+
+<h3 id="准备工作:3563cae33094e7208a24a4600cb42f77">准备工作</h3>
+
+<h4 id="docker-环境:3563cae33094e7208a24a4600cb42f77">docker 环境</h4>
+
+<p>安装 <code>docker</code> 环境，<code>centos</code> 的话可以使用 <code>sudo yum install -y docker</code> 直接安装</p>
+
+<p>之后启动 <code>docker</code>，<code>sudo service docker start</code></p>
+
+<h4 id="docker-镜像加速:3563cae33094e7208a24a4600cb42f77">docker 镜像加速</h4>
+
+<p>由于国内的网络环境过于恶劣，多次尝试从 <a href="https://gitlab.com/">gitlab</a> 官网下载源码安装包未果，之后发现  gitlab 还提供 docker 镜像，这样不仅部署方便，利用国内一些云服务商提供的镜像加速功能，可以加速 docker 镜像的下载。</p>
+
+<p>推荐 daocloud 的镜像加速服务，<a href="https://dashboard.daocloud.io/mirror">https://dashboard.daocloud.io/mirror</a>，安装之后，使用 <code>dao pull</code> 替代 <code>docker pull</code> 即可。</p>
+
+<h4 id="下载相关docker镜像:3563cae33094e7208a24a4600cb42f77">下载相关docker镜像</h4>
+
+<ul>
+<li>gitlab/gitlab-ce:latest （gitlab 的 docker镜像）</li>
+<li>gitlab/gitlab-runner:latest （用于持续集成，构建测试环境）</li>
+<li>golang:1.5 （golang基础环境，用于编译代码，运行测试用例）</li>
+</ul>
+
+<h3 id="启动-gitlab:3563cae33094e7208a24a4600cb42f77">启动 gitlab</h3>
+
+<p>具体的官方说明文档：<a href="http://doc.gitlab.com/omnibus/docker/README.html">http://doc.gitlab.com/omnibus/docker/README.html</a></p>
+
+<p>启动 <code>gitlab</code> 就是启动相应的 <code>docker</code> 镜像，设置好相关配置参数，命令如下：</p>
+
+<pre><code class="language-bash">sudo docker run --detach \
+    --hostname x.x.x.x \
+    --publish 7000:443 --publish 80:80 --publish 7002:22 \
+    --name gitlab \
+    --restart always \
+    --volume /srv/gitlab/config:/etc/gitlab \
+    --volume /srv/gitlab/logs:/var/log/gitlab \
+    --volume /srv/gitlab/data:/var/opt/gitlab \
+    gitlab/gitlab-ce:latest
+</code></pre>
+
+<p>如果你的机器开启了 <code>SELINUX</code>，需要使用如下的命令</p>
+
+<pre><code class="language-bash">sudo docker run --detach \
+    --hostname x.x.x.x \
+    --publish 7000:443 --publish 80:80 --publish 7002:22 \
+    --name gitlab \
+    --restart always \
+    --volume /srv/gitlab/config:/etc/gitlab:Z \
+    --volume /srv/gitlab/logs:/var/log/gitlab:Z \
+    --volume /srv/gitlab/data:/var/opt/gitlab:Z \
+    gitlab/gitlab-ce:latest
+</code></pre>
+
+<p><code>hostname</code> 可以是gitlab服务器的ip，也可以是绑定的域名，80端口需要映射到宿主机的80端口，因为之后 <code>github-ci-runner</code> 会从这个端口下载测试源码。</p>
+
+<p><code>/srv/gitlab</code> 是用于持久化 docker 容器中产生的数据，例如 <strong>redis</strong>，<strong>postgresql</strong> 等等，gitlab 的docker 镜像中已经内置了这些服务。</p>
+
+<p>启动成功后，可以通过浏览器访问80端口来使用 gitlab 了，可能是由于我的测试服务器配置较低，等待约2分钟后才能访问。</p>
+
+<p>初始帐号和密码为 <code>root</code>  <code>5iveL!fe</code>，第一次登录成功后需要修改密码。</p>
+
+<p>gitlab 的具体使用文档比较多，这里就不详细介绍了。</p>
+
+<h3 id="创建测试项目:3563cae33094e7208a24a4600cb42f77">创建测试项目</h3>
+
+<p>简单创建一个 <code>test</code> 项目，先不要提交到 gitlab 仓库。</p>
+
+<p>包含一个 <code>a.go</code> 文件，文件内容如下</p>
+
+<pre><code class="language-go">package main
+
+import fmt 
+
+func main() {
+    fmt.Printf(&quot;aaa\n&quot;)
+}
+</code></pre>
+
+<p><strong>可以看到 import 包名没有加双引号，显然编译时就会出错。</strong></p>
+
+<h4 id="添加-gitlab-ci-yml-文件:3563cae33094e7208a24a4600cb42f77">添加 .gitlab-ci.yml 文件</h4>
+
+<p>配置文件详细内容请参考 <a href="http://doc.gitlab.com/ce/ci/yaml/README.html">http://doc.gitlab.com/ce/ci/yaml/README.html</a></p>
+
+<p>这里简单写一下，仅仅用于测试：</p>
+
+<pre><code class="language-yaml">image: golang:1.5
+
+job1:
+    script:
+        - go build a.go
+        - ./a
+</code></pre>
+
+<p><code>image</code> 表示使用 <code>golang:1.5</code> 的 docker 镜像来部署编译和测试代码，我们之前已经下好了。</p>
+
+<p>测试命令有两条，<code>go build a.go</code> 编译源码， <code>./a</code> 执行编译后的程序。</p>
+
+<h3 id="获取-runner-registration-token:3563cae33094e7208a24a4600cb42f77">获取 Runner registration token</h3>
+
+<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-registration-token.png" alt="registration-token" /></p>
+
+<p>在 <code>gitlab</code> 的管理员配置界面，左边有一个 <code>Runners</code>，点进去之后可以看到有一个 <code>Registration token</code>，这个是用于之后创建的 <code>runner</code> 服务与 <code>gitlab</code> 通信的时候认证使用。</p>
+
+<p>例如图中的 <code>Registration token</code> 为 <code>XKZmVj9t8j4xj1e5k34N</code>。</p>
+
+<h3 id="启动-runner:3563cae33094e7208a24a4600cb42f77">启动 Runner</h3>
+
+<p>Runner 官方详细说明文档： <a href="https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/docs/install/docker.md">https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/docs/install/docker.md</a></p>
+
+<p><code>Runner</code>其实就是用于编译和管理测试环境的服务，当 <code>gitlab</code> 上的项目有 <code>commit</code> 或 <code>merge</code> 的时候，<code>Runner</code> 可以 hook 到相关信息，然后从 <code>gitlab</code> 上拉取代码，利用 <code>docker</code> 创建一个新的测试环境，之后执行 <code>.gitlab-ci.yml</code> 文件中预先配置好的命令。</p>
+
+<pre><code class="language-bash">docker run -d --name gitlab-runner --restart always \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+      gitlab/gitlab-runner:latest
+</code></pre>
+
+<p>如果你的机器开启了 SELINUX，需要使用如下的命令：</p>
+
+<pre><code class="language-bash">docker run -d --name gitlab-runner --restart always \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v /srv/gitlab-runner/config:/etc/gitlab-runner:Z \
+      gitlab/gitlab-runner:latest
+</code></pre>
+
+<h4 id="关联-gitlab:3563cae33094e7208a24a4600cb42f77">关联 gitlab</h4>
+
+<p>启动成功后的 <code>Runner</code> 需要在 <code>gitlab</code> 上注册，通过在 <code>Runner</code> 上执行注册命令，会调用 <code>gitlab</code> 的相关接口注册。</p>
+
+<pre><code class="language-bash">docker exec -it gitlab-runner gitlab-runner register
+
+Please enter the gitlab-ci coordinator URL (e.g. [https://gitlab.com/ci](https://gitlab.com/ci) )
+[https://gitlab.com/ci](https://gitlab.com/ci)（这里的gitlab.com替换成之前启动gitlab时填写的 hostname）
+
+Please enter the gitlab-ci token for this runner
+xxx（填写获取到的 runner registration token）
+
+Please enter the gitlab-ci description for this runner
+my
+INFO[0034] fcf5c619 Registering runner... succeeded
+
+Please enter the executor: shell, docker, docker-ssh, ssh?
+docker
+
+Please enter the Docker image (eg. ruby:2.1):
+golang:1.5
+INFO[0037] Runner registered successfully. Feel free to start it, but if it's
+running already the config should be automatically reloaded!
+</code></pre>
+
+<h3 id="测试:3563cae33094e7208a24a4600cb42f77">测试</h3>
+
+<p>利用 <code>docker</code> 来搭建这套环境还是非常简单的。</p>
+
+<p>接着提交我们之前创建的两个文件，<code>a.go</code> 和 <code>.gitlab-ci.yml</code>。</p>
+
+<p>访问 <code>gitlab</code> 查看 <code>build</code> 的结果。</p>
+
+<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit.png" alt="test-commit" /></p>
+
+<p>可以看到提交记录右边有一个红叉，表示测试未通过，点击红叉，可以看到测试的摘要信息。</p>
+
+<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-info.png" alt="test-info" /></p>
+
+<p>继续点 红色的 <code>failed</code> 按钮就可以看到详细的测试信息。</p>
+
+<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-deatil.png" alt="test-deatil" /></p>
+
+<p>从 <code>Runner</code> 测试过程的输出信息可以看出来，<code>Runner</code> 先 <code>pull</code> 我们指定的 <code>docker</code> 镜像，这里是 <code>golang:1.5</code>，之后 <code>git clone</code> 代码到测试环境，然后开始执行测试命令，在执行 <code>go build a.go</code> 的时候出现了错误，并且显示了错误信息。</p>
+
+<p>将错误的代码修改后再次提交</p>
+
+<pre><code class="language-go">package main
+
+import (
+    &quot;fmt&quot;
+)
+
+func main() {
+    fmt.Printf(&quot;aaa\n&quot;)
+}
+</code></pre>
+
+<p>可以看到能够通过测试了，执行程序后的输出 <code>aaa</code> 也能够看到。</p>
+
+<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit-all.png" alt="test-commit-all" /></p>
+
+<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png" alt="test-succ-detail" /></p>
+
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker">http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="http://blog.fatedier.com/tags/git">
+                            <i class="fa fa-tags"></i>
+                            git
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="http://blog.fatedier.com/tags/docker">
+                            <i class="fa fa-tags"></i>
+                            docker
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+            
+            <footer>
+
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        
+
+                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+
+                
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+    <div class="row">
+
+        <div class="col-xs-12 col-sm-4 col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Recent Posts</h2>
+                </div>
+                <div class="list-group">
+                    
+                    <a href="http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker" class="list-group-item">利用docker搭建gitlab及持续集成模块</a>
+                    
+                    <a href="http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files" class="list-group-item">简记用sed对文件执行批量替换字符串的方法</a>
+                    
+                    <a href="http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory" class="list-group-item">如何使golang项目可以在任意目录下编译</a>
+                    
+                    <a href="http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects" class="list-group-item">使用godep管理golang项目的第三方包</a>
+                    
+                    <a href="http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux" class="list-group-item">终端利器 Tmux</a>
+                    
+                    <a href="http://blog.fatedier.com/2015/09/15/redis-cluster-survey" class="list-group-item">Redis集群调研</a>
+                    
+                    <a href="http://blog.fatedier.com/about" class="list-group-item">关于我</a>
+                    
+                    <a href="http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl" class="list-group-item">python中使用pycurl库上传文件</a>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-4 col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Tags</h2>
+                </div>
+                <div class="list-group">
+                    
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/c/cpp" class="list-group-item">
+                        <span class="badge">8</span>
+                        c/cpp
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/docker" class="list-group-item">
+                        <span class="badge">1</span>
+                        docker
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/git" class="list-group-item">
+                        <span class="badge">4</span>
+                        git
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/golang" class="list-group-item">
+                        <span class="badge">2</span>
+                        golang
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/linux" class="list-group-item">
+                        <span class="badge">14</span>
+                        linux
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/python" class="list-group-item">
+                        <span class="badge">1</span>
+                        python
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/redis" class="list-group-item">
+                        <span class="badge">1</span>
+                        redis
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/sed" class="list-group-item">
+                        <span class="badge">1</span>
+                        sed
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/shell" class="list-group-item">
+                        <span class="badge">1</span>
+                        shell
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/stl" class="list-group-item">
+                        <span class="badge">1</span>
+                        stl
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8" class="list-group-item">
+                        <span class="badge">1</span>
+                        分布式存储
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7" class="list-group-item">
+                        <span class="badge">9</span>
+                        开发工具
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E7%AE%97%E6%B3%95" class="list-group-item">
+                        <span class="badge">1</span>
+                        算法
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F" class="list-group-item">
+                        <span class="badge">1</span>
+                        设计模式
+                    </a>
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2016  fatedier blog </p>
+	<p>Powered by <a href="http://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script src="http://blog.fatedier.com/js/jquery-2.2.1.min.js"></script>
+<script src="http://blog.fatedier.com/js/bootstrap.min.js"></script>
+<script src="http://blog.fatedier.com/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+

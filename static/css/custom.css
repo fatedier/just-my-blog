@@ -18,6 +18,12 @@ p,.single li {
     color: #666;
 }
 
+/* 图片 */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
 /* 文章标题 */
 .post-title a {
     color: #444;

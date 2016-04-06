@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="python中使用pycurl库上传文件 &middot; fatedier blog">
+<meta property="og:title" content="Go中如何优雅地关闭net.Listener &middot; fatedier blog">
 
 <meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    python中使用pycurl库上传文件
+    Go中如何优雅地关闭net.Listener
     
 </title>
 
@@ -78,63 +78,82 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2015年05月08日">
-                        2015年05月08日
+                    <time datetime="2016年02月19日">
+                        2016年02月19日
                     </time>
                 </div>
-                <h1 class="post-title">python中使用pycurl库上传文件</h1>
+                <h1 class="post-title">Go中如何优雅地关闭net.Listener</h1>
             </header>
 
             <div class="post-content">
-                
+                <p>在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。</p>
 
-<p>在对外提供各种语言SDK的时候经常会遇到需要上传文件的问题，例如在python中我们可以借助pycurl库实现这个功能。</p>
+<p>但是我在释放这个监听端口的时候遇到了一些问题，我发现很难优雅地去关闭这个 <strong>net.Listener</strong>。在网上查阅了一下资料，基本上都是程序结束时资源被系统自动回收，没发现有需要主动释放的。这个需求确实不多，不过想一下在写测试用例的时候或许可能会用到，我们先创建一个 <strong>net.Listener</strong> 监听一个端口，<strong>client</strong> 发送请求进行测试，通过后关闭这个 <strong>net.Listener</strong>，再创建另外一个 <strong>net.Listener</strong> 用于测试其他用例。</p>
 
-<h3 id="项目地址:81ff206bb1f6a20d30dfcc23d4c688ef">项目地址</h3>
+<p>初步思考了一下有两个办法来关闭 <strong>net.Listener</strong>：</p>
 
-<p><a href="https://github.com/pycurl/pycurl">https://github.com/pycurl/pycurl</a></p>
+<ol>
+<li>设置一个结束标志，为 <strong>net.Listener</strong> 的 <code>accept</code> 设置超时，<strong>net.Listener</strong> 提供了一个 <code>SetDeadline(t time.Time)</code> 接口，需要关闭时将标志置为 <strong>true</strong>，每次超时后检查一下结束标志，如果为 <strong>true</strong> 则退出。</li>
+<li>在另外一个协程中 <strong>close net.Listener</strong>，检查 <code>accept</code> 返回的 <strong>error</strong> 信息，如果是被 <strong>close</strong> 的话就退出，其他情况就继续。</li>
+</ol>
 
-<h3 id="示例代码:81ff206bb1f6a20d30dfcc23d4c688ef">示例代码</h3>
+<p>第一个方法很显然不够优雅，在大并发量连接请求时对效率有很大影响，而且退出机制是延迟的，不能及时退出。</p>
 
-<pre><code class="language-python">import pycurl
-import StringIO
+<p>第二个方法的问题就在于如果 <strong>close net.Listener</strong>，<code>accept</code> 函数返回的 <strong>error</strong> 信息只能拿到错误的字符串信息，如果是被 <strong>close</strong> 的话返回的信息是：<code>use of closed network connection</code>，这个时候退出监听，如果是其他错误，则继续监听。想法是好的，然而并不能用错误信息的字符串来判断是哪一种类型的错误，有可能以后的版本中错误信息字符串变更也说不定，最好不要在代码中写死。这个 <strong>error</strong> 其实是有类型的，在标准库中是 <code>errClosing</code>，开头小写，说明只能在包内部使用，我们没有办法使用这个类型来判断具体是哪一种错误。个人觉得这方面可能还没有 <strong>c语言</strong> 中通过 <strong>errno</strong> 的值来判断是哪一种类型的错误来的方便。</p>
 
-# 用于执行http请求的通用函数
-# post_data: post参数字符串
-# upload_file: dict类型，需要有file_path(指定要上传的文件路径)和file_name(指定上传后的文件名)
-def do_http_request(method, url, post_data='', upload_file=None): 
-    ch = pycurl.Curl() 
-    buf = StringIO.StringIO() 
-    ch.setopt(ch.URL, url) 
-    ch.setopt(ch.CUSTOMREQUEST, method) 
-    if upload_file != None: 
-        ch.setopt(ch.HTTPPOST, [('file', (ch.FORM_FILE, upload_file['file_path'], \ 
-            ch.FORM_FILENAME, upload_file['file_name']))]) 
-    else: 
-        if method == self.METHOD_POST: 
-            ch.setopt(ch.POSTFIELDS,  urlencode(post_data)) 
+<p>既然不能通过 <strong>error</strong> 的字符串信息判断是哪一种错误，那么我们只能用类似第一个方法中使用的标志来判断了，先将结束标志置为 <strong>true</strong>，之后 <strong>close net.Listener</strong>，<code>accept</code> 函数返回 <code>error != nil</code> 时，检查结束标志，如果为 <strong>true</strong> 就退出，这样相比较第一个方法退出时就没有延迟了，参考代码如下：</p>
 
-    ch.setopt(ch.TIMEOUT, 30) 
-    ch.setopt(ch.WRITEFUNCTION, buf.write)
-    ch.perform() 
-    content = buf.getvalue()
-    buf.close()
-    ch.close()
-    return content
+<pre><code class="language-go">package main
+
+import (
+    &quot;fmt&quot;
+    &quot;net&quot;
+    &quot;time&quot;
+)
+
+var (
+    ln        net.Listener
+    closeFlag bool = false
+)
+
+func startServer() (err error) {
+    ln, err = net.Listen(&quot;tcp&quot;, &quot;:12345&quot;)
+    if err != nil {
+        return err
+    }
+    defer ln.Close()
+
+    for {
+        conn, err := ln.Accept()
+        if err != nil {
+            fmt.Printf(&quot;accept error: %v\n&quot;, err)
+            if closeFlag {
+                break
+            } else {
+                continue
+            }
+        } else {
+            conn.Close()
+        }
+    }
+    return nil
+}
+
+func main() {
+    go startServer()
+    time.Sleep(1 * time.Second)
+    closeFlag = true
+    ln.Close()
+    time.Sleep(1 * time.Second)
+}
 </code></pre>
-
-<p>上面的代码是一个用pycurl库写的调用http请求的通用函数，如果upload_file不为None，则表示需要上传文件，upload_file是一个dict类型，需要有两个key，file_path(指定要上传的文件路径)和file_name(指定上传后的文件名)。</p>
-
-<p><strong>ch.FORM_FILE</strong>：指定要上传文件的路径</p>
-
-<p><strong>ch.FORM_FILENAME</strong>：指定要上传文件的文件名</p>
 
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl">http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully">http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>
@@ -145,9 +164,9 @@ def do_http_request(method, url, post_data='', upload_file=None): 
                 <ul class="list-inline post-tags">
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/python">
+                        <a href="http://blog.fatedier.com/tags/go">
                             <i class="fa fa-tags"></i>
-                            python
+                            go
                         </a>
                     </li>
                     
@@ -161,13 +180,13 @@ def do_http_request(method, url, post_data='', upload_file=None): 
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/about"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

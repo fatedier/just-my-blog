@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fatedier blog </title>
+    <link>http://blog.fatedier.com/tags/go/</link>
+    <language>en-us</language>
+    <author></author>
+    <rights>(C) 2016</rights>
+    <updated>2016-02-19 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>Go中如何优雅地关闭net.Listener</title>
+          <link>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully</link>
+          <pubDate>Fri, 19 Feb 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully</guid>
+          <description>&lt;p&gt;在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。&lt;/p&gt;
+
+&lt;p&gt;但是我在释放这个监听端口的时候遇到了一些问题，我发现很难优雅地去关闭这个 &lt;strong&gt;net.Listener&lt;/strong&gt;。在网上查阅了一下资料，基本上都是程序结束时资源被系统自动回收，没发现有需要主动释放的。这个需求确实不多，不过想一下在写测试用例的时候或许可能会用到，我们先创建一个 &lt;strong&gt;net.Listener&lt;/strong&gt; 监听一个端口，&lt;strong&gt;client&lt;/strong&gt; 发送请求进行测试，通过后关闭这个 &lt;strong&gt;net.Listener&lt;/strong&gt;，再创建另外一个 &lt;strong&gt;net.Listener&lt;/strong&gt; 用于测试其他用例。&lt;/p&gt;
+
+&lt;p&gt;初步思考了一下有两个办法来关闭 &lt;strong&gt;net.Listener&lt;/strong&gt;：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;设置一个结束标志，为 &lt;strong&gt;net.Listener&lt;/strong&gt; 的 &lt;code&gt;accept&lt;/code&gt; 设置超时，&lt;strong&gt;net.Listener&lt;/strong&gt; 提供了一个 &lt;code&gt;SetDeadline(t time.Time)&lt;/code&gt; 接口，需要关闭时将标志置为 &lt;strong&gt;true&lt;/strong&gt;，每次超时后检查一下结束标志，如果为 &lt;strong&gt;true&lt;/strong&gt; 则退出。&lt;/li&gt;
+&lt;li&gt;在另外一个协程中 &lt;strong&gt;close net.Listener&lt;/strong&gt;，检查 &lt;code&gt;accept&lt;/code&gt; 返回的 &lt;strong&gt;error&lt;/strong&gt; 信息，如果是被 &lt;strong&gt;close&lt;/strong&gt; 的话就退出，其他情况就继续。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;第一个方法很显然不够优雅，在大并发量连接请求时对效率有很大影响，而且退出机制是延迟的，不能及时退出。&lt;/p&gt;
+
+&lt;p&gt;第二个方法的问题就在于如果 &lt;strong&gt;close net.Listener&lt;/strong&gt;，&lt;code&gt;accept&lt;/code&gt; 函数返回的 &lt;strong&gt;error&lt;/strong&gt; 信息只能拿到错误的字符串信息，如果是被 &lt;strong&gt;close&lt;/strong&gt; 的话返回的信息是：&lt;code&gt;use of closed network connection&lt;/code&gt;，这个时候退出监听，如果是其他错误，则继续监听。想法是好的，然而并不能用错误信息的字符串来判断是哪一种类型的错误，有可能以后的版本中错误信息字符串变更也说不定，最好不要在代码中写死。这个 &lt;strong&gt;error&lt;/strong&gt; 其实是有类型的，在标准库中是 &lt;code&gt;errClosing&lt;/code&gt;，开头小写，说明只能在包内部使用，我们没有办法使用这个类型来判断具体是哪一种错误。个人觉得这方面可能还没有 &lt;strong&gt;c语言&lt;/strong&gt; 中通过 &lt;strong&gt;errno&lt;/strong&gt; 的值来判断是哪一种类型的错误来的方便。&lt;/p&gt;
+
+&lt;p&gt;既然不能通过 &lt;strong&gt;error&lt;/strong&gt; 的字符串信息判断是哪一种错误，那么我们只能用类似第一个方法中使用的标志来判断了，先将结束标志置为 &lt;strong&gt;true&lt;/strong&gt;，之后 &lt;strong&gt;close net.Listener&lt;/strong&gt;，&lt;code&gt;accept&lt;/code&gt; 函数返回 &lt;code&gt;error != nil&lt;/code&gt; 时，检查结束标志，如果为 &lt;strong&gt;true&lt;/strong&gt; 就退出，这样相比较第一个方法退出时就没有延迟了，参考代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import (
+    &amp;quot;fmt&amp;quot;
+    &amp;quot;net&amp;quot;
+    &amp;quot;time&amp;quot;
+)
+
+var (
+    ln        net.Listener
+    closeFlag bool = false
+)
+
+func startServer() (err error) {
+    ln, err = net.Listen(&amp;quot;tcp&amp;quot;, &amp;quot;:12345&amp;quot;)
+    if err != nil {
+        return err
+    }
+    defer ln.Close()
+
+    for {
+        conn, err := ln.Accept()
+        if err != nil {
+            fmt.Printf(&amp;quot;accept error: %v\n&amp;quot;, err)
+            if closeFlag {
+                break
+            } else {
+                continue
+            }
+        } else {
+            conn.Close()
+        }
+    }
+    return nil
+}
+
+func main() {
+    go startServer()
+    time.Sleep(1 * time.Second)
+    closeFlag = true
+    ln.Close()
+    time.Sleep(1 * time.Second)
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

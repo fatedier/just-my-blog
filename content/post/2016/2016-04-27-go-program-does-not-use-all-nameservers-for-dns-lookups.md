@@ -3,7 +3,7 @@ categories:
     - "技术文章"
 tags:
     - "golang"
-date: 2016-04-05
+date: 2016-04-27
 title: "go程序中dns解析无法使用所有域名服务器"
 url: "/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups"
 ---

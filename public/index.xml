@@ -6,14 +6,14 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2016</rights>
-    <updated>2016-04-05 00:00:00 &#43;0000 UTC</updated>
+    <updated>2016-04-27 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>go程序中dns解析无法使用所有域名服务器</title>
           <link>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups</link>
-          <pubDate>Tue, 05 Apr 2016 00:00:00 UTC</pubDate>
+          <pubDate>Wed, 27 Apr 2016 00:00:00 UTC</pubDate>
           <author></author>
           <guid>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups</guid>
           <description>

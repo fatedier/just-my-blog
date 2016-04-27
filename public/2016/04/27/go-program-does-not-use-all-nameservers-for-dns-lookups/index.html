@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+<meta property="og:url" content="http://blog.fatedier.com">
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="go程序中dns解析无法使用所有域名服务器 &middot; fatedier blog">
+
+<meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    go程序中dns解析无法使用所有域名服务器
+    
+</title>
+
+
+<link rel="stylesheet" href="http://blog.fatedier.com/bs/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://blog.fatedier.com/bs/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="http://blog.fatedier.com/css/hightlight/tomorrow-night.min.css">
+
+<link rel="stylesheet" href="http://blog.fatedier.com/bs/css/font-awesome.min.css">
+
+<link rel="stylesheet" href="http://blog.fatedier.com/css/styles.css">
+<link rel="stylesheet" href="http://blog.fatedier.com/css/custom.css">
+
+
+<link rel="shortcut icon" href="http://blog.fatedier.com/assets/favicon.ico">
+
+
+<link rel="alternate" type="application/rss+xml" title="RSS" href="http://blog.fatedier.com/index.xml">
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="http://blog.fatedier.com">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
+                        <li><a href="http://blog.fatedier.com/tags">Tags</a></li>
+                        
+                        <li><a href="http://blog.fatedier.com/about">关于我</a></li>
+                        
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        
+                        
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                    <time datetime="2016年04月05日">
+                        2016年04月05日
+                    </time>
+                </div>
+                <h1 class="post-title">go程序中dns解析无法使用所有域名服务器</h1>
+            </header>
+
+            <div class="post-content">
+                
+
+<p>最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。</p>
+
+<h3 id="背景:950668773c5541050af4c9df2f93d0a6">背景</h3>
+
+<h4 id="nameserver-配置:950668773c5541050af4c9df2f93d0a6">nameserver 配置</h4>
+
+<p><code>/etc/resolv.conf</code> 中配置了多个 nameserver</p>
+
+<pre><code class="language-bash">nameserver 10.10.100.3
+nameserver 114.114.114.114
+nameserver 8.8.8.8
+</code></pre>
+
+<p><code>10.10.100.3</code> 用于解析内网域名，外网域名通过 <code>114.114.114.114</code> 或者 <code>8.8.8.8</code> 来解析。</p>
+
+<h4 id="测试代码:950668773c5541050af4c9df2f93d0a6">测试代码</h4>
+
+<pre><code class="language-golang">package main
+
+import (
+    &quot;net&quot;
+    &quot;fmt&quot;
+)
+
+func main() {
+    hostname := &quot;www.baidu.com&quot;
+    addrs, err := net.LookupHost(hostname)
+    if err != nil {
+        fmt.Printf(&quot;lookup host error: %v\n&quot;, err)
+    } else {
+        fmt.Printf(&quot;addrs: %v&quot;, addrs)
+    }   
+}
+</code></pre>
+
+<h4 id="结果:950668773c5541050af4c9df2f93d0a6">结果</h4>
+
+<pre><code class="language-bash">lookup host error: lookup www.baidu.com on 10.10.100.3:53: no such host
+</code></pre>
+
+<p>使用 go1.5 版本进行编译，发现程序并没有按照预想的过程来解析，通过 <code>10.10.100.3</code> 无法解析后就直接返回了错误信息。</p>
+
+<p>而使用 go1.4 版本编译运行后，确得到了正确的结果。</p>
+
+<h3 id="调试标准库的方法:950668773c5541050af4c9df2f93d0a6">调试标准库的方法</h3>
+
+<p>调试 golang 的标准库非常简单，先找到标准库源码的存放位置，然后将要修改的文件备份一份，之后直接在其中添加输出语句，大部分可以 <code>import &quot;fmt&quot;</code> 后使用 <code>fmt.Printf</code> 函数进行输出，有的包中需要使用其他方式，避免循环引用，这里不详述，因为我们要改的 <code>net</code> 包并不涉及这个问题，注意调试完之后将标准库的文件恢复。</p>
+
+<h4 id="查找标准库所在的目录:950668773c5541050af4c9df2f93d0a6">查找标准库所在的目录</h4>
+
+<p>执行 <code>go env</code> 查看 go 的环境变量如下：</p>
+
+<pre><code class="language-bash">GOARCH=&quot;amd64&quot;
+GOBIN=&quot;&quot;GOCHAR=&quot;6&quot;GOEXE=&quot;&quot;GOHOSTARCH=&quot;amd64&quot;GOHOSTOS=&quot;linux&quot;GOOS=&quot;linux&quot;
+GOPATH=&quot;/home/wcl/go_projects&quot;
+GORACE=&quot;&quot;
+GOROOT=&quot;/usr/lib/golang&quot;
+GOTOOLDIR=&quot;/usr/lib/golang/pkg/tool/linux_amd64&quot;
+CC=&quot;gcc&quot;
+GOGCCFLAGS=&quot;-fPIC -m64 -pthread -fmessage-length=0&quot;
+CXX=&quot;g++&quot;
+CGO_ENABLED=&quot;1&quot;
+</code></pre>
+
+<p><strong>GOROOT</strong> 的值即是标准库所在的目录，<code>net</code> 包的具体路径为 <code>/usr/lib/golang/src/net</code></p>
+
+<h3 id="go-1-4-与-1-5-版本中-dns-查询逻辑的不同:950668773c5541050af4c9df2f93d0a6">go 1.4 与 1.5 版本中 dns 查询逻辑的不同</h3>
+
+<p>因为最近很多程序都是使用 <strong>go1.5</strong> 版本进行编译的，所以理所当然查看了两个版本这部分源码的区别，还真的有所改变。</p>
+
+<p>标准库对外暴露的 dns 查询函数是 <code>func LookupHost(host string) (addrs []string, err error)</code> <strong>(net/lookup.go)</strong></p>
+
+<p>这个函数会调用实际处理函数 <code>lookupHost</code> <strong>(net/lookup_unix.go)</strong></p>
+
+<h4 id="cgo-与纯-go-实现的-dns-查询:950668773c5541050af4c9df2f93d0a6">cgo 与纯 go 实现的 dns 查询</h4>
+
+<p><strong>go1.4 版本源码</strong></p>
+
+<pre><code class="language-golang">func lookupHost(host string) (addrs []string, err error) {
+    addrs, err, ok := cgoLookupHost(host)
+    if !ok {
+        addrs, err = goLookupHost(host)
+    }
+    return
+}
+</code></pre>
+
+<p><strong>go1.5 版本源码</strong></p>
+
+<pre><code class="language-golang">func lookupHost(host string) (addrs []string, err error) {
+    order := systemConf().hostLookupOrder(host)
+    if order == hostLookupCgo {
+        if addrs, err, ok := cgoLookupHost(host); ok {
+            return addrs, err
+        }
+        // cgo not available (or netgo); fall back to Go's DNS resolver
+        order = hostLookupFilesDNS
+    }
+    return goLookupHostOrder(host, order)
+}
+</code></pre>
+
+<p><strong>可以明显的看到 1.4 的源码中默认使用 cgo 的方式进行 dns 查询</strong>（这个函数最终会创建一个线程调用c的 getaddrinfo 函数来获取 dns 查询结果），如果查询失败则会再使用纯 go 实现的查询方式。</p>
+
+<p><strong>而在 1.5 的源码中，这一点有所改变，cgo 的方式不再是默认值，而是根据 <code>systemConf().hostLookupOrder(host)</code> 的返回值来判断具体使用哪种方式</strong>。这个函数定义在 <strong>net/conf.go</strong> 中，稍微看了一下， 除非通过编译标志强制使用 cgo 方式或者在某些特定的系统上会使用 cgo 方式，其他时候都使用纯 go 实现的查询方式。</p>
+
+<p>cgo 的方式没有问题，看起来程序会并发地向 <code>/etc/resolv.conf</code> 中所有配置的域名服务器发送 dns 解析请求，然后将最先成功响应的结果返回。</p>
+
+<h4 id="纯-go-实现的-dns-查询分析:950668773c5541050af4c9df2f93d0a6">纯 go 实现的 dns 查询分析</h4>
+
+<p>问题就出在纯 go 实现的查询上，主要看一下 go1.5 的实现。</p>
+
+<p>函数调用逻辑如下：</p>
+
+<pre><code class="language-bash">LookupHost (net/lookup.go)
+    lookupHost  (net/lookup_unix.go)
+        goLookupHostOrder  (net/dnsclient_unix.go)
+            goLookupIPOrder  (net/dnsclient_unix.go)
+                tryOneName   (net/dnsclient_unix.go)
+</code></pre>
+
+<p>大部分实现代码在 <code>net/dnsclient_unix.go</code> 这个文件中。</p>
+
+<p>重点看一下 <code>tryOneName</code> 这个函数</p>
+
+<pre><code class="language-golang">func tryOneName(cfg *dnsConfig, name string, qtype uint16) (string, []dnsRR, error) {
+    if len(cfg.servers) == 0 {
+        return &quot;&quot;, nil, &amp;DNSError{Err: &quot;no DNS servers&quot;, Name: name}
+    }
+    if len(name) &gt;= 256 {
+        return &quot;&quot;, nil, &amp;DNSError{Err: &quot;DNS name too long&quot;, Name: name}
+    }
+    timeout := time.Duration(cfg.timeout) * time.Second
+    var lastErr error
+    for i := 0; i &lt; cfg.attempts; i++ {
+        for _, server := range cfg.servers {
+            server = JoinHostPort(server, &quot;53&quot;)
+            msg, err := exchange(server, name, qtype, timeout)
+            if err != nil {
+                lastErr = &amp;DNSError{
+                    Err:    err.Error(),
+                    Name:   name,
+                    Server: server,
+                }
+                if nerr, ok := err.(Error); ok &amp;&amp; nerr.Timeout() {
+                    lastErr.(*DNSError).IsTimeout = true
+                }
+                continue
+            }
+            cname, rrs, err := answer(name, server, msg, qtype)
+            if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;&amp; msg.recursion_available {
+                return cname, rrs, err
+            }
+            lastErr = err
+        }
+    }
+    return &quot;&quot;, nil, lastErr
+}
+</code></pre>
+
+<p>第一层 for 循环是尝试的次数，第二层 for 循环是遍历 <code>/etc/resolv.conf</code> 中配置的所有域名服务器，<code>exchange</code> 函数是发送 dns 查询请求并将响应结果解析到 <code>msg</code> 变量中返回，初看到这里，觉得实现是没问题的，顺序向每一个域名服务器发送 dns 查询请求，如果成功就返回，如果失败就尝试下一个。</p>
+
+<p>问题出现在判断是否成功的那一行代码 <code>if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;&amp; msg.recursion_available</code>，这里的意思是如果 dns 查询成功，或者出错了但是对方支持递归查询的话，就直接返回，不继续请求下一个域名服务器。如果对方支持递归查询但是仍然没有查到的话，说明上级服务器也没有这个域名的记录，没有必要继续往下查。（这个逻辑在 go1.6 版本中被修改了，出错了以后不再判断是否支持递归查询，仍然尝试向下一个域名服务器发送请求）</p>
+
+<p><code>msg.rcode</code> 这个值很重要，是问题的关键，</p>
+
+<h3 id="dns-查询协议格式:950668773c5541050af4c9df2f93d0a6">dns 查询协议格式</h3>
+
+<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-27-go-program-does-not-use-all-nameservers-for-dns-lookups-dns-query-package.png" alt="dns-query-package" /></p>
+
+<p>我们只需要关注首部的12字节。</p>
+
+<ul>
+<li>ID:占16位，2个字节。此报文的编号，由客户端指定。DNS回复时带上此标识，以指示处理的对应请应请求。</li>
+<li>QR:占1位，1/8字节。0代表查询，1代表DNS回复</li>
+<li>Opcode:占4位，1/2字节。指示查询种类：0:标准查询；1:反向查询；2:服务器状态查询；3-15:未使用。</li>
+<li>AA:占1位，1/8字节。是否权威回复。</li>
+<li>TC:占1位，1/8字节。因为一个UDP报文为512字节，所以该位指示是否截掉超过的部分。</li>
+<li>RD:占1位，1/8字节。此位在查询中指定，回复时相同。设置为1指示服务器进行递归查询。</li>
+<li>RA:占1位，1/8字节。由DNS回复返回指定，说明DNS服务器是否支持递归查询。</li>
+<li>Z:占3位，3/8字节。保留字段，必须设置为0。</li>
+<li>RCODE:占4位，1/2字节。由回复时指定的返回码：0:无差错；1:格式错；2:DNS出错；3:域名不存在；4:DNS不支持这类查询；5:DNS拒绝查询；6-15:保留字段。　</li>
+<li>QDCOUNT:占16位，2字节。一个无符号数指示查询记录的个数。</li>
+<li>ANCOUNT:占16位，2字节。一个无符号数指明回复记录的个数。</li>
+<li>NSCOUNT:占16位，2字节。一个无符号数指明权威记录的个数。</li>
+<li>ARCOUNT:占16位，2字节。一个无符号数指明格外记录的个数。</li>
+</ul>
+
+<p>其中 <strong>RCODE</strong> 是回复时用于判断查询结果是否成功的，对应前面的 <code>msg.rcode</code>。</p>
+
+<h3 id="bind-的-dns-回复问题:950668773c5541050af4c9df2f93d0a6">bind 的 dns 回复问题</h3>
+
+<p><code>10.10.100.3</code> 上是使用 <strong>bind</strong> 搭建的本地域名服务器。</p>
+
+<p>使用 <code>dig @10.10.100.3 www.baidu.com</code> 命令查看解析结果如下：</p>
+
+<pre><code class="language-bash">; &lt;&lt;&gt;&gt; DiG 9.8.2rc1-RedHat-9.8.2-0.23.rc1.el6_5.1 &lt;&lt;&gt;&gt; @10.10.100.3 www.baidu.com ;
+(1 server found) 
+;; global options: +cmd 
+;; Got answer: 
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 55909 
+;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: 0 
+;; WARNING: recursion requested but not available 
+
+;; QUESTION SECTION: 
+;www.baidu.com.         IN  A 
+
+;; AUTHORITY SECTION: 
+.           518400  IN  NS  H.ROOT-SERVERS.NET.  
+.           518400  IN  NS  K.ROOT-SERVERS.NET.  
+.           518400  IN  NS  C.ROOT-SERVERS.NET.  
+.           518400  IN  NS  A.ROOT-SERVERS.NET.  
+.           518400  IN  NS  B.ROOT-SERVERS.NET.  
+.           518400  IN  NS  F.ROOT-SERVERS.NET.  
+.           518400  IN  NS  L.ROOT-SERVERS.NET.  
+.           518400  IN  NS  D.ROOT-SERVERS.NET.  
+.           518400  IN  NS  I.ROOT-SERVERS.NET.  
+.           518400  IN  NS  E.ROOT-SERVERS.NET.  
+.           518400  IN  NS  G.ROOT-SERVERS.NET.  
+.           518400  IN  NS  M.ROOT-SERVERS.NET.  
+.           518400  IN  NS  J.ROOT-SERVERS.NET.  
+
+;; Query time: 1 msec 
+;; SERVER: 10.10.100.3#53(10.10.100.3) 
+;; WHEN: Wed Apr 27 17:35:15 2016 
+;; MSG SIZE  rcvd: 242 
+</code></pre>
+
+<p><strong>bind</strong> 并没有返回 <code>www.baidu.com</code> 的 A 记录，而是返回了13个根域名服务器的地址，并且 <strong>status</strong> 的状态是 <strong>NOERROR</strong>（这个值就是前述的 <strong>RCODE</strong>，这里没有错误正则为 0)，问题就在这里，没有查到 A 记录还返回 <code>RCODE=0</code>，回顾一下上面 go 代码中的判断条件</p>
+
+<p><code>if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;&amp; msg.recursion_available</code></p>
+
+<p>如果返回的 <strong>RCODE</strong> 值为 0，则直接退出，不继续尝试后面的域名服务器，从而导致了域名解析失败。</p>
+
+<h3 id="解决方案:950668773c5541050af4c9df2f93d0a6">解决方案</h3>
+
+<h4 id="仍然使用-go1-4-版本进行编译:950668773c5541050af4c9df2f93d0a6">仍然使用 go1.4 版本进行编译</h4>
+
+<p>不推荐这么做，毕竟升级后在 gc 以及很多其他方面都有优化。</p>
+
+<h4 id="使用-go1-5-及以上版本编译但是通过环境变量强制使用-cgo-的-dns-查询方式:950668773c5541050af4c9df2f93d0a6">使用 go1.5 及以上版本编译但是通过环境变量强制使用 cgo 的 dns 查询方式</h4>
+
+<p><code>export GODEBUG=netdns=cgo go build</code></p>
+
+<p>使用 cgo 的方式会在每一次调用时创建一个线程，在并发量较大时可能会对系统资源造成一定影响。而且需要每一个使用 go 编写的程序编译时都加上此标志，较为繁琐。</p>
+
+<h4 id="修改-bind-的配置文件:950668773c5541050af4c9df2f93d0a6">修改 bind 的配置文件</h4>
+
+<p>在 <strong>bind</strong> 中彻底关闭对递归查询的支持也可以解决此问题，但是由于对 <strong>bind</strong> 不是很熟悉，具体是什么原因导致没有查到 <strong>A 记录</strong>但仍然返回 <strong>NOERROR</strong> 不是很清楚，猜测可能和递归转发的查询方式有关，有可能 <strong>bind</strong> 认为返回了根域名服务器的地址，<strong>client</strong> 可以去这些地址上查，所以该次请求并不算做出错。</p>
+
+<p>修改配置文件加上以下内容以后，再次查询时会返回 <strong>RCODE=5</strong>，拒绝递归查询，这样可以达到我们的目的，查询非内网域名时通过其他域名服务器查询</p>
+
+<pre><code class="language-bash">recursion no;
+allow-query-cache { none; };
+allow-recursion { none; };
+</code></pre>
+
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups">http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="http://blog.fatedier.com/tags/golang">
+                            <i class="fa fa-tags"></i>
+                            golang
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+            
+            <footer>
+
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        
+
+                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+
+                
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+    <div class="row">
+
+        <div class="col-xs-12 col-sm-4 col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Recent Posts</h2>
+                </div>
+                <div class="list-group">
+                    
+                    <a href="http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups" class="list-group-item">go程序中dns解析无法使用所有域名服务器</a>
+                    
+                    <a href="http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker" class="list-group-item">利用docker搭建gitlab及持续集成模块</a>
+                    
+                    <a href="http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files" class="list-group-item">简记用sed对文件执行批量替换字符串的方法</a>
+                    
+                    <a href="http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory" class="list-group-item">如何使golang项目可以在任意目录下编译</a>
+                    
+                    <a href="http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully" class="list-group-item">Go中如何优雅地关闭net.Listener</a>
+                    
+                    <a href="http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects" class="list-group-item">使用godep管理golang项目的第三方包</a>
+                    
+                    <a href="http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux" class="list-group-item">终端利器 Tmux</a>
+                    
+                    <a href="http://blog.fatedier.com/2015/09/15/redis-cluster-survey" class="list-group-item">Redis集群调研</a>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-4 col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Tags</h2>
+                </div>
+                <div class="list-group">
+                    
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/c/cpp" class="list-group-item">
+                        <span class="badge">9</span>
+                        c/cpp
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/docker" class="list-group-item">
+                        <span class="badge">1</span>
+                        docker
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/git" class="list-group-item">
+                        <span class="badge">4</span>
+                        git
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/go" class="list-group-item">
+                        <span class="badge">1</span>
+                        go
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/golang" class="list-group-item">
+                        <span class="badge">3</span>
+                        golang
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/linux" class="list-group-item">
+                        <span class="badge">14</span>
+                        linux
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/python" class="list-group-item">
+                        <span class="badge">1</span>
+                        python
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/redis" class="list-group-item">
+                        <span class="badge">1</span>
+                        redis
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/sed" class="list-group-item">
+                        <span class="badge">1</span>
+                        sed
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/shell" class="list-group-item">
+                        <span class="badge">1</span>
+                        shell
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/stl" class="list-group-item">
+                        <span class="badge">1</span>
+                        stl
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8" class="list-group-item">
+                        <span class="badge">1</span>
+                        分布式存储
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7" class="list-group-item">
+                        <span class="badge">9</span>
+                        开发工具
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E7%AE%97%E6%B3%95" class="list-group-item">
+                        <span class="badge">1</span>
+                        算法
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F" class="list-group-item">
+                        <span class="badge">1</span>
+                        设计模式
+                    </a>
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2016  fatedier blog </p>
+	<p>Powered by <a href="http://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script src="http://blog.fatedier.com/js/jquery-2.2.1.min.js"></script>
+<script src="http://blog.fatedier.com/js/bootstrap.min.js"></script>
+<script src="http://blog.fatedier.com/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+

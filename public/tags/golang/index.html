@@ -77,6 +77,27 @@
     <header>
         <div class="post-date">
             <span class="glyphicon glyphicon-calendar"></span>
+            <time datetime="2016年04月05日">
+                2016年04月05日
+            </time>
+        </div>
+        <h2 class="post-title">
+            <a href="http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups">go程序中dns解析无法使用所有域名服务器</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。</p>
+
+    </div>
+    </article>
+<hr>
+
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
+            <span class="glyphicon glyphicon-calendar"></span>
             <time datetime="2016年02月25日">
                 2016年02月25日
             </time>

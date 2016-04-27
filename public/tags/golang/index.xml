@@ -6,8 +6,277 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2016</rights>
-    <updated>2016-02-25 00:00:00 &#43;0000 UTC</updated>
+    <updated>2016-04-05 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>go程序中dns解析无法使用所有域名服务器</title>
+          <link>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups</link>
+          <pubDate>Tue, 05 Apr 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups</guid>
+          <description>
+
+&lt;p&gt;最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。&lt;/p&gt;
+
+&lt;h3 id=&#34;背景:950668773c5541050af4c9df2f93d0a6&#34;&gt;背景&lt;/h3&gt;
+
+&lt;h4 id=&#34;nameserver-配置:950668773c5541050af4c9df2f93d0a6&#34;&gt;nameserver 配置&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;/etc/resolv.conf&lt;/code&gt; 中配置了多个 nameserver&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;nameserver 10.10.100.3
+nameserver 114.114.114.114
+nameserver 8.8.8.8
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;10.10.100.3&lt;/code&gt; 用于解析内网域名，外网域名通过 &lt;code&gt;114.114.114.114&lt;/code&gt; 或者 &lt;code&gt;8.8.8.8&lt;/code&gt; 来解析。&lt;/p&gt;
+
+&lt;h4 id=&#34;测试代码:950668773c5541050af4c9df2f93d0a6&#34;&gt;测试代码&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;package main
+
+import (
+    &amp;quot;net&amp;quot;
+    &amp;quot;fmt&amp;quot;
+)
+
+func main() {
+    hostname := &amp;quot;www.baidu.com&amp;quot;
+    addrs, err := net.LookupHost(hostname)
+    if err != nil {
+        fmt.Printf(&amp;quot;lookup host error: %v\n&amp;quot;, err)
+    } else {
+        fmt.Printf(&amp;quot;addrs: %v&amp;quot;, addrs)
+    }   
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;结果:950668773c5541050af4c9df2f93d0a6&#34;&gt;结果&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;lookup host error: lookup www.baidu.com on 10.10.100.3:53: no such host
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;使用 go1.5 版本进行编译，发现程序并没有按照预想的过程来解析，通过 &lt;code&gt;10.10.100.3&lt;/code&gt; 无法解析后就直接返回了错误信息。&lt;/p&gt;
+
+&lt;p&gt;而使用 go1.4 版本编译运行后，确得到了正确的结果。&lt;/p&gt;
+
+&lt;h3 id=&#34;调试标准库的方法:950668773c5541050af4c9df2f93d0a6&#34;&gt;调试标准库的方法&lt;/h3&gt;
+
+&lt;p&gt;调试 golang 的标准库非常简单，先找到标准库源码的存放位置，然后将要修改的文件备份一份，之后直接在其中添加输出语句，大部分可以 &lt;code&gt;import &amp;quot;fmt&amp;quot;&lt;/code&gt; 后使用 &lt;code&gt;fmt.Printf&lt;/code&gt; 函数进行输出，有的包中需要使用其他方式，避免循环引用，这里不详述，因为我们要改的 &lt;code&gt;net&lt;/code&gt; 包并不涉及这个问题，注意调试完之后将标准库的文件恢复。&lt;/p&gt;
+
+&lt;h4 id=&#34;查找标准库所在的目录:950668773c5541050af4c9df2f93d0a6&#34;&gt;查找标准库所在的目录&lt;/h4&gt;
+
+&lt;p&gt;执行 &lt;code&gt;go env&lt;/code&gt; 查看 go 的环境变量如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;GOARCH=&amp;quot;amd64&amp;quot;
+GOBIN=&amp;quot;&amp;quot;GOCHAR=&amp;quot;6&amp;quot;GOEXE=&amp;quot;&amp;quot;GOHOSTARCH=&amp;quot;amd64&amp;quot;GOHOSTOS=&amp;quot;linux&amp;quot;GOOS=&amp;quot;linux&amp;quot;
+GOPATH=&amp;quot;/home/wcl/go_projects&amp;quot;
+GORACE=&amp;quot;&amp;quot;
+GOROOT=&amp;quot;/usr/lib/golang&amp;quot;
+GOTOOLDIR=&amp;quot;/usr/lib/golang/pkg/tool/linux_amd64&amp;quot;
+CC=&amp;quot;gcc&amp;quot;
+GOGCCFLAGS=&amp;quot;-fPIC -m64 -pthread -fmessage-length=0&amp;quot;
+CXX=&amp;quot;g++&amp;quot;
+CGO_ENABLED=&amp;quot;1&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;GOROOT&lt;/strong&gt; 的值即是标准库所在的目录，&lt;code&gt;net&lt;/code&gt; 包的具体路径为 &lt;code&gt;/usr/lib/golang/src/net&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;go-1-4-与-1-5-版本中-dns-查询逻辑的不同:950668773c5541050af4c9df2f93d0a6&#34;&gt;go 1.4 与 1.5 版本中 dns 查询逻辑的不同&lt;/h3&gt;
+
+&lt;p&gt;因为最近很多程序都是使用 &lt;strong&gt;go1.5&lt;/strong&gt; 版本进行编译的，所以理所当然查看了两个版本这部分源码的区别，还真的有所改变。&lt;/p&gt;
+
+&lt;p&gt;标准库对外暴露的 dns 查询函数是 &lt;code&gt;func LookupHost(host string) (addrs []string, err error)&lt;/code&gt; &lt;strong&gt;(net/lookup.go)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;这个函数会调用实际处理函数 &lt;code&gt;lookupHost&lt;/code&gt; &lt;strong&gt;(net/lookup_unix.go)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;cgo-与纯-go-实现的-dns-查询:950668773c5541050af4c9df2f93d0a6&#34;&gt;cgo 与纯 go 实现的 dns 查询&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;go1.4 版本源码&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func lookupHost(host string) (addrs []string, err error) {
+    addrs, err, ok := cgoLookupHost(host)
+    if !ok {
+        addrs, err = goLookupHost(host)
+    }
+    return
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;go1.5 版本源码&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func lookupHost(host string) (addrs []string, err error) {
+    order := systemConf().hostLookupOrder(host)
+    if order == hostLookupCgo {
+        if addrs, err, ok := cgoLookupHost(host); ok {
+            return addrs, err
+        }
+        // cgo not available (or netgo); fall back to Go&#39;s DNS resolver
+        order = hostLookupFilesDNS
+    }
+    return goLookupHostOrder(host, order)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;可以明显的看到 1.4 的源码中默认使用 cgo 的方式进行 dns 查询&lt;/strong&gt;（这个函数最终会创建一个线程调用c的 getaddrinfo 函数来获取 dns 查询结果），如果查询失败则会再使用纯 go 实现的查询方式。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;而在 1.5 的源码中，这一点有所改变，cgo 的方式不再是默认值，而是根据 &lt;code&gt;systemConf().hostLookupOrder(host)&lt;/code&gt; 的返回值来判断具体使用哪种方式&lt;/strong&gt;。这个函数定义在 &lt;strong&gt;net/conf.go&lt;/strong&gt; 中，稍微看了一下， 除非通过编译标志强制使用 cgo 方式或者在某些特定的系统上会使用 cgo 方式，其他时候都使用纯 go 实现的查询方式。&lt;/p&gt;
+
+&lt;p&gt;cgo 的方式没有问题，看起来程序会并发地向 &lt;code&gt;/etc/resolv.conf&lt;/code&gt; 中所有配置的域名服务器发送 dns 解析请求，然后将最先成功响应的结果返回。&lt;/p&gt;
+
+&lt;h4 id=&#34;纯-go-实现的-dns-查询分析:950668773c5541050af4c9df2f93d0a6&#34;&gt;纯 go 实现的 dns 查询分析&lt;/h4&gt;
+
+&lt;p&gt;问题就出在纯 go 实现的查询上，主要看一下 go1.5 的实现。&lt;/p&gt;
+
+&lt;p&gt;函数调用逻辑如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;LookupHost (net/lookup.go)
+    lookupHost  (net/lookup_unix.go)
+        goLookupHostOrder  (net/dnsclient_unix.go)
+            goLookupIPOrder  (net/dnsclient_unix.go)
+                tryOneName   (net/dnsclient_unix.go)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;大部分实现代码在 &lt;code&gt;net/dnsclient_unix.go&lt;/code&gt; 这个文件中。&lt;/p&gt;
+
+&lt;p&gt;重点看一下 &lt;code&gt;tryOneName&lt;/code&gt; 这个函数&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func tryOneName(cfg *dnsConfig, name string, qtype uint16) (string, []dnsRR, error) {
+    if len(cfg.servers) == 0 {
+        return &amp;quot;&amp;quot;, nil, &amp;amp;DNSError{Err: &amp;quot;no DNS servers&amp;quot;, Name: name}
+    }
+    if len(name) &amp;gt;= 256 {
+        return &amp;quot;&amp;quot;, nil, &amp;amp;DNSError{Err: &amp;quot;DNS name too long&amp;quot;, Name: name}
+    }
+    timeout := time.Duration(cfg.timeout) * time.Second
+    var lastErr error
+    for i := 0; i &amp;lt; cfg.attempts; i++ {
+        for _, server := range cfg.servers {
+            server = JoinHostPort(server, &amp;quot;53&amp;quot;)
+            msg, err := exchange(server, name, qtype, timeout)
+            if err != nil {
+                lastErr = &amp;amp;DNSError{
+                    Err:    err.Error(),
+                    Name:   name,
+                    Server: server,
+                }
+                if nerr, ok := err.(Error); ok &amp;amp;&amp;amp; nerr.Timeout() {
+                    lastErr.(*DNSError).IsTimeout = true
+                }
+                continue
+            }
+            cname, rrs, err := answer(name, server, msg, qtype)
+            if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;amp;&amp;amp; msg.recursion_available {
+                return cname, rrs, err
+            }
+            lastErr = err
+        }
+    }
+    return &amp;quot;&amp;quot;, nil, lastErr
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第一层 for 循环是尝试的次数，第二层 for 循环是遍历 &lt;code&gt;/etc/resolv.conf&lt;/code&gt; 中配置的所有域名服务器，&lt;code&gt;exchange&lt;/code&gt; 函数是发送 dns 查询请求并将响应结果解析到 &lt;code&gt;msg&lt;/code&gt; 变量中返回，初看到这里，觉得实现是没问题的，顺序向每一个域名服务器发送 dns 查询请求，如果成功就返回，如果失败就尝试下一个。&lt;/p&gt;
+
+&lt;p&gt;问题出现在判断是否成功的那一行代码 &lt;code&gt;if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;amp;&amp;amp; msg.recursion_available&lt;/code&gt;，这里的意思是如果 dns 查询成功，或者出错了但是对方支持递归查询的话，就直接返回，不继续请求下一个域名服务器。如果对方支持递归查询但是仍然没有查到的话，说明上级服务器也没有这个域名的记录，没有必要继续往下查。（这个逻辑在 go1.6 版本中被修改了，出错了以后不再判断是否支持递归查询，仍然尝试向下一个域名服务器发送请求）&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;msg.rcode&lt;/code&gt; 这个值很重要，是问题的关键，&lt;/p&gt;
+
+&lt;h3 id=&#34;dns-查询协议格式:950668773c5541050af4c9df2f93d0a6&#34;&gt;dns 查询协议格式&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-27-go-program-does-not-use-all-nameservers-for-dns-lookups-dns-query-package.png&#34; alt=&#34;dns-query-package&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;我们只需要关注首部的12字节。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ID:占16位，2个字节。此报文的编号，由客户端指定。DNS回复时带上此标识，以指示处理的对应请应请求。&lt;/li&gt;
+&lt;li&gt;QR:占1位，1/8字节。0代表查询，1代表DNS回复&lt;/li&gt;
+&lt;li&gt;Opcode:占4位，1/2字节。指示查询种类：0:标准查询；1:反向查询；2:服务器状态查询；3-15:未使用。&lt;/li&gt;
+&lt;li&gt;AA:占1位，1/8字节。是否权威回复。&lt;/li&gt;
+&lt;li&gt;TC:占1位，1/8字节。因为一个UDP报文为512字节，所以该位指示是否截掉超过的部分。&lt;/li&gt;
+&lt;li&gt;RD:占1位，1/8字节。此位在查询中指定，回复时相同。设置为1指示服务器进行递归查询。&lt;/li&gt;
+&lt;li&gt;RA:占1位，1/8字节。由DNS回复返回指定，说明DNS服务器是否支持递归查询。&lt;/li&gt;
+&lt;li&gt;Z:占3位，3/8字节。保留字段，必须设置为0。&lt;/li&gt;
+&lt;li&gt;RCODE:占4位，1/2字节。由回复时指定的返回码：0:无差错；1:格式错；2:DNS出错；3:域名不存在；4:DNS不支持这类查询；5:DNS拒绝查询；6-15:保留字段。　&lt;/li&gt;
+&lt;li&gt;QDCOUNT:占16位，2字节。一个无符号数指示查询记录的个数。&lt;/li&gt;
+&lt;li&gt;ANCOUNT:占16位，2字节。一个无符号数指明回复记录的个数。&lt;/li&gt;
+&lt;li&gt;NSCOUNT:占16位，2字节。一个无符号数指明权威记录的个数。&lt;/li&gt;
+&lt;li&gt;ARCOUNT:占16位，2字节。一个无符号数指明格外记录的个数。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;其中 &lt;strong&gt;RCODE&lt;/strong&gt; 是回复时用于判断查询结果是否成功的，对应前面的 &lt;code&gt;msg.rcode&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h3 id=&#34;bind-的-dns-回复问题:950668773c5541050af4c9df2f93d0a6&#34;&gt;bind 的 dns 回复问题&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;10.10.100.3&lt;/code&gt; 上是使用 &lt;strong&gt;bind&lt;/strong&gt; 搭建的本地域名服务器。&lt;/p&gt;
+
+&lt;p&gt;使用 &lt;code&gt;dig @10.10.100.3 www.baidu.com&lt;/code&gt; 命令查看解析结果如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;; &amp;lt;&amp;lt;&amp;gt;&amp;gt; DiG 9.8.2rc1-RedHat-9.8.2-0.23.rc1.el6_5.1 &amp;lt;&amp;lt;&amp;gt;&amp;gt; @10.10.100.3 www.baidu.com ;
+(1 server found) 
+;; global options: +cmd 
+;; Got answer: 
+;; -&amp;gt;&amp;gt;HEADER&amp;lt;&amp;lt;- opcode: QUERY, status: NOERROR, id: 55909 
+;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: 0 
+;; WARNING: recursion requested but not available 
+
+;; QUESTION SECTION: 
+;www.baidu.com.         IN  A 
+
+;; AUTHORITY SECTION: 
+.           518400  IN  NS  H.ROOT-SERVERS.NET.  
+.           518400  IN  NS  K.ROOT-SERVERS.NET.  
+.           518400  IN  NS  C.ROOT-SERVERS.NET.  
+.           518400  IN  NS  A.ROOT-SERVERS.NET.  
+.           518400  IN  NS  B.ROOT-SERVERS.NET.  
+.           518400  IN  NS  F.ROOT-SERVERS.NET.  
+.           518400  IN  NS  L.ROOT-SERVERS.NET.  
+.           518400  IN  NS  D.ROOT-SERVERS.NET.  
+.           518400  IN  NS  I.ROOT-SERVERS.NET.  
+.           518400  IN  NS  E.ROOT-SERVERS.NET.  
+.           518400  IN  NS  G.ROOT-SERVERS.NET.  
+.           518400  IN  NS  M.ROOT-SERVERS.NET.  
+.           518400  IN  NS  J.ROOT-SERVERS.NET.  
+
+;; Query time: 1 msec 
+;; SERVER: 10.10.100.3#53(10.10.100.3) 
+;; WHEN: Wed Apr 27 17:35:15 2016 
+;; MSG SIZE  rcvd: 242 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;bind&lt;/strong&gt; 并没有返回 &lt;code&gt;www.baidu.com&lt;/code&gt; 的 A 记录，而是返回了13个根域名服务器的地址，并且 &lt;strong&gt;status&lt;/strong&gt; 的状态是 &lt;strong&gt;NOERROR&lt;/strong&gt;（这个值就是前述的 &lt;strong&gt;RCODE&lt;/strong&gt;，这里没有错误正则为 0)，问题就在这里，没有查到 A 记录还返回 &lt;code&gt;RCODE=0&lt;/code&gt;，回顾一下上面 go 代码中的判断条件&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;amp;&amp;amp; msg.recursion_available&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;如果返回的 &lt;strong&gt;RCODE&lt;/strong&gt; 值为 0，则直接退出，不继续尝试后面的域名服务器，从而导致了域名解析失败。&lt;/p&gt;
+
+&lt;h3 id=&#34;解决方案:950668773c5541050af4c9df2f93d0a6&#34;&gt;解决方案&lt;/h3&gt;
+
+&lt;h4 id=&#34;仍然使用-go1-4-版本进行编译:950668773c5541050af4c9df2f93d0a6&#34;&gt;仍然使用 go1.4 版本进行编译&lt;/h4&gt;
+
+&lt;p&gt;不推荐这么做，毕竟升级后在 gc 以及很多其他方面都有优化。&lt;/p&gt;
+
+&lt;h4 id=&#34;使用-go1-5-及以上版本编译但是通过环境变量强制使用-cgo-的-dns-查询方式:950668773c5541050af4c9df2f93d0a6&#34;&gt;使用 go1.5 及以上版本编译但是通过环境变量强制使用 cgo 的 dns 查询方式&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;export GODEBUG=netdns=cgo go build&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;使用 cgo 的方式会在每一次调用时创建一个线程，在并发量较大时可能会对系统资源造成一定影响。而且需要每一个使用 go 编写的程序编译时都加上此标志，较为繁琐。&lt;/p&gt;
+
+&lt;h4 id=&#34;修改-bind-的配置文件:950668773c5541050af4c9df2f93d0a6&#34;&gt;修改 bind 的配置文件&lt;/h4&gt;
+
+&lt;p&gt;在 &lt;strong&gt;bind&lt;/strong&gt; 中彻底关闭对递归查询的支持也可以解决此问题，但是由于对 &lt;strong&gt;bind&lt;/strong&gt; 不是很熟悉，具体是什么原因导致没有查到 &lt;strong&gt;A 记录&lt;/strong&gt;但仍然返回 &lt;strong&gt;NOERROR&lt;/strong&gt; 不是很清楚，猜测可能和递归转发的查询方式有关，有可能 &lt;strong&gt;bind&lt;/strong&gt; 认为返回了根域名服务器的地址，&lt;strong&gt;client&lt;/strong&gt; 可以去这些地址上查，所以该次请求并不算做出错。&lt;/p&gt;
+
+&lt;p&gt;修改配置文件加上以下内容以后，再次查询时会返回 &lt;strong&gt;RCODE=5&lt;/strong&gt;，拒绝递归查询，这样可以达到我们的目的，查询非内网域名时通过其他域名服务器查询&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;recursion no;
+allow-query-cache { none; };
+allow-recursion { none; };
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        </item>
+      
     
       
         <item>

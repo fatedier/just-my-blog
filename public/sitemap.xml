@@ -8,6 +8,11 @@
   </url>
   
   <url>
+    <loc>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups</loc>
+    <lastmod>2016-04-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker</loc>
     <lastmod>2016-04-05T00:00:00+00:00</lastmod>
   </url>

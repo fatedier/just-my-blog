@@ -245,7 +245,7 @@ func tryOneName(cfg *dnsConfig, name string, qtype uint16) (string, []dnsRR, err
 ;; MSG SIZE  rcvd: 242 
 ``` 
 
-**bind** 并没有返回 `www.baidu.com` 的 A 记录，而是返回了13个根域名服务器的地址，并且 **status** 的状态是 **NOERROR**（这个值就是前述的 **RCODE**，这里没有错误正则为 0)，问题就在这里，没有查到 A 记录还返回 `RCODE=0`，回顾一下上面 go 代码中的判断条件
+**bind** 并没有返回 `www.baidu.com` 的 A 记录，而是返回了13个根域名服务器的地址，并且 **status** 的状态是 **NOERROR**（这个值就是前述的 **RCODE**，这里返回0表示没有错误)，问题就在这里，没有查到 A 记录还返回 `RCODE=0`，回顾一下上面 go 代码中的判断条件
 
 `if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError && msg.recursion_available`
 

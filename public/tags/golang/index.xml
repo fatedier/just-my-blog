@@ -246,7 +246,7 @@ CGO_ENABLED=&amp;quot;1&amp;quot;
 ;; MSG SIZE  rcvd: 242 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;strong&gt;bind&lt;/strong&gt; 并没有返回 &lt;code&gt;www.baidu.com&lt;/code&gt; 的 A 记录，而是返回了13个根域名服务器的地址，并且 &lt;strong&gt;status&lt;/strong&gt; 的状态是 &lt;strong&gt;NOERROR&lt;/strong&gt;（这个值就是前述的 &lt;strong&gt;RCODE&lt;/strong&gt;，这里没有错误正则为 0)，问题就在这里，没有查到 A 记录还返回 &lt;code&gt;RCODE=0&lt;/code&gt;，回顾一下上面 go 代码中的判断条件&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;bind&lt;/strong&gt; 并没有返回 &lt;code&gt;www.baidu.com&lt;/code&gt; 的 A 记录，而是返回了13个根域名服务器的地址，并且 &lt;strong&gt;status&lt;/strong&gt; 的状态是 &lt;strong&gt;NOERROR&lt;/strong&gt;（这个值就是前述的 &lt;strong&gt;RCODE&lt;/strong&gt;，这里返回0表示没有错误)，问题就在这里，没有查到 A 记录还返回 &lt;code&gt;RCODE=0&lt;/code&gt;，回顾一下上面 go 代码中的判断条件&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;amp;&amp;amp; msg.recursion_available&lt;/code&gt;&lt;/p&gt;
 

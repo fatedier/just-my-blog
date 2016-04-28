@@ -316,7 +316,7 @@ CGO_ENABLED=&quot;1&quot;
 ;; MSG SIZE  rcvd: 242 
 </code></pre>
 
-<p><strong>bind</strong> 并没有返回 <code>www.baidu.com</code> 的 A 记录，而是返回了13个根域名服务器的地址，并且 <strong>status</strong> 的状态是 <strong>NOERROR</strong>（这个值就是前述的 <strong>RCODE</strong>，这里没有错误正则为 0)，问题就在这里，没有查到 A 记录还返回 <code>RCODE=0</code>，回顾一下上面 go 代码中的判断条件</p>
+<p><strong>bind</strong> 并没有返回 <code>www.baidu.com</code> 的 A 记录，而是返回了13个根域名服务器的地址，并且 <strong>status</strong> 的状态是 <strong>NOERROR</strong>（这个值就是前述的 <strong>RCODE</strong>，这里返回0表示没有错误)，问题就在这里，没有查到 A 记录还返回 <code>RCODE=0</code>，回顾一下上面 go 代码中的判断条件</p>
 
 <p><code>if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;&amp; msg.recursion_available</code></p>
 

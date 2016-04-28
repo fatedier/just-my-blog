@@ -182,7 +182,7 @@ CGO_ENABLED=&amp;quot;1&amp;quot;
 
 &lt;p&gt;问题出现在判断是否成功的那一行代码 &lt;code&gt;if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;amp;&amp;amp; msg.recursion_available&lt;/code&gt;，这里的意思是如果 dns 查询成功，或者出错了但是对方支持递归查询的话，就直接返回，不继续请求下一个域名服务器。如果对方支持递归查询但是仍然没有查到的话，说明上级服务器也没有这个域名的记录，没有必要继续往下查。（这个逻辑在 go1.6 版本中被修改了，出错了以后不再判断是否支持递归查询，仍然尝试向下一个域名服务器发送请求）&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;msg.rcode&lt;/code&gt; 这个值很重要，是问题的关键，&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;msg.rcode&lt;/code&gt; 这个值很重要，是问题的关键。&lt;/p&gt;
 
 &lt;h3 id=&#34;dns-查询协议格式:950668773c5541050af4c9df2f93d0a6&#34;&gt;dns 查询协议格式&lt;/h3&gt;
 
@@ -1265,6 +1265,69 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这个函数是不安全的，需要小心使用，因为不能确定 &lt;strong&gt;environ&lt;/strong&gt; 的地址是否已经被其他人修改过了，比如在 php 扩展中，有可能已经被其他程序用同样的方法修改过，这样就会造成获取到的 &lt;strong&gt;argv[0]&lt;/strong&gt; 的地址是未知的，执行的程序可能就会出现内存错误。&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
+          <title>关于vim的一些小技巧</title>
+          <link>http://blog.fatedier.com/2015/07/30/some-skills-about-vim</link>
+          <pubDate>Thu, 30 Jul 2015 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2015/07/30/some-skills-about-vim</guid>
+          <description>
+
+&lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;
+
+&lt;h3 id=&#34;插入与删除:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;插入与删除&lt;/h3&gt;
+
+&lt;h4 id=&#34;插入:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;插入&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;A&lt;/code&gt; 在行末插入&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;I&lt;/code&gt; 在行首插入&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;O&lt;/code&gt; 在上一行插入&lt;/p&gt;
+
+&lt;h4 id=&#34;替换字符:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;替换字符&lt;/h4&gt;
+
+&lt;p&gt;普通模式下，先按下 &lt;code&gt;r&lt;/code&gt; 再按下其他按键，就是使用新的字符替换旧字符。&lt;/p&gt;
+
+&lt;h4 id=&#34;删除:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;删除&lt;/h4&gt;
+
+&lt;p&gt;普通模式下，&lt;code&gt;ct;&lt;/code&gt; 依次按下三个按键，&lt;code&gt;c&lt;/code&gt; 表示删除这部分内容后直接进行插入模式，&lt;code&gt;t;&lt;/code&gt; 表示从当前位置到这一行中下一个出现 &lt;code&gt;;&lt;/code&gt; 号之前的位置，合在一起就是删除这之间的内容。 &lt;code&gt;c&lt;/code&gt; 换成 &lt;code&gt;d&lt;/code&gt; 的话就是删除当前位置到这一行中下一个出现 &lt;code&gt;;&lt;/code&gt; 之前的内容，但是不进入插入模式。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;di&amp;quot;&lt;/code&gt; 将当前行第一次出现两个 &lt;code&gt;&amp;quot;&lt;/code&gt; 之间的内容全部清空并且进入插入模式。&lt;/p&gt;
+
+&lt;h3 id=&#34;移动:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;移动&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;f;&lt;/code&gt; 表示移动到这一行中下一个 &lt;code&gt;;&lt;/code&gt; 号的位置。&lt;/p&gt;
+
+&lt;h3 id=&#34;vimgrep:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;vimgrep&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;vimgrep /匹配模式/[g][j]&lt;/code&gt; 要搜索的文件/范围&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;g&lt;/code&gt; 表示是否把每一行的多个匹配结果都加入&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;j&lt;/code&gt; 表示是否搜索完后定位到第一个匹配位置&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;vimgrep /pattern/ %           // 在当前打开文件中查找
+vimgrep /pattern/ *           // 在当前目录下查找所有
+vimgrep /pattern/ **          // 在当前目录及子目录下查找所有
+vimgrep /pattern/ *.c         // 查找当前目录下所有.c文件
+vimgrep /pattern/ **/*        // 只查找子目录
+cn                            // 查找下一个
+cp                            // 查找上一个
+copen                         // 打开quickfix
+cw                            // 打开quickfix
+cclose                        // 关闭qucikfix
+help vimgrep                  // 查看vimgrep帮助
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;从vim正文复制单词到vim命令行:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;从vim正文复制单词到vim命令行&lt;/h3&gt;
+
+&lt;p&gt;例如使用 &lt;code&gt;vimgrep&lt;/code&gt; 搜索时，光标先移动到要复制的单词的起始位置，之后切到命令模式， 先按 &lt;code&gt;ctrl + r&lt;/code&gt; ，之后再按 &lt;code&gt;ctrl + w&lt;/code&gt; 即可。&lt;/p&gt;
 </description>
         </item>
       

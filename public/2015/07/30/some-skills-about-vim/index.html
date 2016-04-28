@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何使golang项目可以在任意目录下编译 &middot; fatedier blog">
+<meta property="og:title" content="关于vim的一些小技巧 &middot; fatedier blog">
 
 <meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    如何使golang项目可以在任意目录下编译
+    关于vim的一些小技巧
     
 </title>
 
@@ -78,48 +78,73 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2016年02月25日">
-                        2016年02月25日
+                    <time datetime="2015年07月30日">
+                        2015年07月30日
                     </time>
                 </div>
-                <h1 class="post-title">如何使golang项目可以在任意目录下编译</h1>
+                <h1 class="post-title">关于vim的一些小技巧</h1>
             </header>
 
             <div class="post-content">
                 
 
-<p>通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。</p>
+<p>记录一下关于 vim 中一些使用频率也许并不高的小技巧。</p>
 
-<h3 id="背景:ab38b6c3b1bcedcc11f7400cd407aaf7">背景</h3>
+<h3 id="插入与删除:eced521468be4e7a77cc24aa3b654ac4">插入与删除</h3>
 
-<p><a href="https://github.com/fatedier/frp">frp</a> 是我业余时间写的一个用于穿透内网的反向代理工具，可以将防火墙内或内网环境的机器对外暴露指定的服务，例如22端口提供ssh服务或者80端口提供一个临时的web测试环境。</p>
+<h4 id="插入:eced521468be4e7a77cc24aa3b654ac4">插入</h4>
 
-<p>一开始项目是直接放在 <code>$GOPATH/src</code> 目录下的，第三方包的引用是 <code>import github.com/xxx/xxx</code>，内部包的引用 <code>import frp/xxx</code>，这样编译时内部包的查找路径实际上就是 <code>$GOPATH/src/frp/xxx</code>。</p>
+<p><code>A</code> 在行末插入</p>
 
-<p>后来由于使用了 <a href="https://travis-ci.org/">travis-ci</a> 做持续集成，travis-ci 中是直接使用 <code>go get github.com/fatedier/frp</code> 下载代码，然后编译运行。这样问题就来了，通过 go get 下载的源码在本地的路径是 <code>$GOPATH/src/github.com/fatedier/frp</code>，内部包就找不到了，导致编译失败。</p>
+<p><code>I</code> 在行首插入</p>
 
-<h3 id="使用类似第三方包的引用方式:ab38b6c3b1bcedcc11f7400cd407aaf7">使用类似第三方包的引用方式</h3>
+<p><code>O</code> 在上一行插入</p>
 
-<p>解决这个问题最直接的方法就是将内部包的引用方式修改成 <code>import github.com/fatedier/frp/xxx</code>，在 travis-ci 中编译的时候就可以通过了，同时需要注意把自己本地的项目路径也更换成<code>$GOPATH/src/github.com/fatedier/frp</code>，很多开源项目都是用的这种方式引用内部包。</p>
+<h4 id="替换字符:eced521468be4e7a77cc24aa3b654ac4">替换字符</h4>
 
-<p><strong>注：不推荐使用 ./ ../ 等相对路径来引用内部包，这样管理和定位问题其实都不是很方便。</strong></p>
+<p>普通模式下，先按下 <code>r</code> 再按下其他按键，就是使用新的字符替换旧字符。</p>
 
-<p>之后由于需要其他人共同开发，fork了我的项目之后，他们也使用 go get 下载他们fork后的项目源码，这样 <code>fatedier</code> 就替换成了他们自己的用户名，但是代码中 import 的包名并没有改变，会导致他们无法编译通过。当然，他们可以将项目再放到正确的目录，但是多了一部操作总归不方便。</p>
+<h4 id="删除:eced521468be4e7a77cc24aa3b654ac4">删除</h4>
 
-<h3 id="比较tricky的做法-修改gopath:ab38b6c3b1bcedcc11f7400cd407aaf7">比较tricky的做法，修改GOPATH</h3>
+<p>普通模式下，<code>ct;</code> 依次按下三个按键，<code>c</code> 表示删除这部分内容后直接进行插入模式，<code>t;</code> 表示从当前位置到这一行中下一个出现 <code>;</code> 号之前的位置，合在一起就是删除这之间的内容。 <code>c</code> 换成 <code>d</code> 的话就是删除当前位置到这一行中下一个出现 <code>;</code> 之前的内容，但是不进入插入模式。</p>
 
-<p>其实问题的关键就在于 <code>GOPATH</code> 这个环境变量，这个变量决定了查找包的绝对路径。我们在项目根目录下建立 <code>src/frp</code> 这样的目录结构，之后将原来的源代码放到这个目录下，然后内部包的应用方式还是改成 <code>import frp/xxx</code> 这种简洁的格式。</p>
+<p><code>di&quot;</code> 将当前行第一次出现两个 <code>&quot;</code> 之间的内容全部清空并且进入插入模式。</p>
 
-<p>编译的时候，把项目根目录加到 <code>GOPATH</code> 中去，例如 <code>GOPATH=`pwd`:${GOPATH}</code>，这样就会在自己的目录里查找内部包。</p>
+<h3 id="移动:eced521468be4e7a77cc24aa3b654ac4">移动</h3>
 
-<p>可以看到，通过这样的方式不管把你把项目放到哪一个目录下，都可以编译成功，当然，为了便于管理，推荐还是放在 <code>$GOPATH/src</code> 目录下，同时使用 <a href="https://github.com/tools/godep">godep</a> 来管理第三方包。</p>
+<p><code>f;</code> 表示移动到这一行中下一个 <code>;</code> 号的位置。</p>
+
+<h3 id="vimgrep:eced521468be4e7a77cc24aa3b654ac4">vimgrep</h3>
+
+<p><code>vimgrep /匹配模式/[g][j]</code> 要搜索的文件/范围</p>
+
+<p><code>g</code> 表示是否把每一行的多个匹配结果都加入</p>
+
+<p><code>j</code> 表示是否搜索完后定位到第一个匹配位置</p>
+
+<pre><code class="language-bash">vimgrep /pattern/ %           // 在当前打开文件中查找
+vimgrep /pattern/ *           // 在当前目录下查找所有
+vimgrep /pattern/ **          // 在当前目录及子目录下查找所有
+vimgrep /pattern/ *.c         // 查找当前目录下所有.c文件
+vimgrep /pattern/ **/*        // 只查找子目录
+cn                            // 查找下一个
+cp                            // 查找上一个
+copen                         // 打开quickfix
+cw                            // 打开quickfix
+cclose                        // 关闭qucikfix
+help vimgrep                  // 查看vimgrep帮助
+</code></pre>
+
+<h3 id="从vim正文复制单词到vim命令行:eced521468be4e7a77cc24aa3b654ac4">从vim正文复制单词到vim命令行</h3>
+
+<p>例如使用 <code>vimgrep</code> 搜索时，光标先移动到要复制的单词的起始位置，之后切到命令模式， 先按 <code>ctrl + r</code> ，之后再按 <code>ctrl + w</code> 即可。</p>
 
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory">http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2015/07/30/some-skills-about-vim">http://blog.fatedier.com/2015/07/30/some-skills-about-vim</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>
@@ -130,9 +155,9 @@
                 <ul class="list-inline post-tags">
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/golang">
+                        <a href="http://blog.fatedier.com/tags/vim">
                             <i class="fa fa-tags"></i>
-                            golang
+                            vim
                         </a>
                     </li>
                     
@@ -146,13 +171,13 @@
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="http://blog.fatedier.com/2015/08/24/how-to-modify-process-name"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

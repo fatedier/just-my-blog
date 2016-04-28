@@ -182,7 +182,7 @@ func tryOneName(cfg *dnsConfig, name string, qtype uint16) (string, []dnsRR, err
 
 问题出现在判断是否成功的那一行代码 `if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError && msg.recursion_available`，这里的意思是如果 dns 查询成功，或者出错了但是对方支持递归查询的话，就直接返回，不继续请求下一个域名服务器。如果对方支持递归查询但是仍然没有查到的话，说明上级服务器也没有这个域名的记录，没有必要继续往下查。（这个逻辑在 go1.6 版本中被修改了，出错了以后不再判断是否支持递归查询，仍然尝试向下一个域名服务器发送请求）
 
-`msg.rcode` 这个值很重要，是问题的关键，
+`msg.rcode` 这个值很重要，是问题的关键。
 
 ### dns 查询协议格式
 

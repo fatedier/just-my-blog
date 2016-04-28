@@ -2,7 +2,7 @@
 categories:
     - "技术文章"
 tags:
-    - "go"
+    - "golang"
 date: 2016-02-19
 title: "Go中如何优雅地关闭net.Listener"
 url: "/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully"

@@ -62,3 +62,45 @@ img {
 .single strong {
     color: #3C4650;
 }
+
+.single table {
+    display: table;
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    border-left: none;
+    border: 1px solid #dddddd;
+    border-spacing: 0;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    padding: 8px;
+    font-size: 16px;
+}
+
+.single thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+.single th {
+    text-align: center;
+    border: 1px solid #dddddd;
+    vertical-align: inherit;
+    padding: 8px;
+}
+
+.single tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+.single td {
+    text-align: center;
+    padding: 8px;
+    border-left: 1px solid #dddddd;
+    border-top: 1px solid #dddddd;
+    line-height: 20px;
+    vertical-align: top;
+}

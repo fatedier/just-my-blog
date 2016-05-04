@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦 &middot; fatedier blog">
+<meta property="og:title" content="codis 2.x版本环境搭建与测试 &middot; fatedier blog">
 
 <meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦
+    codis 2.x版本环境搭建与测试
     
 </title>
 
@@ -79,194 +79,258 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2015年03月04日">
-                        2015年03月04日
+                    <time datetime="2015年11月24日">
+                        2015年11月24日
                     </time>
                 </div>
-                <h1 class="post-title">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</h1>
+                <h1 class="post-title">codis 2.x版本环境搭建与测试</h1>
             </header>
 
             <div class="post-content">
                 
 
-<p>在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。</p>
+<p>Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。</p>
 
-<h3 id="业务说明:b843d88db977db74e59764a23a86a6c0">业务说明</h3>
+<h3 id="安装并启动-zookeeper:57de784f564f909e53fd43ba72fc074a">安装并启动 zookeeper</h3>
 
-<p>为了便于说明，举一个简单的例子。假设现在有一个项目需要建立一个和银行交互的平台，目前只接入工商银行，后续接入其他银行，每个银行的业务都有差异，报文格式可能也不一致。</p>
+<p>codis 2.x 版本重度依赖于 zookeeper。</p>
 
-<p>这里只列举几个简要的流程，仅包括拼报文，发送报文，接收报文，解析报文，其余整体架构以及后续处理等内容省略。</p>
+<p>从官网下载 <a href="http://zookeeper.apache.org/releases.html">zookeeper</a>，解压安装。</p>
 
-<h3 id="初步设计:b843d88db977db74e59764a23a86a6c0">初步设计</h3>
+<p>使用默认配置启动 zookeeper <code>sh ./bin/zkServer.sh start</code>，监听地址为 <code>2181</code>。</p>
 
-<p>创建一个银行交互类 BankOpt，包括四个函数</p>
+<h3 id="下载安装-codis:57de784f564f909e53fd43ba72fc074a">下载安装 codis</h3>
 
-<pre><code class="language-cpp">int setMsg();       // 拼报文
-int sendMsg();      // 发送报文
-int getMsg();       // 接收报文
-int parseMsg();     // 解析报文
-</code></pre>
+<p><code>go get -d github.com/CodisLabs/codis</code></p>
 
-<p>然后在每个函数中通过if-else来判断具体是哪一个银行，之后进行相应的处理。</p>
+<p>进入源码根目录 <code>cd $GOPATH/src/github.com/CodisLabs/codis</code></p>
 
-<p>这种设计在刚开发的时候非常方便，代码量少，但是如果后续需要接入另外一个银行时就需要改动 <strong>BankOpt</strong> 类，不符合设计模式中的开放-封闭原则。而且单个函数中将来可能会有大量的 <strong>if-else</strong>，使代码可读性下降。</p>
+<p>执行安装脚本 <code>./bootstrap.sh</code></p>
 
-<h3 id="简单工厂模式:b843d88db977db74e59764a23a86a6c0">简单工厂模式</h3>
+<p><strong>注：这里第一步和第三步（会下载第三方库到本地）需要从 github copy 数据，鉴于网络环境的问题，时间会比较长。</strong></p>
 
-<p>通过简单工厂模式，我们可以创建一个专门的工厂类用于实例化一个合适的银行交互类，只需要这个银行交互类具有共同的接口即可。</p>
+<p>之后生成的可执行文件都在 <code>codis/bin</code> 文件夹下。</p>
 
-<p>首先，为了实现更好的复用，把各个银行交互类中相同的部分抽象出来，形成一个银行交互基类，代码如下：</p>
+<h3 id="部署-codis-server:57de784f564f909e53fd43ba72fc074a">部署 codis-server</h3>
 
-<pre><code class="language-cpp">class BaseBank
-{
-public:
-    virtual int setMsg() = 0;
-    virtual int sendMsg() = 0;
-    virtual int getMsg() = 0;
-    virtual int parseMsg() = 0;
-};
-</code></pre>
+<p><strong>codis-server</strong> 基于 <strong>redis 2.8.21</strong> 稍微进行了一些修改以支持原子性的迁移数据，具体用法和 redis 一致。</p>
 
-<p>这里仅仅声明了四个纯虚函数，具体的业务逻辑在子类中实现。</p>
+<p>将 <code>bin</code> 文件夹下的 codis-server 拷贝到集群中每个节点，和 redis-server 的启动命令一样，指定配置文件，启动。</p>
 
-<p>创建两个银行交互子类GSBank（工商银行）和RMBank（人民银行），继承BaseBank，实现四个虚函数。</p>
+<p><strong>这里要注意 redis.conf 配置中需要设置 maxmemory，不然无法自动按照负载均衡的方式分配 slot（可以手动分配），推荐单台机器部署多个 redis 实例。</strong></p>
 
-<h4 id="创建一个工厂类:b843d88db977db74e59764a23a86a6c0">创建一个工厂类</h4>
+<p><code>./bin/codis-server ./redis_conf/redis_6400.conf</code></p>
 
-<pre><code class="language-cpp">class BankFactory
-{
-public:
-    BaseBank* createBank(const string&amp; bank_name) {
-    if (bank_name == &quot;SBank&quot;) 
-        return new GSBank();
-    else if (bank_name == &quot;MBank&quot;)
-        return new RMBank();
-    }
-};
-</code></pre>
+<h3 id="启动-dashboard:57de784f564f909e53fd43ba72fc074a">启动 dashboard</h3>
 
-<p>工厂类中有一个 <strong>createBank</strong> 函数，用于根据银行编码创建相应的实例并返回其基类指针，这样我们只需要通过基类指针调用相关函数即可。</p>
+<p><strong>dashboard</strong> 既是 codis 集群的管理中心，又提供了一个人性化的 web 界面，方便查看统计信息以及对集群进行管理操作。</p>
 
-<h4 id="在主流程中调用:b843d88db977db74e59764a23a86a6c0">在主流程中调用</h4>
+<p>启动 web 控制面板，注意这里要用到配置文件，不指定的话就是当前目录下的 config.ini，可以用 <code>-c</code> 参数指定。</p>
 
-<pre><code class="language-cpp">BankFactory bf;
-BaseBank* t = (BaseBank*)bf.createBank(bank_name);
-if (t == NULL) {
-    cout &lt;&lt; &quot;银行编码错误！&quot; &lt;&lt; endl;
-    return 2;
-}
-t-&gt;setMsg();
-t-&gt;sendMsg();
-t-&gt;getMsg();
-t-&gt;parseMsg();
-</code></pre>
+<p><code>nohup ./bin/codis-config -c ./config.ini dashboard --addr=:18087 &amp;</code></p>
 
-<h4 id="优缺点:b843d88db977db74e59764a23a86a6c0">优缺点</h4>
+<h3 id="初始化-slot:57de784f564f909e53fd43ba72fc074a">初始化 slot</h3>
 
-<p>利用简单工厂模式，当我们后续接入另外的银行时，只需要添加具体的银行交互类，实现业务函数，然后在工厂类的 <strong>createBank</strong> 函数中添加一个 <strong>else if</strong> 子句。相对于原来的设计已经改进很多了，但是仍然需要修改原来的工厂类的代码，没有彻底实现解耦。</p>
+<p><code>./bin/codis-config -c ./config.ini slot init</code></p>
 
-<h3 id="反射:b843d88db977db74e59764a23a86a6c0">反射</h3>
+<p>该命令会在 zookeeper 上创建 slot 相关信息。</p>
 
-<p>反射在java的一些框架中使用的比较多，而且用起来非常方便。C++本身并不支持，但是我们可以模拟一些简单的特性。</p>
+<h3 id="添加-group:57de784f564f909e53fd43ba72fc074a">添加 group</h3>
 
-<p>我们需要一种能够根据字符串动态获取对应的银行交互类的实例的方法。这样在工厂类的 <strong>createBank</strong> 方法中就可以根据字符串直接获取对应银行交互类的实例，而不需要再每次通过新增 <strong>else if</strong> 子句来新增一个银行接口。</p>
+<p>每个 <strong>group</strong> 只能有一个 <strong>master</strong> 和多个 <strong>slave</strong>。</p>
 
-<p>也就是说，利用反射和简单工厂模式，下次当我们需要新增一个银行接口的时候只需要新增一个银行交互类即可，不需要修改原来的任何代码，实现了业务上的解耦。</p>
+<p>命令格式： <code>codis-config -c ./config.ini server add &lt;group_id&gt; &lt;redis_addr&gt; &lt;role&gt;</code></p>
 
-<h4 id="如何在c-中实现反射:b843d88db977db74e59764a23a86a6c0">如何在C++中实现反射</h4>
+<p>例如向 group 1 和 group 2 中各加入两个 codis-server 实例，一主一从。</p>
 
-<ol>
-<li><p>需要一个全局的map用于存储类的信息以及创建实例的函数</p></li>
+<p><code>./bin/codis-config -c ./config.ini server add 1 localhost:6379 master</code></p>
 
-<li><p>需要反射的类需要提供一个用于创建自身实例的函数</p></li>
+<p><code>./bin/codis-config -c ./config.ini server add 1 localhost:6380 slave</code></p>
 
-<li><p>利用类的静态变量在程序启动的时候会进行初始化来在全局map中将类名及创建实例的函数存入map中</p></li>
-</ol>
+<p><code>./bin/codis-config -c ./config.ini server add 2 localhost:6381 master</code></p>
 
-<p>相关代码如下：</p>
+<p><code>./bin/codis-config -c ./config.ini server add 2 localhost:6382 slave</code></p>
 
-<pre><code class="language-cpp">typedef void* (*register_func)();
+<p><strong>1 代表 group_id，必须为数字，且从 1 开始</strong></p>
 
-class Class
-{
-public:
-static void* newInstance(const string&amp; class_name) {
-    map&lt;string, register_func&gt;::iterator it = m_register.find(class_name);
-    if (it == m_register.end())
-        return NULL;
-    else
-        return it-&gt;second();
-}
-static void registerClass(const string&amp; class_name, register_func func) {
-    m_register[class_name] = func;
-}
+<h3 id="分配-slot:57de784f564f909e53fd43ba72fc074a">分配 slot</h3>
 
-private:
-    /* key is class name and value is function to create instance of class */
-    static map&lt;string, register_func&gt; m_register;
-};
+<h4 id="手动分配:57de784f564f909e53fd43ba72fc074a">手动分配</h4>
 
+<p><code>codis-config -c ./config.ini slot range-set &lt;slot_from&gt; &lt;slot_to&gt; &lt;group_id&gt; &lt;status&gt;</code></p>
 
-class Register
-{
-public:
-    Register(const string&amp; class_name, register_func func) {
-        Class::registerClass(class_name, func);
-    }
-};
+<p><strong>slot</strong> 默认为 <strong>1024</strong> 个，范围是 <strong>0 - 1023</strong>，需要将这 1024 个 slot 分配到集群中不同的 group 中。</p>
 
-#define REGISTER_CLASS(class_name) \
-    class class_name##Register { \
-    public: \
-        static void* newInstance() { \
-            return new class_name; \
-        } \
-    private: \
-        static const Register reg; \
-    };\
-const Register class_name##Register::reg(#class_name,class_name##Register::newInstance);
-</code></pre>
+<p>例如将 1024 个 slot 平均分配到</p>
 
-<p>还需要修改工厂类的 <strong>createBank</strong> 函数，利用Class的 <strong>newInstance</strong> 函数来创建实例：</p>
+<p><code>./bin/codis-config -c ./config.ini slot range-set 0 511 1 online</code></p>
 
-<pre><code class="language-cpp">BaseBank* createBank(const string&amp; bank_name) {
-    return (BaseBank*)Class::newInstance(bank_name);
-}
-</code></pre>
+<p><code>./bin/codis-config -c ./config.ini slot range-set 512 1023 2 online</code></p>
 
-<p>Class类中的 <strong>m_register</strong> 变量是 <strong>static</strong> 类型的map，相当于全局变量。</p>
+<h4 id="自动分配:57de784f564f909e53fd43ba72fc074a">自动分配</h4>
 
-<p><strong>newInstance</strong> 函数，传入类名，查找map，调用回调函数，返回一个对应类的实例。</p>
+<p>在 dashboard 上可以自动分配 slot，会按照负载均衡的方式进行分配，不推荐使用，因为可能会造成大量数据的迁移。</p>
 
-<p><strong>registerClass</strong> 函数传入类名和用于创建实例的回调函数并将信息存入全局的map中。</p>
+<p>或者使用命令进行自动分配</p>
 
-<p><strong>Register</strong> 类只有一个构造函数，会调用Class的 <strong>registerClass</strong> 函数完成注册。</p>
+<p><code>./bin/codis-config -c ./config.ini slot rebalance</code></p>
 
-<p>利用宏定义，在每一个需要反射的类后面额外增加一个类，其中有一个 <strong>Register</strong> 类型的 <strong>static const</strong> 变量，这样在程序启动的时候就会完成初始化调用 <strong>Register</strong> 类的构造函数，完成注册。</p>
+<h3 id="启动-codis-proxy:57de784f564f909e53fd43ba72fc074a">启动 codis-proxy</h3>
 
-<p>之后只需要在需要反射的类，例如在工商银行交互类 GSBank 后面加上一条宏定义：</p>
+<p><code>./bin/codis-proxy -c ./config.ini -L ./log/proxy.log --cpu=8 --addr=10.10.100.1:19000 --http-addr=10.10.100.1:11000</code></p>
 
-<pre><code class="language-cpp">REGISTER_CLASS(GSBank)
-</code></pre>
+<p><strong>注意：这里 &ndash;addr 和 &ndash;http-addr 不要填 0.0.0.0，要绑定一个具体的 ip，不然 zookeeper 中存的将是hostname，会导致 dashboard 无法连接。</strong></p>
 
-<p>就可以通过工厂类传入 &ldquo;GSBank&rdquo; 字符串获得工商银行交互类的实例。</p>
+<p>codis-proxy 是无状态的，可以部署多个，且用 go 编写，可以利用多核，建议 cpu 设置核心数的一半到2/3，19000 即为访问 redis 集群的端口，11000 为获取 proxy 相关状态的端口。</p>
 
-<h3 id="测试:b843d88db977db74e59764a23a86a6c0">测试</h3>
+<p>之后使用 codis-config 将 codis-proxy 加入进来，也就是设置online（后来更新了一个版本，默认启动后即自动注册为online）</p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg" alt="GSBANK" /></p>
+<p><code>bin/codis-config -c ./config.ini proxy online &lt;proxy_name&gt;</code></p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg" alt="RMBANK" /></p>
+<p><strong>需要注意的是，启动 codis-proxy，会在 zookeeper 中注册一个 node，地址为 /zk/codis/db_test/fence，如果使用 kill -9 强行杀掉进程的话，这个会一直存在，需要手工删除。且 node 名称为 [hostname:port]，所以需要注意这个组合不能重复。</strong></p>
 
-<p>通过传入不同的银行编码，会实例化不同的银行交互类，并且执行其对应的函数。</p>
+<h3 id="主从切换:57de784f564f909e53fd43ba72fc074a">主从切换</h3>
 
-<p>如果需要增加新的银行接口，例如农业银行，只需要新增一个 <strong>NYBank</strong> 类，实现具体的业务逻辑，不需要改动原来的任何代码，传入 <strong>NYBank</strong> 字符串，就会执行农业银行相关的处理流程。</p>
+<p>官方建议是手工操作，避免数据不一致的问题，但是没有自动容灾的话可用性太差。</p>
+
+<p>官方另外提供了一个工具，<strong>codis-ha</strong>，这是一个通过 codis 开放的 api 实现自动切换主从的工具。该工具会在检测到 master 挂掉的时候将其下线并选择其中一个 slave 提升为 master 继续提供服务。</p>
+
+<p>这个工具不是很好用，如果 codis-ha 连接 dashboard 失败之后进程就会自动退出，需要手动重启或者使用 supervisor 拉起来。另外，当有机器被提升为 master 之后，其他 slave 的状态不会改变，还是从原 master 同步数据。原来的 master 重启之后处于 offline 状态，也需要手动加入 group 指定为 slave。也就是说有master 挂掉后，其余机器的状态需要手动修改。</p>
+
+<p><code>./bin/codis-ha --codis-config=10.10.100.3:18087 --productName=common</code></p>
+
+<p><code>10.10.100.14:18088</code> 为 dashboard 所在机器的 ip 和端口。</p>
+
+<h3 id="旧数据的迁移:57de784f564f909e53fd43ba72fc074a">旧数据的迁移</h3>
+
+<p>官方提供了一个 <strong>redis-port</strong> 工具可以将旧 redis 中的数据实时迁移到 codis 集群中，之后需要修改各服务配置文件，重启服务，指向 codis 集群即可。</p>
+
+<h3 id="性能测试:57de784f564f909e53fd43ba72fc074a">性能测试</h3>
+
+<p>测试环境： 24核 2.1GHz，4个redis实例</p>
+
+<h4 id="不启用-pipeline:57de784f564f909e53fd43ba72fc074a">不启用 pipeline</h4>
+
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">SET</th>
+<th align="center">GET</th>
+<th align="center">MSET</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">redis单机</td>
+<td align="center">58997.05</td>
+<td align="center">58651.02</td>
+<td align="center">33557.05</td>
+</tr>
+
+<tr>
+<td align="center">codis1核1proxy</td>
+<td align="center">42973.79</td>
+<td align="center">33003.30</td>
+<td align="center">12295.58</td>
+</tr>
+
+<tr>
+<td align="center">codis4核1proxy</td>
+<td align="center">44208.66</td>
+<td align="center">39936.10</td>
+<td align="center">21743.86</td>
+</tr>
+
+<tr>
+<td align="center">codis8核1proxy</td>
+<td align="center">39478.88</td>
+<td align="center">23052.10</td>
+<td align="center">24679.17</td>
+</tr>
+
+<tr>
+<td align="center">codis12核1proxy</td>
+<td align="center">28943.56</td>
+<td align="center">24224.81</td>
+<td align="center">21376.66</td>
+</tr>
+
+<tr>
+<td align="center">codis8核2proxy</td>
+<td align="center">62085.65</td>
+<td align="center">68964.40</td>
+<td align="center">48298.74</td>
+</tr>
+</tbody>
+</table>
+
+<h4 id="pipeline-100:57de784f564f909e53fd43ba72fc074a">pipeline = 100</h4>
+
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">SET</th>
+<th align="center">GET</th>
+<th align="center">MSET</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">redis单机</td>
+<td align="center">259067.36</td>
+<td align="center">340136.06</td>
+<td align="center">40387.72</td>
+</tr>
+
+<tr>
+<td align="center">codis1核1proxy</td>
+<td align="center">158982.52</td>
+<td align="center">166112.95</td>
+<td align="center">15199.88</td>
+</tr>
+
+<tr>
+<td align="center">codis4核1proxy</td>
+<td align="center">491159.12</td>
+<td align="center">403551.25</td>
+<td align="center">40157.42</td>
+</tr>
+
+<tr>
+<td align="center">codis8核1proxy</td>
+<td align="center">518134.72</td>
+<td align="center">537634.38</td>
+<td align="center">58156.44</td>
+</tr>
+
+<tr>
+<td align="center">codis12核1proxy</td>
+<td align="center">520833.34</td>
+<td align="center">500000.00</td>
+<td align="center">53418.80</td>
+</tr>
+
+<tr>
+<td align="center">codis8核2proxy</td>
+<td align="center">529812.81</td>
+<td align="center">607041.47</td>
+<td align="center">62872.28</td>
+</tr>
+</tbody>
+</table>
+
+<p>通过测试可以看出，使用 codis 会在性能上比原来直接使用 redis 会有所下降，但是优势就在于可以通过横向扩展（加机器）的方式去提高 redis 的存储容量以及并发量。</p>
 
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp">http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two">http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>
@@ -277,16 +341,23 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
                 <ul class="list-inline post-tags">
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/c/cpp">
+                        <a href="http://blog.fatedier.com/tags/codis">
                             <i class="fa fa-tags"></i>
-                            c/cpp
+                            codis
                         </a>
                     </li>
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F">
+                        <a href="http://blog.fatedier.com/tags/redis">
                             <i class="fa fa-tags"></i>
-                            设计模式
+                            redis
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8">
+                            <i class="fa fa-tags"></i>
+                            分布式存储
                         </a>
                     </li>
                     
@@ -300,13 +371,13 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2015/11/24/give-your-shell-some-color">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

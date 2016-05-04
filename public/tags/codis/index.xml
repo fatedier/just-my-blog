@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fatedier blog </title>
+    <link>http://blog.fatedier.com/tags/codis/</link>
+    <language>en-us</language>
+    <author></author>
+    <rights>(C) 2016</rights>
+    <updated>2015-11-24 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>codis 2.x版本环境搭建与测试</title>
+          <link>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two</link>
+          <pubDate>Tue, 24 Nov 2015 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two</guid>
+          <description>
+
+&lt;p&gt;Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。&lt;/p&gt;
+
+&lt;h3 id=&#34;安装并启动-zookeeper:57de784f564f909e53fd43ba72fc074a&#34;&gt;安装并启动 zookeeper&lt;/h3&gt;
+
+&lt;p&gt;codis 2.x 版本重度依赖于 zookeeper。&lt;/p&gt;
+
+&lt;p&gt;从官网下载 &lt;a href=&#34;http://zookeeper.apache.org/releases.html&#34;&gt;zookeeper&lt;/a&gt;，解压安装。&lt;/p&gt;
+
+&lt;p&gt;使用默认配置启动 zookeeper &lt;code&gt;sh ./bin/zkServer.sh start&lt;/code&gt;，监听地址为 &lt;code&gt;2181&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h3 id=&#34;下载安装-codis:57de784f564f909e53fd43ba72fc074a&#34;&gt;下载安装 codis&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;go get -d github.com/CodisLabs/codis&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;进入源码根目录 &lt;code&gt;cd $GOPATH/src/github.com/CodisLabs/codis&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;执行安装脚本 &lt;code&gt;./bootstrap.sh&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;注：这里第一步和第三步（会下载第三方库到本地）需要从 github copy 数据，鉴于网络环境的问题，时间会比较长。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;之后生成的可执行文件都在 &lt;code&gt;codis/bin&lt;/code&gt; 文件夹下。&lt;/p&gt;
+
+&lt;h3 id=&#34;部署-codis-server:57de784f564f909e53fd43ba72fc074a&#34;&gt;部署 codis-server&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;codis-server&lt;/strong&gt; 基于 &lt;strong&gt;redis 2.8.21&lt;/strong&gt; 稍微进行了一些修改以支持原子性的迁移数据，具体用法和 redis 一致。&lt;/p&gt;
+
+&lt;p&gt;将 &lt;code&gt;bin&lt;/code&gt; 文件夹下的 codis-server 拷贝到集群中每个节点，和 redis-server 的启动命令一样，指定配置文件，启动。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;这里要注意 redis.conf 配置中需要设置 maxmemory，不然无法自动按照负载均衡的方式分配 slot（可以手动分配），推荐单台机器部署多个 redis 实例。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/codis-server ./redis_conf/redis_6400.conf&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;启动-dashboard:57de784f564f909e53fd43ba72fc074a&#34;&gt;启动 dashboard&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;dashboard&lt;/strong&gt; 既是 codis 集群的管理中心，又提供了一个人性化的 web 界面，方便查看统计信息以及对集群进行管理操作。&lt;/p&gt;
+
+&lt;p&gt;启动 web 控制面板，注意这里要用到配置文件，不指定的话就是当前目录下的 config.ini，可以用 &lt;code&gt;-c&lt;/code&gt; 参数指定。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;nohup ./bin/codis-config -c ./config.ini dashboard --addr=:18087 &amp;amp;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;初始化-slot:57de784f564f909e53fd43ba72fc074a&#34;&gt;初始化 slot&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/codis-config -c ./config.ini slot init&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;该命令会在 zookeeper 上创建 slot 相关信息。&lt;/p&gt;
+
+&lt;h3 id=&#34;添加-group:57de784f564f909e53fd43ba72fc074a&#34;&gt;添加 group&lt;/h3&gt;
+
+&lt;p&gt;每个 &lt;strong&gt;group&lt;/strong&gt; 只能有一个 &lt;strong&gt;master&lt;/strong&gt; 和多个 &lt;strong&gt;slave&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;p&gt;命令格式： &lt;code&gt;codis-config -c ./config.ini server add &amp;lt;group_id&amp;gt; &amp;lt;redis_addr&amp;gt; &amp;lt;role&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;例如向 group 1 和 group 2 中各加入两个 codis-server 实例，一主一从。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/codis-config -c ./config.ini server add 1 localhost:6379 master&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/codis-config -c ./config.ini server add 1 localhost:6380 slave&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/codis-config -c ./config.ini server add 2 localhost:6381 master&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/codis-config -c ./config.ini server add 2 localhost:6382 slave&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;1 代表 group_id，必须为数字，且从 1 开始&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;分配-slot:57de784f564f909e53fd43ba72fc074a&#34;&gt;分配 slot&lt;/h3&gt;
+
+&lt;h4 id=&#34;手动分配:57de784f564f909e53fd43ba72fc074a&#34;&gt;手动分配&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;codis-config -c ./config.ini slot range-set &amp;lt;slot_from&amp;gt; &amp;lt;slot_to&amp;gt; &amp;lt;group_id&amp;gt; &amp;lt;status&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;slot&lt;/strong&gt; 默认为 &lt;strong&gt;1024&lt;/strong&gt; 个，范围是 &lt;strong&gt;0 - 1023&lt;/strong&gt;，需要将这 1024 个 slot 分配到集群中不同的 group 中。&lt;/p&gt;
+
+&lt;p&gt;例如将 1024 个 slot 平均分配到&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/codis-config -c ./config.ini slot range-set 0 511 1 online&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/codis-config -c ./config.ini slot range-set 512 1023 2 online&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;自动分配:57de784f564f909e53fd43ba72fc074a&#34;&gt;自动分配&lt;/h4&gt;
+
+&lt;p&gt;在 dashboard 上可以自动分配 slot，会按照负载均衡的方式进行分配，不推荐使用，因为可能会造成大量数据的迁移。&lt;/p&gt;
+
+&lt;p&gt;或者使用命令进行自动分配&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/codis-config -c ./config.ini slot rebalance&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;启动-codis-proxy:57de784f564f909e53fd43ba72fc074a&#34;&gt;启动 codis-proxy&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/codis-proxy -c ./config.ini -L ./log/proxy.log --cpu=8 --addr=10.10.100.1:19000 --http-addr=10.10.100.1:11000&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;注意：这里 &amp;ndash;addr 和 &amp;ndash;http-addr 不要填 0.0.0.0，要绑定一个具体的 ip，不然 zookeeper 中存的将是hostname，会导致 dashboard 无法连接。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;codis-proxy 是无状态的，可以部署多个，且用 go 编写，可以利用多核，建议 cpu 设置核心数的一半到2/3，19000 即为访问 redis 集群的端口，11000 为获取 proxy 相关状态的端口。&lt;/p&gt;
+
+&lt;p&gt;之后使用 codis-config 将 codis-proxy 加入进来，也就是设置online（后来更新了一个版本，默认启动后即自动注册为online）&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;bin/codis-config -c ./config.ini proxy online &amp;lt;proxy_name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;需要注意的是，启动 codis-proxy，会在 zookeeper 中注册一个 node，地址为 /zk/codis/db_test/fence，如果使用 kill -9 强行杀掉进程的话，这个会一直存在，需要手工删除。且 node 名称为 [hostname:port]，所以需要注意这个组合不能重复。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;主从切换:57de784f564f909e53fd43ba72fc074a&#34;&gt;主从切换&lt;/h3&gt;
+
+&lt;p&gt;官方建议是手工操作，避免数据不一致的问题，但是没有自动容灾的话可用性太差。&lt;/p&gt;
+
+&lt;p&gt;官方另外提供了一个工具，&lt;strong&gt;codis-ha&lt;/strong&gt;，这是一个通过 codis 开放的 api 实现自动切换主从的工具。该工具会在检测到 master 挂掉的时候将其下线并选择其中一个 slave 提升为 master 继续提供服务。&lt;/p&gt;
+
+&lt;p&gt;这个工具不是很好用，如果 codis-ha 连接 dashboard 失败之后进程就会自动退出，需要手动重启或者使用 supervisor 拉起来。另外，当有机器被提升为 master 之后，其他 slave 的状态不会改变，还是从原 master 同步数据。原来的 master 重启之后处于 offline 状态，也需要手动加入 group 指定为 slave。也就是说有master 挂掉后，其余机器的状态需要手动修改。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/codis-ha --codis-config=10.10.100.3:18087 --productName=common&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;10.10.100.14:18088&lt;/code&gt; 为 dashboard 所在机器的 ip 和端口。&lt;/p&gt;
+
+&lt;h3 id=&#34;旧数据的迁移:57de784f564f909e53fd43ba72fc074a&#34;&gt;旧数据的迁移&lt;/h3&gt;
+
+&lt;p&gt;官方提供了一个 &lt;strong&gt;redis-port&lt;/strong&gt; 工具可以将旧 redis 中的数据实时迁移到 codis 集群中，之后需要修改各服务配置文件，重启服务，指向 codis 集群即可。&lt;/p&gt;
+
+&lt;h3 id=&#34;性能测试:57de784f564f909e53fd43ba72fc074a&#34;&gt;性能测试&lt;/h3&gt;
+
+&lt;p&gt;测试环境： 24核 2.1GHz，4个redis实例&lt;/p&gt;
+
+&lt;h4 id=&#34;不启用-pipeline:57de784f564f909e53fd43ba72fc074a&#34;&gt;不启用 pipeline&lt;/h4&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;SET&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;GET&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;MSET&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;redis单机&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;58997.05&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;58651.02&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;33557.05&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;codis1核1proxy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;42973.79&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;33003.30&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;12295.58&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;codis4核1proxy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;44208.66&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;39936.10&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;21743.86&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;codis8核1proxy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;39478.88&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;23052.10&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;24679.17&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;codis12核1proxy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;28943.56&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;24224.81&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;21376.66&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;codis8核2proxy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;62085.65&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;68964.40&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;48298.74&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h4 id=&#34;pipeline-100:57de784f564f909e53fd43ba72fc074a&#34;&gt;pipeline = 100&lt;/h4&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;SET&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;GET&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;MSET&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;redis单机&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;259067.36&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;340136.06&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;40387.72&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;codis1核1proxy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;158982.52&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;166112.95&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;15199.88&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;codis4核1proxy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;491159.12&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;403551.25&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;40157.42&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;codis8核1proxy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;518134.72&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;537634.38&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;58156.44&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;codis12核1proxy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;520833.34&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;500000.00&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;53418.80&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;codis8核2proxy&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;529812.81&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;607041.47&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;62872.28&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;通过测试可以看出，使用 codis 会在性能上比原来直接使用 redis 会有所下降，但是优势就在于可以通过横向扩展（加机器）的方式去提高 redis 的存储容量以及并发量。&lt;/p&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

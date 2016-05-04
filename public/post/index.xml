@@ -946,9 +946,75 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
     
       
         <item>
+          <title>给shell的输出加上颜色</title>
+          <link>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color</link>
+          <pubDate>Tue, 24 Nov 2015 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color</guid>
+          <description>
+
+&lt;p&gt;在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。&lt;/p&gt;
+
+&lt;h3 id=&#34;前景色-文本颜色:cea9018ed40398730f1d41a5ee8db575&#34;&gt;前景色(文本颜色)&lt;/h3&gt;
+
+&lt;p&gt;例如要将 &lt;code&gt;hello&lt;/code&gt; 在控制台上输出为红色，执行如下的命令&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;echo -e &amp;quot;\033[31mhello\033[0m&amp;quot;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;\033[31m&lt;/code&gt; 表示将字符的显示颜色改为红色&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;\033[0m&lt;/code&gt; 表示将字符的显示颜色改为正常值&lt;/p&gt;
+
+&lt;p&gt;可以看到 &lt;code&gt;\033[&lt;/code&gt; 以及最后的 &lt;code&gt;m&lt;/code&gt; 都是一样的，就是中间的数字有区别，这个数字就代表了要显示的颜色，含义如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;30        黑色 
+31        红色 
+32        绿色 
+33        淡红色 
+34        蓝色 
+35        紫色 
+36        淡蓝色 
+37        灰色 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;背景色:cea9018ed40398730f1d41a5ee8db575&#34;&gt;背景色&lt;/h3&gt;
+
+&lt;p&gt;背景色和前景色设置的方法一样，只是使用的数字不同&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;40        黑色 
+41        红色 
+42        绿色 
+43        淡红色 
+44        蓝色 
+45        紫色 
+46        淡蓝色 
+47        灰色 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果需要同时设置前景色和背景色，例如输出文本颜色为红色，背景色为绿色的字符串，需要以分号分隔两个数字，示例如下&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;echo -e &amp;quot;\033[31;42mhello\033[0m&amp;quot;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;简化:cea9018ed40398730f1d41a5ee8db575&#34;&gt;简化&lt;/h3&gt;
+
+&lt;p&gt;从上面的示例可以看到这样写起来很麻烦，可以简单的将重复的内容定义为一个变量&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;lc=&#39;\033[&#39;
+rc=&#39;\033[0m&#39;
+cred=&#39;31m&#39;        # red
+cgreen=&#39;32m&#39;      # green
+
+echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
           <title>codis 2.x版本环境搭建与测试</title>
           <link>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two</link>
-          <pubDate>Tue, 24 Nov 2015 00:00:00 UTC</pubDate>
+          <pubDate>Wed, 07 Oct 2015 00:00:00 UTC</pubDate>
           <author></author>
           <guid>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two</guid>
           <description>
@@ -1188,72 +1254,6 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 &lt;/table&gt;
 
 &lt;p&gt;通过测试可以看出，使用 codis 会在性能上比原来直接使用 redis 会有所下降，但是优势就在于可以通过横向扩展（加机器）的方式去提高 redis 的存储容量以及并发量。&lt;/p&gt;
-</description>
-        </item>
-      
-    
-      
-        <item>
-          <title>给shell的输出加上颜色</title>
-          <link>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color</link>
-          <pubDate>Tue, 24 Nov 2015 00:00:00 UTC</pubDate>
-          <author></author>
-          <guid>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color</guid>
-          <description>
-
-&lt;p&gt;在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。&lt;/p&gt;
-
-&lt;h3 id=&#34;前景色-文本颜色:cea9018ed40398730f1d41a5ee8db575&#34;&gt;前景色(文本颜色)&lt;/h3&gt;
-
-&lt;p&gt;例如要将 &lt;code&gt;hello&lt;/code&gt; 在控制台上输出为红色，执行如下的命令&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;echo -e &amp;quot;\033[31mhello\033[0m&amp;quot;&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;\033[31m&lt;/code&gt; 表示将字符的显示颜色改为红色&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;\033[0m&lt;/code&gt; 表示将字符的显示颜色改为正常值&lt;/p&gt;
-
-&lt;p&gt;可以看到 &lt;code&gt;\033[&lt;/code&gt; 以及最后的 &lt;code&gt;m&lt;/code&gt; 都是一样的，就是中间的数字有区别，这个数字就代表了要显示的颜色，含义如下&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;30        黑色 
-31        红色 
-32        绿色 
-33        淡红色 
-34        蓝色 
-35        紫色 
-36        淡蓝色 
-37        灰色 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;背景色:cea9018ed40398730f1d41a5ee8db575&#34;&gt;背景色&lt;/h3&gt;
-
-&lt;p&gt;背景色和前景色设置的方法一样，只是使用的数字不同&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;40        黑色 
-41        红色 
-42        绿色 
-43        淡红色 
-44        蓝色 
-45        紫色 
-46        淡蓝色 
-47        灰色 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果需要同时设置前景色和背景色，例如输出文本颜色为红色，背景色为绿色的字符串，需要以分号分隔两个数字，示例如下&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;echo -e &amp;quot;\033[31;42mhello\033[0m&amp;quot;&lt;/code&gt;&lt;/p&gt;
-
-&lt;h3 id=&#34;简化:cea9018ed40398730f1d41a5ee8db575&#34;&gt;简化&lt;/h3&gt;
-
-&lt;p&gt;从上面的示例可以看到这样写起来很麻烦，可以简单的将重复的内容定义为一个变量&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;lc=&#39;\033[&#39;
-rc=&#39;\033[0m&#39;
-cred=&#39;31m&#39;        # red
-cgreen=&#39;32m&#39;      # green
-
-echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
 </description>
         </item>
       

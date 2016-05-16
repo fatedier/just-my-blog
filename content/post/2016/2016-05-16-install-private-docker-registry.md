@@ -8,7 +8,7 @@ title: "搭建私有docker仓库"
 url: "/2016/05/16/install-private-docker-registry"
 ---
 
-docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的docker镜像仓库，方便在集群上快速部署 docker 服务。
+docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的 docker 镜像仓库，方便在集群上快速部署 docker 服务。
 
 <!--more-->
 

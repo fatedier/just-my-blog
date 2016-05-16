@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://blog.fatedier.com/</loc>
-    <lastmod>2016-04-27T00:00:00+00:00</lastmod>
+    <lastmod>2016-05-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.fatedier.com/2016/05/16/install-private-docker-registry</loc>
+    <lastmod>2016-05-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>

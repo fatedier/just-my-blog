@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fatedier blog </title>
+    <link>http://blog.fatedier.com/tags/opentsdb/</link>
+    <language>en-us</language>
+    <author></author>
+    <rights>(C) 2016</rights>
+    <updated>2016-03-12 00:00:00 &#43;0000 UTC</updated>
+
+    
+      
+        <item>
+          <title>OpenTSDB部署与使用</title>
+          <link>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb</link>
+          <pubDate>Sat, 12 Mar 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb</guid>
+          <description>
+
+&lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;
+
+&lt;h3 id=&#34;安装-hbase:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;安装 HBase&lt;/h3&gt;
+
+&lt;p&gt;因为 OpenTSDB 的后端存储使用的是 HBase，所以我们需要先安装 HBase。&lt;/p&gt;
+
+&lt;p&gt;参考文档： &lt;a href=&#34;https://hbase.apache.org/book.html#quickstart&#34;&gt;Quick Start - Standalone HBase&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;这里简单搭建了一个&lt;strong&gt;单机&lt;/strong&gt;的 HBase 环境：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;安装 JDK 环境，centos 上可以直接通过 yum 安装。&lt;/li&gt;
+&lt;li&gt;下载 HBase，&lt;a href=&#34;http://apache.fayea.com/hbase/stable&#34;&gt;http://apache.fayea.com/hbase/stable&lt;/a&gt;，这里我们选择下载 stable 的 1.1.3 版本，文件名为 &lt;code&gt;hbase-1.1.3-bin.tar.gz&lt;/code&gt;，解压到任意目录。&lt;/li&gt;
+&lt;li&gt;修改 &lt;code&gt;conf/hbase-env.sh&lt;/code&gt; ，设置  &lt;code&gt;JAVA_HOME=/usr&lt;/code&gt;，这个是 &lt;code&gt;/bin/java&lt;/code&gt; 所在的目录，通过 &lt;code&gt;which java&lt;/code&gt; 查看。&lt;/li&gt;
+&lt;li&gt;修改 &lt;code&gt;conf/hbase-site.xml&lt;/code&gt;， 设置 hbase 的数据存储目录以及 zookeeper 的数据存储目录，默认会放到 &lt;code&gt;/tmp&lt;/code&gt; 目录下，这个目录机器重启后会清空，所以需要更改目录。&lt;/li&gt;
+&lt;li&gt;执行 &lt;code&gt;bin/start-hbase.sh&lt;/code&gt; 启动 HBase，之后可以通过 &lt;code&gt;jps&lt;/code&gt; 命令来查看 HMaster 进程是否启动成功。 &lt;code&gt;bin/stop-hbase.sh&lt;/code&gt; 用于关闭 HBase。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;code&gt;conf/hbase-site.xml&lt;/code&gt; 的配置示例如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;configuration&amp;gt;
+    &amp;lt;property&amp;gt;
+        &amp;lt;name&amp;gt;hbase.rootdir&amp;lt;/name&amp;gt;
+        &amp;lt;value&amp;gt;file:///home/testuser/hbase&amp;lt;/value&amp;gt;
+    &amp;lt;/property&amp;gt;
+    &amp;lt;property&amp;gt;
+        &amp;lt;name&amp;gt;hbase.zookeeper.property.dataDir&amp;lt;/name&amp;gt;
+        &amp;lt;value&amp;gt;/home/testuser/zookeeper&amp;lt;/value&amp;gt;
+    &amp;lt;/property&amp;gt;
+&amp;lt;/configuration&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;通过命令行操作-hbase:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;通过命令行操作 HBase&lt;/h3&gt;
+
+&lt;p&gt;这里可以稍微熟悉一下 HBase 的操作，非必须。&lt;/p&gt;
+
+&lt;h5 id=&#34;连接到-hbase:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;连接到 HBase&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;./bin/hbase shell&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;创建一张表:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;创建一张表&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;create &#39;test&#39;, &#39;cf&#39;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;查看表信息:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;查看表信息&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;list &#39;test&#39;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;向表中插入数据:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;向表中插入数据&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;put &#39;test&#39;, &#39;row1&#39;, &#39;cf:a&#39;, &#39;value1&#39;
+put &#39;test&#39;, &#39;row2&#39;, &#39;cf:b&#39;, &#39;value2&#39;
+put &#39;test&#39;, &#39;row3&#39;, &#39;cf:c&#39;, &#39;value3&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;查看表中所有数据:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;查看表中所有数据&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;scan &#39;test&#39;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;查看指定行的数据:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;查看指定行的数据&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;get &#39;test&#39;, &#39;row1&#39;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;禁用指定表-删除表或修改表设置前需要先禁用该表:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;禁用指定表（删除表或修改表设置前需要先禁用该表）&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;disable &#39;test&#39;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;恢复指定表:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;恢复指定表&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;enable &#39;test&#39;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;删除表:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;删除表&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;drop &#39;test&#39;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;安装opentsdb:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;安装OpenTSDB&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;参考文章&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://debugo.com/opentsdb/&#34;&gt;http://debugo.com/opentsdb/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://opentsdb.net/docs/build/html/installation.html#runtime-requirements&#34;&gt;http://opentsdb.net/docs/build/html/installation.html#runtime-requirements&lt;/a&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;直接从 github 上下载 OpenTSDB 的 &lt;a href=&#34;https://github.com/OpenTSDB/opentsdb&#34;&gt;release&lt;/a&gt; 版本的 RPM 包。安装 &lt;code&gt;yum localinstall opentsdb-2.2.0.noarch.rpm&lt;/code&gt;。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;配置完成后，我们通过下面命令在 HBase 中建立 opentsdb 所需的表。默认情况下 opentsdb 建立的 HBase 表启用了 lzo 压缩。需要开启 Hadoop 中的 lzo 压缩支持， 这里我们直接在下面脚本中把 COMPRESSION 的支持关闭。修改 &lt;code&gt;/usr/share/opentsdb/tools/create_table.sh&lt;/code&gt;，设置 &lt;code&gt;COMPRESSION=NONE&lt;/code&gt;，并且在文件开始处设置 HBase 所在目录， &lt;code&gt;HBASE_HOME=/home/xxx/hbase-1.1.3&lt;/code&gt;。之后执行该脚本，在 HBase 中创建相应的表。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;修改 OpenTSDB 的配置文件，&lt;code&gt;/etc/opentsdb/opentsdb.conf&lt;/code&gt;，例如绑定的端口号等。&lt;strong&gt;这里需要注意的是 tsd.core.auto_create_metrics 从 false 改为 true。这样上传数据时会自动创建 metric，否则会提示 Unknown metric 的错误。也可以设置为 false，但是使用 &lt;code&gt;tsdb mkmetric proc.loadavg.1m&lt;/code&gt; 来手动添加 metric。&lt;/strong&gt;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;启动 OpenTSDB，&lt;code&gt;service opentsdb start&lt;/code&gt; 或者 &lt;code&gt;nohup tsdb tsd &amp;amp;&lt;/code&gt;。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;通过浏览器访问 &lt;a href=&#34;http://x.x.x.x:4242&#34;&gt;http://x.x.x.x:4242&lt;/a&gt; 查看是否安装成功。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;http-api:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;HTTP API&lt;/h3&gt;
+
+&lt;h4 id=&#34;插入数据:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;插入数据&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;/api/put&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;根据 url 参数的不同，可以选择是否获取详细的信息。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;/api/put?summary&lt;/strong&gt;        // 返回失败和成功的个数&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+    &amp;quot;failed&amp;quot;: 0,
+    &amp;quot;success&amp;quot;: 1
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;/api/put?details&lt;/strong&gt;        // 返回详细信息&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+    &amp;quot;errors&amp;quot;: [],
+    &amp;quot;failed&amp;quot;: 0,
+    &amp;quot;success&amp;quot;: 1
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;通过POST方式插入数据，JSON格式，例如&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+    &amp;quot;metric&amp;quot;:&amp;quot;self.test&amp;quot;, 
+    &amp;quot;timestamp&amp;quot;:1456123787, 
+    &amp;quot;value&amp;quot;:20, 
+    &amp;quot;tags&amp;quot;:{
+        &amp;quot;host&amp;quot;:&amp;quot;web1&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;查询数据:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;查询数据&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;/api/query&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;可以选择 Get 或者 Post 两种方式，推荐使用 Post 方式，JSON 格式。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+    &amp;quot;start&amp;quot;: 1456123705,
+    &amp;quot;end&amp;quot;: 1456124985,
+    &amp;quot;queries&amp;quot;: [
+        {
+            &amp;quot;aggregator&amp;quot;: &amp;quot;sum&amp;quot;,
+            &amp;quot;metric&amp;quot;: &amp;quot;self.test&amp;quot;,
+            &amp;quot;tags&amp;quot;: {
+                &amp;quot;host&amp;quot;: &amp;quot;web1&amp;quot;
+            }
+        },
+        {
+            &amp;quot;aggregator&amp;quot;: &amp;quot;sum&amp;quot;,
+            &amp;quot;metric&amp;quot;: &amp;quot;self.test&amp;quot;,
+            &amp;quot;tags&amp;quot;: {
+                &amp;quot;host&amp;quot;: &amp;quot;web2&amp;quot;
+            }
+        }
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;start 和 end 为指定的查询时间段。&lt;/p&gt;
+
+&lt;p&gt;queries 为一个数组，可以指定多个查询。&lt;/p&gt;
+
+&lt;p&gt;metric 和 tags 是用于过滤的查询条件。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;返回字符串也为json格式&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;[
+    {
+        &amp;quot;metric&amp;quot;: &amp;quot;self.test&amp;quot;,
+        &amp;quot;tags&amp;quot;: {},
+        &amp;quot;aggregateTags&amp;quot;: [
+            &amp;quot;host&amp;quot;
+        ],
+        &amp;quot;dps&amp;quot;: {
+            &amp;quot;1456123785&amp;quot;: 10,
+            &amp;quot;1456123786&amp;quot;: 10
+        }
+    },
+    {
+        &amp;quot;metric&amp;quot;: &amp;quot;self.test&amp;quot;,
+        &amp;quot;tags&amp;quot;: {
+            &amp;quot;host&amp;quot;: &amp;quot;web1&amp;quot;
+        },
+        &amp;quot;aggregateTags&amp;quot;: [],
+        &amp;quot;dps&amp;quot;: {
+            &amp;quot;1456123784&amp;quot;: 10,
+            &amp;quot;1456123786&amp;quot;: 15
+        }
+    }
+]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;聚合:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;聚合&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;aggregator&lt;/strong&gt; 是用于对查询结果进行聚合，将同一 unix 时间戳内的数据进行聚合计算后返回结果，例如如果 tags 不填，1456123705 有两条数据，一条 &lt;code&gt;host=web1&lt;/code&gt;，另外一条 &lt;code&gt;host=web2&lt;/code&gt;，值都为10，那么返回的该时间点的值为 sum 后的 20。&lt;/p&gt;
+
+&lt;h4 id=&#34;条件过滤:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;条件过滤&lt;/h4&gt;
+
+&lt;p&gt;可以针对 tag 进行一些条件的过滤，返回 tag 中 host 的值以 web 开头的数据。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;&amp;quot;queries&amp;quot;: [
+    {
+        &amp;quot;aggregator&amp;quot;: &amp;quot;sum&amp;quot;,
+        &amp;quot;metric&amp;quot;: &amp;quot;self.test&amp;quot;,
+        &amp;quot;filters&amp;quot;: [
+            {
+                &amp;quot;type&amp;quot;: &amp;quot;wildcard&amp;quot;,
+                &amp;quot;tagk&amp;quot;: &amp;quot;host&amp;quot;,
+                &amp;quot;filter&amp;quot;: &amp;quot;web*&amp;quot;
+            }
+        ]
+    }
+]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;downsample:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;downsample&lt;/h4&gt;
+
+&lt;p&gt;简单来说就是对指定时间段内的数据进行聚合后返回，例如需要返回每分钟的平均值数据&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;&amp;quot;queries&amp;quot;: [
+    {
+        &amp;quot;aggregator&amp;quot;: &amp;quot;sum&amp;quot;,
+        &amp;quot;metric&amp;quot;: &amp;quot;self.test&amp;quot;,
+        &amp;quot;downsample&amp;quot;: &amp;quot;1m-avg&amp;quot;,
+        &amp;quot;tags&amp;quot;: {
+            &amp;quot;host&amp;quot;: &amp;quot;web1&amp;quot;
+        }
+    }
+]
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        </item>
+      
+    
+
+  </channel>
+</rss>

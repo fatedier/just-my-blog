@@ -28,6 +28,11 @@
   </url>
   
   <url>
+    <loc>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb</loc>
+    <lastmod>2016-03-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory</loc>
     <lastmod>2016-02-25T00:00:00+00:00</lastmod>
   </url>

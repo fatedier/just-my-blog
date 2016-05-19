@@ -78,6 +78,11 @@
   </url>
   
   <url>
+    <loc>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp</loc>
+    <lastmod>2015-08-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.fatedier.com/2015/07/30/some-skills-about-vim</loc>
     <lastmod>2015-07-30T00:00:00+00:00</lastmod>
   </url>

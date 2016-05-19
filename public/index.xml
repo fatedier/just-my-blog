@@ -1900,6 +1900,222 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
     
       
         <item>
+          <title>go语言中使用smtp发送邮件及smtp协议的相关问题</title>
+          <link>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp</link>
+          <pubDate>Thu, 20 Aug 2015 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp</guid>
+          <description>
+
+&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
+
+&lt;h3 id=&#34;smtp-协议发送邮件:ef1e028a5d80f74d9f890187a186e459&#34;&gt;smtp 协议发送邮件&lt;/h3&gt;
+
+&lt;h4 id=&#34;sendmail-函数:ef1e028a5d80f74d9f890187a186e459&#34;&gt;sendmail 函数&lt;/h4&gt;
+
+&lt;p&gt;go 标准库的 net/smtp 包提供了一个 SendMail 函数用于发送邮件。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func SendMail(addr string, a Auth, from string, to []string, msg []byte) error
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;SendMail&lt;/strong&gt;： 连接到 &lt;strong&gt;addr&lt;/strong&gt; 指定的服务器；如果支持会开启 &lt;strong&gt;TLS&lt;/strong&gt;；如果支持会使用 &lt;strong&gt;a(Auth)&lt;/strong&gt; 认证身份；然后以 &lt;strong&gt;from&lt;/strong&gt; 为邮件源地址发送邮件 &lt;strong&gt;msg&lt;/strong&gt; 到目标地址 &lt;strong&gt;to&lt;/strong&gt;。（可以是多个目标地址：群发）&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;addr&lt;/strong&gt;： 邮件服务器的地址。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;a&lt;/strong&gt;： 身份认证接口，可以由 &lt;code&gt;func PlainAuth(identity, username, password, host string) Auth&lt;/code&gt; 函数创建。&lt;/p&gt;
+
+&lt;h4 id=&#34;简单发送邮件示例:ef1e028a5d80f74d9f890187a186e459&#34;&gt;简单发送邮件示例&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import (
+    &amp;quot;fmt&amp;quot;
+    &amp;quot;net/smtp&amp;quot;
+    &amp;quot;strings&amp;quot;
+)
+
+func main() {
+    auth := smtp.PlainAuth(&amp;quot;&amp;quot;, &amp;quot;username@qq.com&amp;quot;, &amp;quot;passwd&amp;quot;, &amp;quot;smtp.qq.com&amp;quot;)
+    to := []string{&amp;quot;to-user@qq.com&amp;quot;}
+    nickname := &amp;quot;test&amp;quot;
+    user := &amp;quot;username@qq.com&amp;quot;
+    subject := &amp;quot;test mail&amp;quot;
+    content_type := &amp;quot;Content-Type: text/plain; charset=UTF-8&amp;quot;
+    body := &amp;quot;This is the email body.&amp;quot;
+    msg := []byte(&amp;quot;To: &amp;quot; + strings.Join(to, &amp;quot;,&amp;quot;) + &amp;quot;\r\nFrom: &amp;quot; + nickname +
+        &amp;quot;&amp;lt;&amp;quot; + user + &amp;quot;&amp;gt;\r\nSubject: &amp;quot; + subject + &amp;quot;\r\n&amp;quot; + content_type + &amp;quot;\r\n\r\n&amp;quot; + body)
+    err := smtp.SendMail(&amp;quot;smtp.qq.com:25&amp;quot;, auth, user, to, msg)
+    if err != nil {
+        fmt.Printf(&amp;quot;send mail error: %v&amp;quot;, err)
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;autu&lt;/strong&gt;： 这里采用简单的明文用户名和密码的认证方式。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;nickname&lt;/strong&gt;： 发送方的昵称。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;subject&lt;/strong&gt;： 邮件主题。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;content_type&lt;/strong&gt;： 可以有两种方式，一种 text/plain，纯字符串，不做转义。一种 text/html，会展示成 html 页面。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;body&lt;/strong&gt;： 邮件正文内容。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;msg&lt;/strong&gt;： msg 的内容需要遵循 smtp 协议的格式，参考上例。&lt;/p&gt;
+
+&lt;h3 id=&#34;特定邮件服务器出错:ef1e028a5d80f74d9f890187a186e459&#34;&gt;特定邮件服务器出错&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;certificate signed by unknown authority
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在通过公司内部自己搭建的邮件服务器发送邮件时报了上述错误，看上去是因为认证不通过的问题，检查了一下用户名和密码没有问题。&lt;/p&gt;
+
+&lt;p&gt;我通过抓包以及手动 telnet 执行了一遍 smtp 的过程，发送问题出现在是否加密和身份验证上。&lt;/p&gt;
+
+&lt;h4 id=&#34;smtp-协议:ef1e028a5d80f74d9f890187a186e459&#34;&gt;SMTP 协议&lt;/h4&gt;
+
+&lt;p&gt;smtp 协议开始时客户端主动向邮件服务器发送 &lt;code&gt;EHLO&lt;/code&gt;，服务器会返回支持的所有命令，例如&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;250-PIPELINING
+250-SIZE 10240000
+250-VRFY
+250-ETRN
+250-STARTTLS
+250-AUTH PLAIN LOGIN
+250-AUTH=PLAIN LOGIN
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250 DSN
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果有 &lt;strong&gt;STARTTLS&lt;/strong&gt;，说明支持加密传输，golang 的标准库中会进行判断然后决定是否选择使用 &lt;strong&gt;STARTTLS&lt;/strong&gt; 加密传输。&lt;/p&gt;
+
+&lt;p&gt;如果没有 &lt;strong&gt;AUTH=PLAIN LOGIN&lt;/strong&gt;，说明不支持 &lt;strong&gt;PLAIN&lt;/strong&gt; 方式。&lt;/p&gt;
+
+&lt;p&gt;一共有3种验证方式，可以参考这篇 blog： &lt;a href=&#34;http://blog.csdn.net/mhfh611/article/details/9470599&#34;&gt;http://blog.csdn.net/mhfh611/article/details/9470599&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;starttls-引起的错误:ef1e028a5d80f74d9f890187a186e459&#34;&gt;STARTTLS 引起的错误&lt;/h4&gt;
+
+&lt;p&gt;公司内部的邮件服务器返回了 &lt;strong&gt;STARTTLS&lt;/strong&gt;，但是实际上却不支持加密传输的认证方式，所以就导致了身份认证失败。&lt;/p&gt;
+
+&lt;p&gt;大部分国内的邮件服务器都支持 &lt;strong&gt;LOGIN&lt;/strong&gt; 和 &lt;strong&gt;PLAIN&lt;/strong&gt; 方式，所以我们可以在代码中直接采用 &lt;strong&gt;PLAIN&lt;/strong&gt; 的方式，不过安全性就降低了。&lt;/p&gt;
+
+&lt;p&gt;想要强制使用 &lt;strong&gt;PLAIN&lt;/strong&gt; 方式也不是这么容易的，因为涉及到修改 &lt;strong&gt;net/smtp&lt;/strong&gt; 的 &lt;code&gt;SendMail&lt;/code&gt; 函数，当然标准库我们修改不了，所以只能重新实现一个 &lt;code&gt;SendMail&lt;/code&gt; 函数。&lt;/p&gt;
+
+&lt;p&gt;标准库中 &lt;code&gt;SendMail&lt;/code&gt; 函数代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func SendMail(addr string, a Auth, from string, to []string, msg []byte) error {
+    c, err := Dial(addr)
+    if err != nil {
+        return err
+    }
+    defer c.Close()
+    if err = c.hello(); err != nil {
+        return err
+    }
+    if ok, _ := c.Extension(&amp;quot;STARTTLS&amp;quot;); ok {
+        config := &amp;amp;tls.Config{ServerName: c.serverName}
+        if testHookStartTLS != nil {
+            testHookStartTLS(config)
+        }
+        if err = c.StartTLS(config); err != nil {
+            return err
+        }
+    }
+    if a != nil &amp;amp;&amp;amp; c.ext != nil {
+        if _, ok := c.ext[&amp;quot;AUTH&amp;quot;]; ok {
+            if err = c.Auth(a); err != nil {
+                return err
+            }
+        }
+    }
+    if err = c.Mail(from); err != nil {
+        return err
+    }
+    for _, addr := range to {
+        if err = c.Rcpt(addr); err != nil {
+            return err
+        }
+    }
+    w, err := c.Data()
+    if err != nil {
+        return err
+    }
+    _, err = w.Write(msg)
+    if err != nil {
+        return err
+    }
+    err = w.Close()
+    if err != nil {
+        return err
+    }
+    return c.Quit()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;重点就在于下面这一段&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;if ok, _ := c.Extension(&amp;quot;STARTTLS&amp;quot;); ok {
+    config := &amp;amp;tls.Config{ServerName: c.serverName}
+    if testHookStartTLS != nil {
+        testHookStartTLS(config)
+    }
+    if err = c.StartTLS(config); err != nil {
+        return err
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;逻辑上就是检查服务器端对于 &lt;strong&gt;EHLO&lt;/strong&gt; 命令返回的所支持的命令中是否有 &lt;strong&gt;STARTTLS&lt;/strong&gt;，如果有，则采用加密传输的方式。我们自己实现的函数中直接把这部分去掉。&lt;/p&gt;
+
+&lt;p&gt;我们仿照 &lt;code&gt;SendMail&lt;/code&gt; 函数实现一个 &lt;code&gt;NewSendMail&lt;/code&gt; 函数&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func NewSendMail(addr string, a smtp.Auth, from string, to []string, msg []byte) error {
+    c, err := smtp.Dial(addr)
+    if err != nil {
+        return err 
+    }   
+    defer c.Close()
+    if err = c.Hello(&amp;quot;localhost&amp;quot;); err != nil {
+        return err 
+    }   
+    err = c.Auth(a)
+    if err != nil {
+        return err 
+    }   
+
+    if err = c.Mail(from); err != nil {
+        fmt.Printf(&amp;quot;mail\n&amp;quot;)
+        return err 
+    }   
+    for _, addr := range to {
+        if err = c.Rcpt(addr); err != nil {
+            return err 
+        }   
+    }
+    w, err := c.Data()
+    if err != nil {
+        return err
+    }
+    _, err = w.Write(msg)
+    if err != nil {
+        return err
+    }
+    err = w.Close()
+    if err != nil {
+        return err
+    }
+    return c.Quit()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;通过这个函数发送邮件，则身份认证时不会采用加密的方式，而是直接使用 &lt;strong&gt;PLAIN&lt;/strong&gt; 方式。&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
           <title>关于vim的一些小技巧</title>
           <link>http://blog.fatedier.com/2015/07/30/some-skills-about-vim</link>
           <pubDate>Thu, 30 Jul 2015 00:00:00 UTC</pubDate>

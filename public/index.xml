@@ -2179,6 +2179,184 @@ help vimgrep                  // 查看vimgrep帮助
     
       
         <item>
+          <title>MongoDB常用命令</title>
+          <link>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb</link>
+          <pubDate>Fri, 05 Jun 2015 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb</guid>
+          <description>
+
+&lt;p&gt;MongoDB 是一个基于分布式文件存储的数据库，由C++编写，介于关系数据库和非关系数据库之间的产品，所以在很多业务上可以取代 mysql，提供更高的性能以及更好的扩展性。虽然 MongoDB 不支持 sql 语法，但是从常用的操作命令上来说和 sql 的用法相类似。&lt;/p&gt;
+
+&lt;h4 id=&#34;查询有哪些数据库:7c435197e47a696ee42dab56a053039d&#34;&gt;查询有哪些数据库&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;show dbs&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;切换数据库:7c435197e47a696ee42dab56a053039d&#34;&gt;切换数据库&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;use &amp;lt;db_name&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;如果数据库不存在，则创建数据库，否则切换到指定数据库。但是只有在数据库中插入数据，才会在查询数据库列表时显示。&lt;/p&gt;
+
+&lt;h4 id=&#34;查询当前数据库的所有集合:7c435197e47a696ee42dab56a053039d&#34;&gt;查询当前数据库的所有集合&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;db.getCollectionNames()&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;查看指定集合的状态信息:7c435197e47a696ee42dab56a053039d&#34;&gt;查看指定集合的状态信息&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;db.&amp;lt;collection_name&amp;gt;.stats()&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+    &amp;quot;ns&amp;quot; : &amp;quot;&amp;lt;db_name&amp;gt;.&amp;lt;collection_name&amp;gt;&amp;quot;,
+    &amp;quot;count&amp;quot; : 1,
+    &amp;quot;size&amp;quot; : 4080,
+    &amp;quot;avgObjSize&amp;quot; : 4080,
+    &amp;quot;numExtents&amp;quot; : 1,
+    &amp;quot;storageSize&amp;quot; : 8192,
+    &amp;quot;lastExtentSize&amp;quot; : 8192,
+    &amp;quot;paddingFactor&amp;quot; : 1,
+    &amp;quot;paddingFactorNote&amp;quot; : &amp;quot;paddingFactor is unused and unmaintained in 3.0. It remains hard coded to 1.0 for compatibility only.&amp;quot;,
+    &amp;quot;userFlags&amp;quot; : 1,
+    &amp;quot;capped&amp;quot; : false,
+    &amp;quot;nindexes&amp;quot; : 1,
+    &amp;quot;totalIndexSize&amp;quot; : 8176,
+    &amp;quot;indexSizes&amp;quot; : {
+        &amp;quot;_id_&amp;quot; : 8176
+    },
+    &amp;quot;ok&amp;quot; : 1
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;查看当前数据库中的所有的索引:7c435197e47a696ee42dab56a053039d&#34;&gt;查看当前数据库中的所有的索引&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;db.system.indexes.find()&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;查看指定集合中的索引:7c435197e47a696ee42dab56a053039d&#34;&gt;查看指定集合中的索引&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;db.col.getIndexes()&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;创建指定集合中的索引:7c435197e47a696ee42dab56a053039d&#34;&gt;创建指定集合中的索引&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;db.col.ensureIndex({&amp;quot;name&amp;quot;: 1, &amp;quot;age&amp;quot;: -1})&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;根据 name 和 age 进行索引，1表示升序，-1表示降序。&lt;/p&gt;
+
+&lt;h4 id=&#34;查看集合中的文档:7c435197e47a696ee42dab56a053039d&#34;&gt;查看集合中的文档&lt;/h4&gt;
+
+&lt;h5 id=&#34;查询所有文档:7c435197e47a696ee42dab56a053039d&#34;&gt;查询所有文档&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;db.col.find()&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;以易读的方式显示文档内容:7c435197e47a696ee42dab56a053039d&#34;&gt;以易读的方式显示文档内容&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;db.col.find().pretty()&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;查询前10个文档:7c435197e47a696ee42dab56a053039d&#34;&gt;查询前10个文档&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;db.col.find().limit(10)&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;查询结果排序展示:7c435197e47a696ee42dab56a053039d&#34;&gt;查询结果排序展示&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;db.col.find().sort({&#39;clock&#39;:-1})&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;查询结果按照 clock 排序展示，1 为升序，-1 为降序。&lt;/p&gt;
+
+&lt;h5 id=&#34;where-条件:7c435197e47a696ee42dab56a053039d&#34;&gt;where 条件&lt;/h5&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;操作&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;范例&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;RDBMS中的类似语句&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;等于&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;db.col.find({&amp;ldquo;key&amp;rdquo;:&amp;ldquo;value&amp;rdquo;}).pretty()&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;where key = &amp;lsquo;value&amp;rsquo;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;小于&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;db.col.find({&amp;ldquo;key&amp;rdquo;:{$lt:50}}).pretty()&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;where key &amp;lt; 50&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;小于等于&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;db.col.find({&amp;ldquo;key&amp;rdquo;:{$lte:50}}).pretty()&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;where key &amp;lt;= 50&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;大于&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;db.col.find({&amp;ldquo;key&amp;rdquo;:{$gt:50}}).pretty()&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;where key &amp;gt; 50&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;大于或等于&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;db.col.find({&amp;ldquo;key&amp;rdquo;:{$gte:50}}).pretty()&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;where key &amp;gt;= 50&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;不等于&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;db.col.find({&amp;ldquo;key&amp;rdquo;:{$ne:50}}).pretty()&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;where key != 50&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h5 id=&#34;and-条件:7c435197e47a696ee42dab56a053039d&#34;&gt;and 条件&lt;/h5&gt;
+
+&lt;p&gt;find() 方法可以传入多个键，每个键以逗号隔开。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;db.col.find({key1:value1, key2:value2}).pretty()&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;or-条件:7c435197e47a696ee42dab56a053039d&#34;&gt;or 条件&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;db.col.find(
+    {
+        $or: [
+            {key1: value1}, {key2:value2}
+        ]
+    }
+).pretty()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;例如 &lt;code&gt;db.col.find({$or:[{&amp;quot;key1&amp;quot;:&amp;quot;value1&amp;quot;}, {&amp;quot;key2&amp;quot;: &amp;quot;value2&amp;quot;}]}).pretty()&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;更新操作:7c435197e47a696ee42dab56a053039d&#34;&gt;更新操作&lt;/h5&gt;
+
+&lt;p&gt;&lt;code&gt;db.collection.update( query, update, upsert, multi )&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;query&lt;/strong&gt;： update 的查询条件，类似 sql update 操作的 where 子句。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;update&lt;/strong&gt;： update 的对象和一些更新的操作符（如$set, $inc&amp;hellip;）等，也可以理解为 sql update 操作的 set 子句。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;upsert&lt;/strong&gt;： 可选，这个参数的意思是，如果不存在 update 的记录，是否插入新的记录，true 为插入，默认是 false，不插入。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;multi&lt;/strong&gt;： 可选，默认为 false，只更新找到的第一条记录，如果这个参数为 true，就把按条件查出来多条记录全部更新。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;db.agent_conf.update({hostid:137}, {$set: {upload:{interval:10}}}, true)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;将 agent_conf 集合中 hostid = 137 的记录将 upload.interval 的值修改为 3，如果不存在就插入，只修改匹配的第一条。&lt;/p&gt;
+
+&lt;h4 id=&#34;删除操作:7c435197e47a696ee42dab56a053039d&#34;&gt;删除操作&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;db.col.remove({id:1})&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;remove 的过滤条件同 find。&lt;/p&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
           <title>python中使用pycurl库上传文件</title>
           <link>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl</link>
           <pubDate>Fri, 08 May 2015 00:00:00 UTC</pubDate>

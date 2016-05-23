@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="linux shell中的条件判断 &middot; fatedier blog">
+<meta property="og:title" content="MongoDB常用命令 &middot; fatedier blog">
 
 <meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    linux shell中的条件判断
+    MongoDB常用命令
     
 </title>
 
@@ -79,108 +79,188 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2014年11月24日">
-                        2014年11月24日
+                    <time datetime="2015年06月05日">
+                        2015年06月05日
                     </time>
                 </div>
-                <h1 class="post-title">linux shell中的条件判断</h1>
+                <h1 class="post-title">MongoDB常用命令</h1>
             </header>
 
             <div class="post-content">
                 
 
-<p>在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。</p>
+<p>MongoDB 是一个基于分布式文件存储的数据库，由C++编写，介于关系数据库和非关系数据库之间的产品，所以在很多业务上可以取代 mysql，提供更高的性能以及更好的扩展性。虽然 MongoDB 不支持 sql 语法，但是从常用的操作命令上来说和 sql 的用法相类似。</p>
 
-<h3 id="退出状态:289ce1ced731ab87d58afb0f0a69b270">退出状态</h3>
+<h4 id="查询有哪些数据库:7c435197e47a696ee42dab56a053039d">查询有哪些数据库</h4>
 
-<p>在Linux系统中，每当一条命令执行完成后，系统都会返回一个退出状态，这个状态被存放在$? 这个变量中，是一个整数值，我们可以根据这个值来判断命令运行的结果是否正确。</p>
+<p><code>show dbs</code></p>
 
-<p>通常情况下，退出状态值为0，表示执行成功，不为0的时候表示执行失败。</p>
+<h4 id="切换数据库:7c435197e47a696ee42dab56a053039d">切换数据库</h4>
 
-<blockquote>
-<p><strong>POSIX规定的退出状态和退出状态的含义</strong></p>
+<p><code>use &lt;db_name&gt;</code></p>
 
-<p>0 （运行成功）</p>
+<p>如果数据库不存在，则创建数据库，否则切换到指定数据库。但是只有在数据库中插入数据，才会在查询数据库列表时显示。</p>
 
-<p>1-255 （运行失败，脚本命令、系统命令错误或参数传递错误）</p>
+<h4 id="查询当前数据库的所有集合:7c435197e47a696ee42dab56a053039d">查询当前数据库的所有集合</h4>
 
-<p>126 （找到了该命令但无法执行）</p>
+<p><code>db.getCollectionNames()</code></p>
 
-<p>127 （未找到要运行的命令）</p>
+<h4 id="查看指定集合的状态信息:7c435197e47a696ee42dab56a053039d">查看指定集合的状态信息</h4>
 
-<p>128 （命令被系统强行结束）</p>
-</blockquote>
+<p><code>db.&lt;collection_name&gt;.stats()</code></p>
 
-<h3 id="测试命令:289ce1ced731ab87d58afb0f0a69b270">测试命令</h3>
-
-<pre><code class="language-bash">test expression
+<pre><code class="language-json">{
+    &quot;ns&quot; : &quot;&lt;db_name&gt;.&lt;collection_name&gt;&quot;,
+    &quot;count&quot; : 1,
+    &quot;size&quot; : 4080,
+    &quot;avgObjSize&quot; : 4080,
+    &quot;numExtents&quot; : 1,
+    &quot;storageSize&quot; : 8192,
+    &quot;lastExtentSize&quot; : 8192,
+    &quot;paddingFactor&quot; : 1,
+    &quot;paddingFactorNote&quot; : &quot;paddingFactor is unused and unmaintained in 3.0. It remains hard coded to 1.0 for compatibility only.&quot;,
+    &quot;userFlags&quot; : 1,
+    &quot;capped&quot; : false,
+    &quot;nindexes&quot; : 1,
+    &quot;totalIndexSize&quot; : 8176,
+    &quot;indexSizes&quot; : {
+        &quot;_id_&quot; : 8176
+    },
+    &quot;ok&quot; : 1
+}
 </code></pre>
 
-<p>用test命令进行测试，expression是一个表达式</p>
+<h4 id="查看当前数据库中的所有的索引:7c435197e47a696ee42dab56a053039d">查看当前数据库中的所有的索引</h4>
 
-<pre><code class="language-bash">[ expression ]
+<p><code>db.system.indexes.find()</code></p>
+
+<h4 id="查看指定集合中的索引:7c435197e47a696ee42dab56a053039d">查看指定集合中的索引</h4>
+
+<p><code>db.col.getIndexes()</code></p>
+
+<h4 id="创建指定集合中的索引:7c435197e47a696ee42dab56a053039d">创建指定集合中的索引</h4>
+
+<p><code>db.col.ensureIndex({&quot;name&quot;: 1, &quot;age&quot;: -1})</code></p>
+
+<p>根据 name 和 age 进行索引，1表示升序，-1表示降序。</p>
+
+<h4 id="查看集合中的文档:7c435197e47a696ee42dab56a053039d">查看集合中的文档</h4>
+
+<h5 id="查询所有文档:7c435197e47a696ee42dab56a053039d">查询所有文档</h5>
+
+<p><code>db.col.find()</code></p>
+
+<h5 id="以易读的方式显示文档内容:7c435197e47a696ee42dab56a053039d">以易读的方式显示文档内容</h5>
+
+<p><code>db.col.find().pretty()</code></p>
+
+<h5 id="查询前10个文档:7c435197e47a696ee42dab56a053039d">查询前10个文档</h5>
+
+<p><code>db.col.find().limit(10)</code></p>
+
+<h5 id="查询结果排序展示:7c435197e47a696ee42dab56a053039d">查询结果排序展示</h5>
+
+<p><code>db.col.find().sort({'clock':-1})</code></p>
+
+<p>查询结果按照 clock 排序展示，1 为升序，-1 为降序。</p>
+
+<h5 id="where-条件:7c435197e47a696ee42dab56a053039d">where 条件</h5>
+
+<table>
+<thead>
+<tr>
+<th align="left">操作</th>
+<th align="left">范例</th>
+<th align="left">RDBMS中的类似语句</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">等于</td>
+<td align="left">db.col.find({&ldquo;key&rdquo;:&ldquo;value&rdquo;}).pretty()</td>
+<td align="left">where key = &lsquo;value&rsquo;</td>
+</tr>
+
+<tr>
+<td align="left">小于</td>
+<td align="left">db.col.find({&ldquo;key&rdquo;:{$lt:50}}).pretty()</td>
+<td align="left">where key &lt; 50</td>
+</tr>
+
+<tr>
+<td align="left">小于等于</td>
+<td align="left">db.col.find({&ldquo;key&rdquo;:{$lte:50}}).pretty()</td>
+<td align="left">where key &lt;= 50</td>
+</tr>
+
+<tr>
+<td align="left">大于</td>
+<td align="left">db.col.find({&ldquo;key&rdquo;:{$gt:50}}).pretty()</td>
+<td align="left">where key &gt; 50</td>
+</tr>
+
+<tr>
+<td align="left">大于或等于</td>
+<td align="left">db.col.find({&ldquo;key&rdquo;:{$gte:50}}).pretty()</td>
+<td align="left">where key &gt;= 50</td>
+</tr>
+
+<tr>
+<td align="left">不等于</td>
+<td align="left">db.col.find({&ldquo;key&rdquo;:{$ne:50}}).pretty()</td>
+<td align="left">where key != 50</td>
+</tr>
+</tbody>
+</table>
+
+<h5 id="and-条件:7c435197e47a696ee42dab56a053039d">and 条件</h5>
+
+<p>find() 方法可以传入多个键，每个键以逗号隔开。</p>
+
+<p><code>db.col.find({key1:value1, key2:value2}).pretty()</code></p>
+
+<h5 id="or-条件:7c435197e47a696ee42dab56a053039d">or 条件</h5>
+
+<pre><code class="language-json">db.col.find(
+    {
+        $or: [
+            {key1: value1}, {key2:value2}
+        ]
+    }
+).pretty()
 </code></pre>
 
-<p>为了提高可读性，可以使用简化的这种格式</p>
+<p>例如 <code>db.col.find({$or:[{&quot;key1&quot;:&quot;value1&quot;}, {&quot;key2&quot;: &quot;value2&quot;}]}).pretty()</code></p>
 
-<p><strong>需要注意的是大括号和表达式之间需要有一个空格，不能省略。这种方式和if、case、while等语句结合，可以作为shell脚本中的判断条件。</strong></p>
+<h5 id="更新操作:7c435197e47a696ee42dab56a053039d">更新操作</h5>
 
-<h3 id="整数比较运算符:289ce1ced731ab87d58afb0f0a69b270">整数比较运算符</h3>
+<p><code>db.collection.update( query, update, upsert, multi )</code></p>
 
-<p>在shell中对两个数进行比较，不像在C/C++中可以使用 &ldquo;&gt;&rdquo; 之类的运算符，而是使用类似参数选项的格式。</p>
+<p><strong>query</strong>： update 的查询条件，类似 sql update 操作的 where 子句。</p>
 
-<pre><code class="language-bash">-eq  # 如果等于则为真
--ge  # 如果大于或等于则为真
--gt  # 如果大于则为真
--le  # 如果小于或等于则为真
--lt  # 如果小于则为真
--ne  # 如果不等于则为真
-</code></pre>
+<p><strong>update</strong>： update 的对象和一些更新的操作符（如$set, $inc&hellip;）等，也可以理解为 sql update 操作的 set 子句。</p>
 
-<p><strong>其中的参数可以这样理解e(equal)，g(greater)，t(than)，l(less)，n(not)，这样方便记忆。</strong></p>
+<p><strong>upsert</strong>： 可选，这个参数的意思是，如果不存在 update 的记录，是否插入新的记录，true 为插入，默认是 false，不插入。</p>
 
-<h3 id="字符串相关运算符:289ce1ced731ab87d58afb0f0a69b270">字符串相关运算符</h3>
+<p><strong>multi</strong>： 可选，默认为 false，只更新找到的第一条记录，如果这个参数为 true，就把按条件查出来多条记录全部更新。</p>
 
-<pre><code class="language-bash">-n string            # 字符串不为空则为真
--z string            # 字符串为空则为真
-string1 = string2    # 字符串相等则为真 （或者 == 也可以）
-string1 != string2   # 字符串不等则为真
-</code></pre>
+<p><code>db.agent_conf.update({hostid:137}, {$set: {upload:{interval:10}}}, true)</code></p>
 
-<p><strong>这里有一个需要注意的地方，就是使用 -n 这个运算符进行判断的时候需要注意在变量两边加上双引号。</strong></p>
+<p>将 agent_conf 集合中 hostid = 137 的记录将 upload.interval 的值修改为 3，如果不存在就插入，只修改匹配的第一条。</p>
 
-<p><strong>例如 if [ -n $string ] 应该写成 if [ -n “$string” ] ，不然该表达式总是会返回真，因为当string变量为空的时候就相当于是 if [ -n ]。</strong></p>
+<h4 id="删除操作:7c435197e47a696ee42dab56a053039d">删除操作</h4>
 
-<h3 id="文件操作符:289ce1ced731ab87d58afb0f0a69b270">文件操作符</h3>
+<p><code>db.col.remove({id:1})</code></p>
 
-<pre><code class="language-bash">-d file # 测试file是否为目录
--e file # 测试file是否存在
--f file # 测试file是否为普通文件
--r file # 测试file是否是进程可读文件
--s file # 测试file的长度是否不为0
--w file # 测试file是否是进程可写文件
--x file # 测试file是否是进程可执行文件
--L file # 测试file是否符号化链接
-</code></pre>
-
-<h3 id="逻辑运算符:289ce1ced731ab87d58afb0f0a69b270">逻辑运算符</h3>
-
-<pre><code class="language-bash">! expression                # 非
-expression1 -a expression2  # 与
-expression1 -o expression2  # 或
-</code></pre>
-
-<p>多重的嵌套</p>
-
-<pre><code class="language-bash">if [ $a == 1 ] &amp;&amp; [ $b == 1 -o $b == 3 ]
-</code></pre>
+<p>remove 的过滤条件同 find。</p>
 
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell">http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb">http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>
@@ -191,16 +271,9 @@ expression1 -o expression2  # 或
                 <ul class="list-inline post-tags">
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/linux">
+                        <a href="http://blog.fatedier.com/tags/mongodb">
                             <i class="fa fa-tags"></i>
-                            linux
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="http://blog.fatedier.com/tags/shell">
-                            <i class="fa fa-tags"></i>
-                            shell
+                            mongodb
                         </a>
                     </li>
                     
@@ -214,13 +287,13 @@ expression1 -o expression2  # 或
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="http://blog.fatedier.com/2015/07/30/some-skills-about-vim"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

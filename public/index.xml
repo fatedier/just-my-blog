@@ -34,7 +34,7 @@
 
 &lt;h3 id=&#34;安装各种依赖:15a147333eadc9d914016442056e059f&#34;&gt;安装各种依赖&lt;/h3&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo yum install curl gcc memcached rsync sqlite xfsprogs git-core \ 
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo yum install curl gcc memcached rsync sqlite xfsprogs git-core \
     libffi-devel xinetd liberasurecode-devel \
     python-setuptools \
     python-coverage python-devel python-nose \

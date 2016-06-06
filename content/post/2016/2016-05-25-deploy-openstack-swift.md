@@ -29,7 +29,7 @@ ip 为 **192.168.2.129, 192.168.2.130, 192.168.2.131**
 ### 安装各种依赖
 
 ```bash
-sudo yum install curl gcc memcached rsync sqlite xfsprogs git-core \ 
+sudo yum install curl gcc memcached rsync sqlite xfsprogs git-core \
     libffi-devel xinetd liberasurecode-devel \
     python-setuptools \
     python-coverage python-devel python-nose \

@@ -173,8 +173,8 @@ sudo chown user:user /var/cache/swift
 <h4 id="修改-etc-rsyncd-conf:15a147333eadc9d914016442056e059f">修改 /etc/rsyncd.conf</h4>
 
 <pre><code class="language-bash"># /etc/rsyncd: configuration file for rsync daemon mode
-uid = root
-gid = root
+uid = user
+gid = user
 log file = /var/log/rsyncd.log
 pid file = /var/run/rsyncd.pid
 address = 0.0.0.0

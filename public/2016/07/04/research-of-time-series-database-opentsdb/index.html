@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用astyle进行代码格式化 &middot; fatedier blog">
+<meta property="og:title" content="时间序列数据库调研之OpenTSDB &middot; fatedier blog">
 
 <meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    使用astyle进行代码格式化
+    时间序列数据库调研之OpenTSDB
     
 </title>
 
@@ -79,135 +79,152 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2014年11月10日">
-                        2014年11月10日
+                    <time datetime="2016年07月04日">
+                        2016年07月04日
                     </time>
                 </div>
-                <h1 class="post-title">使用astyle进行代码格式化</h1>
+                <h1 class="post-title">时间序列数据库调研之OpenTSDB</h1>
             </header>
 
             <div class="post-content">
                 
 
-<p>在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &ndash; &ldquo;astyle&rdquo;。</p>
+<p>Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。</p>
 
-<p>astyle这个工具可以将现有的代码格式转换为指定的风格，当你将乱七八糟的代码用astyle转换一下之后，就会感觉整个世界都清静了……</p>
+<h3 id="测试版本:2bcfdb374ee9d4126e3ae956caebf257">测试版本</h3>
 
-<h3 id="如何获取:699e4d34b5ad72c6fd24a2cffb5c24a4">如何获取</h3>
+<p>hbase-1.1.5</p>
 
-<p>astyle是一个开放源码的项目，支持C/C++、C#和java的代码格式化</p>
+<p>opentsdb-2.2.0</p>
 
-<p>SourceForge地址: <a href="http://sourceforge.net/projects/astyle/">http://sourceforge.net/projects/astyle/</a></p>
+<h3 id="单机部署:2bcfdb374ee9d4126e3ae956caebf257">单机部署</h3>
 
-<p>我的Github拷贝: <a href="https://github.com/fatedier/fatedier-tools/tree/master/astyle">https://github.com/fatedier/fatedier-tools/tree/master/astyle</a></p>
+<p>单机部署可以参考我之前的一篇文章，集群部署比较复杂，这里仅使用单机进行测试。</p>
 
-<h3 id="编译:699e4d34b5ad72c6fd24a2cffb5c24a4">编译</h3>
+<p><a href="http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/">OpenTSDB部署与使用</a></p>
 
-<p>直接写一个Makefile编译下源码，我的Github的拷贝里有写好的Makefile，直接用gmake命令编译一下就可以用了。</p>
+<h3 id="概念:2bcfdb374ee9d4126e3ae956caebf257">概念</h3>
 
-<h3 id="示例:699e4d34b5ad72c6fd24a2cffb5c24a4">示例</h3>
+<h4 id="数据格式:2bcfdb374ee9d4126e3ae956caebf257">数据格式</h4>
 
-<pre><code class="language-bash">./astyle --style=ansi test.cpp
+<ul>
+<li>metric: 一个可测量的单位的标称。</li>
+<li>tags: 对 metric 的具体描述。</li>
+<li>timestamp: 时间戳。</li>
+<li>value: metric 的实际测量值。</li>
+</ul>
+
+<h4 id="uid:2bcfdb374ee9d4126e3ae956caebf257">UID</h4>
+
+<p>在 OpenTSDB 中，每一个 metric、tagk 或者 tagv 在创建的时候被分配一个唯一标识叫做 UID。在后续的实际存储中，实际上存储的是 UID，而不是它们原本的字符串，UID 占 3个字节（也可以修改源码改为4字节），这样可以节省存储空间。</p>
+
+<h4 id="tsuid:2bcfdb374ee9d4126e3ae956caebf257">TSUID</h4>
+
+<p><code>&lt;metric_UID&gt;&lt;timestamp&gt;&lt;tagk1_UID&gt;&lt;tagv1_UID&gt;[...&lt;tagkN_UID&gt;&lt;tagvN_UID&gt;]</code></p>
+
+<p>写入 HBase 时的 row key 格式，其中的 metric、tagk 和 tagv 都被转换成了 UID。</p>
+
+<h4 id="data-table-schema:2bcfdb374ee9d4126e3ae956caebf257">Data Table Schema</h4>
+
+<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-data-table-schema.png" alt="data-table-schema" /></p>
+
+<p><strong>RowKey</strong> 就是上述的 TSUID，除了时间戳占 4 byte，其余 UID 占 3 byte。</p>
+
+<p>时间戳的部分只保留到了小时粒度，具体相对于小时的偏移量被存储在了 <strong>列族 t</strong> 中。这样就减小了 HBase 中的存储行数。也就是说对于同一个小时的 metric + tags 相同的数据都会存放在一个 row 下面，这样的设计提高了 row 的检索速度。</p>
+
+<p>这样的 RowKey 设计使得 metric + tags 相同的数据都会连续存放，且 metric 相同的数据也会连续存放，底层 HBase 中会放在同一 Region 中，在做 Scan 的时候可以快速读取到大片数据，加速查询的过程。</p>
+
+<p><strong>value</strong> 使用 8 bytes 存储，既可以存储 long,也可以存储 double。</p>
+
+<h4 id="compaction:2bcfdb374ee9d4126e3ae956caebf257">Compaction</h4>
+
+<p>在 OpenTSDB 中，会将多列合并到一列之中以减少磁盘占用空间，这个过程会在 TSD 写数据或者查询过程中不定期的发生。</p>
+
+<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-compaction.png" alt="compaction" /></p>
+
+<p>例如图中，将列 1890 和 列 1892 合并到了一起。</p>
+
+<h3 id="api:2bcfdb374ee9d4126e3ae956caebf257">API</h3>
+
+<p>OpenTSDB 同样提供了一套基于 HTTP 的 API 接口。</p>
+
+<h4 id="插入数据:2bcfdb374ee9d4126e3ae956caebf257">插入数据</h4>
+
+<p><a href="http://localhost:4242/api/put">http://localhost:4242/api/put</a>, POST</p>
+
+<p>内容为 JSON 格式，支持同时插入多条数据。</p>
+
+<pre><code class="language-json">[
+    {
+        &quot;metric&quot;: &quot;sys.cpu.nice&quot;,
+        &quot;timestamp&quot;: 1346846400,
+        &quot;value&quot;: 18,
+        &quot;tags&quot;: {
+           &quot;host&quot;: &quot;web01&quot;,
+           &quot;dc&quot;: &quot;lga&quot;
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;sys.cpu.nice&quot;,
+        &quot;timestamp&quot;: 1346846400,
+        &quot;value&quot;: 9,
+        &quot;tags&quot;: {
+           &quot;host&quot;: &quot;web02&quot;,
+           &quot;dc&quot;: &quot;lga&quot;
+        }
+    }
+]
 </code></pre>
 
-<p>执行之后会提示</p>
+<h4 id="查询数据:2bcfdb374ee9d4126e3ae956caebf257">查询数据</h4>
 
-<pre><code class="language-bash">Formatted  xxx/test.cpp
+<p><a href="http://localhost:4242/api/query">http://localhost:4242/api/query</a>, POST</p>
+
+<pre><code class="language-json">{
+    &quot;start&quot;: 1463452826,
+    &quot;end&quot;: 1463453026,
+    &quot;globalAnnotations&quot;: true,
+    &quot;queries&quot;: [
+        {
+            &quot;aggregator&quot;: &quot;avg&quot;,
+            &quot;metric&quot;: &quot;sys.disk.usage&quot;,
+            &quot;downsample&quot;: &quot;60s-avg&quot;,
+            &quot;tags&quot;: {
+                &quot;host_id&quot;: &quot;123&quot;
+            }
+        },
+        {
+            &quot;aggregator&quot;: &quot;sum&quot;,
+            &quot;metric&quot;: &quot;sys.cpu.load&quot;,
+            &quot;downsample&quot;: &quot;60s-avg&quot;,
+            &quot;tags&quot;: {
+                &quot;host_id&quot;: &quot;123&quot;
+            }
+        }
+    ]
+}
 </code></pre>
 
-<p><strong>astyle</strong> 会在当前目录下生成一个备份文件，以 <strong>.orig</strong> 结尾，例如 &ldquo;test.cpp.orig&rdquo;。</p>
+<p><strong>start</strong> 和 <strong>end</strong> 指定了查询的时间范围。</p>
 
-<p>而 <strong>test.cpp</strong> 就已经转换为了 <strong>ansi</strong> 代码风格了。</p>
+<p><strong>tags</strong> 指定了过滤条件，2.2 版本中将不被推荐，取而代之的是 filters 参数。</p>
 
-<h3 id="常用选项:699e4d34b5ad72c6fd24a2cffb5c24a4">常用选项</h3>
+<p><strong>downsample</strong> 聚合计算，例如上面是对每隔60s的数据计算一次平均值。</p>
 
-<p><strong>注：使用 &ndash;help 选项可以查看astyle的帮助文档</strong></p>
+<h3 id="总结:2bcfdb374ee9d4126e3ae956caebf257">总结</h3>
 
-<h4 id="style风格设置:699e4d34b5ad72c6fd24a2cffb5c24a4">style风格设置</h4>
+<p>OpenTSDB 在存储时间序列数据这一领域拥有很大的优势，被大多数公司所采用，网上的相关文档也比较全面。</p>
 
-<p>常用的代码风格主要有三种: <strong>ansi</strong> 和 <strong>k&amp;r</strong> 以及 <strong>java</strong></p>
+<p>底层存储依托于 HBase，采用特殊设计过的数据存储格式，提供了非常快的查询速度，在此基础之上也更容易横向扩展。</p>
 
-<ol>
-<li><p>&ndash;style=allman  OR &ndash;style=ansi OR &ndash;style=bsd OR &ndash;style=break OR -A1</p>
-
-<pre><code class="language-cpp">int Foo()
-{
-   if (isBar)
-    {
-       bar();
-       return 1;
-    }
-   else
-    {
-       return 0;
-    }
-}
-</code></pre></li>
-
-<li><p>&ndash;style=kr OR &ndash;style=k&amp;r OR &ndash;style=k/r OR -A3</p>
-
-<pre><code class="language-cpp">int Foo()
-{
-   if (isBar) {
-       bar();
-       return 1;
-    }else {
-       return 0;
-    }
-}
-</code></pre></li>
-
-<li><p>&ndash;style=java OR &ndash;style=attach OR -A2</p>
-
-<pre><code class="language-cpp">int Foo() {
-   if (isBar) {
-       bar();
-       return 1;
-    }else {
-       return 0;
-    }
-}
-</code></pre></li>
-</ol>
-
-<h4 id="tab选项:699e4d34b5ad72c6fd24a2cffb5c24a4">Tab选项</h4>
-
-<p>默认是使用4个空格替换一个tab。</p>
-
-<ol>
-<li><p>&ndash;indent=spaces=# OR -s#</p>
-
-<p>指定用几个空格替换一个tab，例如 &ndash;indent=spaces=8 ，指定用8个空格替换一个tab。</p></li>
-
-<li><p>&ndash;indent=tab OR &ndash;indent=tab=# OR -t OR -t#</p>
-
-<p>指定缩进使用tab，=#同上，指定一个tab占几个空格，不说明的话默认是4个。</p></li>
-</ol>
-
-<h4 id="递归处理:699e4d34b5ad72c6fd24a2cffb5c24a4">递归处理</h4>
-
-<p>&ndash;recursive OR -r OR -R</p>
-
-<p>可以递归处理所有子目录的文件。</p>
-
-<h4 id="排除不处理的文件:699e4d34b5ad72c6fd24a2cffb5c24a4">排除不处理的文件</h4>
-
-<p>&ndash;exclude=####</p>
-
-<p>指定哪些文件或者文件夹不需要进行处理。</p>
-
-<h4 id="指定配置文件:699e4d34b5ad72c6fd24a2cffb5c24a4">指定配置文件</h4>
-
-<p>&ndash;options=####</p>
-
-<p>可以指定读取某个文件的内容作为参数选项。</p>
+<p>但是，相对于 InfluxDB 这种即使是新手也可以在两分钟内部署运行完成，OpenTSDB 的部署和运维显然要麻烦很多，由于底层依赖于 HBase，想要大规模运行起来，需要相当专业、细心的运维工作。</p>
 
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code">http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb">http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>
@@ -218,16 +235,23 @@
                 <ul class="list-inline post-tags">
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/linux">
+                        <a href="http://blog.fatedier.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">
                             <i class="fa fa-tags"></i>
-                            linux
+                            数据库
                         </a>
                     </li>
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7">
+                        <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8">
                             <i class="fa fa-tags"></i>
-                            开发工具
+                            分布式存储
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="http://blog.fatedier.com/tags/opentsdb">
+                            <i class="fa fa-tags"></i>
+                            opentsdb
                         </a>
                     </li>
                     
@@ -241,13 +265,13 @@
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

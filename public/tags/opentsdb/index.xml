@@ -6,8 +6,150 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2016</rights>
-    <updated>2016-03-12 00:00:00 &#43;0000 UTC</updated>
+    <updated>2016-07-04 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>时间序列数据库调研之OpenTSDB</title>
+          <link>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb</link>
+          <pubDate>Mon, 04 Jul 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb</guid>
+          <description>
+
+&lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;
+
+&lt;h3 id=&#34;测试版本:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;测试版本&lt;/h3&gt;
+
+&lt;p&gt;hbase-1.1.5&lt;/p&gt;
+
+&lt;p&gt;opentsdb-2.2.0&lt;/p&gt;
+
+&lt;h3 id=&#34;单机部署:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;单机部署&lt;/h3&gt;
+
+&lt;p&gt;单机部署可以参考我之前的一篇文章，集群部署比较复杂，这里仅使用单机进行测试。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/&#34;&gt;OpenTSDB部署与使用&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;概念:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;概念&lt;/h3&gt;
+
+&lt;h4 id=&#34;数据格式:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;数据格式&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;metric: 一个可测量的单位的标称。&lt;/li&gt;
+&lt;li&gt;tags: 对 metric 的具体描述。&lt;/li&gt;
+&lt;li&gt;timestamp: 时间戳。&lt;/li&gt;
+&lt;li&gt;value: metric 的实际测量值。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&#34;uid:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;UID&lt;/h4&gt;
+
+&lt;p&gt;在 OpenTSDB 中，每一个 metric、tagk 或者 tagv 在创建的时候被分配一个唯一标识叫做 UID。在后续的实际存储中，实际上存储的是 UID，而不是它们原本的字符串，UID 占 3个字节（也可以修改源码改为4字节），这样可以节省存储空间。&lt;/p&gt;
+
+&lt;h4 id=&#34;tsuid:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;TSUID&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;&amp;lt;metric_UID&amp;gt;&amp;lt;timestamp&amp;gt;&amp;lt;tagk1_UID&amp;gt;&amp;lt;tagv1_UID&amp;gt;[...&amp;lt;tagkN_UID&amp;gt;&amp;lt;tagvN_UID&amp;gt;]&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;写入 HBase 时的 row key 格式，其中的 metric、tagk 和 tagv 都被转换成了 UID。&lt;/p&gt;
+
+&lt;h4 id=&#34;data-table-schema:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;Data Table Schema&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-data-table-schema.png&#34; alt=&#34;data-table-schema&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;RowKey&lt;/strong&gt; 就是上述的 TSUID，除了时间戳占 4 byte，其余 UID 占 3 byte。&lt;/p&gt;
+
+&lt;p&gt;时间戳的部分只保留到了小时粒度，具体相对于小时的偏移量被存储在了 &lt;strong&gt;列族 t&lt;/strong&gt; 中。这样就减小了 HBase 中的存储行数。也就是说对于同一个小时的 metric + tags 相同的数据都会存放在一个 row 下面，这样的设计提高了 row 的检索速度。&lt;/p&gt;
+
+&lt;p&gt;这样的 RowKey 设计使得 metric + tags 相同的数据都会连续存放，且 metric 相同的数据也会连续存放，底层 HBase 中会放在同一 Region 中，在做 Scan 的时候可以快速读取到大片数据，加速查询的过程。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;value&lt;/strong&gt; 使用 8 bytes 存储，既可以存储 long,也可以存储 double。&lt;/p&gt;
+
+&lt;h4 id=&#34;compaction:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;Compaction&lt;/h4&gt;
+
+&lt;p&gt;在 OpenTSDB 中，会将多列合并到一列之中以减少磁盘占用空间，这个过程会在 TSD 写数据或者查询过程中不定期的发生。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-compaction.png&#34; alt=&#34;compaction&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;例如图中，将列 1890 和 列 1892 合并到了一起。&lt;/p&gt;
+
+&lt;h3 id=&#34;api:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;API&lt;/h3&gt;
+
+&lt;p&gt;OpenTSDB 同样提供了一套基于 HTTP 的 API 接口。&lt;/p&gt;
+
+&lt;h4 id=&#34;插入数据:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;插入数据&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://localhost:4242/api/put&#34;&gt;http://localhost:4242/api/put&lt;/a&gt;, POST&lt;/p&gt;
+
+&lt;p&gt;内容为 JSON 格式，支持同时插入多条数据。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;[
+    {
+        &amp;quot;metric&amp;quot;: &amp;quot;sys.cpu.nice&amp;quot;,
+        &amp;quot;timestamp&amp;quot;: 1346846400,
+        &amp;quot;value&amp;quot;: 18,
+        &amp;quot;tags&amp;quot;: {
+           &amp;quot;host&amp;quot;: &amp;quot;web01&amp;quot;,
+           &amp;quot;dc&amp;quot;: &amp;quot;lga&amp;quot;
+        }
+    },
+    {
+        &amp;quot;metric&amp;quot;: &amp;quot;sys.cpu.nice&amp;quot;,
+        &amp;quot;timestamp&amp;quot;: 1346846400,
+        &amp;quot;value&amp;quot;: 9,
+        &amp;quot;tags&amp;quot;: {
+           &amp;quot;host&amp;quot;: &amp;quot;web02&amp;quot;,
+           &amp;quot;dc&amp;quot;: &amp;quot;lga&amp;quot;
+        }
+    }
+]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;查询数据:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;查询数据&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://localhost:4242/api/query&#34;&gt;http://localhost:4242/api/query&lt;/a&gt;, POST&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
+    &amp;quot;start&amp;quot;: 1463452826,
+    &amp;quot;end&amp;quot;: 1463453026,
+    &amp;quot;globalAnnotations&amp;quot;: true,
+    &amp;quot;queries&amp;quot;: [
+        {
+            &amp;quot;aggregator&amp;quot;: &amp;quot;avg&amp;quot;,
+            &amp;quot;metric&amp;quot;: &amp;quot;sys.disk.usage&amp;quot;,
+            &amp;quot;downsample&amp;quot;: &amp;quot;60s-avg&amp;quot;,
+            &amp;quot;tags&amp;quot;: {
+                &amp;quot;host_id&amp;quot;: &amp;quot;123&amp;quot;
+            }
+        },
+        {
+            &amp;quot;aggregator&amp;quot;: &amp;quot;sum&amp;quot;,
+            &amp;quot;metric&amp;quot;: &amp;quot;sys.cpu.load&amp;quot;,
+            &amp;quot;downsample&amp;quot;: &amp;quot;60s-avg&amp;quot;,
+            &amp;quot;tags&amp;quot;: {
+                &amp;quot;host_id&amp;quot;: &amp;quot;123&amp;quot;
+            }
+        }
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;start&lt;/strong&gt; 和 &lt;strong&gt;end&lt;/strong&gt; 指定了查询的时间范围。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;tags&lt;/strong&gt; 指定了过滤条件，2.2 版本中将不被推荐，取而代之的是 filters 参数。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;downsample&lt;/strong&gt; 聚合计算，例如上面是对每隔60s的数据计算一次平均值。&lt;/p&gt;
+
+&lt;h3 id=&#34;总结:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;总结&lt;/h3&gt;
+
+&lt;p&gt;OpenTSDB 在存储时间序列数据这一领域拥有很大的优势，被大多数公司所采用，网上的相关文档也比较全面。&lt;/p&gt;
+
+&lt;p&gt;底层存储依托于 HBase，采用特殊设计过的数据存储格式，提供了非常快的查询速度，在此基础之上也更容易横向扩展。&lt;/p&gt;
+
+&lt;p&gt;但是，相对于 InfluxDB 这种即使是新手也可以在两分钟内部署运行完成，OpenTSDB 的部署和运维显然要麻烦很多，由于底层依赖于 HBase，想要大规模运行起来，需要相当专业、细心的运维工作。&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

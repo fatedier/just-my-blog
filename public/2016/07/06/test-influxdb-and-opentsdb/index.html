@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="epoll使用说明 &middot; fatedier blog">
+<meta property="og:title" content="InfluxDB 与 OpenTSDB 对比测试 &middot; fatedier blog">
 
 <meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    epoll使用说明
+    InfluxDB 与 OpenTSDB 对比测试
     
 </title>
 
@@ -79,120 +79,116 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2015年01月25日">
-                        2015年01月25日
+                    <time datetime="2016年07月06日">
+                        2016年07月06日
                     </time>
                 </div>
-                <h1 class="post-title">epoll使用说明</h1>
+                <h1 class="post-title">InfluxDB 与 OpenTSDB 对比测试</h1>
             </header>
 
             <div class="post-content">
                 
 
-<p>在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。</p>
+<p>通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。</p>
 
-<p>epoll相对于select/poll来说有很大优势：</p>
+<h3 id="测试环境:4dfacd6c1d774692305fdb3325c74808">测试环境</h3>
+
+<p>青云 centos7</p>
+
+<p>4 cpu，8GB RAM</p>
+
+<h3 id="测试样本:4dfacd6c1d774692305fdb3325c74808">测试样本</h3>
+
+<p><strong>metric</strong> 从 cpu_load1 - cpu_load10 共10个。</p>
+
+<p><strong>tags</strong> 只有一个，host_id 为 1-100。</p>
+
+<p><strong>time</strong> 为 1467000000 - 1467010000，各维度每秒生成1条数据。</p>
+
+<p><strong>value</strong> 取值为 0.1-0.9。</p>
+
+<p>合计数据量为 10 * 100 * 10000 = 1000w。</p>
+
+<h3 id="查询测试用例:4dfacd6c1d774692305fdb3325c74808">查询测试用例</h3>
+
+<h4 id="查询1-单条查询:4dfacd6c1d774692305fdb3325c74808">查询1：单条查询</h4>
+
+<p>指定 metricName 以及 host_id，对 time 在 1467000000 和 1467005000 内的数据按照每3分钟的粒度进行聚合计算平均值。</p>
+
+<p>例如 InfluxDB 中的查询语句</p>
+
+<p><code>select mean(value) from cpu_load1 where host_id = '1' and time &gt; 1467000000000000000 and time &lt; 1467005000000000000 group by time(3m)</code></p>
+
+<h4 id="查询2-批量10条不同-metricname-查询:4dfacd6c1d774692305fdb3325c74808">查询2：批量10条不同 metricName 查询</h4>
+
+<p>单条查询的基础上修改成不同的 metricName</p>
+
+<h3 id="influxdb:4dfacd6c1d774692305fdb3325c74808">InfluxDB</h3>
+
+<p>并发数 50 通过 http 写入，每次 100 条数据</p>
+
+<h4 id="资源占用:4dfacd6c1d774692305fdb3325c74808">资源占用</h4>
+
+<p>cpu 使用率维持在 100% 左右，耗时 1m58s，约 84746/s</p>
+
+<p>磁盘占用 70MB</p>
+
+<h4 id="查询1:4dfacd6c1d774692305fdb3325c74808">查询1</h4>
 
 <ul>
-<li><p><strong>不再需要每次把fd集合从用户态拷贝到内核态。</strong></p></li>
-
-<li><p><strong>不再需要在每次就绪时遍历fd集合中的所有fd来检查哪些fd处于就绪状态，epoll只返回就绪的fd集合。</strong></p></li>
-
-<li><p><strong>select一般只支持1024个文件描述符，而epoll没有类似的限制。</strong></p></li>
+<li>Num1: 0.010s</li>
+<li>Num2: 0.010s</li>
 </ul>
 
-<h3 id="epoll相关函数:a1b713ac15cbe6847c7bc66b99b440ae">epoll相关函数</h3>
-
-<p>使用epoll只需要记住3个系统调用函数。</p>
-
-<h4 id="int-epoll-create-int-size:a1b713ac15cbe6847c7bc66b99b440ae">int epoll_create(int size)</h4>
-
-<p>创建一个epoll实例，从2.68的Linux内核开始，size参数不再生效，内核会动态分配所需的数据结构。失败返回-1，成功则该函数会返回一个文件描述符，并占用一个fd值，所以在使用完之后要记得close该文件描述符。</p>
-
-<h4 id="int-epoll-ctl-int-epfd-int-op-int-fd-struct-epoll-event-event:a1b713ac15cbe6847c7bc66b99b440ae">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</h4>
-
-<p>用于对epoll实例执行不同的操作的函数。</p>
-
-<p><strong>epfd</strong></p>
-
-<p>使用epoll_create()返回的文件描述符</p>
-
-<p><strong>op</strong></p>
-
-<p>用三个宏表示不同的操作</p>
+<h4 id="查询2:4dfacd6c1d774692305fdb3325c74808">查询2</h4>
 
 <ul>
-<li><p>EPOLL_CTL_ADD：注册新的fd到epfd中；</p></li>
-
-<li><p>EPOLL_CTL_MOD：修改已经注册的fd的监听事件；</p></li>
-
-<li><p>EPOLL_CTL_DEL：从epfd中删除指定fd；</p></li>
+<li>Num 1: 0.029s</li>
+<li>Num 2: 0.021s</li>
 </ul>
 
-<p><strong>fd</strong></p>
+<h3 id="opentsdb:4dfacd6c1d774692305fdb3325c74808">OpenTSDB</h3>
 
-<p>要监听的文件描述符</p>
+<p>并发数 50 通过http写入，每次 100 条数据</p>
 
-<p><strong>event</strong></p>
+<h4 id="资源占用-1:4dfacd6c1d774692305fdb3325c74808">资源占用</h4>
 
-<p>event 是与指定fd关联的epoll_event结构，包含了监听事件，附加数据</p>
+<p>cpu 开始时跑满，之后在250%左右 耗时 2m16s，约 73529/s</p>
 
-<p><strong>struct epoll_event</strong> 的结构如下</p>
+<p>磁盘占用 1.6GB，由于是简单部署，这里 HBase 没有启用 lzo 压缩，据说压缩之后只需要占用原来 <sup>1</sup>&frasl;<sub>5</sub> 的空间，也就是 320MB。</p>
 
-<pre><code class="language-cpp">typedef union epoll_data {
-    void        *ptr;
-    int          fd;
-    __uint32_t   u32;
-    __uint64_t   u64;
-}epoll_data_t;
- 
-struct epoll_event {
-    __uint32_t  events;      /* Epoll events */
-    epoll_data_t data;       /* User data variable */
-};
-</code></pre>
+<h4 id="查询1-1:4dfacd6c1d774692305fdb3325c74808">查询1</h4>
 
-<p><strong>这里需要特别注意的是epoll_data_t是一个union结构，fd和ptr指针只能使用一个，通常我们使用void *ptr存储需要附加的用户数据结构，然后在用户数据结构中存储int型的fd，这样在epoll_wait调用后就仍然能获得该注册事件对应的文件描述符。</strong></p>
+<ul>
+<li>Num 1: 0.285s</li>
+<li>Num 2: 0.039s</li>
+</ul>
 
-<p>events可以是如下值的集合</p>
+<h4 id="查询2-1:4dfacd6c1d774692305fdb3325c74808">查询2</h4>
 
-<pre><code class="language-bash">EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）
-EPOLLOUT：表示对应的文件描述符可以写
-EPOLLPRI：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）
-EPOLLERR：表示对应的文件描述符发生错误
-EPOLLHUP：表示对应的文件描述符被挂断
-EPOLLET： 将EPOLL设为边缘触发(EdgeTriggered)模式，这是相对于水平触发(Level Triggered)来说的
-EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里
-</code></pre>
+<ul>
+<li>Num 1: 0.111s</li>
+<li>Num 2: 0.040s</li>
+</ul>
 
-<h4 id="int-epoll-wait-int-epfd-struct-epoll-event-events-int-maxevents-int-timeout:a1b713ac15cbe6847c7bc66b99b440ae">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</h4>
+<h3 id="总结:4dfacd6c1d774692305fdb3325c74808">总结</h3>
 
-<p>该函数等待epoll实例中的fd集合有就绪事件。</p>
+<p>一开始是准备在本地的一个2核2GB的虚拟机里进行测试，InfluxDB 虽然比较慢，但是测试完成，而 OpenTSDB 测试过程中，要么 zookeeper 出现故障，要么 Hbase 异常退出，要么无法正常写入数据，始终无法完成测试。更换成配置更高的青云服务器后，两者都能正常完成测试。</p>
 
-<pre><code class="language-bash">epfd：使用epoll_create()返回的文件描述符
-events：指向处于就绪状态的事件集合
-maxevents：最多maxevents数量的事件集合会被返回
-timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指定为0则立即返回并返回0
-</code></pre>
+<p>在单机部署上，InfluxDB 非常简单，一两分钟就可以成功运行，而 OpenTSDB 需要搭建 Hbase，创建 TSD 用到的数据表，配置 JAVA 环境等，相对来说更加复杂。</p>
 
-<p>如果成功，返回已就绪的事件的个数；如果达到超时时间仍然没有就绪事件，返回0；如果出现错误，返回-1并置errno值</p>
+<p>资源占用方面，InfluxDB 都要占据优势，cpu 消耗更小，磁盘占用更是小的惊人。</p>
 
-<h3 id="lt和et两种工作方式:a1b713ac15cbe6847c7bc66b99b440ae">LT和ET两种工作方式</h3>
+<p>查询速度，由于测试样本数据量还不够大，速度都非常快，可以看到 InfluxDB 的查询在 10ms 这个数量级，而 OpenTSDB 则慢了接近 10 倍，第二次查询时，由于缓存的原因，OpenTSDB 的查询速度也相当快。</p>
 
-<p>epoll 默认使用LT的工作方式，当指定事件就绪时，内核通知用户进行操作，如果你只处理了部分数据，只要对应的套接字缓冲区中还有剩余数据，下一次内核仍然还会继续通知用户去进行处理，所以使用这种模式来写程序较为简单。</p>
-
-<p>ET工作方式是一种高速工作方式，只能使用非阻塞socket，它的效率要比LT方式高。当一个新事件就绪时，内核通知用户进行操作，如果这时用户没有处理完缓冲区的数据，缓冲区中剩余的数据就会丢失，用户无法从下一次epoll_wait调用中获取到这个事件。</p>
-
-<p>举个例子，可以指定事件为 EPOLLIN| EPOLLET 来使用ET工作方式获取指定文件描述符的可读事件。</p>
-
-<p><strong>在该事件就绪后，需要不断调用read函数来获取缓冲区数据，直到产生一个EAGAIN错误或者read函数返回的读取到的数据长度小于请求的数据长度时才认为此事件处理完成。write也是一样的处理方式。</strong></p>
+<p>集群方面，目前 InfluxDB 还没有比较好的解决方案，而 OpenTSDB 基于 HBase，这一套集群方案已经被很多大公司采用，稳定运行。</p>
 
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll">http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb">http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>
@@ -203,16 +199,16 @@ timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指�
                 <ul class="list-inline post-tags">
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/linux">
+                        <a href="http://blog.fatedier.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">
                             <i class="fa fa-tags"></i>
-                            linux
+                            数据库
                         </a>
                     </li>
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/c/cpp">
+                        <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8">
                             <i class="fa fa-tags"></i>
-                            c/cpp
+                            分布式存储
                         </a>
                     </li>
                     
@@ -226,13 +222,13 @@ timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指�
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

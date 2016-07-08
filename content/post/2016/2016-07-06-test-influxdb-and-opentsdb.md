@@ -13,6 +13,10 @@ url: "/2016/07/06/test-influxdb-and-opentsdb"
 
 <!--more-->
 
+### 时间序列数据库热度排名
+
+![db-rank](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-06-test-influxdb-and-opentsdb-db-rank.png)
+
 ### 测试环境
 
 青云 centos7

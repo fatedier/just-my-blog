@@ -20,7 +20,7 @@
 
 &lt;p&gt;在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。&lt;/p&gt;
 
-&lt;h3 id=&#34;前景色-文本颜色:cea9018ed40398730f1d41a5ee8db575&#34;&gt;前景色(文本颜色)&lt;/h3&gt;
+&lt;h3 id=&#34;前景色-文本颜色&#34;&gt;前景色(文本颜色)&lt;/h3&gt;
 
 &lt;p&gt;例如要将 &lt;code&gt;hello&lt;/code&gt; 在控制台上输出为红色，执行如下的命令&lt;/p&gt;
 
@@ -42,7 +42,7 @@
 37        灰色 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;背景色:cea9018ed40398730f1d41a5ee8db575&#34;&gt;背景色&lt;/h3&gt;
+&lt;h3 id=&#34;背景色&#34;&gt;背景色&lt;/h3&gt;
 
 &lt;p&gt;背景色和前景色设置的方法一样，只是使用的数字不同&lt;/p&gt;
 
@@ -60,7 +60,7 @@
 
 &lt;p&gt;&lt;code&gt;echo -e &amp;quot;\033[31;42mhello\033[0m&amp;quot;&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;简化:cea9018ed40398730f1d41a5ee8db575&#34;&gt;简化&lt;/h3&gt;
+&lt;h3 id=&#34;简化&#34;&gt;简化&lt;/h3&gt;
 
 &lt;p&gt;从上面的示例可以看到这样写起来很麻烦，可以简单的将重复的内容定义为一个变量&lt;/p&gt;
 
@@ -86,7 +86,7 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 
 &lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;
 
-&lt;h3 id=&#34;退出状态:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;退出状态&lt;/h3&gt;
+&lt;h3 id=&#34;退出状态&#34;&gt;退出状态&lt;/h3&gt;
 
 &lt;p&gt;在Linux系统中，每当一条命令执行完成后，系统都会返回一个退出状态，这个状态被存放在$? 这个变量中，是一个整数值，我们可以根据这个值来判断命令运行的结果是否正确。&lt;/p&gt;
 
@@ -106,7 +106,7 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 &lt;p&gt;128 （命令被系统强行结束）&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h3 id=&#34;测试命令:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;测试命令&lt;/h3&gt;
+&lt;h3 id=&#34;测试命令&#34;&gt;测试命令&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;test expression
 &lt;/code&gt;&lt;/pre&gt;
@@ -120,7 +120,7 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 
 &lt;p&gt;&lt;strong&gt;需要注意的是大括号和表达式之间需要有一个空格，不能省略。这种方式和if、case、while等语句结合，可以作为shell脚本中的判断条件。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;整数比较运算符:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;整数比较运算符&lt;/h3&gt;
+&lt;h3 id=&#34;整数比较运算符&#34;&gt;整数比较运算符&lt;/h3&gt;
 
 &lt;p&gt;在shell中对两个数进行比较，不像在C/C++中可以使用 &amp;ldquo;&amp;gt;&amp;rdquo; 之类的运算符，而是使用类似参数选项的格式。&lt;/p&gt;
 
@@ -134,7 +134,7 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 
 &lt;p&gt;&lt;strong&gt;其中的参数可以这样理解e(equal)，g(greater)，t(than)，l(less)，n(not)，这样方便记忆。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;字符串相关运算符:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;字符串相关运算符&lt;/h3&gt;
+&lt;h3 id=&#34;字符串相关运算符&#34;&gt;字符串相关运算符&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;-n string            # 字符串不为空则为真
 -z string            # 字符串为空则为真
@@ -146,7 +146,7 @@ string1 != string2   # 字符串不等则为真
 
 &lt;p&gt;&lt;strong&gt;例如 if [ -n $string ] 应该写成 if [ -n “$string” ] ，不然该表达式总是会返回真，因为当string变量为空的时候就相当于是 if [ -n ]。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;文件操作符:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;文件操作符&lt;/h3&gt;
+&lt;h3 id=&#34;文件操作符&#34;&gt;文件操作符&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;-d file # 测试file是否为目录
 -e file # 测试file是否存在
@@ -158,7 +158,7 @@ string1 != string2   # 字符串不等则为真
 -L file # 测试file是否符号化链接
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;逻辑运算符:289ce1ced731ab87d58afb0f0a69b270&#34;&gt;逻辑运算符&lt;/h3&gt;
+&lt;h3 id=&#34;逻辑运算符&#34;&gt;逻辑运算符&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;! expression                # 非
 expression1 -a expression2  # 与

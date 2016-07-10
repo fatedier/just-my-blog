@@ -20,9 +20,9 @@
 
 &lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
 
-&lt;h3 id=&#34;smtp-协议发送邮件:ef1e028a5d80f74d9f890187a186e459&#34;&gt;smtp 协议发送邮件&lt;/h3&gt;
+&lt;h3 id=&#34;smtp-协议发送邮件&#34;&gt;smtp 协议发送邮件&lt;/h3&gt;
 
-&lt;h4 id=&#34;sendmail-函数:ef1e028a5d80f74d9f890187a186e459&#34;&gt;sendmail 函数&lt;/h4&gt;
+&lt;h4 id=&#34;sendmail-函数&#34;&gt;sendmail 函数&lt;/h4&gt;
 
 &lt;p&gt;go 标准库的 net/smtp 包提供了一个 SendMail 函数用于发送邮件。&lt;/p&gt;
 
@@ -35,7 +35,7 @@
 
 &lt;p&gt;&lt;strong&gt;a&lt;/strong&gt;： 身份认证接口，可以由 &lt;code&gt;func PlainAuth(identity, username, password, host string) Auth&lt;/code&gt; 函数创建。&lt;/p&gt;
 
-&lt;h4 id=&#34;简单发送邮件示例:ef1e028a5d80f74d9f890187a186e459&#34;&gt;简单发送邮件示例&lt;/h4&gt;
+&lt;h4 id=&#34;简单发送邮件示例&#34;&gt;简单发送邮件示例&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
 
@@ -74,7 +74,7 @@ func main() {
 
 &lt;p&gt;&lt;strong&gt;msg&lt;/strong&gt;： msg 的内容需要遵循 smtp 协议的格式，参考上例。&lt;/p&gt;
 
-&lt;h3 id=&#34;特定邮件服务器出错:ef1e028a5d80f74d9f890187a186e459&#34;&gt;特定邮件服务器出错&lt;/h3&gt;
+&lt;h3 id=&#34;特定邮件服务器出错&#34;&gt;特定邮件服务器出错&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;certificate signed by unknown authority
 &lt;/code&gt;&lt;/pre&gt;
@@ -83,7 +83,7 @@ func main() {
 
 &lt;p&gt;我通过抓包以及手动 telnet 执行了一遍 smtp 的过程，发送问题出现在是否加密和身份验证上。&lt;/p&gt;
 
-&lt;h4 id=&#34;smtp-协议:ef1e028a5d80f74d9f890187a186e459&#34;&gt;SMTP 协议&lt;/h4&gt;
+&lt;h4 id=&#34;smtp-协议&#34;&gt;SMTP 协议&lt;/h4&gt;
 
 &lt;p&gt;smtp 协议开始时客户端主动向邮件服务器发送 &lt;code&gt;EHLO&lt;/code&gt;，服务器会返回支持的所有命令，例如&lt;/p&gt;
 
@@ -105,7 +105,7 @@ func main() {
 
 &lt;p&gt;一共有3种验证方式，可以参考这篇 blog： &lt;a href=&#34;http://blog.csdn.net/mhfh611/article/details/9470599&#34;&gt;http://blog.csdn.net/mhfh611/article/details/9470599&lt;/a&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;starttls-引起的错误:ef1e028a5d80f74d9f890187a186e459&#34;&gt;STARTTLS 引起的错误&lt;/h4&gt;
+&lt;h4 id=&#34;starttls-引起的错误&#34;&gt;STARTTLS 引起的错误&lt;/h4&gt;
 
 &lt;p&gt;公司内部的邮件服务器返回了 &lt;strong&gt;STARTTLS&lt;/strong&gt;，但是实际上却不支持加密传输的认证方式，所以就导致了身份认证失败。&lt;/p&gt;
 

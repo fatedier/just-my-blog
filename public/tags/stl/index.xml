@@ -102,9 +102,9 @@ int main()
 
 &lt;p&gt;因为这两个函数本身耗时太短，不方便测算时间，所以采取重复调用再计时的方法。&lt;/p&gt;
 
-&lt;h3 id=&#34;vector:e87a20174c7a89c9a430628f9c301c79&#34;&gt;vector&lt;/h3&gt;
+&lt;h3 id=&#34;vector&#34;&gt;vector&lt;/h3&gt;
 
-&lt;h4 id=&#34;aix:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Aix&lt;/h4&gt;
+&lt;h4 id=&#34;aix&#34;&gt;Aix&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-code&#34;&gt;第1次输出：
 vector:
@@ -117,7 +117,7 @@ size() msec:2762
 empty() msec:4877
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;centos:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Centos&lt;/h4&gt;
+&lt;h4 id=&#34;centos&#34;&gt;Centos&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-code&#34;&gt;第1次输出：
 vector:
@@ -130,9 +130,9 @@ size() msec: 283
 empty() msec:1530
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;list:e87a20174c7a89c9a430628f9c301c79&#34;&gt;list&lt;/h3&gt;
+&lt;h3 id=&#34;list&#34;&gt;list&lt;/h3&gt;
 
-&lt;h4 id=&#34;aix-1:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Aix&lt;/h4&gt;
+&lt;h4 id=&#34;aix-1&#34;&gt;Aix&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-code&#34;&gt;第1次输出：
 vector:
@@ -145,7 +145,7 @@ size() msec: 13
 empty() msec: 22
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;centos-1:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Centos&lt;/h4&gt;
+&lt;h4 id=&#34;centos-1&#34;&gt;Centos&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-code&#34;&gt;第1次输出：
 vector:
@@ -158,9 +158,9 @@ size() msec: 242109
 empty() msec: 1
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;map:e87a20174c7a89c9a430628f9c301c79&#34;&gt;map&lt;/h3&gt;
+&lt;h3 id=&#34;map&#34;&gt;map&lt;/h3&gt;
 
-&lt;h4 id=&#34;aix-2:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Aix&lt;/h4&gt;
+&lt;h4 id=&#34;aix-2&#34;&gt;Aix&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-code&#34;&gt;第1次输出：
 vector:
@@ -173,7 +173,7 @@ size() msec: 1339
 empty() msec: 1733
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;centos-2:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Centos&lt;/h4&gt;
+&lt;h4 id=&#34;centos-2&#34;&gt;Centos&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-code&#34;&gt;第1次输出：
 vector:
@@ -190,9 +190,9 @@ empty() msec: 304
 
 &lt;p&gt;下面我们就一起来看一下两个系统中STL源码部分是如何实现size()和empty()的。&lt;/p&gt;
 
-&lt;h3 id=&#34;vector源码:e87a20174c7a89c9a430628f9c301c79&#34;&gt;vector源码&lt;/h3&gt;
+&lt;h3 id=&#34;vector源码&#34;&gt;vector源码&lt;/h3&gt;
 
-&lt;h4 id=&#34;aix-3:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Aix&lt;/h4&gt;
+&lt;h4 id=&#34;aix-3&#34;&gt;Aix&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;size_type size() const
     {return (_Size); }
@@ -203,7 +203,7 @@ bool empty() const
 
 &lt;p&gt;可以看出Aix上vector的empty()函数实际上是调用了size()函数进行判断，size()函数返回的是表示当前容器数量的一个变量，所以，显然，size() == 0的效率是要高于empty()的，因为少了函数调用部分的耗时。&lt;/p&gt;
 
-&lt;h4 id=&#34;centos-3:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Centos&lt;/h4&gt;
+&lt;h4 id=&#34;centos-3&#34;&gt;Centos&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;size_type size() const
     { return size_type(this-&amp;gt;_M_impl._M_finish -this-&amp;gt;_M_impl._M_start); }
@@ -214,9 +214,9 @@ bool empty() const
 
 &lt;p&gt;这里size()是尾指针减去头指针得到的，而empty()是比较头指针和尾指针是否相等。在empty()里多了函数调用以及临时变量赋值等操作。&lt;/p&gt;
 
-&lt;h3 id=&#34;list源码:e87a20174c7a89c9a430628f9c301c79&#34;&gt;list源码&lt;/h3&gt;
+&lt;h3 id=&#34;list源码&#34;&gt;list源码&lt;/h3&gt;
 
-&lt;h4 id=&#34;aix-4:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Aix&lt;/h4&gt;
+&lt;h4 id=&#34;aix-4&#34;&gt;Aix&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;size_type size() const
     {return (_Size); }
@@ -227,7 +227,7 @@ bool empty() const
 
 &lt;p&gt;Aix上对于在list中的处理方式依然和vector一样，维护了一个_Size变量，empty()多了一层函数调用，效率较低。&lt;/p&gt;
 
-&lt;h4 id=&#34;centos-4:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Centos&lt;/h4&gt;
+&lt;h4 id=&#34;centos-4&#34;&gt;Centos&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;size_type size() const
     { return std::distance(begin(), end()); }
@@ -238,9 +238,9 @@ bool empty() const
 
 &lt;p&gt;size()函数调用了distance函数用遍历的方法取得两个指针间的元素个数，然后返回。而empty()函数则是判断头指针的下一个节点是否是自己本身，只需要进行一次判断。所以，当list容器元素个数较多的时候，这里的empty()效率远大于size() == 0。&lt;/p&gt;
 
-&lt;h3 id=&#34;map源码:e87a20174c7a89c9a430628f9c301c79&#34;&gt;map源码&lt;/h3&gt;
+&lt;h3 id=&#34;map源码&#34;&gt;map源码&lt;/h3&gt;
 
-&lt;h4 id=&#34;aix-5:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Aix&lt;/h4&gt;
+&lt;h4 id=&#34;aix-5&#34;&gt;Aix&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;size_type size() const
     {return (_Size); }
@@ -251,7 +251,7 @@ bool empty() const
 
 &lt;p&gt;不出意外，可以看出Aix上依然维护了一个_Size变量，在判断的时候都是用这个变量来判断，但是empty()多了一层函数调用，所以效率上会稍微低一些。&lt;/p&gt;
 
-&lt;h4 id=&#34;centos-5:e87a20174c7a89c9a430628f9c301c79&#34;&gt;Centos&lt;/h4&gt;
+&lt;h4 id=&#34;centos-5&#34;&gt;Centos&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;bool empty() const
     { return _M_impl._M_node_count == 0; }
@@ -262,7 +262,7 @@ size_type size() const
 
 &lt;p&gt;这里的map用到了红黑树，就不详细解释了，有兴趣的同学可以自己查阅相关资料。代码中empty()和size()用到的都是保存红黑树的节点数的变量，可以看出empty()和size() == 0两者其实是等价的。&lt;/p&gt;
 
-&lt;h3 id=&#34;总结:e87a20174c7a89c9a430628f9c301c79&#34;&gt;总结&lt;/h3&gt;
+&lt;h3 id=&#34;总结&#34;&gt;总结&lt;/h3&gt;
 
 &lt;p&gt;并不是所有的时候用empty()的效率都比size() == 0要高。&lt;/p&gt;
 

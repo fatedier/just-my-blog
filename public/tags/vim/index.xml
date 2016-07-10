@@ -20,9 +20,9 @@
 
 &lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;
 
-&lt;h3 id=&#34;插入与删除:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;插入与删除&lt;/h3&gt;
+&lt;h3 id=&#34;插入与删除&#34;&gt;插入与删除&lt;/h3&gt;
 
-&lt;h4 id=&#34;插入:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;插入&lt;/h4&gt;
+&lt;h4 id=&#34;插入&#34;&gt;插入&lt;/h4&gt;
 
 &lt;p&gt;&lt;code&gt;A&lt;/code&gt; 在行末插入&lt;/p&gt;
 
@@ -30,21 +30,21 @@
 
 &lt;p&gt;&lt;code&gt;O&lt;/code&gt; 在上一行插入&lt;/p&gt;
 
-&lt;h4 id=&#34;替换字符:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;替换字符&lt;/h4&gt;
+&lt;h4 id=&#34;替换字符&#34;&gt;替换字符&lt;/h4&gt;
 
 &lt;p&gt;普通模式下，先按下 &lt;code&gt;r&lt;/code&gt; 再按下其他按键，就是使用新的字符替换旧字符。&lt;/p&gt;
 
-&lt;h4 id=&#34;删除:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;删除&lt;/h4&gt;
+&lt;h4 id=&#34;删除&#34;&gt;删除&lt;/h4&gt;
 
 &lt;p&gt;普通模式下，&lt;code&gt;ct;&lt;/code&gt; 依次按下三个按键，&lt;code&gt;c&lt;/code&gt; 表示删除这部分内容后直接进行插入模式，&lt;code&gt;t;&lt;/code&gt; 表示从当前位置到这一行中下一个出现 &lt;code&gt;;&lt;/code&gt; 号之前的位置，合在一起就是删除这之间的内容。 &lt;code&gt;c&lt;/code&gt; 换成 &lt;code&gt;d&lt;/code&gt; 的话就是删除当前位置到这一行中下一个出现 &lt;code&gt;;&lt;/code&gt; 之前的内容，但是不进入插入模式。&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;di&amp;quot;&lt;/code&gt; 将当前行第一次出现两个 &lt;code&gt;&amp;quot;&lt;/code&gt; 之间的内容全部清空并且进入插入模式。&lt;/p&gt;
 
-&lt;h3 id=&#34;移动:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;移动&lt;/h3&gt;
+&lt;h3 id=&#34;移动&#34;&gt;移动&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;f;&lt;/code&gt; 表示移动到这一行中下一个 &lt;code&gt;;&lt;/code&gt; 号的位置。&lt;/p&gt;
 
-&lt;h3 id=&#34;vimgrep:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;vimgrep&lt;/h3&gt;
+&lt;h3 id=&#34;vimgrep&#34;&gt;vimgrep&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;vimgrep /匹配模式/[g][j]&lt;/code&gt; 要搜索的文件/范围&lt;/p&gt;
 
@@ -65,7 +65,7 @@ cclose                        // 关闭qucikfix
 help vimgrep                  // 查看vimgrep帮助
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;从vim正文复制单词到vim命令行:eced521468be4e7a77cc24aa3b654ac4&#34;&gt;从vim正文复制单词到vim命令行&lt;/h3&gt;
+&lt;h3 id=&#34;从vim正文复制单词到vim命令行&#34;&gt;从vim正文复制单词到vim命令行&lt;/h3&gt;
 
 &lt;p&gt;例如使用 &lt;code&gt;vimgrep&lt;/code&gt; 搜索时，光标先移动到要复制的单词的起始位置，之后切到命令模式， 先按 &lt;code&gt;ctrl + r&lt;/code&gt; ，之后再按 &lt;code&gt;ctrl + w&lt;/code&gt; 即可。&lt;/p&gt;
 </description>

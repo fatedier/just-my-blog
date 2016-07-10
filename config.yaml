@@ -32,7 +32,7 @@ menu:
           Weight: -110
           Identifier: "post"
           URL: "/post/"
-        - Name: "关于我"
+        - Name: "关于"
           Pre: "<i class='fa fa-road'></i>"
           Identifier: "about"
           Weight: -100

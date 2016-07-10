@@ -30,7 +30,7 @@
 
 &lt;p&gt;&lt;strong&gt;markdown 中的图片标签一般的格式是 &lt;code&gt;![label](http://www.xxx.com/a.jpg)&lt;/code&gt;，我的图片链接则是都会有一个 &lt;code&gt;pic&lt;/code&gt; 的目录前缀。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;grep:e1c2ae8777bb46014c863fd3c79b29cd&#34;&gt;grep&lt;/h4&gt;
+&lt;h4 id=&#34;grep&#34;&gt;grep&lt;/h4&gt;
 
 &lt;p&gt;先看后面，&lt;code&gt;grep &amp;quot;|pic|&amp;quot; -rl ./&lt;/code&gt; 用于递归查找所有含有 &lt;code&gt;|pic|&lt;/code&gt; 这个字符串的文件所在路径的路径名，按行显示。&lt;/p&gt;
 
@@ -39,7 +39,7 @@
 &lt;li&gt;&lt;code&gt;-l&lt;/code&gt; 参数会输出匹配的文件名&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;sed:e1c2ae8777bb46014c863fd3c79b29cd&#34;&gt;sed&lt;/h4&gt;
+&lt;h4 id=&#34;sed&#34;&gt;sed&lt;/h4&gt;
 
 &lt;p&gt;&lt;strong&gt;sed&lt;/strong&gt; 和 &lt;strong&gt;awk&lt;/strong&gt; 都是文本处理的利器。&lt;/p&gt;
 
@@ -53,7 +53,7 @@
 
 &lt;p&gt;&lt;code&gt;-i&lt;/code&gt; 表示将替换后的结果写入文件中，而不是直接输出。&lt;/p&gt;
 
-&lt;h4 id=&#34;查看修改结果:e1c2ae8777bb46014c863fd3c79b29cd&#34;&gt;查看修改结果&lt;/h4&gt;
+&lt;h4 id=&#34;查看修改结果&#34;&gt;查看修改结果&lt;/h4&gt;
 
 &lt;p&gt;一开始不确定修改是否正确最好不要给予使用 &lt;code&gt;-i&lt;/code&gt; 参数将修改后的结果写入文件，可以将上面的命令换成如下的内容来检查是否替换正确：&lt;/p&gt;
 

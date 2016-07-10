@@ -20,9 +20,9 @@
 
 &lt;p&gt;最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。&lt;/p&gt;
 
-&lt;h3 id=&#34;背景:950668773c5541050af4c9df2f93d0a6&#34;&gt;背景&lt;/h3&gt;
+&lt;h3 id=&#34;背景&#34;&gt;背景&lt;/h3&gt;
 
-&lt;h4 id=&#34;nameserver-配置:950668773c5541050af4c9df2f93d0a6&#34;&gt;nameserver 配置&lt;/h4&gt;
+&lt;h4 id=&#34;nameserver-配置&#34;&gt;nameserver 配置&lt;/h4&gt;
 
 &lt;p&gt;&lt;code&gt;/etc/resolv.conf&lt;/code&gt; 中配置了多个 nameserver&lt;/p&gt;
 
@@ -33,7 +33,7 @@ nameserver 8.8.8.8
 
 &lt;p&gt;&lt;code&gt;10.10.100.3&lt;/code&gt; 用于解析内网域名，外网域名通过 &lt;code&gt;114.114.114.114&lt;/code&gt; 或者 &lt;code&gt;8.8.8.8&lt;/code&gt; 来解析。&lt;/p&gt;
 
-&lt;h4 id=&#34;测试代码:950668773c5541050af4c9df2f93d0a6&#34;&gt;测试代码&lt;/h4&gt;
+&lt;h4 id=&#34;测试代码&#34;&gt;测试代码&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;package main
 
@@ -53,7 +53,7 @@ func main() {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;结果:950668773c5541050af4c9df2f93d0a6&#34;&gt;结果&lt;/h4&gt;
+&lt;h4 id=&#34;结果&#34;&gt;结果&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;lookup host error: lookup www.baidu.com on 10.10.100.3:53: no such host
 &lt;/code&gt;&lt;/pre&gt;
@@ -62,11 +62,11 @@ func main() {
 
 &lt;p&gt;而使用 go1.4 版本编译运行后，确得到了正确的结果。&lt;/p&gt;
 
-&lt;h3 id=&#34;调试标准库的方法:950668773c5541050af4c9df2f93d0a6&#34;&gt;调试标准库的方法&lt;/h3&gt;
+&lt;h3 id=&#34;调试标准库的方法&#34;&gt;调试标准库的方法&lt;/h3&gt;
 
 &lt;p&gt;调试 golang 的标准库非常简单，先找到标准库源码的存放位置，然后将要修改的文件备份一份，之后直接在其中添加输出语句，大部分可以 &lt;code&gt;import &amp;quot;fmt&amp;quot;&lt;/code&gt; 后使用 &lt;code&gt;fmt.Printf&lt;/code&gt; 函数进行输出，有的包中需要使用其他方式，避免循环引用，这里不详述，因为我们要改的 &lt;code&gt;net&lt;/code&gt; 包并不涉及这个问题，注意调试完之后将标准库的文件恢复。&lt;/p&gt;
 
-&lt;h4 id=&#34;查找标准库所在的目录:950668773c5541050af4c9df2f93d0a6&#34;&gt;查找标准库所在的目录&lt;/h4&gt;
+&lt;h4 id=&#34;查找标准库所在的目录&#34;&gt;查找标准库所在的目录&lt;/h4&gt;
 
 &lt;p&gt;执行 &lt;code&gt;go env&lt;/code&gt; 查看 go 的环境变量如下：&lt;/p&gt;
 
@@ -84,7 +84,7 @@ CGO_ENABLED=&amp;quot;1&amp;quot;
 
 &lt;p&gt;&lt;strong&gt;GOROOT&lt;/strong&gt; 的值即是标准库所在的目录，&lt;code&gt;net&lt;/code&gt; 包的具体路径为 &lt;code&gt;/usr/lib/golang/src/net&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;go-1-4-与-1-5-版本中-dns-查询逻辑的不同:950668773c5541050af4c9df2f93d0a6&#34;&gt;go 1.4 与 1.5 版本中 dns 查询逻辑的不同&lt;/h3&gt;
+&lt;h3 id=&#34;go-1-4-与-1-5-版本中-dns-查询逻辑的不同&#34;&gt;go 1.4 与 1.5 版本中 dns 查询逻辑的不同&lt;/h3&gt;
 
 &lt;p&gt;因为最近很多程序都是使用 &lt;strong&gt;go1.5&lt;/strong&gt; 版本进行编译的，所以理所当然查看了两个版本这部分源码的区别，还真的有所改变。&lt;/p&gt;
 
@@ -92,7 +92,7 @@ CGO_ENABLED=&amp;quot;1&amp;quot;
 
 &lt;p&gt;这个函数会调用实际处理函数 &lt;code&gt;lookupHost&lt;/code&gt; &lt;strong&gt;(net/lookup_unix.go)&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;cgo-与纯-go-实现的-dns-查询:950668773c5541050af4c9df2f93d0a6&#34;&gt;cgo 与纯 go 实现的 dns 查询&lt;/h4&gt;
+&lt;h4 id=&#34;cgo-与纯-go-实现的-dns-查询&#34;&gt;cgo 与纯 go 实现的 dns 查询&lt;/h4&gt;
 
 &lt;p&gt;&lt;strong&gt;go1.4 版本源码&lt;/strong&gt;&lt;/p&gt;
 
@@ -126,7 +126,7 @@ CGO_ENABLED=&amp;quot;1&amp;quot;
 
 &lt;p&gt;cgo 的方式没有问题，看起来程序会并发地向 &lt;code&gt;/etc/resolv.conf&lt;/code&gt; 中所有配置的域名服务器发送 dns 解析请求，然后将最先成功响应的结果返回。&lt;/p&gt;
 
-&lt;h4 id=&#34;纯-go-实现的-dns-查询分析:950668773c5541050af4c9df2f93d0a6&#34;&gt;纯 go 实现的 dns 查询分析&lt;/h4&gt;
+&lt;h4 id=&#34;纯-go-实现的-dns-查询分析&#34;&gt;纯 go 实现的 dns 查询分析&lt;/h4&gt;
 
 &lt;p&gt;问题就出在纯 go 实现的查询上，主要看一下 go1.5 的实现。&lt;/p&gt;
 
@@ -184,7 +184,7 @@ CGO_ENABLED=&amp;quot;1&amp;quot;
 
 &lt;p&gt;&lt;code&gt;msg.rcode&lt;/code&gt; 这个值很重要，是问题的关键。&lt;/p&gt;
 
-&lt;h3 id=&#34;dns-查询协议格式:950668773c5541050af4c9df2f93d0a6&#34;&gt;dns 查询协议格式&lt;/h3&gt;
+&lt;h3 id=&#34;dns-查询协议格式&#34;&gt;dns 查询协议格式&lt;/h3&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-27-go-program-does-not-use-all-nameservers-for-dns-lookups-dns-query-package.png&#34; alt=&#34;dns-query-package&#34; /&gt;&lt;/p&gt;
 
@@ -208,7 +208,7 @@ CGO_ENABLED=&amp;quot;1&amp;quot;
 
 &lt;p&gt;其中 &lt;strong&gt;RCODE&lt;/strong&gt; 是回复时用于判断查询结果是否成功的，对应前面的 &lt;code&gt;msg.rcode&lt;/code&gt;。&lt;/p&gt;
 
-&lt;h3 id=&#34;bind-的-dns-回复问题:950668773c5541050af4c9df2f93d0a6&#34;&gt;bind 的 dns 回复问题&lt;/h3&gt;
+&lt;h3 id=&#34;bind-的-dns-回复问题&#34;&gt;bind 的 dns 回复问题&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;10.10.100.3&lt;/code&gt; 上是使用 &lt;strong&gt;bind&lt;/strong&gt; 搭建的本地域名服务器。&lt;/p&gt;
 
@@ -252,19 +252,19 @@ CGO_ENABLED=&amp;quot;1&amp;quot;
 
 &lt;p&gt;如果返回的 &lt;strong&gt;RCODE&lt;/strong&gt; 值为 0，则直接退出，不继续尝试后面的域名服务器，从而导致了域名解析失败。&lt;/p&gt;
 
-&lt;h3 id=&#34;解决方案:950668773c5541050af4c9df2f93d0a6&#34;&gt;解决方案&lt;/h3&gt;
+&lt;h3 id=&#34;解决方案&#34;&gt;解决方案&lt;/h3&gt;
 
-&lt;h4 id=&#34;仍然使用-go1-4-版本进行编译:950668773c5541050af4c9df2f93d0a6&#34;&gt;仍然使用 go1.4 版本进行编译&lt;/h4&gt;
+&lt;h4 id=&#34;仍然使用-go1-4-版本进行编译&#34;&gt;仍然使用 go1.4 版本进行编译&lt;/h4&gt;
 
 &lt;p&gt;不推荐这么做，毕竟升级后在 gc 以及很多其他方面都有优化。&lt;/p&gt;
 
-&lt;h4 id=&#34;使用-go1-5-及以上版本编译但是通过环境变量强制使用-cgo-的-dns-查询方式:950668773c5541050af4c9df2f93d0a6&#34;&gt;使用 go1.5 及以上版本编译但是通过环境变量强制使用 cgo 的 dns 查询方式&lt;/h4&gt;
+&lt;h4 id=&#34;使用-go1-5-及以上版本编译但是通过环境变量强制使用-cgo-的-dns-查询方式&#34;&gt;使用 go1.5 及以上版本编译但是通过环境变量强制使用 cgo 的 dns 查询方式&lt;/h4&gt;
 
 &lt;p&gt;&lt;code&gt;export GODEBUG=netdns=cgo go build&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;使用 cgo 的方式会在每一次调用时创建一个线程，在并发量较大时可能会对系统资源造成一定影响。而且需要每一个使用 go 编写的程序编译时都加上此标志，较为繁琐。&lt;/p&gt;
 
-&lt;h4 id=&#34;修改-bind-的配置文件:950668773c5541050af4c9df2f93d0a6&#34;&gt;修改 bind 的配置文件&lt;/h4&gt;
+&lt;h4 id=&#34;修改-bind-的配置文件&#34;&gt;修改 bind 的配置文件&lt;/h4&gt;
 
 &lt;p&gt;在 &lt;strong&gt;bind&lt;/strong&gt; 中彻底关闭对递归查询的支持也可以解决此问题，但是由于对 &lt;strong&gt;bind&lt;/strong&gt; 不是很熟悉，具体是什么原因导致没有查到 &lt;strong&gt;A 记录&lt;/strong&gt;但仍然返回 &lt;strong&gt;NOERROR&lt;/strong&gt; 不是很清楚，猜测可能和递归转发的查询方式有关，有可能 &lt;strong&gt;bind&lt;/strong&gt; 认为返回了根域名服务器的地址，&lt;strong&gt;client&lt;/strong&gt; 可以去这些地址上查，所以该次请求并不算做出错。&lt;/p&gt;
 
@@ -289,7 +289,7 @@ allow-recursion { none; };
 
 &lt;p&gt;通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。&lt;/p&gt;
 
-&lt;h3 id=&#34;背景:ab38b6c3b1bcedcc11f7400cd407aaf7&#34;&gt;背景&lt;/h3&gt;
+&lt;h3 id=&#34;背景&#34;&gt;背景&lt;/h3&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/fatedier/frp&#34;&gt;frp&lt;/a&gt; 是我业余时间写的一个用于穿透内网的反向代理工具，可以将防火墙内或内网环境的机器对外暴露指定的服务，例如22端口提供ssh服务或者80端口提供一个临时的web测试环境。&lt;/p&gt;
 
@@ -297,7 +297,7 @@ allow-recursion { none; };
 
 &lt;p&gt;后来由于使用了 &lt;a href=&#34;https://travis-ci.org/&#34;&gt;travis-ci&lt;/a&gt; 做持续集成，travis-ci 中是直接使用 &lt;code&gt;go get github.com/fatedier/frp&lt;/code&gt; 下载代码，然后编译运行。这样问题就来了，通过 go get 下载的源码在本地的路径是 &lt;code&gt;$GOPATH/src/github.com/fatedier/frp&lt;/code&gt;，内部包就找不到了，导致编译失败。&lt;/p&gt;
 
-&lt;h3 id=&#34;使用类似第三方包的引用方式:ab38b6c3b1bcedcc11f7400cd407aaf7&#34;&gt;使用类似第三方包的引用方式&lt;/h3&gt;
+&lt;h3 id=&#34;使用类似第三方包的引用方式&#34;&gt;使用类似第三方包的引用方式&lt;/h3&gt;
 
 &lt;p&gt;解决这个问题最直接的方法就是将内部包的引用方式修改成 &lt;code&gt;import github.com/fatedier/frp/xxx&lt;/code&gt;，在 travis-ci 中编译的时候就可以通过了，同时需要注意把自己本地的项目路径也更换成&lt;code&gt;$GOPATH/src/github.com/fatedier/frp&lt;/code&gt;，很多开源项目都是用的这种方式引用内部包。&lt;/p&gt;
 
@@ -305,7 +305,7 @@ allow-recursion { none; };
 
 &lt;p&gt;之后由于需要其他人共同开发，fork了我的项目之后，他们也使用 go get 下载他们fork后的项目源码，这样 &lt;code&gt;fatedier&lt;/code&gt; 就替换成了他们自己的用户名，但是代码中 import 的包名并没有改变，会导致他们无法编译通过。当然，他们可以将项目再放到正确的目录，但是多了一部操作总归不方便。&lt;/p&gt;
 
-&lt;h3 id=&#34;比较tricky的做法-修改gopath:ab38b6c3b1bcedcc11f7400cd407aaf7&#34;&gt;比较tricky的做法，修改GOPATH&lt;/h3&gt;
+&lt;h3 id=&#34;比较tricky的做法-修改gopath&#34;&gt;比较tricky的做法，修改GOPATH&lt;/h3&gt;
 
 &lt;p&gt;其实问题的关键就在于 &lt;code&gt;GOPATH&lt;/code&gt; 这个环境变量，这个变量决定了查找包的绝对路径。我们在项目根目录下建立 &lt;code&gt;src/frp&lt;/code&gt; 这样的目录结构，之后将原来的源代码放到这个目录下，然后内部包的应用方式还是改成 &lt;code&gt;import frp/xxx&lt;/code&gt; 这种简洁的格式。&lt;/p&gt;
 
@@ -401,7 +401,7 @@ func main() {
 
 &lt;p&gt;目前 go 自身的包管理体系比较薄弱，go 1.5 以后开始使用 vendor 机制来管理，但是依然缺乏对第三方包的版本的管理。&lt;/p&gt;
 
-&lt;h3 id=&#34;安装:3d8a685e3f913849abb783937da83deb&#34;&gt;安装&lt;/h3&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;确保已经有go语言的环境并且设置好了 GOPATH 环境变量。&lt;/li&gt;
@@ -409,11 +409,11 @@ func main() {
 &lt;li&gt;godep 可执行程序会放在 $GOPATH/bin 目录下。所以想直接用 godep 执行命令的话需要将该路径加入到全局的环境变量 PATH 中，可以将&lt;code&gt;export PATH=&amp;quot;$PATH:$GOPATH/bin&amp;quot;&lt;/code&gt;加入到系统启动脚本中。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;使用:3d8a685e3f913849abb783937da83deb&#34;&gt;使用&lt;/h3&gt;
+&lt;h3 id=&#34;使用&#34;&gt;使用&lt;/h3&gt;
 
 &lt;p&gt;进入go项目的根目录，需要该项目已经可以使用 go build 正常编译。&lt;/p&gt;
 
-&lt;h4 id=&#34;godep-save:3d8a685e3f913849abb783937da83deb&#34;&gt;godep save&lt;/h4&gt;
+&lt;h4 id=&#34;godep-save&#34;&gt;godep save&lt;/h4&gt;
 
 &lt;p&gt;执行 &lt;code&gt;godep save&lt;/code&gt; 或者 &lt;code&gt;godep save ./...&lt;/code&gt;，后者会递归地查找所有引用的第三方包。&lt;/p&gt;
 
@@ -427,11 +427,11 @@ func main() {
 &lt;li&gt;所有依赖的第三包的代码会被拷贝到 &lt;code&gt;Godeps/_workspace/src&lt;/code&gt; 下，并且移除了 &lt;code&gt;.git&lt;/code&gt; 这样的版本控制信息。&lt;code&gt;Godeps/_workspace&lt;/code&gt; 里的内容如果加到版本控制里，别人下载代码后可以直接编译，不需要另外再下依赖包，但是项目大小会变大。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;godep-restore:3d8a685e3f913849abb783937da83deb&#34;&gt;godep restore&lt;/h4&gt;
+&lt;h4 id=&#34;godep-restore&#34;&gt;godep restore&lt;/h4&gt;
 
 &lt;p&gt;这个命令是根据 &lt;code&gt;Godeps/Godeps.json&lt;/code&gt; 文件把项目的依赖包下载到 &lt;code&gt;$GOPATH&lt;/code&gt; 目录下，需要注意这个命令是会修改 &lt;code&gt;$GOPATH&lt;/code&gt; 下依赖包的状态的，所以最好还是将 &lt;code&gt;Godeps/_workspace&lt;/code&gt; 里的内容直接加到自己项目的版本控制里。&lt;/p&gt;
 
-&lt;h4 id=&#34;其他命令:3d8a685e3f913849abb783937da83deb&#34;&gt;其他命令&lt;/h4&gt;
+&lt;h4 id=&#34;其他命令&#34;&gt;其他命令&lt;/h4&gt;
 
 &lt;p&gt;其他的 go 命令基本上都可以通过 godep 执行，例如&lt;/p&gt;
 
@@ -456,9 +456,9 @@ godep go fmt
 
 &lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
 
-&lt;h3 id=&#34;smtp-协议发送邮件:ef1e028a5d80f74d9f890187a186e459&#34;&gt;smtp 协议发送邮件&lt;/h3&gt;
+&lt;h3 id=&#34;smtp-协议发送邮件&#34;&gt;smtp 协议发送邮件&lt;/h3&gt;
 
-&lt;h4 id=&#34;sendmail-函数:ef1e028a5d80f74d9f890187a186e459&#34;&gt;sendmail 函数&lt;/h4&gt;
+&lt;h4 id=&#34;sendmail-函数&#34;&gt;sendmail 函数&lt;/h4&gt;
 
 &lt;p&gt;go 标准库的 net/smtp 包提供了一个 SendMail 函数用于发送邮件。&lt;/p&gt;
 
@@ -471,7 +471,7 @@ godep go fmt
 
 &lt;p&gt;&lt;strong&gt;a&lt;/strong&gt;： 身份认证接口，可以由 &lt;code&gt;func PlainAuth(identity, username, password, host string) Auth&lt;/code&gt; 函数创建。&lt;/p&gt;
 
-&lt;h4 id=&#34;简单发送邮件示例:ef1e028a5d80f74d9f890187a186e459&#34;&gt;简单发送邮件示例&lt;/h4&gt;
+&lt;h4 id=&#34;简单发送邮件示例&#34;&gt;简单发送邮件示例&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
 
@@ -510,7 +510,7 @@ func main() {
 
 &lt;p&gt;&lt;strong&gt;msg&lt;/strong&gt;： msg 的内容需要遵循 smtp 协议的格式，参考上例。&lt;/p&gt;
 
-&lt;h3 id=&#34;特定邮件服务器出错:ef1e028a5d80f74d9f890187a186e459&#34;&gt;特定邮件服务器出错&lt;/h3&gt;
+&lt;h3 id=&#34;特定邮件服务器出错&#34;&gt;特定邮件服务器出错&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;certificate signed by unknown authority
 &lt;/code&gt;&lt;/pre&gt;
@@ -519,7 +519,7 @@ func main() {
 
 &lt;p&gt;我通过抓包以及手动 telnet 执行了一遍 smtp 的过程，发送问题出现在是否加密和身份验证上。&lt;/p&gt;
 
-&lt;h4 id=&#34;smtp-协议:ef1e028a5d80f74d9f890187a186e459&#34;&gt;SMTP 协议&lt;/h4&gt;
+&lt;h4 id=&#34;smtp-协议&#34;&gt;SMTP 协议&lt;/h4&gt;
 
 &lt;p&gt;smtp 协议开始时客户端主动向邮件服务器发送 &lt;code&gt;EHLO&lt;/code&gt;，服务器会返回支持的所有命令，例如&lt;/p&gt;
 
@@ -541,7 +541,7 @@ func main() {
 
 &lt;p&gt;一共有3种验证方式，可以参考这篇 blog： &lt;a href=&#34;http://blog.csdn.net/mhfh611/article/details/9470599&#34;&gt;http://blog.csdn.net/mhfh611/article/details/9470599&lt;/a&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;starttls-引起的错误:ef1e028a5d80f74d9f890187a186e459&#34;&gt;STARTTLS 引起的错误&lt;/h4&gt;
+&lt;h4 id=&#34;starttls-引起的错误&#34;&gt;STARTTLS 引起的错误&lt;/h4&gt;
 
 &lt;p&gt;公司内部的邮件服务器返回了 &lt;strong&gt;STARTTLS&lt;/strong&gt;，但是实际上却不支持加密传输的认证方式，所以就导致了身份认证失败。&lt;/p&gt;
 

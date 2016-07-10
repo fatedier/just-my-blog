@@ -20,29 +20,29 @@
 
 &lt;p&gt;最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。&lt;/p&gt;
 
-&lt;h3 id=&#34;特点:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;特点&lt;/h3&gt;
+&lt;h3 id=&#34;特点&#34;&gt;特点&lt;/h3&gt;
 
 &lt;p&gt;总的来说就是通过将大量的随机写转换为顺序写，从而极大地提升了数据写入的性能，虽然与此同时牺牲了部分读的性能。&lt;/p&gt;
 
 &lt;p&gt;只适合存储 key 值有序且写入大于读取的数据，或者读取操作通常是 key 值连续的数据。&lt;/p&gt;
 
-&lt;h3 id=&#34;存储模型:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;存储模型&lt;/h3&gt;
+&lt;h3 id=&#34;存储模型&#34;&gt;存储模型&lt;/h3&gt;
 
-&lt;h4 id=&#34;wal:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;WAL&lt;/h4&gt;
+&lt;h4 id=&#34;wal&#34;&gt;WAL&lt;/h4&gt;
 
 &lt;p&gt;在设计数据库的时候经常被使用，当插入一条数据时，数据先顺序写入 WAL 文件中，之后插入到内存中的 MemTable 中。这样就保证了数据的持久化，不会丢失数据，并且都是顺序写，速度很快。当程序挂掉重启时，可以从 WAL 文件中重新恢复内存中的 MemTable。&lt;/p&gt;
 
-&lt;h4 id=&#34;memtable:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;MemTable&lt;/h4&gt;
+&lt;h4 id=&#34;memtable&#34;&gt;MemTable&lt;/h4&gt;
 
 &lt;p&gt;MemTable 对应的就是 WAL 文件，是该文件内容在内存中的存储结构，通常用 SkipList 来实现。MemTable 提供了 k-v 数据的写入、删除以及读取的操作接口。其内部将 k-v 对按照 key 值有序存储，这样方便之后快速序列化到 SSTable 文件中，仍然保持数据的有序性。&lt;/p&gt;
 
-&lt;h4 id=&#34;immutable-memtable:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;Immutable Memtable&lt;/h4&gt;
+&lt;h4 id=&#34;immutable-memtable&#34;&gt;Immutable Memtable&lt;/h4&gt;
 
 &lt;p&gt;顾名思义，Immutable Memtable 就是在内存中只读的 MemTable，由于内存是有限的，通常我们会设置一个阀值，当 MemTable 占用的内存达到阀值后就自动转换为 Immutable Memtable，Immutable Memtable 和 MemTable 的区别就是它是只读的，系统此时会生成新的 MemTable 供写操作继续写入。&lt;/p&gt;
 
 &lt;p&gt;之所以要使用 Immutable Memtable，就是为了避免将 MemTable 中的内容序列化到磁盘中时会阻塞写操作。&lt;/p&gt;
 
-&lt;h4 id=&#34;sstable:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;SSTable&lt;/h4&gt;
+&lt;h4 id=&#34;sstable&#34;&gt;SSTable&lt;/h4&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-06-15-learn-lsm-tree-sstable.png&#34; alt=&#34;sstable&#34; /&gt;&lt;/p&gt;
 
@@ -50,23 +50,23 @@
 
 &lt;p&gt;SSTable 通常采用的分级的结构，例如 LevelDB 中就是如此。MemTable 中的数据达到指定阀值后会在 Level 0 层创建一个新的 SSTable。当某个 Level 下的文件数超过一定值后，就会将这个 Level 下的一个 SSTable 文件和更高一级的 SSTable 文件合并，由于 SSTable 中的 k-v 数据都是有序的，相当于是一个多路归并排序，所以合并操作相当快速，最终生成一个新的 SSTable 文件，将旧的文件删除，这样就完成了一次合并过程。&lt;/p&gt;
 
-&lt;h3 id=&#34;常用操作的实现:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;常用操作的实现&lt;/h3&gt;
+&lt;h3 id=&#34;常用操作的实现&#34;&gt;常用操作的实现&lt;/h3&gt;
 
-&lt;h4 id=&#34;写入:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;写入&lt;/h4&gt;
+&lt;h4 id=&#34;写入&#34;&gt;写入&lt;/h4&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-06-15-learn-lsm-tree-write.png&#34; alt=&#34;write&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;在 LSM Tree 中，写入操作是相当快速的，只需要在 WAL 文件中顺序写入当次操作的内容，成功之后将该 k-v 数据写入 MemTable 中即可。尽管做了一次磁盘 IO，但是由于是顺序追加写入操作，效率相对来说很高，并不会导致写入速度的降低。数据写入 MemTable 中其实就是往 SkipList 中插入一条数据，过程也相当简单快速。&lt;/p&gt;
 
-&lt;h4 id=&#34;更新:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;更新&lt;/h4&gt;
+&lt;h4 id=&#34;更新&#34;&gt;更新&lt;/h4&gt;
 
 &lt;p&gt;更新操作其实并不真正存在，和写入一个 k-v 数据没有什么不同，只是在读取的时候，会从 Level0 层的 SSTable 文件开始查找数据，数据在低层的 SSTable 文件中必然比高层的文件中要新，所以总能读取到最新的那条数据。也就是说此时在整个 LSM Tree 中可能会同时存在多个 key 值相同的数据，只有在之后合并 SSTable 文件的时候，才会将旧的值删除。&lt;/p&gt;
 
-&lt;h4 id=&#34;删除:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;删除&lt;/h4&gt;
+&lt;h4 id=&#34;删除&#34;&gt;删除&lt;/h4&gt;
 
 &lt;p&gt;删除一条记录的操作比较特殊，并不立即将数据从文件中删除，而是记录下对这个 key 的删除操作标记，同插入操作相同，插入操作插入的是 k-v 值，而删除操作插入的是 k-del 标记，只有当合并 SSTable 文件时才会真正的删除。&lt;/p&gt;
 
-&lt;h4 id=&#34;compaction:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;Compaction&lt;/h4&gt;
+&lt;h4 id=&#34;compaction&#34;&gt;Compaction&lt;/h4&gt;
 
 &lt;p&gt;当数据不断从  Immutable Memtable 序列化到磁盘上的 SSTable 文件中时，SSTable 文件的数量就不断增加，而且其中可能有很多更新和删除操作并不立即对文件进行操作，而只是存储一个操作记录，这就造成了整个 LSM Tree 中可能有大量相同 key 值的数据，占据了磁盘空间。&lt;/p&gt;
 
@@ -79,7 +79,7 @@
 &lt;li&gt;当一层的文件达到指定数量后，其中的一个文件会被合并进入上一层的文件中。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h4 id=&#34;读取:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;读取&lt;/h4&gt;
+&lt;h4 id=&#34;读取&#34;&gt;读取&lt;/h4&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-06-15-learn-lsm-tree-read.png&#34; alt=&#34;read&#34; /&gt;&lt;/p&gt;
 
@@ -87,13 +87,13 @@
 
 &lt;p&gt;在每一层的 SSTable 文件的 key 值范围是不重复的，所以只需要查找其中一个 SSTable 文件即可确定指定 key 的数据是否存在于这一层中。Level 0 层比较特殊，因为数据是 Immutable MemTable 直接写入此层的，所以 Level 0 层的 SSTable 文件的 key 值范围可能存在重复，查找数据时有可能需要查找多个文件。&lt;/p&gt;
 
-&lt;h4 id=&#34;优化读取:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;优化读取&lt;/h4&gt;
+&lt;h4 id=&#34;优化读取&#34;&gt;优化读取&lt;/h4&gt;
 
 &lt;p&gt;因为这样的读取效率非常差，通常会进行一些优化，例如 LevelDB 中的 Mainfest 文件，这个文件记录了 SSTable 文件的一些关键信息，例如 Level 层数，文件名，最小 key 值，最大 key 值等，这个文件通常不会太大，可以放入内存中，可以帮助快速定位到要查询的 SSTable 文件，避免频繁读取。&lt;/p&gt;
 
 &lt;p&gt;另外一个经常使用的方法是布隆解析器(Bloom filter)，布隆解析器是一个使用内存判断文件是否包含一个关键字的有效方法。&lt;/p&gt;
 
-&lt;h3 id=&#34;总结:1b2b88debc5a316f8737c3dec23d74c4&#34;&gt;总结&lt;/h3&gt;
+&lt;h3 id=&#34;总结&#34;&gt;总结&lt;/h3&gt;
 
 &lt;p&gt;LSM Tree 的思想非常实用，将随机写转换为顺序写来大幅提高写入操作的性能，但是牺牲了部分读的性能。&lt;/p&gt;
 
@@ -113,7 +113,7 @@
 
 &lt;p&gt;题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。&lt;/p&gt;
 
-&lt;h3 id=&#34;思路:82c26b45de3ed5f70b38a0a9fc49fa75&#34;&gt;思路&lt;/h3&gt;
+&lt;h3 id=&#34;思路&#34;&gt;思路&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;考虑到64位整型可以直接取余8求得结果，所以当输入非负整数位数小于20位的时候，可以直接转换成64位整型进行计算。&lt;/p&gt;&lt;/li&gt;
@@ -123,7 +123,7 @@
 &lt;li&gt;&lt;p&gt;没必要对可能的10000位做全排列，因为0-9每个数最多只能用3次，我们只需要遍历一遍每一位，将0-9出现的次数记录下来，最多允许记录3次。这样最坏的情况下需要对30个数进行全排列即可，效率会非常高。&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;代码:82c26b45de3ed5f70b38a0a9fc49fa75&#34;&gt;代码&lt;/h3&gt;
+&lt;h3 id=&#34;代码&#34;&gt;代码&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;#include &amp;lt;stdio.h&amp;gt;
 #include &amp;lt;string.h&amp;gt;

@@ -20,17 +20,17 @@
 
 &lt;p&gt;通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。&lt;/p&gt;
 
-&lt;h3 id=&#34;时间序列数据库热度排名:4dfacd6c1d774692305fdb3325c74808&#34;&gt;时间序列数据库热度排名&lt;/h3&gt;
+&lt;h3 id=&#34;时间序列数据库热度排名&#34;&gt;时间序列数据库热度排名&lt;/h3&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-06-test-influxdb-and-opentsdb-db-rank.png&#34; alt=&#34;db-rank&#34; /&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;测试环境:4dfacd6c1d774692305fdb3325c74808&#34;&gt;测试环境&lt;/h3&gt;
+&lt;h3 id=&#34;测试环境&#34;&gt;测试环境&lt;/h3&gt;
 
 &lt;p&gt;青云 centos7&lt;/p&gt;
 
 &lt;p&gt;4 cpu，8GB RAM&lt;/p&gt;
 
-&lt;h3 id=&#34;测试样本:4dfacd6c1d774692305fdb3325c74808&#34;&gt;测试样本&lt;/h3&gt;
+&lt;h3 id=&#34;测试样本&#34;&gt;测试样本&lt;/h3&gt;
 
 &lt;p&gt;&lt;strong&gt;metric&lt;/strong&gt; 从 cpu_load1 - cpu_load10 共10个。&lt;/p&gt;
 
@@ -42,9 +42,9 @@
 
 &lt;p&gt;合计数据量为 10 * 100 * 10000 = 1000w。&lt;/p&gt;
 
-&lt;h3 id=&#34;查询测试用例:4dfacd6c1d774692305fdb3325c74808&#34;&gt;查询测试用例&lt;/h3&gt;
+&lt;h3 id=&#34;查询测试用例&#34;&gt;查询测试用例&lt;/h3&gt;
 
-&lt;h4 id=&#34;查询1-单条查询:4dfacd6c1d774692305fdb3325c74808&#34;&gt;查询1：单条查询&lt;/h4&gt;
+&lt;h4 id=&#34;查询1-单条查询&#34;&gt;查询1：单条查询&lt;/h4&gt;
 
 &lt;p&gt;指定 metricName 以及 host_id，对 time 在 1467000000 和 1467005000 内的数据按照每3分钟的粒度进行聚合计算平均值。&lt;/p&gt;
 
@@ -52,59 +52,59 @@
 
 &lt;p&gt;&lt;code&gt;select mean(value) from cpu_load1 where host_id = &#39;1&#39; and time &amp;gt; 1467000000000000000 and time &amp;lt; 1467005000000000000 group by time(3m)&lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;查询2-批量10条不同-metricname-查询:4dfacd6c1d774692305fdb3325c74808&#34;&gt;查询2：批量10条不同 metricName 查询&lt;/h4&gt;
+&lt;h4 id=&#34;查询2-批量10条不同-metricname-查询&#34;&gt;查询2：批量10条不同 metricName 查询&lt;/h4&gt;
 
 &lt;p&gt;单条查询的基础上修改成不同的 metricName&lt;/p&gt;
 
-&lt;h3 id=&#34;influxdb:4dfacd6c1d774692305fdb3325c74808&#34;&gt;InfluxDB&lt;/h3&gt;
+&lt;h3 id=&#34;influxdb&#34;&gt;InfluxDB&lt;/h3&gt;
 
 &lt;p&gt;并发数 50 通过 http 写入，每次 100 条数据&lt;/p&gt;
 
-&lt;h4 id=&#34;资源占用:4dfacd6c1d774692305fdb3325c74808&#34;&gt;资源占用&lt;/h4&gt;
+&lt;h4 id=&#34;资源占用&#34;&gt;资源占用&lt;/h4&gt;
 
 &lt;p&gt;cpu 使用率维持在 100% 左右，耗时 1m58s，约 84746/s&lt;/p&gt;
 
 &lt;p&gt;磁盘占用 70MB&lt;/p&gt;
 
-&lt;h4 id=&#34;查询1:4dfacd6c1d774692305fdb3325c74808&#34;&gt;查询1&lt;/h4&gt;
+&lt;h4 id=&#34;查询1&#34;&gt;查询1&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Num1: 0.010s&lt;/li&gt;
 &lt;li&gt;Num2: 0.010s&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;查询2:4dfacd6c1d774692305fdb3325c74808&#34;&gt;查询2&lt;/h4&gt;
+&lt;h4 id=&#34;查询2&#34;&gt;查询2&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Num 1: 0.029s&lt;/li&gt;
 &lt;li&gt;Num 2: 0.021s&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;opentsdb:4dfacd6c1d774692305fdb3325c74808&#34;&gt;OpenTSDB&lt;/h3&gt;
+&lt;h3 id=&#34;opentsdb&#34;&gt;OpenTSDB&lt;/h3&gt;
 
 &lt;p&gt;并发数 50 通过http写入，每次 100 条数据&lt;/p&gt;
 
-&lt;h4 id=&#34;资源占用-1:4dfacd6c1d774692305fdb3325c74808&#34;&gt;资源占用&lt;/h4&gt;
+&lt;h4 id=&#34;资源占用-1&#34;&gt;资源占用&lt;/h4&gt;
 
 &lt;p&gt;cpu 开始时跑满，之后在250%左右 耗时 2m16s，约 73529/s&lt;/p&gt;
 
 &lt;p&gt;磁盘占用 1.6GB，由于是简单部署，这里 HBase 没有启用 lzo 压缩，据说压缩之后只需要占用原来 &lt;sup&gt;1&lt;/sup&gt;&amp;frasl;&lt;sub&gt;5&lt;/sub&gt; 的空间，也就是 320MB。&lt;/p&gt;
 
-&lt;h4 id=&#34;查询1-1:4dfacd6c1d774692305fdb3325c74808&#34;&gt;查询1&lt;/h4&gt;
+&lt;h4 id=&#34;查询1-1&#34;&gt;查询1&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Num 1: 0.285s&lt;/li&gt;
 &lt;li&gt;Num 2: 0.039s&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;查询2-1:4dfacd6c1d774692305fdb3325c74808&#34;&gt;查询2&lt;/h4&gt;
+&lt;h4 id=&#34;查询2-1&#34;&gt;查询2&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Num 1: 0.111s&lt;/li&gt;
 &lt;li&gt;Num 2: 0.040s&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;总结:4dfacd6c1d774692305fdb3325c74808&#34;&gt;总结&lt;/h3&gt;
+&lt;h3 id=&#34;总结&#34;&gt;总结&lt;/h3&gt;
 
 &lt;p&gt;一开始是准备在本地的一个2核2GB的虚拟机里进行测试，InfluxDB 虽然比较慢，但是测试完成，而 OpenTSDB 测试过程中，要么 zookeeper 出现故障，要么 Hbase 异常退出，要么无法正常写入数据，始终无法完成测试。更换成配置更高的青云服务器后，两者都能正常完成测试。&lt;/p&gt;
 
@@ -130,11 +130,11 @@
 
 &lt;p&gt;基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。&lt;/p&gt;
 
-&lt;h3 id=&#34;测试版本:441ef2dfb3e97650c90da967029aaee7&#34;&gt;测试版本&lt;/h3&gt;
+&lt;h3 id=&#34;测试版本&#34;&gt;测试版本&lt;/h3&gt;
 
 &lt;p&gt;1.0.0_beta2-1&lt;/p&gt;
 
-&lt;h3 id=&#34;安装部署:441ef2dfb3e97650c90da967029aaee7&#34;&gt;安装部署&lt;/h3&gt;
+&lt;h3 id=&#34;安装部署&#34;&gt;安装部署&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;wget https://dl.influxdata.com/influxdb/releases/influxdb-1.0.0_beta2.x86_64.rpm&lt;/code&gt;&lt;/p&gt;
 
@@ -144,7 +144,7 @@
 
 &lt;p&gt;&lt;code&gt;sudo service influxdb start&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;特点:441ef2dfb3e97650c90da967029aaee7&#34;&gt;特点&lt;/h3&gt;
+&lt;h3 id=&#34;特点&#34;&gt;特点&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;可以设置metric的保存时间。&lt;/li&gt;
@@ -154,9 +154,9 @@
 &lt;li&gt;支持定期采样数据，写入另外的measurement，方便分粒度存储数据。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;概念:441ef2dfb3e97650c90da967029aaee7&#34;&gt;概念&lt;/h3&gt;
+&lt;h3 id=&#34;概念&#34;&gt;概念&lt;/h3&gt;
 
-&lt;h4 id=&#34;数据格式-line-protocol:441ef2dfb3e97650c90da967029aaee7&#34;&gt;数据格式 Line Protocol&lt;/h4&gt;
+&lt;h4 id=&#34;数据格式-line-protocol&#34;&gt;数据格式 Line Protocol&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;measurement[,tag_key1=tag_value1...] field_key=field_value[,field_key2=field_value2] [timestamp]
 
@@ -171,39 +171,39 @@ cpu_load,host_id=1 value=0.1 1434055562000000000
 &lt;li&gt;tags-key, tags-value: 和 field-key 类似，但是会进行索引，方便查询时用于过滤条件。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;series:441ef2dfb3e97650c90da967029aaee7&#34;&gt;Series&lt;/h4&gt;
+&lt;h4 id=&#34;series&#34;&gt;Series&lt;/h4&gt;
 
 &lt;p&gt;measurement, tag set, retention policy 相同的数据集合算做一个 series。&lt;/p&gt;
 
 &lt;p&gt;假设 cpu_load 有两个 tags，host_id 和 name，host_id 的数量为 100，name 的数量为 200，则 series 基数为 100 * 200 = 20000。&lt;/p&gt;
 
-&lt;h4 id=&#34;数据存储:441ef2dfb3e97650c90da967029aaee7&#34;&gt;数据存储&lt;/h4&gt;
+&lt;h4 id=&#34;数据存储&#34;&gt;数据存储&lt;/h4&gt;
 
 &lt;p&gt;measurements, tag keys, field keys，tag values 全局存一份。&lt;/p&gt;
 
 &lt;p&gt;field values 和 timestamps 每条数据存一份。&lt;/p&gt;
 
-&lt;h4 id=&#34;retention-policy:441ef2dfb3e97650c90da967029aaee7&#34;&gt;Retention Policy&lt;/h4&gt;
+&lt;h4 id=&#34;retention-policy&#34;&gt;Retention Policy&lt;/h4&gt;
 
 &lt;p&gt;保留策略包括设置数据保存的时间以及在集群中的副本个数。&lt;/p&gt;
 
 &lt;p&gt;默认的 RP 为 &lt;strong&gt;default&lt;/strong&gt;，保存时间不限制，副本个数为 1，默认 RP 是可以修改的，并且我们可以创建新的 RP。&lt;/p&gt;
 
-&lt;h4 id=&#34;continuous-query:441ef2dfb3e97650c90da967029aaee7&#34;&gt;Continuous Query&lt;/h4&gt;
+&lt;h4 id=&#34;continuous-query&#34;&gt;Continuous Query&lt;/h4&gt;
 
 &lt;p&gt;CQ 是预先配置好的一些查询命令，&lt;strong&gt;SELECT&lt;/strong&gt; 语句必须包含 &lt;strong&gt;GROUP BY time()&lt;/strong&gt;，influxdb 会定期自动执行这些命令并将查询结果写入指定的另外的 measurement 中。&lt;/p&gt;
 
 &lt;p&gt;利用这个特性并结合 RP 我们可以方便地保存不同粒度的数据，根据数据粒度的不同设置不同的保存时间，这样不仅节约了存储空间，而且加速了时间间隔较长的数据查询效率，避免查询时再进行聚合计算。&lt;/p&gt;
 
-&lt;h4 id=&#34;shard:441ef2dfb3e97650c90da967029aaee7&#34;&gt;Shard&lt;/h4&gt;
+&lt;h4 id=&#34;shard&#34;&gt;Shard&lt;/h4&gt;
 
 &lt;p&gt;Shard 这个概念并不对普通用户开放，实际上是 InfluxDB 将连续一段时间内的数据作为一个 shard 存储，根据数据保存策略来决定，通常是保存1天或者7天的数据。例如如果保存策略 RP 是无限制的话，shard 将会保存7天的数据。这样方便之后的删除操作，直接关闭下层对应的一个数据库即可。&lt;/p&gt;
 
-&lt;h3 id=&#34;存储引擎:441ef2dfb3e97650c90da967029aaee7&#34;&gt;存储引擎&lt;/h3&gt;
+&lt;h3 id=&#34;存储引擎&#34;&gt;存储引擎&lt;/h3&gt;
 
 &lt;p&gt;从 LevelDB（LSM Tree），到 BoltDB（mmap B+树），现在是自己实现的 TSM Tree 的算法，类似 LSM Tree，针对 InfluxDB 的使用做了特殊优化。&lt;/p&gt;
 
-&lt;h4 id=&#34;leveldb:441ef2dfb3e97650c90da967029aaee7&#34;&gt;LevelDB&lt;/h4&gt;
+&lt;h4 id=&#34;leveldb&#34;&gt;LevelDB&lt;/h4&gt;
 
 &lt;p&gt;LevelDB 底层使用了 LSM Tree 作为数据结构，用于存储大量的 key 值有序的 K-V 数据，鉴于时序数据的特点，只要将时间戳放入 key 中，就可以非常快速的遍历指定时间范围内的数据。LSM Tree 将大量随机写变成顺序写，所以拥有很高的写吞吐量，并且 LevelDB 内置了压缩功能。&lt;/p&gt;
 
@@ -213,7 +213,7 @@ cpu_load,host_id=1 value=0.1 1434055562000000000
 
 &lt;p&gt;最严重的问题是由于 InfluxDB 通过 shard 来组织数据，每一个 shard 对应的就是一个 LevelDB 数据库，而由于 LevelDB 的底层存储是大量 SSTable 文件，所以当用户需要存储长时间的数据，例如几个月或者一年的时候，会产生大量的 shard，从而消耗大量文件描述符，将系统资源耗尽。&lt;/p&gt;
 
-&lt;h4 id=&#34;boltdb:441ef2dfb3e97650c90da967029aaee7&#34;&gt;BoltDB&lt;/h4&gt;
+&lt;h4 id=&#34;boltdb&#34;&gt;BoltDB&lt;/h4&gt;
 
 &lt;p&gt;之后 InfluxDB 采用了 BoltDB 作为数据存储引擎。BoltDB 是基于 LMDB 使用 Go 语言开发的数据库。同 LevelDB 类似的是，都可以用于存储 key 有序的 K-V 数据。&lt;/p&gt;
 
@@ -223,11 +223,11 @@ cpu_load,host_id=1 value=0.1 1434055562000000000
 
 &lt;p&gt;但是当数据库容量达到数GB级别时，同时往大量 series 中写入数据，相当于是大量随机写，会造成 IOPS 上升。&lt;/p&gt;
 
-&lt;h4 id=&#34;tsm-tree:441ef2dfb3e97650c90da967029aaee7&#34;&gt;TSM Tree&lt;/h4&gt;
+&lt;h4 id=&#34;tsm-tree&#34;&gt;TSM Tree&lt;/h4&gt;
 
 &lt;p&gt;TSM Tree 是 InfluxDB 根据实际需求在 LSM Tree 的基础上稍作修改优化而来。&lt;/p&gt;
 
-&lt;h5 id=&#34;wal:441ef2dfb3e97650c90da967029aaee7&#34;&gt;WAL&lt;/h5&gt;
+&lt;h5 id=&#34;wal&#34;&gt;WAL&lt;/h5&gt;
 
 &lt;p&gt;每一个 shard 对应底层的一个数据库。每一个数据库有自己的 WAL 文件，压缩后的元数据文件，索引文件。&lt;/p&gt;
 
@@ -239,22 +239,22 @@ cpu_load,host_id=1 value=0.1 1434055562000000000
 
 &lt;p&gt;查询操作将会去 WAL 以及索引中查询，WAL 在内存中缓存有一个读写锁进行控制。删除操作会将缓存中的key删除，同时在 WAL 文件中进行记录并且在内存的索引中进行删除标记。&lt;/p&gt;
 
-&lt;h5 id=&#34;data-files-sstables:441ef2dfb3e97650c90da967029aaee7&#34;&gt;Data Files(SSTables)&lt;/h5&gt;
+&lt;h5 id=&#34;data-files-sstables&#34;&gt;Data Files(SSTables)&lt;/h5&gt;
 
 &lt;p&gt;这部分 InfluxDB 自己定义了特定的数据结构，将时间戳编码到了 DataFiles 中，进行了相对于时间序列数据的优化。&lt;/p&gt;
 
-&lt;h3 id=&#34;api:441ef2dfb3e97650c90da967029aaee7&#34;&gt;API&lt;/h3&gt;
+&lt;h3 id=&#34;api&#34;&gt;API&lt;/h3&gt;
 
 &lt;p&gt;通过 HTTP 访问 influxdb。&lt;/p&gt;
 
 &lt;p&gt;语法上是一种类似于 SQL 的命令，官方称为 InfluxQL。&lt;/p&gt;
 
-&lt;h4 id=&#34;创建数据库:441ef2dfb3e97650c90da967029aaee7&#34;&gt;创建数据库&lt;/h4&gt;
+&lt;h4 id=&#34;创建数据库&#34;&gt;创建数据库&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;curl -POST http://localhost:8086/query --data-urlencode &amp;quot;q=CREATE DATABASE mydb&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;插入数据:441ef2dfb3e97650c90da967029aaee7&#34;&gt;插入数据&lt;/h4&gt;
+&lt;h4 id=&#34;插入数据&#34;&gt;插入数据&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;curl -i -XPOST &#39;http://localhost:8086/write?db=mydb&#39; --data-binary &#39;cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000&#39;
 &lt;/code&gt;&lt;/pre&gt;
@@ -268,7 +268,7 @@ cpu_load_short,host=server02,region=us-west value=0.55 1422568543702900257
 cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702900257&#39;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;读取数据:441ef2dfb3e97650c90da967029aaee7&#34;&gt;读取数据&lt;/h4&gt;
+&lt;h4 id=&#34;读取数据&#34;&gt;读取数据&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;curl -GET &#39;http://localhost:8086/query&#39; --data-urlencode &amp;quot;db=mydb&amp;quot; --data-urlencode &amp;quot;epoch=s&amp;quot; --data-urlencode &amp;quot;q=SELECT value FROM cpu_load_short WHERE region=&#39;us-west&#39;&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
@@ -280,37 +280,37 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;这里 &lt;code&gt;--data-urlencode &amp;quot;epoch=s&amp;quot;&lt;/code&gt; 会使返回的时间戳为 unix 时间戳格式。&lt;/p&gt;
 
-&lt;h4 id=&#34;创建-rp:441ef2dfb3e97650c90da967029aaee7&#34;&gt;创建 RP&lt;/h4&gt;
+&lt;h4 id=&#34;创建-rp&#34;&gt;创建 RP&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;CREATE RETENTION POLICY two_hours ON food_data DURATION 2h REPLICATION 1 DEFAULT
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这里将 &lt;strong&gt;two_hours&lt;/strong&gt; 设置成了默认保存策略，存入 food_data 中的数据如果没有明确指定 RP 将会默认采用此策略，数据保存时间为 2 小时，副本数为 1。&lt;/p&gt;
 
-&lt;h4 id=&#34;创建-cq:441ef2dfb3e97650c90da967029aaee7&#34;&gt;创建 CQ&lt;/h4&gt;
+&lt;h4 id=&#34;创建-cq&#34;&gt;创建 CQ&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;CREATE CONTINUOUS QUERY cq_5m ON food_data BEGIN SELECT mean(website) AS mean_website,mean(phone) AS mean_phone INTO food_data.&amp;quot;default&amp;quot;.downsampled_orders FROM orders GROUP BY time(5m) END
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这里创建了一个 CQ，每个5分钟将 two_hours.orders 中的数据计算5分钟的平均值后存入 default.downsampled_orders 中，default 这个 RP 中的数据是永久保存的。&lt;/p&gt;
 
-&lt;h4 id=&#34;where:441ef2dfb3e97650c90da967029aaee7&#34;&gt;WHERE&lt;/h4&gt;
+&lt;h4 id=&#34;where&#34;&gt;WHERE&lt;/h4&gt;
 
 &lt;p&gt;查询时指定查询的限制条件，例如查询最近1小时内 host_id=1 的机器的 cpu 数据。&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;SELECT value FROM cpu_load WHERE time &amp;gt; now() - 1h and host_id = 1
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;group-by:441ef2dfb3e97650c90da967029aaee7&#34;&gt;GROUP BY&lt;/h4&gt;
+&lt;h4 id=&#34;group-by&#34;&gt;GROUP BY&lt;/h4&gt;
 
 &lt;p&gt;类似于 SQL 中的语法，可以对细粒度数据进行聚合计算，例如查询最近1小时内 host_id=1 的机器的 cpu 的数据，并且采样为每5分钟的平均值。&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;SELECT mean(value) FROM cpu_load WHERE time &amp;gt; now() - 1h and host_id = 1 GROUP BY time(5m)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;官方推荐硬件配置:441ef2dfb3e97650c90da967029aaee7&#34;&gt;官方推荐硬件配置&lt;/h3&gt;
+&lt;h3 id=&#34;官方推荐硬件配置&#34;&gt;官方推荐硬件配置&lt;/h3&gt;
 
-&lt;h4 id=&#34;单节点:441ef2dfb3e97650c90da967029aaee7&#34;&gt;单节点&lt;/h4&gt;
+&lt;h4 id=&#34;单节点&#34;&gt;单节点&lt;/h4&gt;
 
 &lt;table&gt;
 &lt;thead&gt;
@@ -360,7 +360,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 &lt;li&gt;Probably infeasible: 可能单机无法支持，需要集群环境&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;集群:441ef2dfb3e97650c90da967029aaee7&#34;&gt;集群&lt;/h4&gt;
+&lt;h4 id=&#34;集群&#34;&gt;集群&lt;/h4&gt;
 
 &lt;p&gt;InfluxDB 从 0.12 版本开始将不再开源其 cluster 源码，而是被用做提供商业服务。&lt;/p&gt;
 
@@ -368,7 +368,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;已知七牛是采用了 InfluxDB 作为时间序列数据的存储，自研了调度器以及高可用模块，具有横向扩展的能力。&lt;/p&gt;
 
-&lt;h3 id=&#34;总结:441ef2dfb3e97650c90da967029aaee7&#34;&gt;总结&lt;/h3&gt;
+&lt;h3 id=&#34;总结&#34;&gt;总结&lt;/h3&gt;
 
 &lt;p&gt;目前最火热的时间序列数据库项目，社区开发活跃，迭代更新较快，存储引擎经常变化，网上的一些资料都比较过时，例如最新的 TSM 存储引擎只能看到官方的文档简介，还没有详细的原理说明的文章。&lt;/p&gt;
 
@@ -390,21 +390,21 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;
 
-&lt;h3 id=&#34;测试版本:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;测试版本&lt;/h3&gt;
+&lt;h3 id=&#34;测试版本&#34;&gt;测试版本&lt;/h3&gt;
 
 &lt;p&gt;hbase-1.1.5&lt;/p&gt;
 
 &lt;p&gt;opentsdb-2.2.0&lt;/p&gt;
 
-&lt;h3 id=&#34;单机部署:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;单机部署&lt;/h3&gt;
+&lt;h3 id=&#34;单机部署&#34;&gt;单机部署&lt;/h3&gt;
 
 &lt;p&gt;单机部署可以参考我之前的一篇文章，集群部署比较复杂，这里仅使用单机进行测试。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/&#34;&gt;OpenTSDB部署与使用&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;概念:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;概念&lt;/h3&gt;
+&lt;h3 id=&#34;概念&#34;&gt;概念&lt;/h3&gt;
 
-&lt;h4 id=&#34;数据格式:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;数据格式&lt;/h4&gt;
+&lt;h4 id=&#34;数据格式&#34;&gt;数据格式&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;metric: 一个可测量的单位的标称。&lt;/li&gt;
@@ -413,17 +413,17 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 &lt;li&gt;value: metric 的实际测量值。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;uid:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;UID&lt;/h4&gt;
+&lt;h4 id=&#34;uid&#34;&gt;UID&lt;/h4&gt;
 
 &lt;p&gt;在 OpenTSDB 中，每一个 metric、tagk 或者 tagv 在创建的时候被分配一个唯一标识叫做 UID。在后续的实际存储中，实际上存储的是 UID，而不是它们原本的字符串，UID 占 3个字节（也可以修改源码改为4字节），这样可以节省存储空间。&lt;/p&gt;
 
-&lt;h4 id=&#34;tsuid:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;TSUID&lt;/h4&gt;
+&lt;h4 id=&#34;tsuid&#34;&gt;TSUID&lt;/h4&gt;
 
 &lt;p&gt;&lt;code&gt;&amp;lt;metric_UID&amp;gt;&amp;lt;timestamp&amp;gt;&amp;lt;tagk1_UID&amp;gt;&amp;lt;tagv1_UID&amp;gt;[...&amp;lt;tagkN_UID&amp;gt;&amp;lt;tagvN_UID&amp;gt;]&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;写入 HBase 时的 row key 格式，其中的 metric、tagk 和 tagv 都被转换成了 UID。&lt;/p&gt;
 
-&lt;h4 id=&#34;data-table-schema:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;Data Table Schema&lt;/h4&gt;
+&lt;h4 id=&#34;data-table-schema&#34;&gt;Data Table Schema&lt;/h4&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-data-table-schema.png&#34; alt=&#34;data-table-schema&#34; /&gt;&lt;/p&gt;
 
@@ -435,7 +435,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;&lt;strong&gt;value&lt;/strong&gt; 使用 8 bytes 存储，既可以存储 long,也可以存储 double。&lt;/p&gt;
 
-&lt;h4 id=&#34;compaction:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;Compaction&lt;/h4&gt;
+&lt;h4 id=&#34;compaction&#34;&gt;Compaction&lt;/h4&gt;
 
 &lt;p&gt;在 OpenTSDB 中，会将多列合并到一列之中以减少磁盘占用空间，这个过程会在 TSD 写数据或者查询过程中不定期的发生。&lt;/p&gt;
 
@@ -443,11 +443,11 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;例如图中，将列 1890 和 列 1892 合并到了一起。&lt;/p&gt;
 
-&lt;h3 id=&#34;api:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;API&lt;/h3&gt;
+&lt;h3 id=&#34;api&#34;&gt;API&lt;/h3&gt;
 
 &lt;p&gt;OpenTSDB 同样提供了一套基于 HTTP 的 API 接口。&lt;/p&gt;
 
-&lt;h4 id=&#34;插入数据:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;插入数据&lt;/h4&gt;
+&lt;h4 id=&#34;插入数据&#34;&gt;插入数据&lt;/h4&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://localhost:4242/api/put&#34;&gt;http://localhost:4242/api/put&lt;/a&gt;, POST&lt;/p&gt;
 
@@ -475,7 +475,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 ]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;查询数据:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;查询数据&lt;/h4&gt;
+&lt;h4 id=&#34;查询数据&#34;&gt;查询数据&lt;/h4&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://localhost:4242/api/query&#34;&gt;http://localhost:4242/api/query&lt;/a&gt;, POST&lt;/p&gt;
 
@@ -510,7 +510,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;&lt;strong&gt;downsample&lt;/strong&gt; 聚合计算，例如上面是对每隔60s的数据计算一次平均值。&lt;/p&gt;
 
-&lt;h3 id=&#34;总结:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;总结&lt;/h3&gt;
+&lt;h3 id=&#34;总结&#34;&gt;总结&lt;/h3&gt;
 
 &lt;p&gt;OpenTSDB 在存储时间序列数据这一领域拥有很大的优势，被大多数公司所采用，网上的相关文档也比较全面。&lt;/p&gt;
 
@@ -532,7 +532,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。&lt;/p&gt;
 
-&lt;h3 id=&#34;环境:15a147333eadc9d914016442056e059f&#34;&gt;环境&lt;/h3&gt;
+&lt;h3 id=&#34;环境&#34;&gt;环境&lt;/h3&gt;
 
 &lt;p&gt;一台物理机上，开了三台虚拟机，操作系统是 Centos7&lt;/p&gt;
 
@@ -544,7 +544,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;整个步骤参考了官方的文档： &lt;a href=&#34;http://docs.openstack.org/developer/swift/development_saio.html&#34;&gt;http://docs.openstack.org/developer/swift/development_saio.html&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;安装各种依赖:15a147333eadc9d914016442056e059f&#34;&gt;安装各种依赖&lt;/h3&gt;
+&lt;h3 id=&#34;安装各种依赖&#34;&gt;安装各种依赖&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo yum install curl gcc memcached rsync sqlite xfsprogs git-core \
     libffi-devel xinetd liberasurecode-devel \
@@ -556,50 +556,50 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
     python-mock
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;创建磁盘设备:15a147333eadc9d914016442056e059f&#34;&gt;创建磁盘设备&lt;/h3&gt;
+&lt;h3 id=&#34;创建磁盘设备&#34;&gt;创建磁盘设备&lt;/h3&gt;
 
 &lt;p&gt;由于 swift 需要使用 xfs 格式的磁盘，这里我们使用回环设备。&lt;/p&gt;
 
-&lt;h4 id=&#34;创建一个用于回环设备的2gb大小的文件:15a147333eadc9d914016442056e059f&#34;&gt;创建一个用于回环设备的2GB大小的文件&lt;/h4&gt;
+&lt;h4 id=&#34;创建一个用于回环设备的2gb大小的文件&#34;&gt;创建一个用于回环设备的2GB大小的文件&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo mkdir /srv
 sudo truncate -s 1GB /srv/swift-disk
 sudo mkfs.xfs /srv/swift-disk
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;修改-etc-fstab:15a147333eadc9d914016442056e059f&#34;&gt;修改 /etc/fstab&lt;/h4&gt;
+&lt;h4 id=&#34;修改-etc-fstab&#34;&gt;修改 /etc/fstab&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;/srv/swift-disk /srv/node/sdb1 xfs loop,noatime,nodiratime,nobarrier,logbufs=8 0 0
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;创建挂载点并进行挂载:15a147333eadc9d914016442056e059f&#34;&gt;创建挂载点并进行挂载&lt;/h4&gt;
+&lt;h4 id=&#34;创建挂载点并进行挂载&#34;&gt;创建挂载点并进行挂载&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo mkdir -p /srv/node/sdb1
 sudo mount /srv/node/sdb1
 sudo chown -R user:user /srv/node
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;下载安装-swift-和-swift-client:15a147333eadc9d914016442056e059f&#34;&gt;下载安装 swift 和 swift-client&lt;/h4&gt;
+&lt;h4 id=&#34;下载安装-swift-和-swift-client&#34;&gt;下载安装 swift 和 swift-client&lt;/h4&gt;
 
 &lt;p&gt;从 git 下载这两个项目之后切换到 2.4.0 版本，安装 python 依赖以后使用 &lt;code&gt;python setup.py&lt;/code&gt; 安装。&lt;/p&gt;
 
 &lt;p&gt;直接通过 yum 安装的 pip 可能版本不是最新的，需要升级，使用 &lt;code&gt;pip install --upgrade pip&lt;/code&gt; 升级。&lt;/p&gt;
 
-&lt;h5 id=&#34;swift-client:15a147333eadc9d914016442056e059f&#34;&gt;swift-client&lt;/h5&gt;
+&lt;h5 id=&#34;swift-client&#34;&gt;swift-client&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git clone https://github.com/openstack/python-swiftclient.git
 git checkout 2.4.0
 cd ./python-swiftclient; sudo python setup.py develop; cd -
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;swift:15a147333eadc9d914016442056e059f&#34;&gt;swift&lt;/h5&gt;
+&lt;h5 id=&#34;swift&#34;&gt;swift&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git clone https://github.com/openstack/swift.git
 git checkout 2.4.0
 cd ./swift; sudo pip install -r requirements.txt; sudo python setup.py develop; cd -
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;配置-etc-rc-local:15a147333eadc9d914016442056e059f&#34;&gt;配置 /etc/rc.local&lt;/h5&gt;
+&lt;h5 id=&#34;配置-etc-rc-local&#34;&gt;配置 /etc/rc.local&lt;/h5&gt;
 
 &lt;p&gt;需要在每次开机时都创建一些需要的目录。&lt;/p&gt;
 
@@ -609,9 +609,9 @@ sudo mkdir -p /var/cache/swift
 sudo chown user:user /var/cache/swift
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;配置-rsync:15a147333eadc9d914016442056e059f&#34;&gt;配置 rsync&lt;/h3&gt;
+&lt;h3 id=&#34;配置-rsync&#34;&gt;配置 rsync&lt;/h3&gt;
 
-&lt;h4 id=&#34;修改-etc-rsyncd-conf:15a147333eadc9d914016442056e059f&#34;&gt;修改 /etc/rsyncd.conf&lt;/h4&gt;
+&lt;h4 id=&#34;修改-etc-rsyncd-conf&#34;&gt;修改 /etc/rsyncd.conf&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# /etc/rsyncd: configuration file for rsync daemon mode
 uid = user
@@ -639,17 +639,17 @@ read only = false
 lock file = /var/lock/object.lock
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;启动-rsync-并设置开机启动:15a147333eadc9d914016442056e059f&#34;&gt;启动 rsync 并设置开机启动&lt;/h4&gt;
+&lt;h4 id=&#34;启动-rsync-并设置开机启动&#34;&gt;启动 rsync 并设置开机启动&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo chkconfig rsyncd on
 sudo service rsyncd start
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;配置rsyslog让每个程序输出独立的日志-可选:15a147333eadc9d914016442056e059f&#34;&gt;配置rsyslog让每个程序输出独立的日志（可选）&lt;/h3&gt;
+&lt;h3 id=&#34;配置rsyslog让每个程序输出独立的日志-可选&#34;&gt;配置rsyslog让每个程序输出独立的日志（可选）&lt;/h3&gt;
 
 &lt;p&gt;swift 默认将日志信息输出到文件 /var/log/syslog 中。如果要按照个人需求设置 rsyslog，生成另外单独的 swift日志文件，就需要另外配置。&lt;/p&gt;
 
-&lt;h4 id=&#34;创建日志配置文件-etc-rsyslog-d-10-swift-conf:15a147333eadc9d914016442056e059f&#34;&gt;创建日志配置文件 /etc/rsyslog.d/10-swift.conf&lt;/h4&gt;
+&lt;h4 id=&#34;创建日志配置文件-etc-rsyslog-d-10-swift-conf&#34;&gt;创建日志配置文件 /etc/rsyslog.d/10-swift.conf&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# Uncomment the following to have a log containing all logs together
 #local1,local2,local3,local4,local5.*   /var/log/swift/all.log
@@ -675,43 +675,43 @@ local4.notice           /var/log/swift/ account.error
 local4.*                ~
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;编辑文件-etc-rsyslog-conf-更改参数-privdroptogroup-为-adm:15a147333eadc9d914016442056e059f&#34;&gt;编辑文件 /etc/rsyslog.conf，更改参数 $PrivDropToGroup 为 adm&lt;/h4&gt;
+&lt;h4 id=&#34;编辑文件-etc-rsyslog-conf-更改参数-privdroptogroup-为-adm&#34;&gt;编辑文件 /etc/rsyslog.conf，更改参数 $PrivDropToGroup 为 adm&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$PrivDropToGroup adm
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;创建-var-log-swift-目录-用于存放独立日志:15a147333eadc9d914016442056e059f&#34;&gt;创建 /var/log/swift 目录，用于存放独立日志&lt;/h4&gt;
+&lt;h4 id=&#34;创建-var-log-swift-目录-用于存放独立日志&#34;&gt;创建 /var/log/swift 目录，用于存放独立日志&lt;/h4&gt;
 
 &lt;p&gt;此外，上面的 &lt;code&gt;10-swift.conf&lt;/code&gt; 文件中设置了输出 Swift Proxy Server 每小时的 stats 日志信息，于是也要创建 &lt;code&gt;/var/log/swift/hourly&lt;/code&gt; 目录。&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo mkdir -p /var/log/swift/hourly
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;更改-swift-独立日志目录的权限:15a147333eadc9d914016442056e059f&#34;&gt;更改 swift 独立日志目录的权限&lt;/h4&gt;
+&lt;h4 id=&#34;更改-swift-独立日志目录的权限&#34;&gt;更改 swift 独立日志目录的权限&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;chown -R root.adm /var/log/swift
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;重启-rsyslog-服务:15a147333eadc9d914016442056e059f&#34;&gt;重启 rsyslog 服务&lt;/h4&gt;
+&lt;h4 id=&#34;重启-rsyslog-服务&#34;&gt;重启 rsyslog 服务&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo service rsyslog restart
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;启动-memcached-并设置开机启动:15a147333eadc9d914016442056e059f&#34;&gt;启动 memcached 并设置开机启动&lt;/h3&gt;
+&lt;h3 id=&#34;启动-memcached-并设置开机启动&#34;&gt;启动 memcached 并设置开机启动&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo service memcached start
 sudo chkconfig memcached on
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;配置swift相关的配置文件:15a147333eadc9d914016442056e059f&#34;&gt;配置swift相关的配置文件&lt;/h3&gt;
+&lt;h3 id=&#34;配置swift相关的配置文件&#34;&gt;配置swift相关的配置文件&lt;/h3&gt;
 
-&lt;h4 id=&#34;创建存储-swift-配置文件的目录:15a147333eadc9d914016442056e059f&#34;&gt;创建存储 swift 配置文件的目录&lt;/h4&gt;
+&lt;h4 id=&#34;创建存储-swift-配置文件的目录&#34;&gt;创建存储 swift 配置文件的目录&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo mkdir /etc/swift
 sudo chown -R user:user /etc/swift
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;创建-swift-配置文件-etc-swift-swift-conf:15a147333eadc9d914016442056e059f&#34;&gt;创建 swift 配置文件 /etc/swift/swift.conf&lt;/h4&gt;
+&lt;h4 id=&#34;创建-swift-配置文件-etc-swift-swift-conf&#34;&gt;创建 swift 配置文件 /etc/swift/swift.conf&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;[swift-hash]
 
@@ -719,7 +719,7 @@ sudo chown -R user:user /etc/swift
 swift_hash_path_suffix = jtangfs
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;配置-account-服务-etc-swift-account-server-conf:15a147333eadc9d914016442056e059f&#34;&gt;配置 account 服务 /etc/swift/account-server.conf&lt;/h4&gt;
+&lt;h4 id=&#34;配置-account-服务-etc-swift-account-server-conf&#34;&gt;配置 account 服务 /etc/swift/account-server.conf&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;[DEFAULT]
 devices = /srv/node
@@ -741,7 +741,7 @@ use = egg:swift#account
 [account-reaper]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;配置-container-服务-etc-swift-container-server-conf:15a147333eadc9d914016442056e059f&#34;&gt;配置 container 服务 /etc/swift/container-server.conf&lt;/h4&gt;
+&lt;h4 id=&#34;配置-container-服务-etc-swift-container-server-conf&#34;&gt;配置 container 服务 /etc/swift/container-server.conf&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;[DEFAULT]
 devices = /srv/node
@@ -767,7 +767,7 @@ use = egg:swift#container
 [container-sync]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;配置-object-服务-etc-swift-object-server-conf:15a147333eadc9d914016442056e059f&#34;&gt;配置 object 服务 /etc/swift/object-server.conf&lt;/h4&gt;
+&lt;h4 id=&#34;配置-object-服务-etc-swift-object-server-conf&#34;&gt;配置 object 服务 /etc/swift/object-server.conf&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;[DEFAULT]
 devices = /srv/node
@@ -791,7 +791,7 @@ use = egg:swift#object
 [object-auditor]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;配置-proxy-服务-etc-swift-proxy-server-conf:15a147333eadc9d914016442056e059f&#34;&gt;配置 proxy 服务 /etc/swift/proxy-server.conf&lt;/h4&gt;
+&lt;h4 id=&#34;配置-proxy-服务-etc-swift-proxy-server-conf&#34;&gt;配置 proxy 服务 /etc/swift/proxy-server.conf&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;[DEFAULT]
 bind_port = 8080
@@ -833,11 +833,11 @@ use = egg:swift#proxy_logging
 
 &lt;p&gt;&lt;strong&gt;注：&lt;code&gt;user_admin_admin = admin .admin .reseller_admin&lt;/code&gt; 后面还可以增加一项 &lt;code&gt;&amp;lt;storage-url&amp;gt;&lt;/code&gt;，显示地指定 swift 为该用户提供的存储服务入口，admin 用户通过认证后，swift 会把 Token 和该 &lt;code&gt;&amp;lt;storage-url&amp;gt;&lt;/code&gt;  返回给用户，此后 admin 用户可以使用该 &lt;code&gt;&amp;lt;storage-url&amp;gt;&lt;/code&gt; 访问 swift 来请求存储服务。特别值得说明的是，如果在 Proxy Server 前面增加了负载均衡器（如 nginx），那么该 &lt;code&gt;&amp;lt;storage-url&amp;gt;&lt;/code&gt; 应该指向负载均衡器，使得用户在通过认证后，向负载均衡器发起存储请求，再由负载均衡器将请求均衡地分发给 Proxy Server 集群。此时的 &lt;code&gt;&amp;lt;storage-url&amp;gt;&lt;/code&gt; 形如 &lt;code&gt;http://&amp;lt;LOAD_BALANCER_HOSTNAME&amp;gt;:&amp;lt;PORT&amp;gt;/v1/AUTH_admin&lt;/code&gt;。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;创建-ring-文件:15a147333eadc9d914016442056e059f&#34;&gt;创建 ring 文件&lt;/h3&gt;
+&lt;h3 id=&#34;创建-ring-文件&#34;&gt;创建 ring 文件&lt;/h3&gt;
 
 &lt;p&gt;&lt;strong&gt;swift&lt;/strong&gt; 安装完成后会有一个 &lt;strong&gt;swift-ring-builder&lt;/strong&gt; 程序用于对 ring 的相关操作。&lt;/p&gt;
 
-&lt;h4 id=&#34;生成-ring:15a147333eadc9d914016442056e059f&#34;&gt;生成 ring&lt;/h4&gt;
+&lt;h4 id=&#34;生成-ring&#34;&gt;生成 ring&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;swift-ring-builder account.builder create 18 3 1
 swift-ring-builder container.builder create 18 3 1
@@ -846,7 +846,7 @@ swift-ring-builder object.builder create 18 3 1
 
 &lt;p&gt;需要事先创建好3个 ring，18 表示 partition 数为2的18次方，3表示 replication 数为3，1 表示分区数据的最短迁移间隔时间为1小时。（官网说明里如果移除设备的话不在这个限制内）&lt;/p&gt;
 
-&lt;h3 id=&#34;向-ring-中加入设备:15a147333eadc9d914016442056e059f&#34;&gt;向 ring 中加入设备&lt;/h3&gt;
+&lt;h3 id=&#34;向-ring-中加入设备&#34;&gt;向 ring 中加入设备&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;swift-ring-builder account.builder add z1-192.168.2.129:6002/sdb1 100
 swift-ring-builder container.builder add z1-192.168.2.129:6001/sdb1 100
@@ -867,22 +867,22 @@ swift-ring-builder object.builder add z2-192.168.2.131:6000/sdb1 100
 
 &lt;p&gt;&lt;strong&gt;100&lt;/strong&gt; 代表设备的权重，也是在分配 &lt;strong&gt;partition&lt;/strong&gt; 的时候会考虑的因素。&lt;/p&gt;
 
-&lt;h4 id=&#34;rebalance:15a147333eadc9d914016442056e059f&#34;&gt;rebalance&lt;/h4&gt;
+&lt;h4 id=&#34;rebalance&#34;&gt;rebalance&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;swift-ring-builder account.builder rebalance
 swift-ring-builder container.builder rebalance
 swift-ring-builder object.builder rebalance
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;将-ring-文件传输到其他机器的-etc-swift-目录下:15a147333eadc9d914016442056e059f&#34;&gt;将 ring 文件传输到其他机器的 /etc/swift 目录下&lt;/h4&gt;
+&lt;h4 id=&#34;将-ring-文件传输到其他机器的-etc-swift-目录下&#34;&gt;将 ring 文件传输到其他机器的 /etc/swift 目录下&lt;/h4&gt;
 
 &lt;p&gt;最终生成的 ring 文件以 &lt;code&gt;.gz&lt;/code&gt; 结尾。&lt;/p&gt;
 
-&lt;h3 id=&#34;创建初始化-起停等脚本:15a147333eadc9d914016442056e059f&#34;&gt;创建初始化、起停等脚本&lt;/h3&gt;
+&lt;h3 id=&#34;创建初始化-起停等脚本&#34;&gt;创建初始化、起停等脚本&lt;/h3&gt;
 
 &lt;p&gt;由于 swift 涉及的组件较多，起停都比较麻烦，所以最好先写好起停脚本。&lt;/p&gt;
 
-&lt;h4 id=&#34;remake-rings-sh-脚本文件-用于完成-ring-的重新创建:15a147333eadc9d914016442056e059f&#34;&gt;remake_rings.sh 脚本文件，用于完成 ring 的重新创建&lt;/h4&gt;
+&lt;h4 id=&#34;remake-rings-sh-脚本文件-用于完成-ring-的重新创建&#34;&gt;remake_rings.sh 脚本文件，用于完成 ring 的重新创建&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/bin/bash
 cd /etc/swift
@@ -910,7 +910,7 @@ swift-ring-builder container.builder rebalance
 swift-ring-builder object.builder rebalance
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;reset-swift-sh-脚本文件-用于一键清空-swift-的对象数据和日志-完全重置:15a147333eadc9d914016442056e059f&#34;&gt;reset_swift.sh 脚本文件，用于一键清空 swift 的对象数据和日志，完全重置&lt;/h4&gt;
+&lt;h4 id=&#34;reset-swift-sh-脚本文件-用于一键清空-swift-的对象数据和日志-完全重置&#34;&gt;reset_swift.sh 脚本文件，用于一键清空 swift 的对象数据和日志，完全重置&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/bin/bash
 swift-init all stop
@@ -929,19 +929,19 @@ sudo service rsyncd restart
 sudo service memcached restart
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;start-main-sh-脚本文件-用于启动-swift-所有基础服务:15a147333eadc9d914016442056e059f&#34;&gt;start_main.sh 脚本文件，用于启动 swift 所有基础服务&lt;/h4&gt;
+&lt;h4 id=&#34;start-main-sh-脚本文件-用于启动-swift-所有基础服务&#34;&gt;start_main.sh 脚本文件，用于启动 swift 所有基础服务&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/bin/bash
 swift-init main start
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;stop-main-sh-脚本文件-用于关闭-swift-所有基础服务:15a147333eadc9d914016442056e059f&#34;&gt;stop_main.sh 脚本文件，用于关闭 swift 所有基础服务&lt;/h4&gt;
+&lt;h4 id=&#34;stop-main-sh-脚本文件-用于关闭-swift-所有基础服务&#34;&gt;stop_main.sh 脚本文件，用于关闭 swift 所有基础服务&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/bin/bash
 swift-init main stop
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;start-all-sh-脚本文件:15a147333eadc9d914016442056e059f&#34;&gt;start_all.sh 脚本文件&lt;/h4&gt;
+&lt;h4 id=&#34;start-all-sh-脚本文件&#34;&gt;start_all.sh 脚本文件&lt;/h4&gt;
 
 &lt;p&gt;一键启动 swift 的所有服务。&lt;/p&gt;
 
@@ -960,7 +960,7 @@ swift-init object-updater start
 swift-init object-auditor start
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;stop-all-sh-脚本文件:15a147333eadc9d914016442056e059f&#34;&gt;stop_all.sh 脚本文件&lt;/h4&gt;
+&lt;h4 id=&#34;stop-all-sh-脚本文件&#34;&gt;stop_all.sh 脚本文件&lt;/h4&gt;
 
 &lt;p&gt;一键关闭 swift的所有服务。&lt;/p&gt;
 
@@ -979,12 +979,12 @@ swift-init object-updater stop
 swift-init object-auditor stop
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;启动-swift-服务:15a147333eadc9d914016442056e059f&#34;&gt;启动 swift 服务&lt;/h4&gt;
+&lt;h4 id=&#34;启动-swift-服务&#34;&gt;启动 swift 服务&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;./start_all.sh
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;动态扩容:15a147333eadc9d914016442056e059f&#34;&gt;动态扩容&lt;/h3&gt;
+&lt;h3 id=&#34;动态扩容&#34;&gt;动态扩容&lt;/h3&gt;
 
 &lt;p&gt;重新编写 &lt;strong&gt;remake_rings.sh&lt;/strong&gt; 脚本中的内容，加上需要添加的机器信息，重新生成 ring 文件。&lt;/p&gt;
 
@@ -992,13 +992,13 @@ swift-init object-auditor stop
 
 &lt;p&gt;swift 的各个组件程序会定期重新读取 rings 文件。&lt;/p&gt;
 
-&lt;h3 id=&#34;一些需要注意的地方:15a147333eadc9d914016442056e059f&#34;&gt;一些需要注意的地方&lt;/h3&gt;
+&lt;h3 id=&#34;一些需要注意的地方&#34;&gt;一些需要注意的地方&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;服务器时间必须一致，不一致的话会出现问题。测试中有一台服务器比其他的慢了2小时，结果向这台 proxy  上传文件，返回成功，但是其实并没有上传成功，可能是由于时间原因，在其他机器看来这个文件已经被删除掉了。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;restful-api-及测试:15a147333eadc9d914016442056e059f&#34;&gt;RESTful API 及测试&lt;/h3&gt;
+&lt;h3 id=&#34;restful-api-及测试&#34;&gt;RESTful API 及测试&lt;/h3&gt;
 
 &lt;p&gt;swift 可以通过 swift-proxy 提供的 RESTful API 来进行操作。&lt;/p&gt;
 
@@ -1006,7 +1006,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;&lt;strong&gt;所有的操作都需要先获取一个 auth-token，之后的所有操作都需要在 header 中附加上 X-Auth-Token 字段的信息进行权限认证。有一定时效性，过期后需要再次获取。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;获取-x-storage-url-和-x-auth-token:15a147333eadc9d914016442056e059f&#34;&gt;获取 X-Storage-Url 和 X-Auth-Token&lt;/h4&gt;
+&lt;h4 id=&#34;获取-x-storage-url-和-x-auth-token&#34;&gt;获取 X-Storage-Url 和 X-Auth-Token&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;curl http://127.0.0.1:8080/auth/v1.0 -v -H &#39;X-Storage-User: test:tester&#39; -H &#39;X-Storage-Pass: testing&#39;
 &lt;/code&gt;&lt;/pre&gt;
@@ -1025,7 +1025,7 @@ swift-init object-auditor stop
 &amp;lt; Date: Wed, 25 May 2016 14:25:12 GMT
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;查看账户信息:15a147333eadc9d914016442056e059f&#34;&gt;查看账户信息&lt;/h4&gt;
+&lt;h4 id=&#34;查看账户信息&#34;&gt;查看账户信息&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;curl http://127.0.0.1:8080/v1/AUTH_test -v -H &#39;X-Auth-Token: AUTH_tk039a65cb62594b319faea9dc492039a2&#39;
 &lt;/code&gt;&lt;/pre&gt;
@@ -1047,14 +1047,14 @@ swift-init object-auditor stop
 &amp;lt; Date: Wed, 25 May 2016 14:30:43 GMT
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;创建-container:15a147333eadc9d914016442056e059f&#34;&gt;创建 container&lt;/h4&gt;
+&lt;h4 id=&#34;创建-container&#34;&gt;创建 container&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;curl http://127.0.0.1:8080/v1/AUTH_test/default -X PUT -H &amp;quot;X-Auth_Token: AUTH_tk039a65cb62594b319faea9dc492039a2&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;在 test 用户下创建了一个名为 default 的 container。&lt;/p&gt;
 
-&lt;h4 id=&#34;restful-api-总结:15a147333eadc9d914016442056e059f&#34;&gt;RESTful API 总结&lt;/h4&gt;
+&lt;h4 id=&#34;restful-api-总结&#34;&gt;RESTful API 总结&lt;/h4&gt;
 
 &lt;table&gt;
 &lt;thead&gt;
@@ -1102,36 +1102,36 @@ swift-init object-auditor stop
 &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;h4 id=&#34;直接使用-swift-客户端程序进行操作:15a147333eadc9d914016442056e059f&#34;&gt;直接使用 swift 客户端程序进行操作&lt;/h4&gt;
+&lt;h4 id=&#34;直接使用-swift-客户端程序进行操作&#34;&gt;直接使用 swift 客户端程序进行操作&lt;/h4&gt;
 
 &lt;p&gt;&lt;strong&gt;-A&lt;/strong&gt; 参数指定 url，&lt;strong&gt;-U&lt;/strong&gt; 参数指定用户，&lt;strong&gt;-K&lt;/strong&gt; 参数指定密码。&lt;/p&gt;
 
-&lt;h5 id=&#34;查看指定账户的-swift-存储信息:15a147333eadc9d914016442056e059f&#34;&gt;查看指定账户的 swift 存储信息&lt;/h5&gt;
+&lt;h5 id=&#34;查看指定账户的-swift-存储信息&#34;&gt;查看指定账户的 swift 存储信息&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing stat
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;创建-container-1:15a147333eadc9d914016442056e059f&#34;&gt;创建 container&lt;/h5&gt;
+&lt;h5 id=&#34;创建-container-1&#34;&gt;创建 container&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing post default
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;查看-test-用户的-container-列表:15a147333eadc9d914016442056e059f&#34;&gt;查看 test 用户的 container 列表&lt;/h5&gt;
+&lt;h5 id=&#34;查看-test-用户的-container-列表&#34;&gt;查看 test 用户的 container 列表&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing list
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;上传object-文件-上传-test-cpp-文件到-default-容器中:15a147333eadc9d914016442056e059f&#34;&gt;上传Object（文件），上传 test.cpp 文件到 default 容器中&lt;/h5&gt;
+&lt;h5 id=&#34;上传object-文件-上传-test-cpp-文件到-default-容器中&#34;&gt;上传Object（文件），上传 test.cpp 文件到 default 容器中&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing upload default ./dd.cpp
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;查看容器中的内容:15a147333eadc9d914016442056e059f&#34;&gt;查看容器中的内容&lt;/h5&gt;
+&lt;h5 id=&#34;查看容器中的内容&#34;&gt;查看容器中的内容&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing list default
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;下载object-文件:15a147333eadc9d914016442056e059f&#34;&gt;下载Object（文件）&lt;/h5&gt;
+&lt;h5 id=&#34;下载object-文件&#34;&gt;下载Object（文件）&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing download default dd.cpp
 &lt;/code&gt;&lt;/pre&gt;
@@ -1150,7 +1150,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。&lt;/p&gt;
 
-&lt;h3 id=&#34;安装并启动-zookeeper:57de784f564f909e53fd43ba72fc074a&#34;&gt;安装并启动 zookeeper&lt;/h3&gt;
+&lt;h3 id=&#34;安装并启动-zookeeper&#34;&gt;安装并启动 zookeeper&lt;/h3&gt;
 
 &lt;p&gt;codis 2.x 版本重度依赖于 zookeeper。&lt;/p&gt;
 
@@ -1158,7 +1158,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;使用默认配置启动 zookeeper &lt;code&gt;sh ./bin/zkServer.sh start&lt;/code&gt;，监听地址为 &lt;code&gt;2181&lt;/code&gt;。&lt;/p&gt;
 
-&lt;h3 id=&#34;下载安装-codis:57de784f564f909e53fd43ba72fc074a&#34;&gt;下载安装 codis&lt;/h3&gt;
+&lt;h3 id=&#34;下载安装-codis&#34;&gt;下载安装 codis&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;go get -d github.com/CodisLabs/codis&lt;/code&gt;&lt;/p&gt;
 
@@ -1170,7 +1170,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;之后生成的可执行文件都在 &lt;code&gt;codis/bin&lt;/code&gt; 文件夹下。&lt;/p&gt;
 
-&lt;h3 id=&#34;部署-codis-server:57de784f564f909e53fd43ba72fc074a&#34;&gt;部署 codis-server&lt;/h3&gt;
+&lt;h3 id=&#34;部署-codis-server&#34;&gt;部署 codis-server&lt;/h3&gt;
 
 &lt;p&gt;&lt;strong&gt;codis-server&lt;/strong&gt; 基于 &lt;strong&gt;redis 2.8.21&lt;/strong&gt; 稍微进行了一些修改以支持原子性的迁移数据，具体用法和 redis 一致。&lt;/p&gt;
 
@@ -1180,7 +1180,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;&lt;code&gt;./bin/codis-server ./redis_conf/redis_6400.conf&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;启动-dashboard:57de784f564f909e53fd43ba72fc074a&#34;&gt;启动 dashboard&lt;/h3&gt;
+&lt;h3 id=&#34;启动-dashboard&#34;&gt;启动 dashboard&lt;/h3&gt;
 
 &lt;p&gt;&lt;strong&gt;dashboard&lt;/strong&gt; 既是 codis 集群的管理中心，又提供了一个人性化的 web 界面，方便查看统计信息以及对集群进行管理操作。&lt;/p&gt;
 
@@ -1188,13 +1188,13 @@ swift-init object-auditor stop
 
 &lt;p&gt;&lt;code&gt;nohup ./bin/codis-config -c ./config.ini dashboard --addr=:18087 &amp;amp;&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;初始化-slot:57de784f564f909e53fd43ba72fc074a&#34;&gt;初始化 slot&lt;/h3&gt;
+&lt;h3 id=&#34;初始化-slot&#34;&gt;初始化 slot&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;./bin/codis-config -c ./config.ini slot init&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;该命令会在 zookeeper 上创建 slot 相关信息。&lt;/p&gt;
 
-&lt;h3 id=&#34;添加-group:57de784f564f909e53fd43ba72fc074a&#34;&gt;添加 group&lt;/h3&gt;
+&lt;h3 id=&#34;添加-group&#34;&gt;添加 group&lt;/h3&gt;
 
 &lt;p&gt;每个 &lt;strong&gt;group&lt;/strong&gt; 只能有一个 &lt;strong&gt;master&lt;/strong&gt; 和多个 &lt;strong&gt;slave&lt;/strong&gt;。&lt;/p&gt;
 
@@ -1212,9 +1212,9 @@ swift-init object-auditor stop
 
 &lt;p&gt;&lt;strong&gt;1 代表 group_id，必须为数字，且从 1 开始&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;分配-slot:57de784f564f909e53fd43ba72fc074a&#34;&gt;分配 slot&lt;/h3&gt;
+&lt;h3 id=&#34;分配-slot&#34;&gt;分配 slot&lt;/h3&gt;
 
-&lt;h4 id=&#34;手动分配:57de784f564f909e53fd43ba72fc074a&#34;&gt;手动分配&lt;/h4&gt;
+&lt;h4 id=&#34;手动分配&#34;&gt;手动分配&lt;/h4&gt;
 
 &lt;p&gt;&lt;code&gt;codis-config -c ./config.ini slot range-set &amp;lt;slot_from&amp;gt; &amp;lt;slot_to&amp;gt; &amp;lt;group_id&amp;gt; &amp;lt;status&amp;gt;&lt;/code&gt;&lt;/p&gt;
 
@@ -1226,7 +1226,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;&lt;code&gt;./bin/codis-config -c ./config.ini slot range-set 512 1023 2 online&lt;/code&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;自动分配:57de784f564f909e53fd43ba72fc074a&#34;&gt;自动分配&lt;/h4&gt;
+&lt;h4 id=&#34;自动分配&#34;&gt;自动分配&lt;/h4&gt;
 
 &lt;p&gt;在 dashboard 上可以自动分配 slot，会按照负载均衡的方式进行分配，不推荐使用，因为可能会造成大量数据的迁移。&lt;/p&gt;
 
@@ -1234,7 +1234,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;&lt;code&gt;./bin/codis-config -c ./config.ini slot rebalance&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;启动-codis-proxy:57de784f564f909e53fd43ba72fc074a&#34;&gt;启动 codis-proxy&lt;/h3&gt;
+&lt;h3 id=&#34;启动-codis-proxy&#34;&gt;启动 codis-proxy&lt;/h3&gt;
 
 &lt;p&gt;&lt;code&gt;./bin/codis-proxy -c ./config.ini -L ./log/proxy.log --cpu=8 --addr=10.10.100.1:19000 --http-addr=10.10.100.1:11000&lt;/code&gt;&lt;/p&gt;
 
@@ -1248,7 +1248,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;&lt;strong&gt;需要注意的是，启动 codis-proxy，会在 zookeeper 中注册一个 node，地址为 /zk/codis/db_test/fence，如果使用 kill -9 强行杀掉进程的话，这个会一直存在，需要手工删除。且 node 名称为 [hostname:port]，所以需要注意这个组合不能重复。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;主从切换:57de784f564f909e53fd43ba72fc074a&#34;&gt;主从切换&lt;/h3&gt;
+&lt;h3 id=&#34;主从切换&#34;&gt;主从切换&lt;/h3&gt;
 
 &lt;p&gt;官方建议是手工操作，避免数据不一致的问题，但是没有自动容灾的话可用性太差。&lt;/p&gt;
 
@@ -1260,15 +1260,15 @@ swift-init object-auditor stop
 
 &lt;p&gt;&lt;code&gt;10.10.100.14:18088&lt;/code&gt; 为 dashboard 所在机器的 ip 和端口。&lt;/p&gt;
 
-&lt;h3 id=&#34;旧数据的迁移:57de784f564f909e53fd43ba72fc074a&#34;&gt;旧数据的迁移&lt;/h3&gt;
+&lt;h3 id=&#34;旧数据的迁移&#34;&gt;旧数据的迁移&lt;/h3&gt;
 
 &lt;p&gt;官方提供了一个 &lt;strong&gt;redis-port&lt;/strong&gt; 工具可以将旧 redis 中的数据实时迁移到 codis 集群中，之后需要修改各服务配置文件，重启服务，指向 codis 集群即可。&lt;/p&gt;
 
-&lt;h3 id=&#34;性能测试:57de784f564f909e53fd43ba72fc074a&#34;&gt;性能测试&lt;/h3&gt;
+&lt;h3 id=&#34;性能测试&#34;&gt;性能测试&lt;/h3&gt;
 
 &lt;p&gt;测试环境： 24核 2.1GHz，4个redis实例&lt;/p&gt;
 
-&lt;h4 id=&#34;不启用-pipeline:57de784f564f909e53fd43ba72fc074a&#34;&gt;不启用 pipeline&lt;/h4&gt;
+&lt;h4 id=&#34;不启用-pipeline&#34;&gt;不启用 pipeline&lt;/h4&gt;
 
 &lt;table&gt;
 &lt;thead&gt;
@@ -1325,7 +1325,7 @@ swift-init object-auditor stop
 &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;h4 id=&#34;pipeline-100:57de784f564f909e53fd43ba72fc074a&#34;&gt;pipeline = 100&lt;/h4&gt;
+&lt;h4 id=&#34;pipeline-100&#34;&gt;pipeline = 100&lt;/h4&gt;
 
 &lt;table&gt;
 &lt;thead&gt;
@@ -1400,7 +1400,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。&lt;/p&gt;
 
-&lt;h3 id=&#34;为什么需要集群:51fa3b005f880190963d473247382d62&#34;&gt;为什么需要集群&lt;/h3&gt;
+&lt;h3 id=&#34;为什么需要集群&#34;&gt;为什么需要集群&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Redis单线程特性，多请求顺序执行，单个耗时的操作会阻塞后续的操作&lt;/li&gt;
@@ -1412,9 +1412,9 @@ swift-init object-auditor stop
 
 &lt;p&gt;Redis集群的目标就是为了实现高可用性，避免性能瓶颈，可动态扩容，易于做监控告警。&lt;/p&gt;
 
-&lt;h3 id=&#34;三种主流的集群解决方案:51fa3b005f880190963d473247382d62&#34;&gt;三种主流的集群解决方案&lt;/h3&gt;
+&lt;h3 id=&#34;三种主流的集群解决方案&#34;&gt;三种主流的集群解决方案&lt;/h3&gt;
 
-&lt;h4 id=&#34;客户端静态分片:51fa3b005f880190963d473247382d62&#34;&gt;客户端静态分片&lt;/h4&gt;
+&lt;h4 id=&#34;客户端静态分片&#34;&gt;客户端静态分片&lt;/h4&gt;
 
 &lt;p&gt;通常需要 smart-client 支持，在业务程序端根据预先设置的路由规则进行分片，从而实现对多个redis实例的分布式访问。&lt;/p&gt;
 
@@ -1426,7 +1426,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;&lt;strong&gt;缺点：&lt;/strong&gt; 当redis实例需要扩容或切换的情况下，需要修改业务端的程序，较为麻烦。并且需  要维护各个语言的客户端版本，如果要升级客户端成本也会比较高。出现故障时难以及时定位问题。（有些smart-client借助于zookeeper维护客户端访问redis实例的一致性）&lt;/p&gt;
 
-&lt;h4 id=&#34;proxy分片:51fa3b005f880190963d473247382d62&#34;&gt;Proxy分片&lt;/h4&gt;
+&lt;h4 id=&#34;proxy分片&#34;&gt;Proxy分片&lt;/h4&gt;
 
 &lt;p&gt;通过统一的代理程序访问多个redis实例，比如业内曾广泛使用的 twemproxy 以及 豌豆荚开源的 codis。（twemproxy是twitter开源的一个redis和memcache代理服务器，只用于作为简单的代理中间件，目前twitter内部已经不再使用）&lt;/p&gt;
 
@@ -1434,7 +1434,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;&lt;strong&gt;缺点：&lt;/strong&gt; 增加了一层中间件，增加了网络和数据处理的消耗，性能下降。&lt;/p&gt;
 
-&lt;h4 id=&#34;official-redis-cluster:51fa3b005f880190963d473247382d62&#34;&gt;Official Redis Cluster&lt;/h4&gt;
+&lt;h4 id=&#34;official-redis-cluster&#34;&gt;Official Redis Cluster&lt;/h4&gt;
 
 &lt;p&gt;Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：&lt;/p&gt;
 
@@ -1444,13 +1444,13 @@ swift-init object-auditor stop
 &lt;li&gt;&lt;strong&gt;可用性：&lt;/strong&gt;集群具有了以前Sentinel的监控和自动Failover能力。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;基于twemproxy的redis集群环境:51fa3b005f880190963d473247382d62&#34;&gt;基于twemproxy的redis集群环境&lt;/h3&gt;
+&lt;h3 id=&#34;基于twemproxy的redis集群环境&#34;&gt;基于twemproxy的redis集群环境&lt;/h3&gt;
 
-&lt;h4 id=&#34;整体架构图:51fa3b005f880190963d473247382d62&#34;&gt;整体架构图&lt;/h4&gt;
+&lt;h4 id=&#34;整体架构图&#34;&gt;整体架构图&lt;/h4&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-twemproxy-architecture.png&#34; alt=&#34;twemproxy_architecture&#34; /&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;twemproxy的特点:51fa3b005f880190963d473247382d62&#34;&gt;twemproxy的特点&lt;/h4&gt;
+&lt;h4 id=&#34;twemproxy的特点&#34;&gt;twemproxy的特点&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;支持失败的节点自动摘除（仅作为缓存时）&lt;/li&gt;
@@ -1460,7 +1460,7 @@ swift-init object-auditor stop
 &lt;li&gt;默认启用pipeline，连接复用，提高效率，性能损失在 10% - 20%&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;集群组件:51fa3b005f880190963d473247382d62&#34;&gt;集群组件&lt;/h4&gt;
+&lt;h4 id=&#34;集群组件&#34;&gt;集群组件&lt;/h4&gt;
 
 &lt;p&gt;由于twemproxy本身只是简单的代理，所以需要依赖于一些其他的程序组件。&lt;/p&gt;
 
@@ -1468,7 +1468,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;&lt;strong&gt;Redis-Twemproxy Agent：&lt;/strong&gt; nodejs写的一个监控程序，用于监听 redis-sentinel 的 master 切换事件，并且及时更新twemproxy的配置文件后将其重新启动&lt;/p&gt;
 
-&lt;h4 id=&#34;why-not-twemproxy:51fa3b005f880190963d473247382d62&#34;&gt;Why not Twemproxy&lt;/h4&gt;
+&lt;h4 id=&#34;why-not-twemproxy&#34;&gt;Why not Twemproxy&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;虽然使用 c 开发，性能损失较小，但同样是单线程。所以基本上twemproxy的数量需要和后端redis实例一样甚至更多才能充分发挥多实例的并发能力，造成运维困难。&lt;/li&gt;
@@ -1476,9 +1476,9 @@ swift-init object-auditor stop
 &lt;li&gt;&lt;strong&gt;无法动态扩容&lt;/strong&gt;，如果需要实现这个功能，要么自己写迁移脚本，手动迁移，比较繁琐，还会影响到当前服务的正常运行。或者二次开发，增加对zookeeper的依赖，将redis节点信息以及hash域相关的数据存储在zookeeper上，然后增加动态迁移数据的模块，可以在不影响现有服务运行的情况下完成增删实例。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;redis-cluster:51fa3b005f880190963d473247382d62&#34;&gt;Redis Cluster&lt;/h3&gt;
+&lt;h3 id=&#34;redis-cluster&#34;&gt;Redis Cluster&lt;/h3&gt;
 
-&lt;h4 id=&#34;数据分布-预分片:51fa3b005f880190963d473247382d62&#34;&gt;数据分布：预分片&lt;/h4&gt;
+&lt;h4 id=&#34;数据分布-预分片&#34;&gt;数据分布：预分片&lt;/h4&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-pre-sharding.png&#34; alt=&#34;redis-cluster-pre-sharding&#34; /&gt;&lt;/p&gt;
 
@@ -1489,7 +1489,7 @@ swift-init object-auditor stop
 &lt;li&gt;数据迁移时就是调整 slot 的分布&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;架构-去中心化:51fa3b005f880190963d473247382d62&#34;&gt;架构：去中心化&lt;/h4&gt;
+&lt;h4 id=&#34;架构-去中心化&#34;&gt;架构：去中心化&lt;/h4&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-architecture.png&#34; alt=&#34;redis-cluster-architecture&#34; /&gt;&lt;/p&gt;
 
@@ -1507,7 +1507,7 @@ swift-init object-auditor stop
 &lt;li&gt;Redis node 不作为client请求的代理（不转发请求），client根据node返回的错误信息重定向请求?（需要 smart-client 支持），所以client连接集群中任意一个节点都可以。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;可用性-master-slave:51fa3b005f880190963d473247382d62&#34;&gt;可用性：Master-Slave&lt;/h4&gt;
+&lt;h4 id=&#34;可用性-master-slave&#34;&gt;可用性：Master-Slave&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;每个Redis Node可以有一个或者多个Slave，当Master挂掉时，选举一个Slave形成新的Master。&lt;/li&gt;
@@ -1517,7 +1517,7 @@ swift-init object-auditor stop
 &lt;li&gt;当 slave 成为 master，先broadcast，后持续PING，最终集群实例都获知此消息&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;存在的问题:51fa3b005f880190963d473247382d62&#34;&gt;存在的问题&lt;/h4&gt;
+&lt;h4 id=&#34;存在的问题&#34;&gt;存在的问题&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Gossip协议通信开销&lt;/li&gt;
@@ -1533,9 +1533,9 @@ swift-init object-auditor stop
 &lt;li&gt;某些操作不支持，MultiOp和Pipeline都被限定在命令中的所有Key必须都在同一Slot内&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;codis:51fa3b005f880190963d473247382d62&#34;&gt;Codis&lt;/h3&gt;
+&lt;h3 id=&#34;codis&#34;&gt;Codis&lt;/h3&gt;
 
-&lt;h4 id=&#34;what-is-codis:51fa3b005f880190963d473247382d62&#34;&gt;What is Codis ？&lt;/h4&gt;
+&lt;h4 id=&#34;what-is-codis&#34;&gt;What is Codis ？&lt;/h4&gt;
 
 &lt;p&gt;Go语言开发的分布式 Redis 解决方案，对于上层的应用来说，访问 codis 和原生的 redis server 没有明显区别（不支持发布订阅等某些命令，支持 pipeline）。&lt;/p&gt;
 
@@ -1560,7 +1560,7 @@ swift-init object-auditor stop
 
 &lt;p&gt;Codis 支持按照 Namespace 区分不同的产品, 拥有不同的 product name 的产品, 各项配置都不会冲突。&lt;/p&gt;
 
-&lt;h4 id=&#34;整体设计:51fa3b005f880190963d473247382d62&#34;&gt;整体设计&lt;/h4&gt;
+&lt;h4 id=&#34;整体设计&#34;&gt;整体设计&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;预分片，1024 slot， key =&amp;gt; crc32(key)%1024&lt;/li&gt;

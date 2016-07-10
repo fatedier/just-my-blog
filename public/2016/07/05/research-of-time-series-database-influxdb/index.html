@@ -52,8 +52,9 @@
 
                 <div class="collapse navbar-collapse" id="navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
-                        <li><a href="http://blog.fatedier.com/tags">Tags</a></li>
+                        <li><a href="http://blog.fatedier.com/categories/技术文章">技术文章</a></li>
+                        <li><a href="http://blog.fatedier.com/categories/读书笔记">读书笔记</a></li>
+                        <li><a href="http://blog.fatedier.com/tags">分类</a></li>
                         
                         <li><a href="http://blog.fatedier.com/about">关于我</a></li>
                         
@@ -91,11 +92,11 @@
 
 <p>基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。</p>
 
-<h3 id="测试版本:441ef2dfb3e97650c90da967029aaee7">测试版本</h3>
+<h3 id="测试版本">测试版本</h3>
 
 <p>1.0.0_beta2-1</p>
 
-<h3 id="安装部署:441ef2dfb3e97650c90da967029aaee7">安装部署</h3>
+<h3 id="安装部署">安装部署</h3>
 
 <p><code>wget https://dl.influxdata.com/influxdb/releases/influxdb-1.0.0_beta2.x86_64.rpm</code></p>
 
@@ -105,7 +106,7 @@
 
 <p><code>sudo service influxdb start</code></p>
 
-<h3 id="特点:441ef2dfb3e97650c90da967029aaee7">特点</h3>
+<h3 id="特点">特点</h3>
 
 <ul>
 <li>可以设置metric的保存时间。</li>
@@ -115,9 +116,9 @@
 <li>支持定期采样数据，写入另外的measurement，方便分粒度存储数据。</li>
 </ul>
 
-<h3 id="概念:441ef2dfb3e97650c90da967029aaee7">概念</h3>
+<h3 id="概念">概念</h3>
 
-<h4 id="数据格式-line-protocol:441ef2dfb3e97650c90da967029aaee7">数据格式 Line Protocol</h4>
+<h4 id="数据格式-line-protocol">数据格式 Line Protocol</h4>
 
 <pre><code class="language-bash">measurement[,tag_key1=tag_value1...] field_key=field_value[,field_key2=field_value2] [timestamp]
 
@@ -132,39 +133,39 @@ cpu_load,host_id=1 value=0.1 1434055562000000000
 <li>tags-key, tags-value: 和 field-key 类似，但是会进行索引，方便查询时用于过滤条件。</li>
 </ul>
 
-<h4 id="series:441ef2dfb3e97650c90da967029aaee7">Series</h4>
+<h4 id="series">Series</h4>
 
 <p>measurement, tag set, retention policy 相同的数据集合算做一个 series。</p>
 
 <p>假设 cpu_load 有两个 tags，host_id 和 name，host_id 的数量为 100，name 的数量为 200，则 series 基数为 100 * 200 = 20000。</p>
 
-<h4 id="数据存储:441ef2dfb3e97650c90da967029aaee7">数据存储</h4>
+<h4 id="数据存储">数据存储</h4>
 
 <p>measurements, tag keys, field keys，tag values 全局存一份。</p>
 
 <p>field values 和 timestamps 每条数据存一份。</p>
 
-<h4 id="retention-policy:441ef2dfb3e97650c90da967029aaee7">Retention Policy</h4>
+<h4 id="retention-policy">Retention Policy</h4>
 
 <p>保留策略包括设置数据保存的时间以及在集群中的副本个数。</p>
 
 <p>默认的 RP 为 <strong>default</strong>，保存时间不限制，副本个数为 1，默认 RP 是可以修改的，并且我们可以创建新的 RP。</p>
 
-<h4 id="continuous-query:441ef2dfb3e97650c90da967029aaee7">Continuous Query</h4>
+<h4 id="continuous-query">Continuous Query</h4>
 
 <p>CQ 是预先配置好的一些查询命令，<strong>SELECT</strong> 语句必须包含 <strong>GROUP BY time()</strong>，influxdb 会定期自动执行这些命令并将查询结果写入指定的另外的 measurement 中。</p>
 
 <p>利用这个特性并结合 RP 我们可以方便地保存不同粒度的数据，根据数据粒度的不同设置不同的保存时间，这样不仅节约了存储空间，而且加速了时间间隔较长的数据查询效率，避免查询时再进行聚合计算。</p>
 
-<h4 id="shard:441ef2dfb3e97650c90da967029aaee7">Shard</h4>
+<h4 id="shard">Shard</h4>
 
 <p>Shard 这个概念并不对普通用户开放，实际上是 InfluxDB 将连续一段时间内的数据作为一个 shard 存储，根据数据保存策略来决定，通常是保存1天或者7天的数据。例如如果保存策略 RP 是无限制的话，shard 将会保存7天的数据。这样方便之后的删除操作，直接关闭下层对应的一个数据库即可。</p>
 
-<h3 id="存储引擎:441ef2dfb3e97650c90da967029aaee7">存储引擎</h3>
+<h3 id="存储引擎">存储引擎</h3>
 
 <p>从 LevelDB（LSM Tree），到 BoltDB（mmap B+树），现在是自己实现的 TSM Tree 的算法，类似 LSM Tree，针对 InfluxDB 的使用做了特殊优化。</p>
 
-<h4 id="leveldb:441ef2dfb3e97650c90da967029aaee7">LevelDB</h4>
+<h4 id="leveldb">LevelDB</h4>
 
 <p>LevelDB 底层使用了 LSM Tree 作为数据结构，用于存储大量的 key 值有序的 K-V 数据，鉴于时序数据的特点，只要将时间戳放入 key 中，就可以非常快速的遍历指定时间范围内的数据。LSM Tree 将大量随机写变成顺序写，所以拥有很高的写吞吐量，并且 LevelDB 内置了压缩功能。</p>
 
@@ -174,7 +175,7 @@ cpu_load,host_id=1 value=0.1 1434055562000000000
 
 <p>最严重的问题是由于 InfluxDB 通过 shard 来组织数据，每一个 shard 对应的就是一个 LevelDB 数据库，而由于 LevelDB 的底层存储是大量 SSTable 文件，所以当用户需要存储长时间的数据，例如几个月或者一年的时候，会产生大量的 shard，从而消耗大量文件描述符，将系统资源耗尽。</p>
 
-<h4 id="boltdb:441ef2dfb3e97650c90da967029aaee7">BoltDB</h4>
+<h4 id="boltdb">BoltDB</h4>
 
 <p>之后 InfluxDB 采用了 BoltDB 作为数据存储引擎。BoltDB 是基于 LMDB 使用 Go 语言开发的数据库。同 LevelDB 类似的是，都可以用于存储 key 有序的 K-V 数据。</p>
 
@@ -184,11 +185,11 @@ cpu_load,host_id=1 value=0.1 1434055562000000000
 
 <p>但是当数据库容量达到数GB级别时，同时往大量 series 中写入数据，相当于是大量随机写，会造成 IOPS 上升。</p>
 
-<h4 id="tsm-tree:441ef2dfb3e97650c90da967029aaee7">TSM Tree</h4>
+<h4 id="tsm-tree">TSM Tree</h4>
 
 <p>TSM Tree 是 InfluxDB 根据实际需求在 LSM Tree 的基础上稍作修改优化而来。</p>
 
-<h5 id="wal:441ef2dfb3e97650c90da967029aaee7">WAL</h5>
+<h5 id="wal">WAL</h5>
 
 <p>每一个 shard 对应底层的一个数据库。每一个数据库有自己的 WAL 文件，压缩后的元数据文件，索引文件。</p>
 
@@ -200,22 +201,22 @@ cpu_load,host_id=1 value=0.1 1434055562000000000
 
 <p>查询操作将会去 WAL 以及索引中查询，WAL 在内存中缓存有一个读写锁进行控制。删除操作会将缓存中的key删除，同时在 WAL 文件中进行记录并且在内存的索引中进行删除标记。</p>
 
-<h5 id="data-files-sstables:441ef2dfb3e97650c90da967029aaee7">Data Files(SSTables)</h5>
+<h5 id="data-files-sstables">Data Files(SSTables)</h5>
 
 <p>这部分 InfluxDB 自己定义了特定的数据结构，将时间戳编码到了 DataFiles 中，进行了相对于时间序列数据的优化。</p>
 
-<h3 id="api:441ef2dfb3e97650c90da967029aaee7">API</h3>
+<h3 id="api">API</h3>
 
 <p>通过 HTTP 访问 influxdb。</p>
 
 <p>语法上是一种类似于 SQL 的命令，官方称为 InfluxQL。</p>
 
-<h4 id="创建数据库:441ef2dfb3e97650c90da967029aaee7">创建数据库</h4>
+<h4 id="创建数据库">创建数据库</h4>
 
 <pre><code class="language-bash">curl -POST http://localhost:8086/query --data-urlencode &quot;q=CREATE DATABASE mydb&quot;
 </code></pre>
 
-<h4 id="插入数据:441ef2dfb3e97650c90da967029aaee7">插入数据</h4>
+<h4 id="插入数据">插入数据</h4>
 
 <pre><code class="language-bash">curl -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary 'cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000'
 </code></pre>
@@ -229,7 +230,7 @@ cpu_load_short,host=server02,region=us-west value=0.55 1422568543702900257
 cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702900257'
 </code></pre>
 
-<h4 id="读取数据:441ef2dfb3e97650c90da967029aaee7">读取数据</h4>
+<h4 id="读取数据">读取数据</h4>
 
 <pre><code class="language-bash">curl -GET 'http://localhost:8086/query' --data-urlencode &quot;db=mydb&quot; --data-urlencode &quot;epoch=s&quot; --data-urlencode &quot;q=SELECT value FROM cpu_load_short WHERE region='us-west'&quot;
 </code></pre>
@@ -241,37 +242,37 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 <p>这里 <code>--data-urlencode &quot;epoch=s&quot;</code> 会使返回的时间戳为 unix 时间戳格式。</p>
 
-<h4 id="创建-rp:441ef2dfb3e97650c90da967029aaee7">创建 RP</h4>
+<h4 id="创建-rp">创建 RP</h4>
 
 <pre><code class="language-bash">CREATE RETENTION POLICY two_hours ON food_data DURATION 2h REPLICATION 1 DEFAULT
 </code></pre>
 
 <p>这里将 <strong>two_hours</strong> 设置成了默认保存策略，存入 food_data 中的数据如果没有明确指定 RP 将会默认采用此策略，数据保存时间为 2 小时，副本数为 1。</p>
 
-<h4 id="创建-cq:441ef2dfb3e97650c90da967029aaee7">创建 CQ</h4>
+<h4 id="创建-cq">创建 CQ</h4>
 
 <pre><code class="language-bash">CREATE CONTINUOUS QUERY cq_5m ON food_data BEGIN SELECT mean(website) AS mean_website,mean(phone) AS mean_phone INTO food_data.&quot;default&quot;.downsampled_orders FROM orders GROUP BY time(5m) END
 </code></pre>
 
 <p>这里创建了一个 CQ，每个5分钟将 two_hours.orders 中的数据计算5分钟的平均值后存入 default.downsampled_orders 中，default 这个 RP 中的数据是永久保存的。</p>
 
-<h4 id="where:441ef2dfb3e97650c90da967029aaee7">WHERE</h4>
+<h4 id="where">WHERE</h4>
 
 <p>查询时指定查询的限制条件，例如查询最近1小时内 host_id=1 的机器的 cpu 数据。</p>
 
 <pre><code class="language-bash">SELECT value FROM cpu_load WHERE time &gt; now() - 1h and host_id = 1
 </code></pre>
 
-<h4 id="group-by:441ef2dfb3e97650c90da967029aaee7">GROUP BY</h4>
+<h4 id="group-by">GROUP BY</h4>
 
 <p>类似于 SQL 中的语法，可以对细粒度数据进行聚合计算，例如查询最近1小时内 host_id=1 的机器的 cpu 的数据，并且采样为每5分钟的平均值。</p>
 
 <pre><code class="language-bash">SELECT mean(value) FROM cpu_load WHERE time &gt; now() - 1h and host_id = 1 GROUP BY time(5m)
 </code></pre>
 
-<h3 id="官方推荐硬件配置:441ef2dfb3e97650c90da967029aaee7">官方推荐硬件配置</h3>
+<h3 id="官方推荐硬件配置">官方推荐硬件配置</h3>
 
-<h4 id="单节点:441ef2dfb3e97650c90da967029aaee7">单节点</h4>
+<h4 id="单节点">单节点</h4>
 
 <table>
 <thead>
@@ -321,7 +322,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 <li>Probably infeasible: 可能单机无法支持，需要集群环境</li>
 </ul>
 
-<h4 id="集群:441ef2dfb3e97650c90da967029aaee7">集群</h4>
+<h4 id="集群">集群</h4>
 
 <p>InfluxDB 从 0.12 版本开始将不再开源其 cluster 源码，而是被用做提供商业服务。</p>
 
@@ -329,7 +330,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 <p>已知七牛是采用了 InfluxDB 作为时间序列数据的存储，自研了调度器以及高可用模块，具有横向扩展的能力。</p>
 
-<h3 id="总结:441ef2dfb3e97650c90da967029aaee7">总结</h3>
+<h3 id="总结">总结</h3>
 
 <p>目前最火热的时间序列数据库项目，社区开发活跃，迭代更新较快，存储引擎经常变化，网上的一些资料都比较过时，例如最新的 TSM 存储引擎只能看到官方的文档简介，还没有详细的原理说明的文章。</p>
 
@@ -412,6 +413,8 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
                 </div>
                 <div class="list-group">
                     
+                    <a href="http://blog.fatedier.com/2016/07/10/from-zero-to-one-just-a-dream" class="list-group-item">从0到1：遥远的理想国</a>
+                    
                     <a href="http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb" class="list-group-item">InfluxDB 与 OpenTSDB 对比测试</a>
                     
                     <a href="http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb" class="list-group-item">时间序列数据库调研之InfluxDB</a>
@@ -425,8 +428,6 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
                     <a href="http://blog.fatedier.com/2016/05/25/deploy-openstack-swift" class="list-group-item">部署openstack的对象存储服务swift</a>
                     
                     <a href="http://blog.fatedier.com/2016/05/16/install-private-docker-registry" class="list-group-item">搭建私有docker仓库</a>
-                    
-                    <a href="http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups" class="list-group-item">go程序中dns解析无法使用所有域名服务器</a>
                     
                 </div>
             </div>
@@ -570,6 +571,12 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
                     <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8" class="list-group-item">
                         <span class="badge">6</span>
                         分布式存储
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A" class="list-group-item">
+                        <span class="badge">1</span>
+                        创业
                     </a>
                     
                     

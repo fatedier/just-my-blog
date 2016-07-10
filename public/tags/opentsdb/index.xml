@@ -20,21 +20,21 @@
 
 &lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;
 
-&lt;h3 id=&#34;测试版本:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;测试版本&lt;/h3&gt;
+&lt;h3 id=&#34;测试版本&#34;&gt;测试版本&lt;/h3&gt;
 
 &lt;p&gt;hbase-1.1.5&lt;/p&gt;
 
 &lt;p&gt;opentsdb-2.2.0&lt;/p&gt;
 
-&lt;h3 id=&#34;单机部署:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;单机部署&lt;/h3&gt;
+&lt;h3 id=&#34;单机部署&#34;&gt;单机部署&lt;/h3&gt;
 
 &lt;p&gt;单机部署可以参考我之前的一篇文章，集群部署比较复杂，这里仅使用单机进行测试。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/&#34;&gt;OpenTSDB部署与使用&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;概念:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;概念&lt;/h3&gt;
+&lt;h3 id=&#34;概念&#34;&gt;概念&lt;/h3&gt;
 
-&lt;h4 id=&#34;数据格式:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;数据格式&lt;/h4&gt;
+&lt;h4 id=&#34;数据格式&#34;&gt;数据格式&lt;/h4&gt;
 
 &lt;ul&gt;
 &lt;li&gt;metric: 一个可测量的单位的标称。&lt;/li&gt;
@@ -43,17 +43,17 @@
 &lt;li&gt;value: metric 的实际测量值。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;uid:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;UID&lt;/h4&gt;
+&lt;h4 id=&#34;uid&#34;&gt;UID&lt;/h4&gt;
 
 &lt;p&gt;在 OpenTSDB 中，每一个 metric、tagk 或者 tagv 在创建的时候被分配一个唯一标识叫做 UID。在后续的实际存储中，实际上存储的是 UID，而不是它们原本的字符串，UID 占 3个字节（也可以修改源码改为4字节），这样可以节省存储空间。&lt;/p&gt;
 
-&lt;h4 id=&#34;tsuid:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;TSUID&lt;/h4&gt;
+&lt;h4 id=&#34;tsuid&#34;&gt;TSUID&lt;/h4&gt;
 
 &lt;p&gt;&lt;code&gt;&amp;lt;metric_UID&amp;gt;&amp;lt;timestamp&amp;gt;&amp;lt;tagk1_UID&amp;gt;&amp;lt;tagv1_UID&amp;gt;[...&amp;lt;tagkN_UID&amp;gt;&amp;lt;tagvN_UID&amp;gt;]&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;写入 HBase 时的 row key 格式，其中的 metric、tagk 和 tagv 都被转换成了 UID。&lt;/p&gt;
 
-&lt;h4 id=&#34;data-table-schema:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;Data Table Schema&lt;/h4&gt;
+&lt;h4 id=&#34;data-table-schema&#34;&gt;Data Table Schema&lt;/h4&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-data-table-schema.png&#34; alt=&#34;data-table-schema&#34; /&gt;&lt;/p&gt;
 
@@ -65,7 +65,7 @@
 
 &lt;p&gt;&lt;strong&gt;value&lt;/strong&gt; 使用 8 bytes 存储，既可以存储 long,也可以存储 double。&lt;/p&gt;
 
-&lt;h4 id=&#34;compaction:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;Compaction&lt;/h4&gt;
+&lt;h4 id=&#34;compaction&#34;&gt;Compaction&lt;/h4&gt;
 
 &lt;p&gt;在 OpenTSDB 中，会将多列合并到一列之中以减少磁盘占用空间，这个过程会在 TSD 写数据或者查询过程中不定期的发生。&lt;/p&gt;
 
@@ -73,11 +73,11 @@
 
 &lt;p&gt;例如图中，将列 1890 和 列 1892 合并到了一起。&lt;/p&gt;
 
-&lt;h3 id=&#34;api:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;API&lt;/h3&gt;
+&lt;h3 id=&#34;api&#34;&gt;API&lt;/h3&gt;
 
 &lt;p&gt;OpenTSDB 同样提供了一套基于 HTTP 的 API 接口。&lt;/p&gt;
 
-&lt;h4 id=&#34;插入数据:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;插入数据&lt;/h4&gt;
+&lt;h4 id=&#34;插入数据&#34;&gt;插入数据&lt;/h4&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://localhost:4242/api/put&#34;&gt;http://localhost:4242/api/put&lt;/a&gt;, POST&lt;/p&gt;
 
@@ -105,7 +105,7 @@
 ]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;查询数据:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;查询数据&lt;/h4&gt;
+&lt;h4 id=&#34;查询数据&#34;&gt;查询数据&lt;/h4&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://localhost:4242/api/query&#34;&gt;http://localhost:4242/api/query&lt;/a&gt;, POST&lt;/p&gt;
 
@@ -140,7 +140,7 @@
 
 &lt;p&gt;&lt;strong&gt;downsample&lt;/strong&gt; 聚合计算，例如上面是对每隔60s的数据计算一次平均值。&lt;/p&gt;
 
-&lt;h3 id=&#34;总结:2bcfdb374ee9d4126e3ae956caebf257&#34;&gt;总结&lt;/h3&gt;
+&lt;h3 id=&#34;总结&#34;&gt;总结&lt;/h3&gt;
 
 &lt;p&gt;OpenTSDB 在存储时间序列数据这一领域拥有很大的优势，被大多数公司所采用，网上的相关文档也比较全面。&lt;/p&gt;
 
@@ -162,7 +162,7 @@
 
 &lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;
 
-&lt;h3 id=&#34;安装-hbase:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;安装 HBase&lt;/h3&gt;
+&lt;h3 id=&#34;安装-hbase&#34;&gt;安装 HBase&lt;/h3&gt;
 
 &lt;p&gt;因为 OpenTSDB 的后端存储使用的是 HBase，所以我们需要先安装 HBase。&lt;/p&gt;
 
@@ -192,50 +192,50 @@
 &amp;lt;/configuration&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;通过命令行操作-hbase:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;通过命令行操作 HBase&lt;/h3&gt;
+&lt;h3 id=&#34;通过命令行操作-hbase&#34;&gt;通过命令行操作 HBase&lt;/h3&gt;
 
 &lt;p&gt;这里可以稍微熟悉一下 HBase 的操作，非必须。&lt;/p&gt;
 
-&lt;h5 id=&#34;连接到-hbase:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;连接到 HBase&lt;/h5&gt;
+&lt;h5 id=&#34;连接到-hbase&#34;&gt;连接到 HBase&lt;/h5&gt;
 
 &lt;p&gt;&lt;code&gt;./bin/hbase shell&lt;/code&gt;&lt;/p&gt;
 
-&lt;h5 id=&#34;创建一张表:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;创建一张表&lt;/h5&gt;
+&lt;h5 id=&#34;创建一张表&#34;&gt;创建一张表&lt;/h5&gt;
 
 &lt;p&gt;&lt;code&gt;create &#39;test&#39;, &#39;cf&#39;&lt;/code&gt;&lt;/p&gt;
 
-&lt;h5 id=&#34;查看表信息:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;查看表信息&lt;/h5&gt;
+&lt;h5 id=&#34;查看表信息&#34;&gt;查看表信息&lt;/h5&gt;
 
 &lt;p&gt;&lt;code&gt;list &#39;test&#39;&lt;/code&gt;&lt;/p&gt;
 
-&lt;h5 id=&#34;向表中插入数据:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;向表中插入数据&lt;/h5&gt;
+&lt;h5 id=&#34;向表中插入数据&#34;&gt;向表中插入数据&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;put &#39;test&#39;, &#39;row1&#39;, &#39;cf:a&#39;, &#39;value1&#39;
 put &#39;test&#39;, &#39;row2&#39;, &#39;cf:b&#39;, &#39;value2&#39;
 put &#39;test&#39;, &#39;row3&#39;, &#39;cf:c&#39;, &#39;value3&#39;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;查看表中所有数据:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;查看表中所有数据&lt;/h5&gt;
+&lt;h5 id=&#34;查看表中所有数据&#34;&gt;查看表中所有数据&lt;/h5&gt;
 
 &lt;p&gt;&lt;code&gt;scan &#39;test&#39;&lt;/code&gt;&lt;/p&gt;
 
-&lt;h5 id=&#34;查看指定行的数据:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;查看指定行的数据&lt;/h5&gt;
+&lt;h5 id=&#34;查看指定行的数据&#34;&gt;查看指定行的数据&lt;/h5&gt;
 
 &lt;p&gt;&lt;code&gt;get &#39;test&#39;, &#39;row1&#39;&lt;/code&gt;&lt;/p&gt;
 
-&lt;h5 id=&#34;禁用指定表-删除表或修改表设置前需要先禁用该表:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;禁用指定表（删除表或修改表设置前需要先禁用该表）&lt;/h5&gt;
+&lt;h5 id=&#34;禁用指定表-删除表或修改表设置前需要先禁用该表&#34;&gt;禁用指定表（删除表或修改表设置前需要先禁用该表）&lt;/h5&gt;
 
 &lt;p&gt;&lt;code&gt;disable &#39;test&#39;&lt;/code&gt;&lt;/p&gt;
 
-&lt;h5 id=&#34;恢复指定表:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;恢复指定表&lt;/h5&gt;
+&lt;h5 id=&#34;恢复指定表&#34;&gt;恢复指定表&lt;/h5&gt;
 
 &lt;p&gt;&lt;code&gt;enable &#39;test&#39;&lt;/code&gt;&lt;/p&gt;
 
-&lt;h5 id=&#34;删除表:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;删除表&lt;/h5&gt;
+&lt;h5 id=&#34;删除表&#34;&gt;删除表&lt;/h5&gt;
 
 &lt;p&gt;&lt;code&gt;drop &#39;test&#39;&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;安装opentsdb:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;安装OpenTSDB&lt;/h3&gt;
+&lt;h3 id=&#34;安装opentsdb&#34;&gt;安装OpenTSDB&lt;/h3&gt;
 
 &lt;p&gt;&lt;strong&gt;参考文章&lt;/strong&gt;&lt;/p&gt;
 
@@ -255,9 +255,9 @@ put &#39;test&#39;, &#39;row3&#39;, &#39;cf:c&#39;, &#39;value3&#39;
 &lt;li&gt;&lt;p&gt;通过浏览器访问 &lt;a href=&#34;http://x.x.x.x:4242&#34;&gt;http://x.x.x.x:4242&lt;/a&gt; 查看是否安装成功。&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;http-api:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;HTTP API&lt;/h3&gt;
+&lt;h3 id=&#34;http-api&#34;&gt;HTTP API&lt;/h3&gt;
 
-&lt;h4 id=&#34;插入数据:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;插入数据&lt;/h4&gt;
+&lt;h4 id=&#34;插入数据&#34;&gt;插入数据&lt;/h4&gt;
 
 &lt;p&gt;&lt;strong&gt;/api/put&lt;/strong&gt;&lt;/p&gt;
 
@@ -292,7 +292,7 @@ put &#39;test&#39;, &#39;row3&#39;, &#39;cf:c&#39;, &#39;value3&#39;
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;查询数据:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;查询数据&lt;/h3&gt;
+&lt;h3 id=&#34;查询数据&#34;&gt;查询数据&lt;/h3&gt;
 
 &lt;p&gt;&lt;strong&gt;/api/query&lt;/strong&gt;&lt;/p&gt;
 
@@ -354,11 +354,11 @@ put &#39;test&#39;, &#39;row3&#39;, &#39;cf:c&#39;, &#39;value3&#39;
 ]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;聚合:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;聚合&lt;/h4&gt;
+&lt;h4 id=&#34;聚合&#34;&gt;聚合&lt;/h4&gt;
 
 &lt;p&gt;&lt;strong&gt;aggregator&lt;/strong&gt; 是用于对查询结果进行聚合，将同一 unix 时间戳内的数据进行聚合计算后返回结果，例如如果 tags 不填，1456123705 有两条数据，一条 &lt;code&gt;host=web1&lt;/code&gt;，另外一条 &lt;code&gt;host=web2&lt;/code&gt;，值都为10，那么返回的该时间点的值为 sum 后的 20。&lt;/p&gt;
 
-&lt;h4 id=&#34;条件过滤:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;条件过滤&lt;/h4&gt;
+&lt;h4 id=&#34;条件过滤&#34;&gt;条件过滤&lt;/h4&gt;
 
 &lt;p&gt;可以针对 tag 进行一些条件的过滤，返回 tag 中 host 的值以 web 开头的数据。&lt;/p&gt;
 
@@ -377,7 +377,7 @@ put &#39;test&#39;, &#39;row3&#39;, &#39;cf:c&#39;, &#39;value3&#39;
 ]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;downsample:f7a0fb8dc4f1344c3cd3f22f8254b5c8&#34;&gt;downsample&lt;/h4&gt;
+&lt;h4 id=&#34;downsample&#34;&gt;downsample&lt;/h4&gt;
 
 &lt;p&gt;简单来说就是对指定时间段内的数据进行聚合后返回，例如需要返回每分钟的平均值数据&lt;/p&gt;
 

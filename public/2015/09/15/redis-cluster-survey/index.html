@@ -52,8 +52,9 @@
 
                 <div class="collapse navbar-collapse" id="navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
-                        <li><a href="http://blog.fatedier.com/tags">Tags</a></li>
+                        <li><a href="http://blog.fatedier.com/categories/技术文章">技术文章</a></li>
+                        <li><a href="http://blog.fatedier.com/categories/读书笔记">读书笔记</a></li>
+                        <li><a href="http://blog.fatedier.com/tags">分类</a></li>
                         
                         <li><a href="http://blog.fatedier.com/about">关于我</a></li>
                         
@@ -93,7 +94,7 @@
 
 <p>单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。</p>
 
-<h3 id="为什么需要集群:51fa3b005f880190963d473247382d62">为什么需要集群</h3>
+<h3 id="为什么需要集群">为什么需要集群</h3>
 
 <ul>
 <li>Redis单线程特性，多请求顺序执行，单个耗时的操作会阻塞后续的操作</li>
@@ -105,9 +106,9 @@
 
 <p>Redis集群的目标就是为了实现高可用性，避免性能瓶颈，可动态扩容，易于做监控告警。</p>
 
-<h3 id="三种主流的集群解决方案:51fa3b005f880190963d473247382d62">三种主流的集群解决方案</h3>
+<h3 id="三种主流的集群解决方案">三种主流的集群解决方案</h3>
 
-<h4 id="客户端静态分片:51fa3b005f880190963d473247382d62">客户端静态分片</h4>
+<h4 id="客户端静态分片">客户端静态分片</h4>
 
 <p>通常需要 smart-client 支持，在业务程序端根据预先设置的路由规则进行分片，从而实现对多个redis实例的分布式访问。</p>
 
@@ -119,7 +120,7 @@
 
 <p><strong>缺点：</strong> 当redis实例需要扩容或切换的情况下，需要修改业务端的程序，较为麻烦。并且需  要维护各个语言的客户端版本，如果要升级客户端成本也会比较高。出现故障时难以及时定位问题。（有些smart-client借助于zookeeper维护客户端访问redis实例的一致性）</p>
 
-<h4 id="proxy分片:51fa3b005f880190963d473247382d62">Proxy分片</h4>
+<h4 id="proxy分片">Proxy分片</h4>
 
 <p>通过统一的代理程序访问多个redis实例，比如业内曾广泛使用的 twemproxy 以及 豌豆荚开源的 codis。（twemproxy是twitter开源的一个redis和memcache代理服务器，只用于作为简单的代理中间件，目前twitter内部已经不再使用）</p>
 
@@ -127,7 +128,7 @@
 
 <p><strong>缺点：</strong> 增加了一层中间件，增加了网络和数据处理的消耗，性能下降。</p>
 
-<h4 id="official-redis-cluster:51fa3b005f880190963d473247382d62">Official Redis Cluster</h4>
+<h4 id="official-redis-cluster">Official Redis Cluster</h4>
 
 <p>Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：</p>
 
@@ -137,13 +138,13 @@
 <li><strong>可用性：</strong>集群具有了以前Sentinel的监控和自动Failover能力。</li>
 </ul>
 
-<h3 id="基于twemproxy的redis集群环境:51fa3b005f880190963d473247382d62">基于twemproxy的redis集群环境</h3>
+<h3 id="基于twemproxy的redis集群环境">基于twemproxy的redis集群环境</h3>
 
-<h4 id="整体架构图:51fa3b005f880190963d473247382d62">整体架构图</h4>
+<h4 id="整体架构图">整体架构图</h4>
 
 <p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-twemproxy-architecture.png" alt="twemproxy_architecture" /></p>
 
-<h4 id="twemproxy的特点:51fa3b005f880190963d473247382d62">twemproxy的特点</h4>
+<h4 id="twemproxy的特点">twemproxy的特点</h4>
 
 <ul>
 <li>支持失败的节点自动摘除（仅作为缓存时）</li>
@@ -153,7 +154,7 @@
 <li>默认启用pipeline，连接复用，提高效率，性能损失在 10% - 20%</li>
 </ul>
 
-<h4 id="集群组件:51fa3b005f880190963d473247382d62">集群组件</h4>
+<h4 id="集群组件">集群组件</h4>
 
 <p>由于twemproxy本身只是简单的代理，所以需要依赖于一些其他的程序组件。</p>
 
@@ -161,7 +162,7 @@
 
 <p><strong>Redis-Twemproxy Agent：</strong> nodejs写的一个监控程序，用于监听 redis-sentinel 的 master 切换事件，并且及时更新twemproxy的配置文件后将其重新启动</p>
 
-<h4 id="why-not-twemproxy:51fa3b005f880190963d473247382d62">Why not Twemproxy</h4>
+<h4 id="why-not-twemproxy">Why not Twemproxy</h4>
 
 <ul>
 <li>虽然使用 c 开发，性能损失较小，但同样是单线程。所以基本上twemproxy的数量需要和后端redis实例一样甚至更多才能充分发挥多实例的并发能力，造成运维困难。</li>
@@ -169,9 +170,9 @@
 <li><strong>无法动态扩容</strong>，如果需要实现这个功能，要么自己写迁移脚本，手动迁移，比较繁琐，还会影响到当前服务的正常运行。或者二次开发，增加对zookeeper的依赖，将redis节点信息以及hash域相关的数据存储在zookeeper上，然后增加动态迁移数据的模块，可以在不影响现有服务运行的情况下完成增删实例。</li>
 </ul>
 
-<h3 id="redis-cluster:51fa3b005f880190963d473247382d62">Redis Cluster</h3>
+<h3 id="redis-cluster">Redis Cluster</h3>
 
-<h4 id="数据分布-预分片:51fa3b005f880190963d473247382d62">数据分布：预分片</h4>
+<h4 id="数据分布-预分片">数据分布：预分片</h4>
 
 <p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-pre-sharding.png" alt="redis-cluster-pre-sharding" /></p>
 
@@ -182,7 +183,7 @@
 <li>数据迁移时就是调整 slot 的分布</li>
 </ul>
 
-<h4 id="架构-去中心化:51fa3b005f880190963d473247382d62">架构：去中心化</h4>
+<h4 id="架构-去中心化">架构：去中心化</h4>
 
 <p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-architecture.png" alt="redis-cluster-architecture" /></p>
 
@@ -200,7 +201,7 @@
 <li>Redis node 不作为client请求的代理（不转发请求），client根据node返回的错误信息重定向请求?（需要 smart-client 支持），所以client连接集群中任意一个节点都可以。</li>
 </ul>
 
-<h4 id="可用性-master-slave:51fa3b005f880190963d473247382d62">可用性：Master-Slave</h4>
+<h4 id="可用性-master-slave">可用性：Master-Slave</h4>
 
 <ul>
 <li>每个Redis Node可以有一个或者多个Slave，当Master挂掉时，选举一个Slave形成新的Master。</li>
@@ -210,7 +211,7 @@
 <li>当 slave 成为 master，先broadcast，后持续PING，最终集群实例都获知此消息</li>
 </ul>
 
-<h4 id="存在的问题:51fa3b005f880190963d473247382d62">存在的问题</h4>
+<h4 id="存在的问题">存在的问题</h4>
 
 <ul>
 <li>Gossip协议通信开销</li>
@@ -226,9 +227,9 @@
 <li>某些操作不支持，MultiOp和Pipeline都被限定在命令中的所有Key必须都在同一Slot内</li>
 </ul>
 
-<h3 id="codis:51fa3b005f880190963d473247382d62">Codis</h3>
+<h3 id="codis">Codis</h3>
 
-<h4 id="what-is-codis:51fa3b005f880190963d473247382d62">What is Codis ？</h4>
+<h4 id="what-is-codis">What is Codis ？</h4>
 
 <p>Go语言开发的分布式 Redis 解决方案，对于上层的应用来说，访问 codis 和原生的 redis server 没有明显区别（不支持发布订阅等某些命令，支持 pipeline）。</p>
 
@@ -253,7 +254,7 @@
 
 <p>Codis 支持按照 Namespace 区分不同的产品, 拥有不同的 product name 的产品, 各项配置都不会冲突。</p>
 
-<h4 id="整体设计:51fa3b005f880190963d473247382d62">整体设计</h4>
+<h4 id="整体设计">整体设计</h4>
 
 <ul>
 <li>预分片，1024 slot， key =&gt; crc32(key)%1024</li>
@@ -331,6 +332,8 @@
                 </div>
                 <div class="list-group">
                     
+                    <a href="http://blog.fatedier.com/2016/07/10/from-zero-to-one-just-a-dream" class="list-group-item">从0到1：遥远的理想国</a>
+                    
                     <a href="http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb" class="list-group-item">InfluxDB 与 OpenTSDB 对比测试</a>
                     
                     <a href="http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb" class="list-group-item">时间序列数据库调研之InfluxDB</a>
@@ -344,8 +347,6 @@
                     <a href="http://blog.fatedier.com/2016/05/25/deploy-openstack-swift" class="list-group-item">部署openstack的对象存储服务swift</a>
                     
                     <a href="http://blog.fatedier.com/2016/05/16/install-private-docker-registry" class="list-group-item">搭建私有docker仓库</a>
-                    
-                    <a href="http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups" class="list-group-item">go程序中dns解析无法使用所有域名服务器</a>
                     
                 </div>
             </div>
@@ -489,6 +490,12 @@
                     <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8" class="list-group-item">
                         <span class="badge">6</span>
                         分布式存储
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A" class="list-group-item">
+                        <span class="badge">1</span>
+                        创业
                     </a>
                     
                     

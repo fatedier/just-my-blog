@@ -20,13 +20,13 @@
 
 &lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;
 
-&lt;h3 id=&#34;业务说明:b843d88db977db74e59764a23a86a6c0&#34;&gt;业务说明&lt;/h3&gt;
+&lt;h3 id=&#34;业务说明&#34;&gt;业务说明&lt;/h3&gt;
 
 &lt;p&gt;为了便于说明，举一个简单的例子。假设现在有一个项目需要建立一个和银行交互的平台，目前只接入工商银行，后续接入其他银行，每个银行的业务都有差异，报文格式可能也不一致。&lt;/p&gt;
 
 &lt;p&gt;这里只列举几个简要的流程，仅包括拼报文，发送报文，接收报文，解析报文，其余整体架构以及后续处理等内容省略。&lt;/p&gt;
 
-&lt;h3 id=&#34;初步设计:b843d88db977db74e59764a23a86a6c0&#34;&gt;初步设计&lt;/h3&gt;
+&lt;h3 id=&#34;初步设计&#34;&gt;初步设计&lt;/h3&gt;
 
 &lt;p&gt;创建一个银行交互类 BankOpt，包括四个函数&lt;/p&gt;
 
@@ -40,7 +40,7 @@ int parseMsg();     // 解析报文
 
 &lt;p&gt;这种设计在刚开发的时候非常方便，代码量少，但是如果后续需要接入另外一个银行时就需要改动 &lt;strong&gt;BankOpt&lt;/strong&gt; 类，不符合设计模式中的开放-封闭原则。而且单个函数中将来可能会有大量的 &lt;strong&gt;if-else&lt;/strong&gt;，使代码可读性下降。&lt;/p&gt;
 
-&lt;h3 id=&#34;简单工厂模式:b843d88db977db74e59764a23a86a6c0&#34;&gt;简单工厂模式&lt;/h3&gt;
+&lt;h3 id=&#34;简单工厂模式&#34;&gt;简单工厂模式&lt;/h3&gt;
 
 &lt;p&gt;通过简单工厂模式，我们可以创建一个专门的工厂类用于实例化一个合适的银行交互类，只需要这个银行交互类具有共同的接口即可。&lt;/p&gt;
 
@@ -60,7 +60,7 @@ public:
 
 &lt;p&gt;创建两个银行交互子类GSBank（工商银行）和RMBank（人民银行），继承BaseBank，实现四个虚函数。&lt;/p&gt;
 
-&lt;h4 id=&#34;创建一个工厂类:b843d88db977db74e59764a23a86a6c0&#34;&gt;创建一个工厂类&lt;/h4&gt;
+&lt;h4 id=&#34;创建一个工厂类&#34;&gt;创建一个工厂类&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;class BankFactory
 {
@@ -76,7 +76,7 @@ public:
 
 &lt;p&gt;工厂类中有一个 &lt;strong&gt;createBank&lt;/strong&gt; 函数，用于根据银行编码创建相应的实例并返回其基类指针，这样我们只需要通过基类指针调用相关函数即可。&lt;/p&gt;
 
-&lt;h4 id=&#34;在主流程中调用:b843d88db977db74e59764a23a86a6c0&#34;&gt;在主流程中调用&lt;/h4&gt;
+&lt;h4 id=&#34;在主流程中调用&#34;&gt;在主流程中调用&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-cpp&#34;&gt;BankFactory bf;
 BaseBank* t = (BaseBank*)bf.createBank(bank_name);
@@ -90,11 +90,11 @@ t-&amp;gt;getMsg();
 t-&amp;gt;parseMsg();
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;优缺点:b843d88db977db74e59764a23a86a6c0&#34;&gt;优缺点&lt;/h4&gt;
+&lt;h4 id=&#34;优缺点&#34;&gt;优缺点&lt;/h4&gt;
 
 &lt;p&gt;利用简单工厂模式，当我们后续接入另外的银行时，只需要添加具体的银行交互类，实现业务函数，然后在工厂类的 &lt;strong&gt;createBank&lt;/strong&gt; 函数中添加一个 &lt;strong&gt;else if&lt;/strong&gt; 子句。相对于原来的设计已经改进很多了，但是仍然需要修改原来的工厂类的代码，没有彻底实现解耦。&lt;/p&gt;
 
-&lt;h3 id=&#34;反射:b843d88db977db74e59764a23a86a6c0&#34;&gt;反射&lt;/h3&gt;
+&lt;h3 id=&#34;反射&#34;&gt;反射&lt;/h3&gt;
 
 &lt;p&gt;反射在java的一些框架中使用的比较多，而且用起来非常方便。C++本身并不支持，但是我们可以模拟一些简单的特性。&lt;/p&gt;
 
@@ -102,7 +102,7 @@ t-&amp;gt;parseMsg();
 
 &lt;p&gt;也就是说，利用反射和简单工厂模式，下次当我们需要新增一个银行接口的时候只需要新增一个银行交互类即可，不需要修改原来的任何代码，实现了业务上的解耦。&lt;/p&gt;
 
-&lt;h4 id=&#34;如何在c-中实现反射:b843d88db977db74e59764a23a86a6c0&#34;&gt;如何在C++中实现反射&lt;/h4&gt;
+&lt;h4 id=&#34;如何在c-中实现反射&#34;&gt;如何在C++中实现反射&lt;/h4&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;需要一个全局的map用于存储类的信息以及创建实例的函数&lt;/p&gt;&lt;/li&gt;
@@ -180,7 +180,7 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
 
 &lt;p&gt;就可以通过工厂类传入 &amp;ldquo;GSBank&amp;rdquo; 字符串获得工商银行交互类的实例。&lt;/p&gt;
 
-&lt;h3 id=&#34;测试:b843d88db977db74e59764a23a86a6c0&#34;&gt;测试&lt;/h3&gt;
+&lt;h3 id=&#34;测试&#34;&gt;测试&lt;/h3&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg&#34; alt=&#34;GSBANK&#34; /&gt;&lt;/p&gt;
 

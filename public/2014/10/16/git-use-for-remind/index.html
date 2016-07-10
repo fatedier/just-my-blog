@@ -52,8 +52,9 @@
 
                 <div class="collapse navbar-collapse" id="navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
-                        <li><a href="http://blog.fatedier.com/tags">Tags</a></li>
+                        <li><a href="http://blog.fatedier.com/categories/技术文章">技术文章</a></li>
+                        <li><a href="http://blog.fatedier.com/categories/读书笔记">读书笔记</a></li>
+                        <li><a href="http://blog.fatedier.com/tags">分类</a></li>
                         
                         <li><a href="http://blog.fatedier.com/about">关于我</a></li>
                         
@@ -93,7 +94,7 @@
 
 <p>Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。</p>
 
-<h3 id="git的配置:7aa84c832c9ae9742e6d9b7e8364eeab">Git的配置</h3>
+<h3 id="git的配置">Git的配置</h3>
 
 <ul>
 <li><p>/etc/gitconfig 文件：系统中对所有用户都普遍适用的配置。若使用 git config 时用 &ndash;system 选项，读写的就是这个文件。</p></li>
@@ -103,19 +104,19 @@
 
 <p>当前项目的 Git 目录中的配置文件（也就是工作目录中的 .git/config 文件）：这里的配置仅仅针对当前项目有效。每一个级别的配置都会覆盖上层的相同配置，所.git/config 里的配置会覆盖 /etc/gitconfig 中的同名变量。</p>
 
-<h4 id="设置用户信息:7aa84c832c9ae9742e6d9b7e8364eeab">设置用户信息</h4>
+<h4 id="设置用户信息">设置用户信息</h4>
 
 <pre><code class="language-bash">$ git config --globaluser.name  &quot;your-uasername&quot;
 $ git config --global user.email example@example.com
 $ git config --global core.editor vim
 </code></pre>
 
-<h4 id="设置差异分析工具:7aa84c832c9ae9742e6d9b7e8364eeab">设置差异分析工具</h4>
+<h4 id="设置差异分析工具">设置差异分析工具</h4>
 
 <pre><code class="language-bash">$ git config --global merge.tool vimdiff
 </code></pre>
 
-<h4 id="如何获取帮助文档:7aa84c832c9ae9742e6d9b7e8364eeab">如何获取帮助文档</h4>
+<h4 id="如何获取帮助文档">如何获取帮助文档</h4>
 
 <pre><code class="language-bash">$ git help &lt;verb&gt;
 $ git &lt;verb&gt; --help
@@ -124,9 +125,9 @@ $ man git-&lt;verb&gt;
 
 <p>例如 <code>man git-config</code></p>
 
-<h3 id="git基础操作:7aa84c832c9ae9742e6d9b7e8364eeab">Git基础操作</h3>
+<h3 id="git基础操作">Git基础操作</h3>
 
-<h4 id="取得git仓库-从现有仓库克隆:7aa84c832c9ae9742e6d9b7e8364eeab">取得Git仓库（从现有仓库克隆）</h4>
+<h4 id="取得git仓库-从现有仓库克隆">取得Git仓库（从现有仓库克隆）</h4>
 
 <pre><code class="language-bash">$ git clone https://github.com/schacon/fatest.git
 </code></pre>
@@ -140,14 +141,14 @@ $ man git-&lt;verb&gt;
 
 <p>现在创建的目录就是fatestnew而不是fatest了，其他的都一样。</p>
 
-<h4 id="检查当前项目文件状态:7aa84c832c9ae9742e6d9b7e8364eeab">检查当前项目文件状态</h4>
+<h4 id="检查当前项目文件状态">检查当前项目文件状态</h4>
 
 <pre><code class="language-bash">$ git status
 </code></pre>
 
 <p>可以看到有哪些文件是没有加入到版本中的，哪些是修改了还没提交的等等。</p>
 
-<h4 id="将新文件加入到版本中:7aa84c832c9ae9742e6d9b7e8364eeab">将新文件加入到版本中</h4>
+<h4 id="将新文件加入到版本中">将新文件加入到版本中</h4>
 
 <pre><code class="language-bash">$ git add test.cpp
 </code></pre>
@@ -156,7 +157,7 @@ $ man git-&lt;verb&gt;
 
 <p>*注意*修改过后的文件处于未暂存状态，提交的时候处于未暂存状态的文件将不会提交，需要使用git add命令更改为暂存状态，之后再提交就会提交到仓库中了。</p>
 
-<h4 id="忽略某些文件:7aa84c832c9ae9742e6d9b7e8364eeab">忽略某些文件</h4>
+<h4 id="忽略某些文件">忽略某些文件</h4>
 
 <p>对于不需要加入到版本中，并且使用git status时不再提示的文件。</p>
 
@@ -181,7 +182,7 @@ doc/*.txt
 doc/**/*.txt
 </code></pre>
 
-<h4 id="查看已暂存和未暂存的更新文件差异:7aa84c832c9ae9742e6d9b7e8364eeab">查看已暂存和未暂存的更新文件差异</h4>
+<h4 id="查看已暂存和未暂存的更新文件差异">查看已暂存和未暂存的更新文件差异</h4>
 
 <p>未暂存：</p>
 
@@ -193,7 +194,7 @@ doc/**/*.txt
 <pre><code class="language-bash">$ git diff --staged
 </code></pre>
 
-<h4 id="提交更新:7aa84c832c9ae9742e6d9b7e8364eeab">提交更新</h4>
+<h4 id="提交更新">提交更新</h4>
 
 <pre><code class="language-bash">$ git commit
 </code></pre>
@@ -210,7 +211,7 @@ doc/**/*.txt
 
 <p>使用 <em>-a</em> 命令，会把未暂存和已暂存的文件一起提交，不然只会提交已暂存的文件。</p>
 
-<h4 id="删除文件和取消跟踪:7aa84c832c9ae9742e6d9b7e8364eeab">删除文件和取消跟踪</h4>
+<h4 id="删除文件和取消跟踪">删除文件和取消跟踪</h4>
 
 <p>可以先本地使用rm命令删掉，这时候放在未暂存区域，之后用“git rm文件名”删掉。</p>
 
@@ -221,7 +222,7 @@ doc/**/*.txt
 <pre><code class="language-bash">$ git rm --cached readme.txt
 </code></pre>
 
-<h4 id="移动文件:7aa84c832c9ae9742e6d9b7e8364eeab">移动文件</h4>
+<h4 id="移动文件">移动文件</h4>
 
 <p>例如要把 test.cpp 改为 tt.cpp</p>
 
@@ -235,35 +236,35 @@ $ git rm README.txt
 $ git add README
 </code></pre>
 
-<h4 id="查看提交历史:7aa84c832c9ae9742e6d9b7e8364eeab">查看提交历史</h4>
+<h4 id="查看提交历史">查看提交历史</h4>
 
 <pre><code class="language-bash">$ git log
 </code></pre>
 
-<h4 id="撤销操作:7aa84c832c9ae9742e6d9b7e8364eeab">撤销操作</h4>
+<h4 id="撤销操作">撤销操作</h4>
 
-<h5 id="覆盖上一次的提交:7aa84c832c9ae9742e6d9b7e8364eeab">覆盖上一次的提交</h5>
+<h5 id="覆盖上一次的提交">覆盖上一次的提交</h5>
 
 <pre><code class="language-bash">$ git commit --amend
 </code></pre>
 
 <p>会将上次提交和这次提交合并起来，算作一次提交。</p>
 
-<h5 id="取消已暂存文件:7aa84c832c9ae9742e6d9b7e8364eeab">取消已暂存文件</h5>
+<h5 id="取消已暂存文件">取消已暂存文件</h5>
 
 <pre><code class="language-bash">$ git reset HEAD &lt;file&gt;
 </code></pre>
 
 <p>这个时候文件状态就从已暂存变为未暂存</p>
 
-<h5 id="取消对文件的修改-还没有放到暂存区:7aa84c832c9ae9742e6d9b7e8364eeab">取消对文件的修改（还没有放到暂存区）</h5>
+<h5 id="取消对文件的修改-还没有放到暂存区">取消对文件的修改（还没有放到暂存区）</h5>
 
 <pre><code class="language-bash">$ git checkout -- &lt;file&gt;
 </code></pre>
 
-<h4 id="运程仓库的使用:7aa84c832c9ae9742e6d9b7e8364eeab">运程仓库的使用</h4>
+<h4 id="运程仓库的使用">运程仓库的使用</h4>
 
-<h5 id="查看当前的远程库:7aa84c832c9ae9742e6d9b7e8364eeab">查看当前的远程库</h5>
+<h5 id="查看当前的远程库">查看当前的远程库</h5>
 
 <pre><code class="language-bash">$ git remote
 </code></pre>
@@ -275,12 +276,12 @@ $ git add README
 
 <p>会额外列出远程库对应的克隆地址</p>
 
-<h5 id="添加远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab">添加远程仓库</h5>
+<h5 id="添加远程仓库">添加远程仓库</h5>
 
 <pre><code class="language-bash">$ git remote add [shortname] [url]
 </code></pre>
 
-<h5 id="从远程仓库抓取数据:7aa84c832c9ae9742e6d9b7e8364eeab">从远程仓库抓取数据</h5>
+<h5 id="从远程仓库抓取数据">从远程仓库抓取数据</h5>
 
 <pre><code class="language-bash">$ git fetch [remote-name]
 </code></pre>
@@ -302,33 +303,33 @@ $ git add README
 
 <p>获取远程分支到本地新的分支上，并切换到新分支</p>
 
-<h5 id="推送数据到远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab">推送数据到远程仓库</h5>
+<h5 id="推送数据到远程仓库">推送数据到远程仓库</h5>
 
 <pre><code class="language-bash">$ git push [remote-name] [branch-name]
 </code></pre>
 
 <p>推送操作会默认使用origin和master名字</p>
 
-<h5 id="查看远程仓库信息:7aa84c832c9ae9742e6d9b7e8364eeab">查看远程仓库信息</h5>
+<h5 id="查看远程仓库信息">查看远程仓库信息</h5>
 
 <pre><code class="language-bash">$ git remote show [remote-name]
 </code></pre>
 
 <p>除了对应的克隆地址外，它还给出了许多额外的信息。它友善地告诉你如果是在 master 分支，就可以用 git pull 命令抓取数据合并到本地。另外还列出了所有处于跟踪状态中的远端分支。</p>
 
-<h5 id="远程仓库的删除:7aa84c832c9ae9742e6d9b7e8364eeab">远程仓库的删除</h5>
+<h5 id="远程仓库的删除">远程仓库的删除</h5>
 
 <pre><code class="language-bash">$ git remote rm [remote-name]
 </code></pre>
 
-<h4 id="标签的使用:7aa84c832c9ae9742e6d9b7e8364eeab">标签的使用</h4>
+<h4 id="标签的使用">标签的使用</h4>
 
-<h5 id="显示已有的标签:7aa84c832c9ae9742e6d9b7e8364eeab">显示已有的标签</h5>
+<h5 id="显示已有的标签">显示已有的标签</h5>
 
 <pre><code class="language-bash">$ git tag
 </code></pre>
 
-<h5 id="新建标签:7aa84c832c9ae9742e6d9b7e8364eeab">新建标签</h5>
+<h5 id="新建标签">新建标签</h5>
 
 <pre><code class="language-bash">$ git tag v1.0
 </code></pre>
@@ -340,7 +341,7 @@ $ git add README
 
 <p>-m 指定了对应标签的说明</p>
 
-<h5 id="后期加注标签:7aa84c832c9ae9742e6d9b7e8364eeab">后期加注标签</h5>
+<h5 id="后期加注标签">后期加注标签</h5>
 
 <pre><code class="language-bash">$ git log --pretty=oneline --abbrev-commit
 </code></pre>
@@ -352,19 +353,19 @@ $ git add README
 
 <p>补加标签</p>
 
-<h5 id="推送标签:7aa84c832c9ae9742e6d9b7e8364eeab">推送标签</h5>
+<h5 id="推送标签">推送标签</h5>
 
 <pre><code class="language-bash">$ git push origin [tagname]
 </code></pre>
 
-<h4 id="设置命令别名:7aa84c832c9ae9742e6d9b7e8364eeab">设置命令别名</h4>
+<h4 id="设置命令别名">设置命令别名</h4>
 
 <pre><code class="language-bash">$ git config --global alias.co checkout
 </code></pre>
 
-<h3 id="git分支:7aa84c832c9ae9742e6d9b7e8364eeab">Git分支</h3>
+<h3 id="git分支">Git分支</h3>
 
-<h4 id="新建分支:7aa84c832c9ae9742e6d9b7e8364eeab">新建分支</h4>
+<h4 id="新建分支">新建分支</h4>
 
 <pre><code class="language-bash">$ git branch testing
 </code></pre>
@@ -373,14 +374,14 @@ $ git add README
 
 <p><em>注：HEAD这个特别的指针是指向正在工作中的本地分支的指针</em></p>
 
-<h4 id="切换分支:7aa84c832c9ae9742e6d9b7e8364eeab">切换分支</h4>
+<h4 id="切换分支">切换分支</h4>
 
 <pre><code class="language-bash">$ git checkout testing
 </code></pre>
 
 <p>切换到testing分支上</p>
 
-<h4 id="分支的合并:7aa84c832c9ae9742e6d9b7e8364eeab">分支的合并</h4>
+<h4 id="分支的合并">分支的合并</h4>
 
 <p>在master分支上，执行：</p>
 
@@ -389,12 +390,12 @@ $ git add README
 
 <p>将tesing分支合并回master</p>
 
-<h4 id="使用合并工具-可以自己设置-例如设置成vimdiff:7aa84c832c9ae9742e6d9b7e8364eeab">使用合并工具（可以自己设置，例如设置成vimdiff）</h4>
+<h4 id="使用合并工具-可以自己设置-例如设置成vimdiff">使用合并工具（可以自己设置，例如设置成vimdiff）</h4>
 
 <pre><code class="language-bash">$ git mergetool
 </code></pre>
 
-<h4 id="分支的管理:7aa84c832c9ae9742e6d9b7e8364eeab">分支的管理</h4>
+<h4 id="分支的管理">分支的管理</h4>
 
 <pre><code class="language-bash">$ git branch --merged
 </code></pre>
@@ -411,12 +412,12 @@ $ git add README
 
 <p>如果该分支尚没有合并，可以使用-D选项强制删除。</p>
 
-<h4 id="推送本地分支:7aa84c832c9ae9742e6d9b7e8364eeab">推送本地分支</h4>
+<h4 id="推送本地分支">推送本地分支</h4>
 
 <pre><code class="language-bash">$ git push origin testing
 </code></pre>
 
-<h4 id="分支的衍合:7aa84c832c9ae9742e6d9b7e8364eeab">分支的衍合</h4>
+<h4 id="分支的衍合">分支的衍合</h4>
 
 <p>例如现在有两个分支，一个master，一个testing</p>
 
@@ -428,23 +429,23 @@ $ git merge testing
 
 <p>通常在贡献自己的代码之前先衍合，再提交，会让历史提交记录更清晰。</p>
 
-<h3 id="git调试:7aa84c832c9ae9742e6d9b7e8364eeab">Git调试</h3>
+<h3 id="git调试">Git调试</h3>
 
-<h4 id="文件标注:7aa84c832c9ae9742e6d9b7e8364eeab">文件标注</h4>
+<h4 id="文件标注">文件标注</h4>
 
 <pre><code class="language-bash">$ git blame -L 12,22 test.cpp
 </code></pre>
 
 <p>查看test.cpp文件对每一行进行修改的最近一次提交。</p>
 
-<h4 id="查看文件的历史提交:7aa84c832c9ae9742e6d9b7e8364eeab">查看文件的历史提交</h4>
+<h4 id="查看文件的历史提交">查看文件的历史提交</h4>
 
 <pre><code class="language-bash">$ git log --pretty=oneline test.cpp
 </code></pre>
 
 <p>查看test.cpp文件的历史提交记录</p>
 
-<h4 id="查看文件的历史版本:7aa84c832c9ae9742e6d9b7e8364eeab">查看文件的历史版本</h4>
+<h4 id="查看文件的历史版本">查看文件的历史版本</h4>
 
 <pre><code class="language-bash">$ git show [commit] [file]
 </code></pre>
@@ -453,7 +454,7 @@ $ git merge testing
 
 <p>查看7da7c23这次提交的test.cpp文件。</p>
 
-<h4 id="查看历史提交的详细文件变化:7aa84c832c9ae9742e6d9b7e8364eeab">查看历史提交的详细文件变化</h4>
+<h4 id="查看历史提交的详细文件变化">查看历史提交的详细文件变化</h4>
 
 <pre><code class="language-bash">$ git log -p -2
 </code></pre>
@@ -528,6 +529,8 @@ $ git merge testing
                 </div>
                 <div class="list-group">
                     
+                    <a href="http://blog.fatedier.com/2016/07/10/from-zero-to-one-just-a-dream" class="list-group-item">从0到1：遥远的理想国</a>
+                    
                     <a href="http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb" class="list-group-item">InfluxDB 与 OpenTSDB 对比测试</a>
                     
                     <a href="http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb" class="list-group-item">时间序列数据库调研之InfluxDB</a>
@@ -541,8 +544,6 @@ $ git merge testing
                     <a href="http://blog.fatedier.com/2016/05/25/deploy-openstack-swift" class="list-group-item">部署openstack的对象存储服务swift</a>
                     
                     <a href="http://blog.fatedier.com/2016/05/16/install-private-docker-registry" class="list-group-item">搭建私有docker仓库</a>
-                    
-                    <a href="http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups" class="list-group-item">go程序中dns解析无法使用所有域名服务器</a>
                     
                 </div>
             </div>
@@ -686,6 +687,12 @@ $ git merge testing
                     <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8" class="list-group-item">
                         <span class="badge">6</span>
                         分布式存储
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A" class="list-group-item">
+                        <span class="badge">1</span>
+                        创业
                     </a>
                     
                     

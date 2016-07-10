@@ -52,8 +52,9 @@
 
                 <div class="collapse navbar-collapse" id="navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
-                        <li><a href="http://blog.fatedier.com/tags">Tags</a></li>
+                        <li><a href="http://blog.fatedier.com/categories/技术文章">技术文章</a></li>
+                        <li><a href="http://blog.fatedier.com/categories/读书笔记">读书笔记</a></li>
+                        <li><a href="http://blog.fatedier.com/tags">分类</a></li>
                         
                         <li><a href="http://blog.fatedier.com/about">关于我</a></li>
                         
@@ -91,9 +92,9 @@
 
 <p>最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。</p>
 
-<h3 id="背景:950668773c5541050af4c9df2f93d0a6">背景</h3>
+<h3 id="背景">背景</h3>
 
-<h4 id="nameserver-配置:950668773c5541050af4c9df2f93d0a6">nameserver 配置</h4>
+<h4 id="nameserver-配置">nameserver 配置</h4>
 
 <p><code>/etc/resolv.conf</code> 中配置了多个 nameserver</p>
 
@@ -104,7 +105,7 @@ nameserver 8.8.8.8
 
 <p><code>10.10.100.3</code> 用于解析内网域名，外网域名通过 <code>114.114.114.114</code> 或者 <code>8.8.8.8</code> 来解析。</p>
 
-<h4 id="测试代码:950668773c5541050af4c9df2f93d0a6">测试代码</h4>
+<h4 id="测试代码">测试代码</h4>
 
 <pre><code class="language-golang">package main
 
@@ -124,7 +125,7 @@ func main() {
 }
 </code></pre>
 
-<h4 id="结果:950668773c5541050af4c9df2f93d0a6">结果</h4>
+<h4 id="结果">结果</h4>
 
 <pre><code class="language-bash">lookup host error: lookup www.baidu.com on 10.10.100.3:53: no such host
 </code></pre>
@@ -133,11 +134,11 @@ func main() {
 
 <p>而使用 go1.4 版本编译运行后，确得到了正确的结果。</p>
 
-<h3 id="调试标准库的方法:950668773c5541050af4c9df2f93d0a6">调试标准库的方法</h3>
+<h3 id="调试标准库的方法">调试标准库的方法</h3>
 
 <p>调试 golang 的标准库非常简单，先找到标准库源码的存放位置，然后将要修改的文件备份一份，之后直接在其中添加输出语句，大部分可以 <code>import &quot;fmt&quot;</code> 后使用 <code>fmt.Printf</code> 函数进行输出，有的包中需要使用其他方式，避免循环引用，这里不详述，因为我们要改的 <code>net</code> 包并不涉及这个问题，注意调试完之后将标准库的文件恢复。</p>
 
-<h4 id="查找标准库所在的目录:950668773c5541050af4c9df2f93d0a6">查找标准库所在的目录</h4>
+<h4 id="查找标准库所在的目录">查找标准库所在的目录</h4>
 
 <p>执行 <code>go env</code> 查看 go 的环境变量如下：</p>
 
@@ -155,7 +156,7 @@ CGO_ENABLED=&quot;1&quot;
 
 <p><strong>GOROOT</strong> 的值即是标准库所在的目录，<code>net</code> 包的具体路径为 <code>/usr/lib/golang/src/net</code></p>
 
-<h3 id="go-1-4-与-1-5-版本中-dns-查询逻辑的不同:950668773c5541050af4c9df2f93d0a6">go 1.4 与 1.5 版本中 dns 查询逻辑的不同</h3>
+<h3 id="go-1-4-与-1-5-版本中-dns-查询逻辑的不同">go 1.4 与 1.5 版本中 dns 查询逻辑的不同</h3>
 
 <p>因为最近很多程序都是使用 <strong>go1.5</strong> 版本进行编译的，所以理所当然查看了两个版本这部分源码的区别，还真的有所改变。</p>
 
@@ -163,7 +164,7 @@ CGO_ENABLED=&quot;1&quot;
 
 <p>这个函数会调用实际处理函数 <code>lookupHost</code> <strong>(net/lookup_unix.go)</strong></p>
 
-<h4 id="cgo-与纯-go-实现的-dns-查询:950668773c5541050af4c9df2f93d0a6">cgo 与纯 go 实现的 dns 查询</h4>
+<h4 id="cgo-与纯-go-实现的-dns-查询">cgo 与纯 go 实现的 dns 查询</h4>
 
 <p><strong>go1.4 版本源码</strong></p>
 
@@ -197,7 +198,7 @@ CGO_ENABLED=&quot;1&quot;
 
 <p>cgo 的方式没有问题，看起来程序会并发地向 <code>/etc/resolv.conf</code> 中所有配置的域名服务器发送 dns 解析请求，然后将最先成功响应的结果返回。</p>
 
-<h4 id="纯-go-实现的-dns-查询分析:950668773c5541050af4c9df2f93d0a6">纯 go 实现的 dns 查询分析</h4>
+<h4 id="纯-go-实现的-dns-查询分析">纯 go 实现的 dns 查询分析</h4>
 
 <p>问题就出在纯 go 实现的查询上，主要看一下 go1.5 的实现。</p>
 
@@ -255,7 +256,7 @@ CGO_ENABLED=&quot;1&quot;
 
 <p><code>msg.rcode</code> 这个值很重要，是问题的关键。</p>
 
-<h3 id="dns-查询协议格式:950668773c5541050af4c9df2f93d0a6">dns 查询协议格式</h3>
+<h3 id="dns-查询协议格式">dns 查询协议格式</h3>
 
 <p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-27-go-program-does-not-use-all-nameservers-for-dns-lookups-dns-query-package.png" alt="dns-query-package" /></p>
 
@@ -279,7 +280,7 @@ CGO_ENABLED=&quot;1&quot;
 
 <p>其中 <strong>RCODE</strong> 是回复时用于判断查询结果是否成功的，对应前面的 <code>msg.rcode</code>。</p>
 
-<h3 id="bind-的-dns-回复问题:950668773c5541050af4c9df2f93d0a6">bind 的 dns 回复问题</h3>
+<h3 id="bind-的-dns-回复问题">bind 的 dns 回复问题</h3>
 
 <p><code>10.10.100.3</code> 上是使用 <strong>bind</strong> 搭建的本地域名服务器。</p>
 
@@ -323,19 +324,19 @@ CGO_ENABLED=&quot;1&quot;
 
 <p>如果返回的 <strong>RCODE</strong> 值为 0，则直接退出，不继续尝试后面的域名服务器，从而导致了域名解析失败。</p>
 
-<h3 id="解决方案:950668773c5541050af4c9df2f93d0a6">解决方案</h3>
+<h3 id="解决方案">解决方案</h3>
 
-<h4 id="仍然使用-go1-4-版本进行编译:950668773c5541050af4c9df2f93d0a6">仍然使用 go1.4 版本进行编译</h4>
+<h4 id="仍然使用-go1-4-版本进行编译">仍然使用 go1.4 版本进行编译</h4>
 
 <p>不推荐这么做，毕竟升级后在 gc 以及很多其他方面都有优化。</p>
 
-<h4 id="使用-go1-5-及以上版本编译但是通过环境变量强制使用-cgo-的-dns-查询方式:950668773c5541050af4c9df2f93d0a6">使用 go1.5 及以上版本编译但是通过环境变量强制使用 cgo 的 dns 查询方式</h4>
+<h4 id="使用-go1-5-及以上版本编译但是通过环境变量强制使用-cgo-的-dns-查询方式">使用 go1.5 及以上版本编译但是通过环境变量强制使用 cgo 的 dns 查询方式</h4>
 
 <p><code>export GODEBUG=netdns=cgo go build</code></p>
 
 <p>使用 cgo 的方式会在每一次调用时创建一个线程，在并发量较大时可能会对系统资源造成一定影响。而且需要每一个使用 go 编写的程序编译时都加上此标志，较为繁琐。</p>
 
-<h4 id="修改-bind-的配置文件:950668773c5541050af4c9df2f93d0a6">修改 bind 的配置文件</h4>
+<h4 id="修改-bind-的配置文件">修改 bind 的配置文件</h4>
 
 <p>在 <strong>bind</strong> 中彻底关闭对递归查询的支持也可以解决此问题，但是由于对 <strong>bind</strong> 不是很熟悉，具体是什么原因导致没有查到 <strong>A 记录</strong>但仍然返回 <strong>NOERROR</strong> 不是很清楚，猜测可能和递归转发的查询方式有关，有可能 <strong>bind</strong> 认为返回了根域名服务器的地址，<strong>client</strong> 可以去这些地址上查，所以该次请求并不算做出错。</p>
 
@@ -407,6 +408,8 @@ allow-recursion { none; };
                 </div>
                 <div class="list-group">
                     
+                    <a href="http://blog.fatedier.com/2016/07/10/from-zero-to-one-just-a-dream" class="list-group-item">从0到1：遥远的理想国</a>
+                    
                     <a href="http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb" class="list-group-item">InfluxDB 与 OpenTSDB 对比测试</a>
                     
                     <a href="http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb" class="list-group-item">时间序列数据库调研之InfluxDB</a>
@@ -420,8 +423,6 @@ allow-recursion { none; };
                     <a href="http://blog.fatedier.com/2016/05/25/deploy-openstack-swift" class="list-group-item">部署openstack的对象存储服务swift</a>
                     
                     <a href="http://blog.fatedier.com/2016/05/16/install-private-docker-registry" class="list-group-item">搭建私有docker仓库</a>
-                    
-                    <a href="http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups" class="list-group-item">go程序中dns解析无法使用所有域名服务器</a>
                     
                 </div>
             </div>
@@ -565,6 +566,12 @@ allow-recursion { none; };
                     <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8" class="list-group-item">
                         <span class="badge">6</span>
                         分布式存储
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A" class="list-group-item">
+                        <span class="badge">1</span>
+                        创业
                     </a>
                     
                     

@@ -52,8 +52,9 @@
 
                 <div class="collapse navbar-collapse" id="navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
-                        <li><a href="http://blog.fatedier.com/tags">Tags</a></li>
+                        <li><a href="http://blog.fatedier.com/categories/技术文章">技术文章</a></li>
+                        <li><a href="http://blog.fatedier.com/categories/读书笔记">读书笔记</a></li>
+                        <li><a href="http://blog.fatedier.com/tags">分类</a></li>
                         
                         <li><a href="http://blog.fatedier.com/about">关于我</a></li>
                         
@@ -91,25 +92,25 @@
 
 <p>Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。</p>
 
-<h3 id="主要概念:2c6eeb698313cb6a4d155dac3acdf251">主要概念</h3>
+<h3 id="主要概念">主要概念</h3>
 
-<h4 id="pod:2c6eeb698313cb6a4d155dac3acdf251">Pod</h4>
+<h4 id="pod">Pod</h4>
 
 <p>在 Kubernetes 中是最基本的调度单元，可以包含多个相关的容器，属于同一个 pod 的容器会被运行在同一个机器上，看作一个统一的管理单元。例如我们的一个应用由 nginx、web网站、数据库三部分组成，每一部分都运行在一个单独的容器中，那么我们可以将这三个容器创建成一个 pod。</p>
 
-<h4 id="service:2c6eeb698313cb6a4d155dac3acdf251">Service</h4>
+<h4 id="service">Service</h4>
 
 <p>Service 是 pod 的路由代理抽象，主要是为了解决 pod 的服务发现问题。因为当有机器出现故障导致容器异常退出时，这个 pod 可能就会被 kubernetes 分配到另外一个正常且资源足够的机器上，此时 IP 地址以及端口都有可能发生变化，所以我们并不能通过 host 的真实 IP 地址和端口来访问。Service 的引入正是为了解决这样的问题，通过 service 这层代理我们就可以访问到 pod 中的容器，目前的版本是通过 iptables 来实现的。</p>
 
-<h4 id="replicationcontroller:2c6eeb698313cb6a4d155dac3acdf251">ReplicationController</h4>
+<h4 id="replicationcontroller">ReplicationController</h4>
 
 <p>ReplicationController 的概念比较简单，从名字就可以看出是用于管理 pod 的多副本运行的。它用于确保 kubernetes 集群中指定的 pod 始终会有指定数量的副本在运行。如果检测到有容器异常退出，replicationController 会立即重新启动新的容器，并且通过 replicationController 我们还可以动态地调整 pod 的副本数量。</p>
 
-<h4 id="label:2c6eeb698313cb6a4d155dac3acdf251">Label</h4>
+<h4 id="label">Label</h4>
 
 <p>Label 是用于将上述几个概念关联起来的一些 k-v 值。例如我们创建了一个 pod 并且设置了 label 为 <code>app=nginx</code>，同样在创建 service 和 replicationController 时也设置相同的 label，这样通过 label 的 selector 机制就可以将创建好的 service 和 replicationController 作用在之前创建的 pod 上。</p>
 
-<h3 id="主要组件:2c6eeb698313cb6a4d155dac3acdf251">主要组件</h3>
+<h3 id="主要组件">主要组件</h3>
 
 <p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-06-24-demystifying-kubernetes-and-deployment-k8s-overview.png" alt="k8s-overview" /></p>
 
@@ -119,35 +120,35 @@
 
 <p>Master 节点负责对外提供一系列管理集群的 API 接口，并且通过和 Minion 节点交互来实现对集群的操作管理。</p>
 
-<h4 id="apiserver:2c6eeb698313cb6a4d155dac3acdf251">apiserver</h4>
+<h4 id="apiserver">apiserver</h4>
 
 <p>用户和 kubernetes 集群交互的入口，封装了核心对象的增删改查操作，提供了 RESTFul 风格的 API 接口，通过 etcd 来实现持久化并维护对象的一致性。</p>
 
-<h4 id="scheduler:2c6eeb698313cb6a4d155dac3acdf251">scheduler</h4>
+<h4 id="scheduler">scheduler</h4>
 
 <p>负责集群资源的调度和管理，例如当有 pod 异常退出需要重新分配机器时，scheduler 通过一定的调度算法从而找到最合适的节点。</p>
 
-<h4 id="controller-manager:2c6eeb698313cb6a4d155dac3acdf251">controller-manager</h4>
+<h4 id="controller-manager">controller-manager</h4>
 
 <p>主要是用于保证 replicationController 定义的复制数量和实际运行的 pod 数量一致，另外还保证了从 service 到 pod 的映射关系总是最新的。</p>
 
-<h4 id="kubelet:2c6eeb698313cb6a4d155dac3acdf251">kubelet</h4>
+<h4 id="kubelet">kubelet</h4>
 
 <p>运行在 minion 节点，负责和节点上的 Docker 交互，例如启停容器，监控运行状态等。</p>
 
-<h4 id="proxy:2c6eeb698313cb6a4d155dac3acdf251">proxy</h4>
+<h4 id="proxy">proxy</h4>
 
 <p>运行在 minion 节点，负责为 pod 提供代理功能，会定期从 etcd 获取 service 信息，并根据 service 信息通过修改 iptables 来实现流量转发（最初的版本是直接通过程序提供转发功能，效率较低。），将流量转发到要访问的 pod 所在的节点上去。</p>
 
-<h3 id="部署实践:2c6eeb698313cb6a4d155dac3acdf251">部署实践</h3>
+<h3 id="部署实践">部署实践</h3>
 
 <p>Kubernetes 的部署十分简单，先从 Github 上下载编译好的二进制文件（我自己尝试编译耗时太久，遂作罢），这里强调简单的原因是因为每个组件并不需要配置文件，而是直接通过启动参数来设置。相比于很多 Java 项目一系列的环境设置，组件搭建，k8s 还是比较友好的。下面主要说一下各个组件常用的启动参数的设置。</p>
 
-<h4 id="etcd:2c6eeb698313cb6a4d155dac3acdf251">etcd</h4>
+<h4 id="etcd">etcd</h4>
 
 <p>安装并启动 etcd 集群，这里以一台作为示例，比较简单，不具体说明，假设访问地址为 <code>192.168.2.129:2379</code>。</p>
 
-<h4 id="flannel:2c6eeb698313cb6a4d155dac3acdf251">flannel</h4>
+<h4 id="flannel">flannel</h4>
 
 <p>Flannel 是 CoreOS 团队针对 Kubernetes 设计的一个覆盖网络（Overlay Network）工具，需要另外下载部署。我们知道当我们启动 Docker 后会有一个用于和容器进行交互的 IP 地址，如果不去管理的话可能这个 IP 地址在各个机器上是一样的，并且仅限于在本机上进行通信，无法访问到其他机器上的 Docker 容器。</p>
 
@@ -155,13 +156,13 @@
 
 <p>具体实现原理可以参考： <a href="http://www.open-open.com/news/view/1aa473a">http://www.open-open.com/news/view/1aa473a</a></p>
 
-<h5 id="安装-flannel:2c6eeb698313cb6a4d155dac3acdf251">安装 flannel</h5>
+<h5 id="安装-flannel">安装 flannel</h5>
 
 <p>在 etcd 中创建 flannel 需要用到的键，假设我们 Minion 中 flannel 所使用的子网范围为<code>172.17.1.0~172.17.254.0</code>（每一个Minion节点都有一个独立的flannel子网）。</p>
 
 <p><code>etcdctl mk /coreos.com/network/config '{&quot;Network&quot;:&quot;172.17.0.0/16&quot;, &quot;SubnetMin&quot;: &quot;172.17.1.0&quot;, &quot;SubnetMax&quot;: &quot;172.17.254.0&quot;}'</code></p>
 
-<h5 id="启动参数:2c6eeb698313cb6a4d155dac3acdf251">启动参数</h5>
+<h5 id="启动参数">启动参数</h5>
 
 <p><code>flanneld -etcd-endpoints=http://192.168.2.129:2379 -etcd-prefix=/coreos.com/network --log_dir=./ --logtostderr=false</code></p>
 
@@ -171,7 +172,7 @@
 --logtostderr: 设置错误信息是否存储到标准输出中
 </code></pre>
 
-<h5 id="修改-docker0-网卡的-ip-地址:2c6eeb698313cb6a4d155dac3acdf251">修改 docker0 网卡的 IP 地址</h5>
+<h5 id="修改-docker0-网卡的-ip-地址">修改 docker0 网卡的 IP 地址</h5>
 
 <p>默认情况下启动 docker 后会有一个 docker0 的虚拟网卡，每一台机器的 docker0 网卡对应的 ip 地址都是相同的。</p>
 
@@ -189,41 +190,41 @@
 
 <p>之后通过 <code>ifconfig</code> 可以看到 docker0 的网卡 ip 已经变成了 flannel 的网段。</p>
 
-<h4 id="kube-apiserver:2c6eeb698313cb6a4d155dac3acdf251">kube-apiserver</h4>
+<h4 id="kube-apiserver">kube-apiserver</h4>
 
 <p>部署在 Master 节点上。</p>
 
 <p><code>kube-apiserver --logtostderr=false --log-dir=./ --v=0 --etcd-servers=http://192.168.2.129:2379 --address=0.0.0.0 --port=8080 --kubelet-port=10250 --allow-privileged=true --service-cluster-ip-range=10.254.0.0/16</code></p>
 
-<h4 id="kube-scheduler:2c6eeb698313cb6a4d155dac3acdf251">kube-scheduler</h4>
+<h4 id="kube-scheduler">kube-scheduler</h4>
 
 <p>部署在 Master 节点上。</p>
 
 <p><code>kube-scheduler --logtostderr=false --log-dir=./ --v=0 --master=http://192.168.2.129:8080</code></p>
 
-<h4 id="kube-controller-manager:2c6eeb698313cb6a4d155dac3acdf251">kube-controller-manager</h4>
+<h4 id="kube-controller-manager">kube-controller-manager</h4>
 
 <p>部署在 Master 节点上。</p>
 
 <p><code>kube-controller-manager --logtostderr=false --log-dir=./ --v=0 --master=http://192.168.2.129:8080</code></p>
 
-<h4 id="kubelet-1:2c6eeb698313cb6a4d155dac3acdf251">kubelet </h4>
+<h4 id="kubelet-1">kubelet </h4>
 
 <p>部署在 Minion 节点上。</p>
 
 <p><code>kubelet --logtostderr=false --log-dir=./ --v=0 --api-servers=http://192.168.2.129:8080 --address=0.0.0.0 --port=10250 --allow-privileged=true</code></p>
 
-<h4 id="kube-proxy:2c6eeb698313cb6a4d155dac3acdf251">kube-proxy</h4>
+<h4 id="kube-proxy">kube-proxy</h4>
 
 <p>部署在 Minion 节点上。</p>
 
 <p><code>kube-proxy --logtostderr=false --log-dir=./ --v=0 --master=http://192.168.2.129:8080</code></p>
 
-<h3 id="遇到的问题:2c6eeb698313cb6a4d155dac3acdf251">遇到的问题</h3>
+<h3 id="遇到的问题">遇到的问题</h3>
 
 <p>通过上面的步骤，k8s 集群就差不多搭建成功了，但是仍然遇到了一些问题，有的甚至目前还没有找到解决方案，直接导致了我丧失了将 k8s 用于实际开发环境的动力。</p>
 
-<h4 id="pause-镜像:2c6eeb698313cb6a4d155dac3acdf251">pause 镜像</h4>
+<h4 id="pause-镜像">pause 镜像</h4>
 
 <p>在每个 Minion 节点上的 Docker 需要安装  gcr.io/google_containers/pause 镜像，这个镜像是在 kubernetes 集群启动用户配置的容器时需要用到。</p>
 
@@ -235,25 +236,25 @@
 
 <p>后来查看文档发现也可以通过在 kubelet 的启动参数中设置这个镜像的地址，不过还没有测试过。</p>
 
-<h4 id="搭建私有-docker-镜像仓库:2c6eeb698313cb6a4d155dac3acdf251">搭建私有 docker 镜像仓库</h4>
+<h4 id="搭建私有-docker-镜像仓库">搭建私有 docker 镜像仓库</h4>
 
 <p>为了便于使用，最好自己搭建内网环境的私有镜像仓库，因为 k8s 中每一台机器上的 docker 都需要 pull 镜像到本地，如果从外网环境拉镜像的话效率较低，而且以后更新镜像等操作将变的非常不方便。</p>
 
 <p>具体的步骤可以参考我之前的一篇文章， <a href="http://blog.fatedier.com/2016/05/16/install-private-docker-registry/">『搭建私有docker仓库』</a>。</p>
 
-<h4 id="service-访问问题:2c6eeb698313cb6a4d155dac3acdf251">service 访问问题</h4>
+<h4 id="service-访问问题">service 访问问题</h4>
 
 <p>测试时可以在一台机器上的容器内部通过 service 提供的内网 IP 地址访问到运行在另外一台机器上的容器。但是必须是在容器内部才行，如果直接在这个机器上通过 telnet 或者 curl 访问，则无法正确地根据这个内网 IP 转发到对应节点的容器中。</p>
 
 <p>因为是通过 iptables 来进行转发，我查看了 iptables 的规则，并没有发现问题，后来通过抓包发现这个包的目的 IP 地址被替换成功了，但是源地址并没有被正确替换，导致对方节点无法正确回复。这个问题我还没有发现具体的原因，目前不能在容器外部通过 service 提供的 IP 地址来访问容器，导致很多应用没有了实际部署的意义，后面有时间还是要研究下。</p>
 
-<h4 id="文件存储:2c6eeb698313cb6a4d155dac3acdf251">文件存储</h4>
+<h4 id="文件存储">文件存储</h4>
 
 <p>由于 pod 可能会被在任意一台机器上重新启动，所以并不能简单的像运行单机 Docker 那样将容器内部的目录映射到宿主机的指定目录上，否则将会丢失文件。所以通常我们需要使用类似 NFS、ceph、glusterFS 这样的分布式存储系统来为 k8s 集群提供后端的统一存储。这样一来，无疑就增加了部署的难度，比如要搭建一个靠谱的 ceph 集群，无疑是需要有比较靠谱的运维团队的。</p>
 
-<h3 id="测试-nginx-容器:2c6eeb698313cb6a4d155dac3acdf251">测试 nginx 容器</h3>
+<h3 id="测试-nginx-容器">测试 nginx 容器</h3>
 
-<h4 id="创建并启动-replicationcontroller:2c6eeb698313cb6a4d155dac3acdf251">创建并启动 replicationController</h4>
+<h4 id="创建并启动-replicationcontroller">创建并启动 replicationController</h4>
 
 <p>创建配置文件 <code>nginx-rc.yaml</code>。</p>
 
@@ -287,7 +288,7 @@ spec:
 
 <p><code>kubectl -s http://192.168.2.129:8080 get pods</code></p>
 
-<h4 id="创建并启动-service:2c6eeb698313cb6a4d155dac3acdf251">创建并启动 service</h4>
+<h4 id="创建并启动-service">创建并启动 service</h4>
 
 <p>Service 的 type 有 ClusterIP 和 NodePort 之分，缺省是 ClusterIP，这种类型的 Service 只能在集群内部访问，而 NodePort 可以在集群外部访问，但是它的原理就是在所有节点上都绑定这个端口，之后将所有的流量转发到正确的节点上。</p>
 
@@ -384,6 +385,8 @@ spec:
                 </div>
                 <div class="list-group">
                     
+                    <a href="http://blog.fatedier.com/2016/07/10/from-zero-to-one-just-a-dream" class="list-group-item">从0到1：遥远的理想国</a>
+                    
                     <a href="http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb" class="list-group-item">InfluxDB 与 OpenTSDB 对比测试</a>
                     
                     <a href="http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb" class="list-group-item">时间序列数据库调研之InfluxDB</a>
@@ -397,8 +400,6 @@ spec:
                     <a href="http://blog.fatedier.com/2016/05/25/deploy-openstack-swift" class="list-group-item">部署openstack的对象存储服务swift</a>
                     
                     <a href="http://blog.fatedier.com/2016/05/16/install-private-docker-registry" class="list-group-item">搭建私有docker仓库</a>
-                    
-                    <a href="http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups" class="list-group-item">go程序中dns解析无法使用所有域名服务器</a>
                     
                 </div>
             </div>
@@ -542,6 +543,12 @@ spec:
                     <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8" class="list-group-item">
                         <span class="badge">6</span>
                         分布式存储
+                    </a>
+                    
+                    
+                    <a href="http://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A" class="list-group-item">
+                        <span class="badge">1</span>
+                        创业
                     </a>
                     
                     

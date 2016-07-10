@@ -22,7 +22,7 @@
 
 &lt;p&gt;目前 go 自身的包管理体系比较薄弱，go 1.5 以后开始使用 vendor 机制来管理，但是依然缺乏对第三方包的版本的管理。&lt;/p&gt;
 
-&lt;h3 id=&#34;安装:3d8a685e3f913849abb783937da83deb&#34;&gt;安装&lt;/h3&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;确保已经有go语言的环境并且设置好了 GOPATH 环境变量。&lt;/li&gt;
@@ -30,11 +30,11 @@
 &lt;li&gt;godep 可执行程序会放在 $GOPATH/bin 目录下。所以想直接用 godep 执行命令的话需要将该路径加入到全局的环境变量 PATH 中，可以将&lt;code&gt;export PATH=&amp;quot;$PATH:$GOPATH/bin&amp;quot;&lt;/code&gt;加入到系统启动脚本中。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h3 id=&#34;使用:3d8a685e3f913849abb783937da83deb&#34;&gt;使用&lt;/h3&gt;
+&lt;h3 id=&#34;使用&#34;&gt;使用&lt;/h3&gt;
 
 &lt;p&gt;进入go项目的根目录，需要该项目已经可以使用 go build 正常编译。&lt;/p&gt;
 
-&lt;h4 id=&#34;godep-save:3d8a685e3f913849abb783937da83deb&#34;&gt;godep save&lt;/h4&gt;
+&lt;h4 id=&#34;godep-save&#34;&gt;godep save&lt;/h4&gt;
 
 &lt;p&gt;执行 &lt;code&gt;godep save&lt;/code&gt; 或者 &lt;code&gt;godep save ./...&lt;/code&gt;，后者会递归地查找所有引用的第三方包。&lt;/p&gt;
 
@@ -48,11 +48,11 @@
 &lt;li&gt;所有依赖的第三包的代码会被拷贝到 &lt;code&gt;Godeps/_workspace/src&lt;/code&gt; 下，并且移除了 &lt;code&gt;.git&lt;/code&gt; 这样的版本控制信息。&lt;code&gt;Godeps/_workspace&lt;/code&gt; 里的内容如果加到版本控制里，别人下载代码后可以直接编译，不需要另外再下依赖包，但是项目大小会变大。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h4 id=&#34;godep-restore:3d8a685e3f913849abb783937da83deb&#34;&gt;godep restore&lt;/h4&gt;
+&lt;h4 id=&#34;godep-restore&#34;&gt;godep restore&lt;/h4&gt;
 
 &lt;p&gt;这个命令是根据 &lt;code&gt;Godeps/Godeps.json&lt;/code&gt; 文件把项目的依赖包下载到 &lt;code&gt;$GOPATH&lt;/code&gt; 目录下，需要注意这个命令是会修改 &lt;code&gt;$GOPATH&lt;/code&gt; 下依赖包的状态的，所以最好还是将 &lt;code&gt;Godeps/_workspace&lt;/code&gt; 里的内容直接加到自己项目的版本控制里。&lt;/p&gt;
 
-&lt;h4 id=&#34;其他命令:3d8a685e3f913849abb783937da83deb&#34;&gt;其他命令&lt;/h4&gt;
+&lt;h4 id=&#34;其他命令&#34;&gt;其他命令&lt;/h4&gt;
 
 &lt;p&gt;其他的 go 命令基本上都可以通过 godep 执行，例如&lt;/p&gt;
 
@@ -77,7 +77,7 @@ godep go fmt
 
 &lt;p&gt;开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。&lt;/p&gt;
 
-&lt;h3 id=&#34;界面:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;界面&lt;/h3&gt;
+&lt;h3 id=&#34;界面&#34;&gt;界面&lt;/h3&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-12-18-terminal-multiplexer-tmux-tmux-overview.png&#34; alt=&#34;tmux&#34; /&gt;&lt;/p&gt;
 
@@ -89,13 +89,13 @@ godep go fmt
 &lt;li&gt;pane： 在一个 window 中可以有多个 pane，便于大屏幕显示屏将屏幕切分成多块。&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;安装:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;安装&lt;/h3&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
 
 &lt;p&gt;Centos下直接通过 &lt;code&gt;yum install -y tmux&lt;/code&gt; 来安装，其他系统也一样可以使用相应的包管理工具安装。&lt;/p&gt;
 
-&lt;h3 id=&#34;常用命令:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;常用命令&lt;/h3&gt;
+&lt;h3 id=&#34;常用命令&#34;&gt;常用命令&lt;/h3&gt;
 
-&lt;h4 id=&#34;快捷键前缀:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;快捷键前缀&lt;/h4&gt;
+&lt;h4 id=&#34;快捷键前缀&#34;&gt;快捷键前缀&lt;/h4&gt;
 
 &lt;p&gt;为了避免按键冲突，使用 tmux 的快捷键都需要加上一个&lt;strong&gt;前缀按键&lt;/strong&gt;，默认是 &lt;strong&gt;Ctrl-b&lt;/strong&gt; 的组合，可以通过配置修改为自定义的按键。&lt;/p&gt;
 
@@ -109,7 +109,7 @@ godep go fmt
 
 &lt;p&gt;我自己将 Ctrl-b 改成了 Ctrl-x ，感觉这样操作顺手一些。&lt;/p&gt;
 
-&lt;h4 id=&#34;基本操作:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;基本操作&lt;/h4&gt;
+&lt;h4 id=&#34;基本操作&#34;&gt;基本操作&lt;/h4&gt;
 
 &lt;p&gt;&lt;strong&gt;创建一个叫做 &amp;ldquo;test&amp;rdquo; 的 session，并且进入 tmux 界面&lt;/strong&gt;&lt;/p&gt;
 
@@ -168,9 +168,9 @@ Ctrl-b + |  // 水平分割
 Ctrl-b + r
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;小技巧:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;小技巧&lt;/h3&gt;
+&lt;h3 id=&#34;小技巧&#34;&gt;小技巧&lt;/h3&gt;
 
-&lt;h4 id=&#34;复制模式:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;复制模式&lt;/h4&gt;
+&lt;h4 id=&#34;复制模式&#34;&gt;复制模式&lt;/h4&gt;
 
 &lt;p&gt;如果要在不同 &lt;strong&gt;window&lt;/strong&gt; 或者 &lt;strong&gt;pane&lt;/strong&gt; 之间复制内容，又想实现全键盘的操作，就需要借助于 tmux 的复制功能。&lt;/p&gt;
 
@@ -182,7 +182,7 @@ Ctrl-b + r
 &lt;li&gt;在需要粘贴的地方按下 &lt;strong&gt;Ctrl-b + ]&lt;/strong&gt; 粘贴&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h4 id=&#34;多-pane-批量操作:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;多 pane 批量操作&lt;/h4&gt;
+&lt;h4 id=&#34;多-pane-批量操作&#34;&gt;多 pane 批量操作&lt;/h4&gt;
 
 &lt;p&gt;有时候同时登录了多台机器，需要执行一样的命令来进行批量操作，借助于 tmux 同样可以实现。&lt;/p&gt;
 
@@ -190,7 +190,7 @@ Ctrl-b + r
 
 &lt;p&gt;这个是设置批量操作的开关，如果原来功能是关闭的，则打开，反之亦然，可以将其映射到一个快捷键方便操作。开启这个功能后，在当前 window 任意一个 pane 输入的命令，都会同时作用于该 window 中的其他 pane。&lt;/p&gt;
 
-&lt;h3 id=&#34;配置文件:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;配置文件&lt;/h3&gt;
+&lt;h3 id=&#34;配置文件&#34;&gt;配置文件&lt;/h3&gt;
 
 &lt;p&gt;配置文件需要自己在 $HOME 目录下创建，命名为 .tmux.conf，具体内容如下&lt;/p&gt;
 
@@ -259,9 +259,9 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;配套工具:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;配套工具&lt;/h3&gt;
+&lt;h3 id=&#34;配套工具&#34;&gt;配套工具&lt;/h3&gt;
 
-&lt;h4 id=&#34;tmuxinator:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;tmuxinator&lt;/h4&gt;
+&lt;h4 id=&#34;tmuxinator&#34;&gt;tmuxinator&lt;/h4&gt;
 
 &lt;p&gt;使用 tmux 可以让我们不管在什么时候，什么地点登录服务器都能得到同样的工作界面，不用因为担心网络暂时中断而需要重新打开一大堆的 tab 页。&lt;/p&gt;
 
@@ -269,7 +269,7 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/tmuxinator/tmuxinator&#34;&gt;tmuxinator&lt;/a&gt; 可以稍微缓解一下这个问题，但是不彻底。tmuxinator 可以用于管理 tmux 的 session 和 window 布局等，便于在机器重启后能够快速恢复自己的工作环境。&lt;/p&gt;
 
-&lt;h5 id=&#34;安装-1:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;安装&lt;/h5&gt;
+&lt;h5 id=&#34;安装-1&#34;&gt;安装&lt;/h5&gt;
 
 &lt;p&gt;先安装 gem， &lt;code&gt;yum install -y rubygems&lt;/code&gt;&lt;/p&gt;
 
@@ -278,7 +278,7 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 &lt;pre&gt;&lt;code&gt;gem sources --add [https://ruby.taobao.org/](https://ruby.taobao.org/) --remove [https://rubygems.org/](https://rubygems.org/)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;使用:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;使用&lt;/h5&gt;
+&lt;h5 id=&#34;使用&#34;&gt;使用&lt;/h5&gt;
 
 &lt;p&gt;创建一个 tmuxinator 的 project： &lt;code&gt;tmuxinator new [project]&lt;/code&gt;&lt;/p&gt;
 
@@ -286,11 +286,11 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;当服务器重启了以后，执行 &lt;code&gt;tmuxinator start [project]&lt;/code&gt;，tmuxinator 就会自动根据配置文件创建一个指定布局的 tmux session。&lt;/p&gt;
 
-&lt;h5 id=&#34;缺点:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;缺点&lt;/h5&gt;
+&lt;h5 id=&#34;缺点&#34;&gt;缺点&lt;/h5&gt;
 
 &lt;p&gt;布局是预先在配置文件中指定好的，你在使用 tmux 过程中修改了的布局是不会记录下来的。&lt;/p&gt;
 
-&lt;h4 id=&#34;tmux-resurrect:8c207b1fc9d64d5edf1b83e5544a1de6&#34;&gt;Tmux Resurrect&lt;/h4&gt;
+&lt;h4 id=&#34;tmux-resurrect&#34;&gt;Tmux Resurrect&lt;/h4&gt;
 
 &lt;p&gt;Tmux Resurrect 用于保存当前的session环境到磁盘上，用于以后恢复。&lt;/p&gt;
 
@@ -313,13 +313,13 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 &lt;p&gt;在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
 题，如果日志较少，就很难进行进一步的查错了。但是发现在该目录下生成了一个core文件，可以帮助我们查找程序崩溃的原因。&lt;/p&gt;
 
-&lt;h3 id=&#34;什么是core文件:67ed1ce693d838a80c03bda9fddde0f2&#34;&gt;什么是core文件&lt;/h3&gt;
+&lt;h3 id=&#34;什么是core文件&#34;&gt;什么是core文件&lt;/h3&gt;
 
 &lt;p&gt;在linux系统下，如果进程不能正常运行，就可能会产生core文件。core文件就是当前内存状态的一个映像，同时加上一些调试信息。&lt;/p&gt;
 
 &lt;p&gt;bug和操作系统或硬件的保护机制都会导致程序异常终止，操作系统会kill掉这些进程并产生core文件，比如常见的段错误等。&lt;/p&gt;
 
-&lt;h3 id=&#34;为什么我的linux不会生成core文件:67ed1ce693d838a80c03bda9fddde0f2&#34;&gt;为什么我的linux不会生成core文件&lt;/h3&gt;
+&lt;h3 id=&#34;为什么我的linux不会生成core文件&#34;&gt;为什么我的linux不会生成core文件&lt;/h3&gt;
 
 &lt;p&gt;使用 &lt;code&gt;ulimit -a&lt;/code&gt; 命令可以查看当前系统资源的一些限制信息，如下：&lt;/p&gt;
 
@@ -355,7 +355,7 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;&lt;strong&gt;注：这条命令只在当前生效，如果希望永久生效，就需要在 .bash_profile 或者类似文件中加上这条命令。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;设置core-dump的核心转储文件目录和命名规则:67ed1ce693d838a80c03bda9fddde0f2&#34;&gt;设置Core Dump的核心转储文件目录和命名规则&lt;/h3&gt;
+&lt;h3 id=&#34;设置core-dump的核心转储文件目录和命名规则&#34;&gt;设置Core Dump的核心转储文件目录和命名规则&lt;/h3&gt;
 
 &lt;p&gt;&lt;strong&gt;/proc/sys/kernel/core_uses_pid&lt;/strong&gt; 可以控制产生的core文件的文件名中是否添加pid作为扩展，如果添加则文件内容为1，否则为0。需要有超级用户的权限才能进行修改。&lt;/p&gt;
 
@@ -376,7 +376,7 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 %e - insertcoredumping executable name into filename 添加命令名
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;使用core文件:67ed1ce693d838a80c03bda9fddde0f2&#34;&gt;使用core文件&lt;/h3&gt;
+&lt;h3 id=&#34;使用core文件&#34;&gt;使用core文件&lt;/h3&gt;
 
 &lt;p&gt;在linux上可以使用gdb来调试core文件，格式为：&lt;/p&gt;
 
@@ -395,7 +395,7 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;之后进入gdb调试状态，输入 where 就可以看到程序崩溃时堆栈信息（当前函数之前的所有已调用函数的列表（包括当前函数），我们可以借此找出是程序中的哪个部分导致了程序崩溃。注意：在编译程序的时候要加入选项-g。&lt;/p&gt;
 
-&lt;h3 id=&#34;一个简单的例子:67ed1ce693d838a80c03bda9fddde0f2&#34;&gt;一个简单的例子&lt;/h3&gt;
+&lt;h3 id=&#34;一个简单的例子&#34;&gt;一个简单的例子&lt;/h3&gt;
 
 &lt;p&gt;编译如下的程序&lt;/p&gt;
 
@@ -505,7 +505,7 @@ Aborted (core dumped)
 
 &lt;p&gt;astyle这个工具可以将现有的代码格式转换为指定的风格，当你将乱七八糟的代码用astyle转换一下之后，就会感觉整个世界都清静了……&lt;/p&gt;
 
-&lt;h3 id=&#34;如何获取:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;如何获取&lt;/h3&gt;
+&lt;h3 id=&#34;如何获取&#34;&gt;如何获取&lt;/h3&gt;
 
 &lt;p&gt;astyle是一个开放源码的项目，支持C/C++、C#和java的代码格式化&lt;/p&gt;
 
@@ -513,11 +513,11 @@ Aborted (core dumped)
 
 &lt;p&gt;我的Github拷贝: &lt;a href=&#34;https://github.com/fatedier/fatedier-tools/tree/master/astyle&#34;&gt;https://github.com/fatedier/fatedier-tools/tree/master/astyle&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;编译:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;编译&lt;/h3&gt;
+&lt;h3 id=&#34;编译&#34;&gt;编译&lt;/h3&gt;
 
 &lt;p&gt;直接写一个Makefile编译下源码，我的Github的拷贝里有写好的Makefile，直接用gmake命令编译一下就可以用了。&lt;/p&gt;
 
-&lt;h3 id=&#34;示例:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;示例&lt;/h3&gt;
+&lt;h3 id=&#34;示例&#34;&gt;示例&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;./astyle --style=ansi test.cpp
 &lt;/code&gt;&lt;/pre&gt;
@@ -531,11 +531,11 @@ Aborted (core dumped)
 
 &lt;p&gt;而 &lt;strong&gt;test.cpp&lt;/strong&gt; 就已经转换为了 &lt;strong&gt;ansi&lt;/strong&gt; 代码风格了。&lt;/p&gt;
 
-&lt;h3 id=&#34;常用选项:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;常用选项&lt;/h3&gt;
+&lt;h3 id=&#34;常用选项&#34;&gt;常用选项&lt;/h3&gt;
 
 &lt;p&gt;&lt;strong&gt;注：使用 &amp;ndash;help 选项可以查看astyle的帮助文档&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;style风格设置:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;style风格设置&lt;/h4&gt;
+&lt;h4 id=&#34;style风格设置&#34;&gt;style风格设置&lt;/h4&gt;
 
 &lt;p&gt;常用的代码风格主要有三种: &lt;strong&gt;ansi&lt;/strong&gt; 和 &lt;strong&gt;k&amp;amp;r&lt;/strong&gt; 以及 &lt;strong&gt;java&lt;/strong&gt;&lt;/p&gt;
 
@@ -582,7 +582,7 @@ Aborted (core dumped)
 &lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h4 id=&#34;tab选项:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;Tab选项&lt;/h4&gt;
+&lt;h4 id=&#34;tab选项&#34;&gt;Tab选项&lt;/h4&gt;
 
 &lt;p&gt;默认是使用4个空格替换一个tab。&lt;/p&gt;
 
@@ -596,19 +596,19 @@ Aborted (core dumped)
 &lt;p&gt;指定缩进使用tab，=#同上，指定一个tab占几个空格，不说明的话默认是4个。&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h4 id=&#34;递归处理:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;递归处理&lt;/h4&gt;
+&lt;h4 id=&#34;递归处理&#34;&gt;递归处理&lt;/h4&gt;
 
 &lt;p&gt;&amp;ndash;recursive OR -r OR -R&lt;/p&gt;
 
 &lt;p&gt;可以递归处理所有子目录的文件。&lt;/p&gt;
 
-&lt;h4 id=&#34;排除不处理的文件:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;排除不处理的文件&lt;/h4&gt;
+&lt;h4 id=&#34;排除不处理的文件&#34;&gt;排除不处理的文件&lt;/h4&gt;
 
 &lt;p&gt;&amp;ndash;exclude=####&lt;/p&gt;
 
 &lt;p&gt;指定哪些文件或者文件夹不需要进行处理。&lt;/p&gt;
 
-&lt;h4 id=&#34;指定配置文件:699e4d34b5ad72c6fd24a2cffb5c24a4&#34;&gt;指定配置文件&lt;/h4&gt;
+&lt;h4 id=&#34;指定配置文件&#34;&gt;指定配置文件&lt;/h4&gt;
 
 &lt;p&gt;&amp;ndash;options=####&lt;/p&gt;
 
@@ -642,7 +642,7 @@ Aborted (core dumped)
 
 &lt;p&gt;现在把整个配置的过程记录下来，方便以后参考。&lt;/p&gt;
 
-&lt;h3 id=&#34;前期准备:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;前期准备&lt;/h3&gt;
+&lt;h3 id=&#34;前期准备&#34;&gt;前期准备&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;有一个github帐号&lt;/li&gt;
@@ -655,7 +655,7 @@ Aborted (core dumped)
 
 &lt;p&gt;地址为：&lt;a href=&#34;https://github.com/fatedier/dot_file&#34;&gt;https://github.com/fatedier/dot_file&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;vim常用配置:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;vim常用配置&lt;/h3&gt;
+&lt;h3 id=&#34;vim常用配置&#34;&gt;vim常用配置&lt;/h3&gt;
 
 &lt;p&gt;个人的vim配置文件一般是放在用户主目录下的.vimrc文件。&lt;/p&gt;
 
@@ -715,13 +715,13 @@ vnoremap &amp;lt;F3&amp;gt;*&amp;lt;Esc&amp;gt;:noh&amp;lt;CR&amp;gt;:match Todo
 inoremap &amp;lt;C-\&amp;gt; &amp;lt;Esc&amp;gt;&amp;lt;&amp;lt;i
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;使用vundle管理vim插件:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;使用vundle管理vim插件&lt;/h3&gt;
+&lt;h3 id=&#34;使用vundle管理vim插件&#34;&gt;使用vundle管理vim插件&lt;/h3&gt;
 
 &lt;p&gt;很多时候我们的vim都需要安装大量的插件，需要进行各种配置，而且插件路径下面的文件也会变的非常混乱，这个时候使用 &lt;strong&gt;vundle&lt;/strong&gt; 就是一个不错的选择。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://github.com/vim-scripts/vundle&#34;&gt;vundle&lt;/a&gt; 是可以算是一个用来管理各种vim插件的插件。&lt;/p&gt;
 
-&lt;h4 id=&#34;安装ctags:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;安装ctags&lt;/h4&gt;
+&lt;h4 id=&#34;安装ctags&#34;&gt;安装ctags&lt;/h4&gt;
 
 &lt;p&gt;直接使用命令 yuminstall ctags 进行安装。&lt;/p&gt;
 
@@ -741,14 +741,14 @@ inoremap &amp;lt;C-\&amp;gt; &amp;lt;Esc&amp;gt;&amp;lt;&amp;lt;i
 
 &lt;p&gt;&lt;strong&gt;注：这里需要填具体的tags文件所在路径。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;先安装vundle这个插件:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;先安装vundle这个插件&lt;/h4&gt;
+&lt;h4 id=&#34;先安装vundle这个插件&#34;&gt;先安装vundle这个插件&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;之后其他的插件也都会被放在~/.vim/bundle这个目录下。&lt;/p&gt;
 
-&lt;h4 id=&#34;安装其他需要的插件:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;安装其他需要的插件&lt;/h4&gt;
+&lt;h4 id=&#34;安装其他需要的插件&#34;&gt;安装其他需要的插件&lt;/h4&gt;
 
 &lt;p&gt;以后当你需要安装其他的vim插件的时候，直接在.vimrc中加上如下部分：&lt;/p&gt;
 
@@ -780,15 +780,15 @@ filetype pluginindent on
 
 &lt;p&gt;这样就会直接从这个地址上下载所需插件。&lt;/p&gt;
 
-&lt;h3 id=&#34;其他插件的配置与使用:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;其他插件的配置与使用&lt;/h3&gt;
+&lt;h3 id=&#34;其他插件的配置与使用&#34;&gt;其他插件的配置与使用&lt;/h3&gt;
 
-&lt;h4 id=&#34;快速浏览源码-taglist:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;快速浏览源码：TagList&lt;/h4&gt;
+&lt;h4 id=&#34;快速浏览源码-taglist&#34;&gt;快速浏览源码：TagList&lt;/h4&gt;
 
 &lt;p&gt;在Windows平台我经常用来浏览项目源码的工具就是SourceInsight，会在窗口左边列出当前文件中的变量、宏、函数名等等，点击以后就会快速跳转到页面相应的地方，使用taglist就可以在vim中实现相同的效果。&lt;/p&gt;
 
 &lt;p&gt;通过vundle安装完成后，在vim中使用 &lt;code&gt;:Tlist&lt;/code&gt; 命令就可以打开TagList窗口。&lt;/p&gt;
 
-&lt;h4 id=&#34;窗口管理器-winmanager:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;窗口管理器：WinManager&lt;/h4&gt;
+&lt;h4 id=&#34;窗口管理器-winmanager&#34;&gt;窗口管理器：WinManager&lt;/h4&gt;
 
 &lt;p&gt;WinManager可以帮助我们管理在屏幕上显示的多个窗口。&lt;/p&gt;
 
@@ -800,7 +800,7 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;&lt;strong&gt;注：nnoremap是设置键盘映射。第一个字母n是normal模式，i是insert模式，v是visual模式。加上nore表示不会递归替换命令，比如a映射到b，b映射到c，那么按a不会得到按c的效果。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;高亮标签-visualmark:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;高亮标签：VisualMark&lt;/h4&gt;
+&lt;h4 id=&#34;高亮标签-visualmark&#34;&gt;高亮标签：VisualMark&lt;/h4&gt;
 
 &lt;p&gt;这个插件的作用就是在浏览代码的时候在指定的行上添加标签，之后可以快速跳转回来，方便快捷。&lt;/p&gt;
 
@@ -810,7 +810,7 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 
 &lt;p&gt;按下“F2”可以在多个标签之间进行快速跳转。&lt;/p&gt;
 
-&lt;h4 id=&#34;自动补全-neocomplcache:5aab60ddb89ca762ffb1e8e903792c73&#34;&gt;自动补全：neocomplcache&lt;/h4&gt;
+&lt;h4 id=&#34;自动补全-neocomplcache&#34;&gt;自动补全：neocomplcache&lt;/h4&gt;
 
 &lt;p&gt;这个补全插件需要tags文件的支持，所以需要安装ctags，并且在项目根目录生成tags文件，之后在.vimrc中加入这个tags文件。&lt;/p&gt;
 
@@ -851,43 +851,43 @@ vim -d [file1] [file2]
 
 &lt;p&gt;其他的一些的编辑命令与vim相同，这里主要记录一些常用的合并文件需要用到的命令：&lt;/p&gt;
 
-&lt;h4 id=&#34;ctrl-w之后按w:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;Ctrl+w之后按w&lt;/h4&gt;
+&lt;h4 id=&#34;ctrl-w之后按w&#34;&gt;Ctrl+w之后按w&lt;/h4&gt;
 
 &lt;p&gt;可以切换到另外一个文件&lt;/p&gt;
 
-&lt;h4 id=&#34;c:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;[c&lt;/h4&gt;
+&lt;h4 id=&#34;c&#34;&gt;[c&lt;/h4&gt;
 
 &lt;p&gt;跳转到上一个差异点&lt;/p&gt;
 
-&lt;h4 id=&#34;c-1:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;]c&lt;/h4&gt;
+&lt;h4 id=&#34;c-1&#34;&gt;]c&lt;/h4&gt;
 
 &lt;p&gt;跳转到下一个差一点&lt;/p&gt;
 
-&lt;h4 id=&#34;zo或者i:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;zo或者i&lt;/h4&gt;
+&lt;h4 id=&#34;zo或者i&#34;&gt;zo或者i&lt;/h4&gt;
 
 &lt;p&gt;展开折叠区域，或者使用i进入插入模式也会进行展开&lt;/p&gt;
 
-&lt;h4 id=&#34;zc:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;zc&lt;/h4&gt;
+&lt;h4 id=&#34;zc&#34;&gt;zc&lt;/h4&gt;
 
 &lt;p&gt;重新折叠，可以把使用zo展开折叠的区域恢复原样&lt;/p&gt;
 
-&lt;h4 id=&#34;dp-diff-put的意思:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;dp（diff put的意思）&lt;/h4&gt;
+&lt;h4 id=&#34;dp-diff-put的意思&#34;&gt;dp（diff put的意思）&lt;/h4&gt;
 
 &lt;p&gt;把当前文件的差异点内容复制到另一个文件&lt;/p&gt;
 
-&lt;h4 id=&#34;do-diff-obtain的意思:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;do（diff obtain的意思）&lt;/h4&gt;
+&lt;h4 id=&#34;do-diff-obtain的意思&#34;&gt;do（diff obtain的意思）&lt;/h4&gt;
 
 &lt;p&gt;把另一个文件的差异点内容复制到当前文件&lt;/p&gt;
 
-&lt;h4 id=&#34;diffupdate:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;:diffupdate&lt;/h4&gt;
+&lt;h4 id=&#34;diffupdate&#34;&gt;:diffupdate&lt;/h4&gt;
 
 &lt;p&gt;有时候修改了文件之后不会立即刷新重新比对，使用该命令可以重新进行文件比较。&lt;/p&gt;
 
-&lt;h4 id=&#34;qa:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;qa&lt;/h4&gt;
+&lt;h4 id=&#34;qa&#34;&gt;qa&lt;/h4&gt;
 
 &lt;p&gt;退出所有打开的文件，但是不保存&lt;/p&gt;
 
-&lt;h4 id=&#34;wqa:9aefac86470ffbb6f4e11b956b035fae&#34;&gt;wqa&lt;/h4&gt;
+&lt;h4 id=&#34;wqa&#34;&gt;wqa&lt;/h4&gt;
 
 &lt;p&gt;退出并保存所有已打开的文件&lt;/p&gt;
 </description>
@@ -905,7 +905,7 @@ vim -d [file1] [file2]
 
 &lt;p&gt;在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。&lt;/p&gt;
 
-&lt;h3 id=&#34;修改某一次提交的说明信息:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;修改某一次提交的说明信息&lt;/h3&gt;
+&lt;h3 id=&#34;修改某一次提交的说明信息&#34;&gt;修改某一次提交的说明信息&lt;/h3&gt;
 
 &lt;p&gt;有时候我们需要修改之前提交的时候的说明信息，没有操作命令可以直接完成，但是使用rebase命令可以实现。&lt;/p&gt;
 
@@ -936,7 +936,7 @@ vim -d [file1] [file2]
 
 &lt;p&gt;&lt;strong&gt;注：不要修改已经push到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;查看-删除-重命名远程分支:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;查看、删除、重命名远程分支&lt;/h3&gt;
+&lt;h3 id=&#34;查看-删除-重命名远程分支&#34;&gt;查看、删除、重命名远程分支&lt;/h3&gt;
 
 &lt;p&gt;查看所有的分支（包括远程分支）&lt;/p&gt;
 
@@ -959,7 +959,7 @@ $ git branch -m &amp;lt;branchName&amp;gt; &amp;lt;newBranchName&amp;gt;
 $ git push origin &amp;lt;newBranchName&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;合并多个提交:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;合并多个提交&lt;/h3&gt;
+&lt;h3 id=&#34;合并多个提交&#34;&gt;合并多个提交&lt;/h3&gt;
 
 &lt;p&gt;比如要合并最后两次的提交，其实和修改某一次提交的说明信息有点类似。&lt;/p&gt;
 
@@ -970,7 +970,7 @@ $ git push origin &amp;lt;newBranchName&amp;gt;
 
 &lt;p&gt;这时git会把两次提交合并，并且提示让你输入新的提交信息，保存后退出就成功完成两次提交的合并了。&lt;/p&gt;
 
-&lt;h3 id=&#34;强制回退远程仓库到指定提交:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;强制回退远程仓库到指定提交&lt;/h3&gt;
+&lt;h3 id=&#34;强制回退远程仓库到指定提交&#34;&gt;强制回退远程仓库到指定提交&lt;/h3&gt;
 
 &lt;p&gt;当我们在开发的时候出现一些关键性的错误，并且确认现在已经做的开发工作是无意义的时候，可能需要回退到之前的版本。&lt;/p&gt;
 
@@ -989,7 +989,7 @@ $ git push origin HEAD --force
 &lt;li&gt;&lt;p&gt;&lt;strong&gt;git reset &amp;ndash;hard&lt;/strong&gt;：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;reset-hard之后的恢复:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;reset &amp;ndash;hard之后的恢复&lt;/h3&gt;
+&lt;h3 id=&#34;reset-hard之后的恢复&#34;&gt;reset &amp;ndash;hard之后的恢复&lt;/h3&gt;
 
 &lt;p&gt;使用 &lt;code&gt;git reset --hard&lt;/code&gt; 之后，也许才发现这是一次错误的操作，那么我们就想要恢复到之前的版本。&lt;/p&gt;
 
@@ -997,7 +997,7 @@ $ git push origin HEAD --force
 
 &lt;p&gt;需要使用 &lt;code&gt;$ git reflog&lt;/code&gt; 找到我们需要恢复的HEAD的ID，然后使用reset命令恢复回去。&lt;/p&gt;
 
-&lt;h3 id=&#34;查看指定版本的某个文件的内容:3ad87c55fc5af115fc9b1721031d1adf&#34;&gt;查看指定版本的某个文件的内容&lt;/h3&gt;
+&lt;h3 id=&#34;查看指定版本的某个文件的内容&#34;&gt;查看指定版本的某个文件的内容&lt;/h3&gt;
 
 &lt;p&gt;例如要查看 f4869b0 这次提交的 test.cpp 文件的内容，test.cpp的路径需要使用相对于git目录的路径名，使用如下命令：&lt;/p&gt;
 
@@ -1022,7 +1022,7 @@ $ git push origin HEAD --force
 
 &lt;p&gt;Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。&lt;/p&gt;
 
-&lt;h3 id=&#34;git的配置:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;Git的配置&lt;/h3&gt;
+&lt;h3 id=&#34;git的配置&#34;&gt;Git的配置&lt;/h3&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;/etc/gitconfig 文件：系统中对所有用户都普遍适用的配置。若使用 git config 时用 &amp;ndash;system 选项，读写的就是这个文件。&lt;/p&gt;&lt;/li&gt;
@@ -1032,19 +1032,19 @@ $ git push origin HEAD --force
 
 &lt;p&gt;当前项目的 Git 目录中的配置文件（也就是工作目录中的 .git/config 文件）：这里的配置仅仅针对当前项目有效。每一个级别的配置都会覆盖上层的相同配置，所.git/config 里的配置会覆盖 /etc/gitconfig 中的同名变量。&lt;/p&gt;
 
-&lt;h4 id=&#34;设置用户信息:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;设置用户信息&lt;/h4&gt;
+&lt;h4 id=&#34;设置用户信息&#34;&gt;设置用户信息&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git config --globaluser.name  &amp;quot;your-uasername&amp;quot;
 $ git config --global user.email example@example.com
 $ git config --global core.editor vim
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;设置差异分析工具:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;设置差异分析工具&lt;/h4&gt;
+&lt;h4 id=&#34;设置差异分析工具&#34;&gt;设置差异分析工具&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git config --global merge.tool vimdiff
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;如何获取帮助文档:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;如何获取帮助文档&lt;/h4&gt;
+&lt;h4 id=&#34;如何获取帮助文档&#34;&gt;如何获取帮助文档&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git help &amp;lt;verb&amp;gt;
 $ git &amp;lt;verb&amp;gt; --help
@@ -1053,9 +1053,9 @@ $ man git-&amp;lt;verb&amp;gt;
 
 &lt;p&gt;例如 &lt;code&gt;man git-config&lt;/code&gt;&lt;/p&gt;
 
-&lt;h3 id=&#34;git基础操作:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;Git基础操作&lt;/h3&gt;
+&lt;h3 id=&#34;git基础操作&#34;&gt;Git基础操作&lt;/h3&gt;
 
-&lt;h4 id=&#34;取得git仓库-从现有仓库克隆:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;取得Git仓库（从现有仓库克隆）&lt;/h4&gt;
+&lt;h4 id=&#34;取得git仓库-从现有仓库克隆&#34;&gt;取得Git仓库（从现有仓库克隆）&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git clone https://github.com/schacon/fatest.git
 &lt;/code&gt;&lt;/pre&gt;
@@ -1069,14 +1069,14 @@ $ man git-&amp;lt;verb&amp;gt;
 
 &lt;p&gt;现在创建的目录就是fatestnew而不是fatest了，其他的都一样。&lt;/p&gt;
 
-&lt;h4 id=&#34;检查当前项目文件状态:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;检查当前项目文件状态&lt;/h4&gt;
+&lt;h4 id=&#34;检查当前项目文件状态&#34;&gt;检查当前项目文件状态&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git status
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;可以看到有哪些文件是没有加入到版本中的，哪些是修改了还没提交的等等。&lt;/p&gt;
 
-&lt;h4 id=&#34;将新文件加入到版本中:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;将新文件加入到版本中&lt;/h4&gt;
+&lt;h4 id=&#34;将新文件加入到版本中&#34;&gt;将新文件加入到版本中&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git add test.cpp
 &lt;/code&gt;&lt;/pre&gt;
@@ -1085,7 +1085,7 @@ $ man git-&amp;lt;verb&amp;gt;
 
 &lt;p&gt;*注意*修改过后的文件处于未暂存状态，提交的时候处于未暂存状态的文件将不会提交，需要使用git add命令更改为暂存状态，之后再提交就会提交到仓库中了。&lt;/p&gt;
 
-&lt;h4 id=&#34;忽略某些文件:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;忽略某些文件&lt;/h4&gt;
+&lt;h4 id=&#34;忽略某些文件&#34;&gt;忽略某些文件&lt;/h4&gt;
 
 &lt;p&gt;对于不需要加入到版本中，并且使用git status时不再提示的文件。&lt;/p&gt;
 
@@ -1110,7 +1110,7 @@ doc/*.txt
 doc/**/*.txt
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;查看已暂存和未暂存的更新文件差异:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看已暂存和未暂存的更新文件差异&lt;/h4&gt;
+&lt;h4 id=&#34;查看已暂存和未暂存的更新文件差异&#34;&gt;查看已暂存和未暂存的更新文件差异&lt;/h4&gt;
 
 &lt;p&gt;未暂存：&lt;/p&gt;
 
@@ -1122,7 +1122,7 @@ doc/**/*.txt
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git diff --staged
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;提交更新:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;提交更新&lt;/h4&gt;
+&lt;h4 id=&#34;提交更新&#34;&gt;提交更新&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git commit
 &lt;/code&gt;&lt;/pre&gt;
@@ -1139,7 +1139,7 @@ doc/**/*.txt
 
 &lt;p&gt;使用 &lt;em&gt;-a&lt;/em&gt; 命令，会把未暂存和已暂存的文件一起提交，不然只会提交已暂存的文件。&lt;/p&gt;
 
-&lt;h4 id=&#34;删除文件和取消跟踪:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;删除文件和取消跟踪&lt;/h4&gt;
+&lt;h4 id=&#34;删除文件和取消跟踪&#34;&gt;删除文件和取消跟踪&lt;/h4&gt;
 
 &lt;p&gt;可以先本地使用rm命令删掉，这时候放在未暂存区域，之后用“git rm文件名”删掉。&lt;/p&gt;
 
@@ -1150,7 +1150,7 @@ doc/**/*.txt
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git rm --cached readme.txt
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;移动文件:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;移动文件&lt;/h4&gt;
+&lt;h4 id=&#34;移动文件&#34;&gt;移动文件&lt;/h4&gt;
 
 &lt;p&gt;例如要把 test.cpp 改为 tt.cpp&lt;/p&gt;
 
@@ -1164,35 +1164,35 @@ $ git rm README.txt
 $ git add README
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;查看提交历史:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看提交历史&lt;/h4&gt;
+&lt;h4 id=&#34;查看提交历史&#34;&gt;查看提交历史&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git log
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;撤销操作:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;撤销操作&lt;/h4&gt;
+&lt;h4 id=&#34;撤销操作&#34;&gt;撤销操作&lt;/h4&gt;
 
-&lt;h5 id=&#34;覆盖上一次的提交:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;覆盖上一次的提交&lt;/h5&gt;
+&lt;h5 id=&#34;覆盖上一次的提交&#34;&gt;覆盖上一次的提交&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git commit --amend
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;会将上次提交和这次提交合并起来，算作一次提交。&lt;/p&gt;
 
-&lt;h5 id=&#34;取消已暂存文件:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;取消已暂存文件&lt;/h5&gt;
+&lt;h5 id=&#34;取消已暂存文件&#34;&gt;取消已暂存文件&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git reset HEAD &amp;lt;file&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;这个时候文件状态就从已暂存变为未暂存&lt;/p&gt;
 
-&lt;h5 id=&#34;取消对文件的修改-还没有放到暂存区:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;取消对文件的修改（还没有放到暂存区）&lt;/h5&gt;
+&lt;h5 id=&#34;取消对文件的修改-还没有放到暂存区&#34;&gt;取消对文件的修改（还没有放到暂存区）&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git checkout -- &amp;lt;file&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;运程仓库的使用:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;运程仓库的使用&lt;/h4&gt;
+&lt;h4 id=&#34;运程仓库的使用&#34;&gt;运程仓库的使用&lt;/h4&gt;
 
-&lt;h5 id=&#34;查看当前的远程库:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看当前的远程库&lt;/h5&gt;
+&lt;h5 id=&#34;查看当前的远程库&#34;&gt;查看当前的远程库&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git remote
 &lt;/code&gt;&lt;/pre&gt;
@@ -1204,12 +1204,12 @@ $ git add README
 
 &lt;p&gt;会额外列出远程库对应的克隆地址&lt;/p&gt;
 
-&lt;h5 id=&#34;添加远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;添加远程仓库&lt;/h5&gt;
+&lt;h5 id=&#34;添加远程仓库&#34;&gt;添加远程仓库&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git remote add [shortname] [url]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;从远程仓库抓取数据:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;从远程仓库抓取数据&lt;/h5&gt;
+&lt;h5 id=&#34;从远程仓库抓取数据&#34;&gt;从远程仓库抓取数据&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git fetch [remote-name]
 &lt;/code&gt;&lt;/pre&gt;
@@ -1231,33 +1231,33 @@ $ git add README
 
 &lt;p&gt;获取远程分支到本地新的分支上，并切换到新分支&lt;/p&gt;
 
-&lt;h5 id=&#34;推送数据到远程仓库:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;推送数据到远程仓库&lt;/h5&gt;
+&lt;h5 id=&#34;推送数据到远程仓库&#34;&gt;推送数据到远程仓库&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git push [remote-name] [branch-name]
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;推送操作会默认使用origin和master名字&lt;/p&gt;
 
-&lt;h5 id=&#34;查看远程仓库信息:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看远程仓库信息&lt;/h5&gt;
+&lt;h5 id=&#34;查看远程仓库信息&#34;&gt;查看远程仓库信息&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git remote show [remote-name]
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;除了对应的克隆地址外，它还给出了许多额外的信息。它友善地告诉你如果是在 master 分支，就可以用 git pull 命令抓取数据合并到本地。另外还列出了所有处于跟踪状态中的远端分支。&lt;/p&gt;
 
-&lt;h5 id=&#34;远程仓库的删除:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;远程仓库的删除&lt;/h5&gt;
+&lt;h5 id=&#34;远程仓库的删除&#34;&gt;远程仓库的删除&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git remote rm [remote-name]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;标签的使用:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;标签的使用&lt;/h4&gt;
+&lt;h4 id=&#34;标签的使用&#34;&gt;标签的使用&lt;/h4&gt;
 
-&lt;h5 id=&#34;显示已有的标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;显示已有的标签&lt;/h5&gt;
+&lt;h5 id=&#34;显示已有的标签&#34;&gt;显示已有的标签&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git tag
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h5 id=&#34;新建标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;新建标签&lt;/h5&gt;
+&lt;h5 id=&#34;新建标签&#34;&gt;新建标签&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git tag v1.0
 &lt;/code&gt;&lt;/pre&gt;
@@ -1269,7 +1269,7 @@ $ git add README
 
 &lt;p&gt;-m 指定了对应标签的说明&lt;/p&gt;
 
-&lt;h5 id=&#34;后期加注标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;后期加注标签&lt;/h5&gt;
+&lt;h5 id=&#34;后期加注标签&#34;&gt;后期加注标签&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git log --pretty=oneline --abbrev-commit
 &lt;/code&gt;&lt;/pre&gt;
@@ -1281,19 +1281,19 @@ $ git add README
 
 &lt;p&gt;补加标签&lt;/p&gt;
 
-&lt;h5 id=&#34;推送标签:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;推送标签&lt;/h5&gt;
+&lt;h5 id=&#34;推送标签&#34;&gt;推送标签&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git push origin [tagname]
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;设置命令别名:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;设置命令别名&lt;/h4&gt;
+&lt;h4 id=&#34;设置命令别名&#34;&gt;设置命令别名&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git config --global alias.co checkout
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;git分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;Git分支&lt;/h3&gt;
+&lt;h3 id=&#34;git分支&#34;&gt;Git分支&lt;/h3&gt;
 
-&lt;h4 id=&#34;新建分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;新建分支&lt;/h4&gt;
+&lt;h4 id=&#34;新建分支&#34;&gt;新建分支&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git branch testing
 &lt;/code&gt;&lt;/pre&gt;
@@ -1302,14 +1302,14 @@ $ git add README
 
 &lt;p&gt;&lt;em&gt;注：HEAD这个特别的指针是指向正在工作中的本地分支的指针&lt;/em&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;切换分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;切换分支&lt;/h4&gt;
+&lt;h4 id=&#34;切换分支&#34;&gt;切换分支&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git checkout testing
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;切换到testing分支上&lt;/p&gt;
 
-&lt;h4 id=&#34;分支的合并:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;分支的合并&lt;/h4&gt;
+&lt;h4 id=&#34;分支的合并&#34;&gt;分支的合并&lt;/h4&gt;
 
 &lt;p&gt;在master分支上，执行：&lt;/p&gt;
 
@@ -1318,12 +1318,12 @@ $ git add README
 
 &lt;p&gt;将tesing分支合并回master&lt;/p&gt;
 
-&lt;h4 id=&#34;使用合并工具-可以自己设置-例如设置成vimdiff:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;使用合并工具（可以自己设置，例如设置成vimdiff）&lt;/h4&gt;
+&lt;h4 id=&#34;使用合并工具-可以自己设置-例如设置成vimdiff&#34;&gt;使用合并工具（可以自己设置，例如设置成vimdiff）&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git mergetool
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;分支的管理:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;分支的管理&lt;/h4&gt;
+&lt;h4 id=&#34;分支的管理&#34;&gt;分支的管理&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git branch --merged
 &lt;/code&gt;&lt;/pre&gt;
@@ -1340,12 +1340,12 @@ $ git add README
 
 &lt;p&gt;如果该分支尚没有合并，可以使用-D选项强制删除。&lt;/p&gt;
 
-&lt;h4 id=&#34;推送本地分支:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;推送本地分支&lt;/h4&gt;
+&lt;h4 id=&#34;推送本地分支&#34;&gt;推送本地分支&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git push origin testing
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4 id=&#34;分支的衍合:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;分支的衍合&lt;/h4&gt;
+&lt;h4 id=&#34;分支的衍合&#34;&gt;分支的衍合&lt;/h4&gt;
 
 &lt;p&gt;例如现在有两个分支，一个master，一个testing&lt;/p&gt;
 
@@ -1357,23 +1357,23 @@ $ git merge testing
 
 &lt;p&gt;通常在贡献自己的代码之前先衍合，再提交，会让历史提交记录更清晰。&lt;/p&gt;
 
-&lt;h3 id=&#34;git调试:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;Git调试&lt;/h3&gt;
+&lt;h3 id=&#34;git调试&#34;&gt;Git调试&lt;/h3&gt;
 
-&lt;h4 id=&#34;文件标注:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;文件标注&lt;/h4&gt;
+&lt;h4 id=&#34;文件标注&#34;&gt;文件标注&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git blame -L 12,22 test.cpp
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;查看test.cpp文件对每一行进行修改的最近一次提交。&lt;/p&gt;
 
-&lt;h4 id=&#34;查看文件的历史提交:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看文件的历史提交&lt;/h4&gt;
+&lt;h4 id=&#34;查看文件的历史提交&#34;&gt;查看文件的历史提交&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git log --pretty=oneline test.cpp
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;查看test.cpp文件的历史提交记录&lt;/p&gt;
 
-&lt;h4 id=&#34;查看文件的历史版本:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看文件的历史版本&lt;/h4&gt;
+&lt;h4 id=&#34;查看文件的历史版本&#34;&gt;查看文件的历史版本&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git show [commit] [file]
 &lt;/code&gt;&lt;/pre&gt;
@@ -1382,7 +1382,7 @@ $ git merge testing
 
 &lt;p&gt;查看7da7c23这次提交的test.cpp文件。&lt;/p&gt;
 
-&lt;h4 id=&#34;查看历史提交的详细文件变化:7aa84c832c9ae9742e6d9b7e8364eeab&#34;&gt;查看历史提交的详细文件变化&lt;/h4&gt;
+&lt;h4 id=&#34;查看历史提交的详细文件变化&#34;&gt;查看历史提交的详细文件变化&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git log -p -2
 &lt;/code&gt;&lt;/pre&gt;
@@ -1403,11 +1403,11 @@ $ git merge testing
 
 &lt;p&gt;学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。&lt;/p&gt;
 
-&lt;h4 id=&#34;git官方文档:8a2c50993806c604dc839fed7e1197e9&#34;&gt;Git官方文档&lt;/h4&gt;
+&lt;h4 id=&#34;git官方文档&#34;&gt;Git官方文档&lt;/h4&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://git-scm.com/book/zh/&#34;&gt;http://git-scm.com/book/zh/&lt;/a&gt;&lt;/p&gt;
 
-&lt;h4 id=&#34;廖雪峰git教程:8a2c50993806c604dc839fed7e1197e9&#34;&gt;廖雪峰Git教程&lt;/h4&gt;
+&lt;h4 id=&#34;廖雪峰git教程&#34;&gt;廖雪峰Git教程&lt;/h4&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&#34;&gt;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&lt;/a&gt;&lt;/p&gt;
 </description>

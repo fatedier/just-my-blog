@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="时间序列数据库调研之OpenTSDB &middot; fatedier blog">
+<meta property="og:title" content="linux下查看指定进程的所有连接信息 &middot; fatedier blog">
 
 <meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    时间序列数据库调研之OpenTSDB
+    linux下查看指定进程的所有连接信息
     
 </title>
 
@@ -80,152 +80,51 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2016年07月04日">
-                        2016年07月04日
+                    <time datetime="2016年07月18日">
+                        2016年07月18日
                     </time>
                 </div>
-                <h1 class="post-title">时间序列数据库调研之OpenTSDB</h1>
+                <h1 class="post-title">linux下查看指定进程的所有连接信息</h1>
             </header>
 
             <div class="post-content">
-                
+                <p>定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。</p>
 
-<p>Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。</p>
+<p>例如我想要查看进程 <code>frps</code> 当前的所有连接信息，先获得进程的 pid：</p>
 
-<h3 id="测试版本">测试版本</h3>
+<p><code>ps -ef|grep frps</code></p>
 
-<p>hbase-1.1.5</p>
+<p>结果为：</p>
 
-<p>opentsdb-2.2.0</p>
-
-<h3 id="单机部署">单机部署</h3>
-
-<p>单机部署可以参考我之前的一篇文章，集群部署比较复杂，这里仅使用单机进行测试。</p>
-
-<p><a href="http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/">OpenTSDB部署与使用</a></p>
-
-<h3 id="概念">概念</h3>
-
-<h4 id="数据格式">数据格式</h4>
-
-<ul>
-<li>metric: 一个可测量的单位的标称。</li>
-<li>tags: 对 metric 的具体描述。</li>
-<li>timestamp: 时间戳。</li>
-<li>value: metric 的实际测量值。</li>
-</ul>
-
-<h4 id="uid">UID</h4>
-
-<p>在 OpenTSDB 中，每一个 metric、tagk 或者 tagv 在创建的时候被分配一个唯一标识叫做 UID。在后续的实际存储中，实际上存储的是 UID，而不是它们原本的字符串，UID 占 3个字节（也可以修改源码改为4字节），这样可以节省存储空间。</p>
-
-<h4 id="tsuid">TSUID</h4>
-
-<p><code>&lt;metric_UID&gt;&lt;timestamp&gt;&lt;tagk1_UID&gt;&lt;tagv1_UID&gt;[...&lt;tagkN_UID&gt;&lt;tagvN_UID&gt;]</code></p>
-
-<p>写入 HBase 时的 row key 格式，其中的 metric、tagk 和 tagv 都被转换成了 UID。</p>
-
-<h4 id="data-table-schema">Data Table Schema</h4>
-
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-data-table-schema.png" alt="data-table-schema" /></p>
-
-<p><strong>RowKey</strong> 就是上述的 TSUID，除了时间戳占 4 byte，其余 UID 占 3 byte。</p>
-
-<p>时间戳的部分只保留到了小时粒度，具体相对于小时的偏移量被存储在了 <strong>列族 t</strong> 中。这样就减小了 HBase 中的存储行数。也就是说对于同一个小时的 metric + tags 相同的数据都会存放在一个 row 下面，这样的设计提高了 row 的检索速度。</p>
-
-<p>这样的 RowKey 设计使得 metric + tags 相同的数据都会连续存放，且 metric 相同的数据也会连续存放，底层 HBase 中会放在同一 Region 中，在做 Scan 的时候可以快速读取到大片数据，加速查询的过程。</p>
-
-<p><strong>value</strong> 使用 8 bytes 存储，既可以存储 long,也可以存储 double。</p>
-
-<h4 id="compaction">Compaction</h4>
-
-<p>在 OpenTSDB 中，会将多列合并到一列之中以减少磁盘占用空间，这个过程会在 TSD 写数据或者查询过程中不定期的发生。</p>
-
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-compaction.png" alt="compaction" /></p>
-
-<p>例如图中，将列 1890 和 列 1892 合并到了一起。</p>
-
-<h3 id="api">API</h3>
-
-<p>OpenTSDB 同样提供了一套基于 HTTP 的 API 接口。</p>
-
-<h4 id="插入数据">插入数据</h4>
-
-<p><a href="http://localhost:4242/api/put">http://localhost:4242/api/put</a>, POST</p>
-
-<p>内容为 JSON 格式，支持同时插入多条数据。</p>
-
-<pre><code class="language-json">[
-    {
-        &quot;metric&quot;: &quot;sys.cpu.nice&quot;,
-        &quot;timestamp&quot;: 1346846400,
-        &quot;value&quot;: 18,
-        &quot;tags&quot;: {
-           &quot;host&quot;: &quot;web01&quot;,
-           &quot;dc&quot;: &quot;lga&quot;
-        }
-    },
-    {
-        &quot;metric&quot;: &quot;sys.cpu.nice&quot;,
-        &quot;timestamp&quot;: 1346846400,
-        &quot;value&quot;: 9,
-        &quot;tags&quot;: {
-           &quot;host&quot;: &quot;web02&quot;,
-           &quot;dc&quot;: &quot;lga&quot;
-        }
-    }
-]
+<pre><code class="language-bash">wcl       4721     1  0 10:27 ?        00:00:01 ./frps
 </code></pre>
 
-<h4 id="查询数据">查询数据</h4>
+<p>可以看到进程 pid 为 <strong>4721</strong>，之后通过 lsof 命令查看所有 TCP 连接信息：</p>
 
-<p><a href="http://localhost:4242/api/query">http://localhost:4242/api/query</a>, POST</p>
+<p><code>lsof -p 4721 -nP | grep TCP</code></p>
 
-<pre><code class="language-json">{
-    &quot;start&quot;: 1463452826,
-    &quot;end&quot;: 1463453026,
-    &quot;globalAnnotations&quot;: true,
-    &quot;queries&quot;: [
-        {
-            &quot;aggregator&quot;: &quot;avg&quot;,
-            &quot;metric&quot;: &quot;sys.disk.usage&quot;,
-            &quot;downsample&quot;: &quot;60s-avg&quot;,
-            &quot;tags&quot;: {
-                &quot;host_id&quot;: &quot;123&quot;
-            }
-        },
-        {
-            &quot;aggregator&quot;: &quot;sum&quot;,
-            &quot;metric&quot;: &quot;sys.cpu.load&quot;,
-            &quot;downsample&quot;: &quot;60s-avg&quot;,
-            &quot;tags&quot;: {
-                &quot;host_id&quot;: &quot;123&quot;
-            }
-        }
-    ]
-}
+<p>显示结果为：</p>
+
+<pre><code class="language-bash">frps    4721  wcl    4u     IPv6 117051764      0t0     TCP *:7000 (LISTEN)
+frps    4721  wcl    6u     IPv6 117051765      0t0     TCP *:7003 (LISTEN)
+frps    4721  wcl    7u     IPv6 117092563      0t0     TCP 139.129.11.120:7000-&gt;116.231.70.223:61545 (ESTABLISHED)
+frps    4721  wcl    8u     IPv6 117092565      0t0     TCP *:6000 (LISTEN)
+frps    4721  wcl    9u     IPv6 117334426      0t0     TCP 139.129.11.120:7000-&gt;116.237.93.230:64898 (ESTABLISHED)
+frps    4721  wcl   10u     IPv6 117053538      0t0     TCP 139.129.11.120:7000-&gt;115.231.20.123:41297 (ESTABLISHED)
+frps    4721  wcl   11u     IPv6 117053540      0t0     TCP *:6005 (LISTEN)
+frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
 </code></pre>
 
-<p><strong>start</strong> 和 <strong>end</strong> 指定了查询的时间范围。</p>
+<p>从 <strong>lsof</strong> 的输出结果中可以清楚的看到 <strong>frps</strong> 进程监听了 5 个端口，并且在 7000 端口上建立了 3 个连接，连接两端的 ip 信息也都可以查到。</p>
 
-<p><strong>tags</strong> 指定了过滤条件，2.2 版本中将不被推荐，取而代之的是 filters 参数。</p>
-
-<p><strong>downsample</strong> 聚合计算，例如上面是对每隔60s的数据计算一次平均值。</p>
-
-<h3 id="总结">总结</h3>
-
-<p>OpenTSDB 在存储时间序列数据这一领域拥有很大的优势，被大多数公司所采用，网上的相关文档也比较全面。</p>
-
-<p>底层存储依托于 HBase，采用特殊设计过的数据存储格式，提供了非常快的查询速度，在此基础之上也更容易横向扩展。</p>
-
-<p>但是，相对于 InfluxDB 这种即使是新手也可以在两分钟内部署运行完成，OpenTSDB 的部署和运维显然要麻烦很多，由于底层依赖于 HBase，想要大规模运行起来，需要相当专业、细心的运维工作。</p>
+<p><strong>lsof</strong> 的 <strong>-nP</strong> 参数用于将 ip 地址和端口号显示为正常的数值类型，否则可能会用别名表示。</p>
 
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb">http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux">http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>
@@ -236,23 +135,9 @@
                 <ul class="list-inline post-tags">
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93">
+                        <a href="http://blog.fatedier.com/tags/linux">
                             <i class="fa fa-tags"></i>
-                            数据库
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8">
-                            <i class="fa fa-tags"></i>
-                            分布式存储
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a href="http://blog.fatedier.com/tags/opentsdb">
-                            <i class="fa fa-tags"></i>
-                            opentsdb
+                            linux
                         </a>
                     </li>
                     
@@ -266,13 +151,13 @@
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2016/07/10/from-zero-to-one-just-a-dream">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

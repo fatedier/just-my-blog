@@ -6,8 +6,49 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2016</rights>
-    <updated>2016-07-10 00:00:00 &#43;0000 UTC</updated>
+    <updated>2016-07-18 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>linux下查看指定进程的所有连接信息</title>
+          <link>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux</link>
+          <pubDate>Mon, 18 Jul 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux</guid>
+          <description>&lt;p&gt;定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。&lt;/p&gt;
+
+&lt;p&gt;例如我想要查看进程 &lt;code&gt;frps&lt;/code&gt; 当前的所有连接信息，先获得进程的 pid：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;ps -ef|grep frps&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;结果为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;wcl       4721     1  0 10:27 ?        00:00:01 ./frps
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到进程 pid 为 &lt;strong&gt;4721&lt;/strong&gt;，之后通过 lsof 命令查看所有 TCP 连接信息：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;lsof -p 4721 -nP | grep TCP&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;显示结果为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;frps    4721  wcl    4u     IPv6 117051764      0t0     TCP *:7000 (LISTEN)
+frps    4721  wcl    6u     IPv6 117051765      0t0     TCP *:7003 (LISTEN)
+frps    4721  wcl    7u     IPv6 117092563      0t0     TCP 139.129.11.120:7000-&amp;gt;116.231.70.223:61545 (ESTABLISHED)
+frps    4721  wcl    8u     IPv6 117092565      0t0     TCP *:6000 (LISTEN)
+frps    4721  wcl    9u     IPv6 117334426      0t0     TCP 139.129.11.120:7000-&amp;gt;116.237.93.230:64898 (ESTABLISHED)
+frps    4721  wcl   10u     IPv6 117053538      0t0     TCP 139.129.11.120:7000-&amp;gt;115.231.20.123:41297 (ESTABLISHED)
+frps    4721  wcl   11u     IPv6 117053540      0t0     TCP *:6005 (LISTEN)
+frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;从 &lt;strong&gt;lsof&lt;/strong&gt; 的输出结果中可以清楚的看到 &lt;strong&gt;frps&lt;/strong&gt; 进程监听了 5 个端口，并且在 7000 端口上建立了 3 个连接，连接两端的 ip 信息也都可以查到。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;lsof&lt;/strong&gt; 的 &lt;strong&gt;-nP&lt;/strong&gt; 参数用于将 ip 地址和端口号显示为正常的数值类型，否则可能会用别名表示。&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

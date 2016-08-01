@@ -6,8 +6,102 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2016</rights>
-    <updated>2016-07-18 00:00:00 &#43;0000 UTC</updated>
+    <updated>2016-07-25 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>使用gvm在不同go版本之间切换</title>
+          <link>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm</link>
+          <pubDate>Mon, 25 Jul 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm</guid>
+          <description>
+
+&lt;p&gt;Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。&lt;/p&gt;
+
+&lt;p&gt;Go 的更新速度比较快，2015年8月发布 1.5 版本，2016年2月发布 1.6 版本，2016年8月即将发布 1.7 版本，在性能以及GC方便都在不断优化，及时更新到新版本的 go 很有优势。&lt;/p&gt;
+
+&lt;h3 id=&#34;go-版本切换的问题&#34;&gt;Go 版本切换的问题&lt;/h3&gt;
+
+&lt;p&gt;二进制文件的管理比较简单，通过链接使用不同版本的程序即可，实际上主要是一些环境变量和标准库的设置问题，环境变量主要是 &lt;code&gt;GOPATH&lt;/code&gt; 以及 &lt;code&gt;GOROOT&lt;/code&gt;，标准库的话需要在切换 go 版本时也能跟着切换。&lt;strong&gt;gvm&lt;/strong&gt; 实际上就是帮助完成这些配置工作。&lt;/p&gt;
+
+&lt;h3 id=&#34;安装-gvm&#34;&gt;安装 gvm&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;gvm&lt;/strong&gt; 的项目地址：&lt;a href=&#34;https://github.com/moovweb/gvm&#34;&gt;https://github.com/moovweb/gvm&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;安装命令：&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;bash &amp;lt;&amp;lt; (curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;如果你使用的是 &lt;code&gt;zsh&lt;/code&gt; 的话将前面的 &lt;code&gt;bash&lt;/code&gt; 改为 &lt;code&gt;zsh&lt;/code&gt; 即可，这条命令主要是下载 &lt;strong&gt;gvm&lt;/strong&gt; 相关的文件，创建所需目录，并且在 &lt;code&gt;.bashrc&lt;/code&gt; 或者 &lt;code&gt;.zshrc&lt;/code&gt; 中加入&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;[[ -s &amp;quot;/home/wcl/.gvm/scripts/gvm&amp;quot; ]] &amp;amp;&amp;amp; source &amp;quot;/home/wcl/.gvm/scripts/gvm&amp;quot;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;使每次登录 shell 时都可以生效。&lt;/p&gt;
+
+&lt;h3 id=&#34;安装指定-go-版本&#34;&gt;安装指定 go 版本&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;gvm install go1.6.3&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;需要注意这里实际上是先执行&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;git clone https://go.googlesource.com/go $GVM_ROOT/archive/go&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这个网站在墙外。&lt;/p&gt;
+
+&lt;p&gt;我们可以通过配置使 git 可以通过 http 代理访问，修改 &lt;code&gt;.gitconfig&lt;/code&gt; 文件，加上 http 代理服务器的地址：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[http]
+        proxy = http://[proxydomain]:[port]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;下载成功后，有可能提示编译失败，因为 go1.6.3 需要依赖于 go1.4 来编译，需要设置 &lt;code&gt;GOROOT_BOOTSTRAP&lt;/code&gt; 变量。&lt;/p&gt;
+
+&lt;p&gt;通过 &lt;code&gt;go env&lt;/code&gt; 查看 &lt;code&gt;GOROOT&lt;/code&gt; 的路径，通常 &lt;code&gt;GOROOT_BOOTSTRAP&lt;/code&gt; 就设置成 &lt;code&gt;GOROOT&lt;/code&gt;，centos7 下需要注意 /usr/lib/golang/bin 下并没有 &lt;code&gt;go&lt;/code&gt; 的二进制文件，通过 cp 命令复制一个过去。&lt;/p&gt;
+
+&lt;p&gt;之后再次执行 &lt;code&gt;gvm install go1.6.3&lt;/code&gt; 即可安装完成。&lt;/p&gt;
+
+&lt;h3 id=&#34;修改配置信息方便使用&#34;&gt;修改配置信息方便使用&lt;/h3&gt;
+
+&lt;p&gt;最初测试时发现每次切换 go 版本后都会被修改 &lt;code&gt;GOPATH&lt;/code&gt; 变量，而实际上我并不需要这个功能，只是希望用新版本来编译已有的项目，所以我们需要把 &lt;code&gt;~/.gvm/environments&lt;/code&gt; 文件夹下所有 &lt;code&gt;GOPATH&lt;/code&gt; 的设置全部删除。&lt;/p&gt;
+
+&lt;p&gt;另外还需要将 &lt;code&gt;~/.zshrc&lt;/code&gt; 或者 &lt;code&gt;~/.bashrc&lt;/code&gt; 中的&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;[[ -s &amp;quot;~/.gvm/scripts/gvm&amp;quot; ]] &amp;amp;&amp;amp; source &amp;quot;~/.gvm/scripts/gvm&amp;quot;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;移到设置 &lt;code&gt;GOPATH&lt;/code&gt; 变量之前，避免登录 shell 之后被修改 &lt;code&gt;GOPATH&lt;/code&gt; 变量。&lt;/p&gt;
+
+&lt;h3 id=&#34;使用&#34;&gt;使用&lt;/h3&gt;
+
+&lt;h4 id=&#34;切换到安装好的指定-go-版本&#34;&gt;切换到安装好的指定 go 版本&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;gvm use go1.6.3&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;通过 &lt;code&gt;go version&lt;/code&gt; 可以看到已经是新版本的二进制文件，通过 &lt;code&gt;go env&lt;/code&gt; 可以查看 &lt;code&gt;GOROOT&lt;/code&gt; 信息，例如我的就是 &lt;code&gt;~/.gvm/gos/go1.6.3&lt;/code&gt;，这样编译项目时就会在这个目录下找标准库中的文件。&lt;/p&gt;
+
+&lt;h4 id=&#34;切换到原来的系统版本&#34;&gt;切换到原来的系统版本&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;gvm use system&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;查看当前已经安装的所有版本&#34;&gt;查看当前已经安装的所有版本&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;gvm list&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gvm gos (installed)
+
+=&amp;gt; go1.6.3
+   system
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;设置某个版本为默认&#34;&gt;设置某个版本为默认&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;gvm use go1.6.3 --default&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这样设置后，再登录 shell 就默认使用 &lt;code&gt;go1.6.3&lt;/code&gt; 的版本，而不是系统原来的版本了。&lt;/p&gt;
+</description>
+        </item>
+      
     
       
         <item>

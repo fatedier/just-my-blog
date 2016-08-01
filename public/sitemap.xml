@@ -3,7 +3,12 @@
   
   <url>
     <loc>http://blog.fatedier.com/</loc>
-    <lastmod>2016-07-18T00:00:00+00:00</lastmod>
+    <lastmod>2016-07-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm</loc>
+    <lastmod>2016-07-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>

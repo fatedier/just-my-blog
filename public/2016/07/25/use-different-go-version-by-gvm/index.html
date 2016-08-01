@@ -9,13 +9,13 @@
 
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用astyle进行代码格式化 &middot; fatedier blog">
+<meta property="og:title" content="使用gvm在不同go版本之间切换 &middot; fatedier blog">
 
 <meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    使用astyle进行代码格式化
+    使用gvm在不同go版本之间切换
     
 </title>
 
@@ -80,135 +80,104 @@
             <header>
                 <div class="post-date">
                     <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2014年11月10日">
-                        2014年11月10日
+                    <time datetime="2016年07月25日">
+                        2016年07月25日
                     </time>
                 </div>
-                <h1 class="post-title">使用astyle进行代码格式化</h1>
+                <h1 class="post-title">使用gvm在不同go版本之间切换</h1>
             </header>
 
             <div class="post-content">
                 
 
-<p>在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &ndash; &ldquo;astyle&rdquo;。</p>
+<p>Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。</p>
 
-<p>astyle这个工具可以将现有的代码格式转换为指定的风格，当你将乱七八糟的代码用astyle转换一下之后，就会感觉整个世界都清静了……</p>
+<p>Go 的更新速度比较快，2015年8月发布 1.5 版本，2016年2月发布 1.6 版本，2016年8月即将发布 1.7 版本，在性能以及GC方便都在不断优化，及时更新到新版本的 go 很有优势。</p>
 
-<h3 id="如何获取">如何获取</h3>
+<h3 id="go-版本切换的问题">Go 版本切换的问题</h3>
 
-<p>astyle是一个开放源码的项目，支持C/C++、C#和java的代码格式化</p>
+<p>二进制文件的管理比较简单，通过链接使用不同版本的程序即可，实际上主要是一些环境变量和标准库的设置问题，环境变量主要是 <code>GOPATH</code> 以及 <code>GOROOT</code>，标准库的话需要在切换 go 版本时也能跟着切换。<strong>gvm</strong> 实际上就是帮助完成这些配置工作。</p>
 
-<p>SourceForge地址: <a href="http://sourceforge.net/projects/astyle/">http://sourceforge.net/projects/astyle/</a></p>
+<h3 id="安装-gvm">安装 gvm</h3>
 
-<p>我的Github拷贝: <a href="https://github.com/fatedier/fatedier-tools/tree/master/astyle">https://github.com/fatedier/fatedier-tools/tree/master/astyle</a></p>
+<p><strong>gvm</strong> 的项目地址：<a href="https://github.com/moovweb/gvm">https://github.com/moovweb/gvm</a></p>
 
-<h3 id="编译">编译</h3>
+<p>安装命令：</p>
 
-<p>直接写一个Makefile编译下源码，我的Github的拷贝里有写好的Makefile，直接用gmake命令编译一下就可以用了。</p>
+<p><code>bash &lt;&lt; (curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)</code></p>
 
-<h3 id="示例">示例</h3>
+<p>如果你使用的是 <code>zsh</code> 的话将前面的 <code>bash</code> 改为 <code>zsh</code> 即可，这条命令主要是下载 <strong>gvm</strong> 相关的文件，创建所需目录，并且在 <code>.bashrc</code> 或者 <code>.zshrc</code> 中加入</p>
 
-<pre><code class="language-bash">./astyle --style=ansi test.cpp
+<p><code>[[ -s &quot;/home/wcl/.gvm/scripts/gvm&quot; ]] &amp;&amp; source &quot;/home/wcl/.gvm/scripts/gvm&quot;</code></p>
+
+<p>使每次登录 shell 时都可以生效。</p>
+
+<h3 id="安装指定-go-版本">安装指定 go 版本</h3>
+
+<p><code>gvm install go1.6.3</code></p>
+
+<p>需要注意这里实际上是先执行</p>
+
+<p><code>git clone https://go.googlesource.com/go $GVM_ROOT/archive/go</code></p>
+
+<p>这个网站在墙外。</p>
+
+<p>我们可以通过配置使 git 可以通过 http 代理访问，修改 <code>.gitconfig</code> 文件，加上 http 代理服务器的地址：</p>
+
+<pre><code>[http]
+        proxy = http://[proxydomain]:[port]
 </code></pre>
 
-<p>执行之后会提示</p>
+<p>下载成功后，有可能提示编译失败，因为 go1.6.3 需要依赖于 go1.4 来编译，需要设置 <code>GOROOT_BOOTSTRAP</code> 变量。</p>
 
-<pre><code class="language-bash">Formatted  xxx/test.cpp
+<p>通过 <code>go env</code> 查看 <code>GOROOT</code> 的路径，通常 <code>GOROOT_BOOTSTRAP</code> 就设置成 <code>GOROOT</code>，centos7 下需要注意 /usr/lib/golang/bin 下并没有 <code>go</code> 的二进制文件，通过 cp 命令复制一个过去。</p>
+
+<p>之后再次执行 <code>gvm install go1.6.3</code> 即可安装完成。</p>
+
+<h3 id="修改配置信息方便使用">修改配置信息方便使用</h3>
+
+<p>最初测试时发现每次切换 go 版本后都会被修改 <code>GOPATH</code> 变量，而实际上我并不需要这个功能，只是希望用新版本来编译已有的项目，所以我们需要把 <code>~/.gvm/environments</code> 文件夹下所有 <code>GOPATH</code> 的设置全部删除。</p>
+
+<p>另外还需要将 <code>~/.zshrc</code> 或者 <code>~/.bashrc</code> 中的</p>
+
+<p><code>[[ -s &quot;~/.gvm/scripts/gvm&quot; ]] &amp;&amp; source &quot;~/.gvm/scripts/gvm&quot;</code></p>
+
+<p>移到设置 <code>GOPATH</code> 变量之前，避免登录 shell 之后被修改 <code>GOPATH</code> 变量。</p>
+
+<h3 id="使用">使用</h3>
+
+<h4 id="切换到安装好的指定-go-版本">切换到安装好的指定 go 版本</h4>
+
+<p><code>gvm use go1.6.3</code></p>
+
+<p>通过 <code>go version</code> 可以看到已经是新版本的二进制文件，通过 <code>go env</code> 可以查看 <code>GOROOT</code> 信息，例如我的就是 <code>~/.gvm/gos/go1.6.3</code>，这样编译项目时就会在这个目录下找标准库中的文件。</p>
+
+<h4 id="切换到原来的系统版本">切换到原来的系统版本</h4>
+
+<p><code>gvm use system</code></p>
+
+<h4 id="查看当前已经安装的所有版本">查看当前已经安装的所有版本</h4>
+
+<p><code>gvm list</code></p>
+
+<pre><code>gvm gos (installed)
+
+=&gt; go1.6.3
+   system
 </code></pre>
 
-<p><strong>astyle</strong> 会在当前目录下生成一个备份文件，以 <strong>.orig</strong> 结尾，例如 &ldquo;test.cpp.orig&rdquo;。</p>
+<h4 id="设置某个版本为默认">设置某个版本为默认</h4>
 
-<p>而 <strong>test.cpp</strong> 就已经转换为了 <strong>ansi</strong> 代码风格了。</p>
+<p><code>gvm use go1.6.3 --default</code></p>
 
-<h3 id="常用选项">常用选项</h3>
-
-<p><strong>注：使用 &ndash;help 选项可以查看astyle的帮助文档</strong></p>
-
-<h4 id="style风格设置">style风格设置</h4>
-
-<p>常用的代码风格主要有三种: <strong>ansi</strong> 和 <strong>k&amp;r</strong> 以及 <strong>java</strong></p>
-
-<ol>
-<li><p>&ndash;style=allman  OR &ndash;style=ansi OR &ndash;style=bsd OR &ndash;style=break OR -A1</p>
-
-<pre><code class="language-cpp">int Foo()
-{
-   if (isBar)
-    {
-       bar();
-       return 1;
-    }
-   else
-    {
-       return 0;
-    }
-}
-</code></pre></li>
-
-<li><p>&ndash;style=kr OR &ndash;style=k&amp;r OR &ndash;style=k/r OR -A3</p>
-
-<pre><code class="language-cpp">int Foo()
-{
-   if (isBar) {
-       bar();
-       return 1;
-    }else {
-       return 0;
-    }
-}
-</code></pre></li>
-
-<li><p>&ndash;style=java OR &ndash;style=attach OR -A2</p>
-
-<pre><code class="language-cpp">int Foo() {
-   if (isBar) {
-       bar();
-       return 1;
-    }else {
-       return 0;
-    }
-}
-</code></pre></li>
-</ol>
-
-<h4 id="tab选项">Tab选项</h4>
-
-<p>默认是使用4个空格替换一个tab。</p>
-
-<ol>
-<li><p>&ndash;indent=spaces=# OR -s#</p>
-
-<p>指定用几个空格替换一个tab，例如 &ndash;indent=spaces=8 ，指定用8个空格替换一个tab。</p></li>
-
-<li><p>&ndash;indent=tab OR &ndash;indent=tab=# OR -t OR -t#</p>
-
-<p>指定缩进使用tab，=#同上，指定一个tab占几个空格，不说明的话默认是4个。</p></li>
-</ol>
-
-<h4 id="递归处理">递归处理</h4>
-
-<p>&ndash;recursive OR -r OR -R</p>
-
-<p>可以递归处理所有子目录的文件。</p>
-
-<h4 id="排除不处理的文件">排除不处理的文件</h4>
-
-<p>&ndash;exclude=####</p>
-
-<p>指定哪些文件或者文件夹不需要进行处理。</p>
-
-<h4 id="指定配置文件">指定配置文件</h4>
-
-<p>&ndash;options=####</p>
-
-<p>可以指定读取某个文件的内容作为参数选项。</p>
+<p>这样设置后，再登录 shell 就默认使用 <code>go1.6.3</code> 的版本，而不是系统原来的版本了。</p>
 
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code">http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm">http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>
@@ -219,9 +188,9 @@
                 <ul class="list-inline post-tags">
                     
                     <li>
-                        <a href="http://blog.fatedier.com/tags/linux">
+                        <a href="http://blog.fatedier.com/tags/golang">
                             <i class="fa fa-tags"></i>
-                            linux
+                            golang
                         </a>
                     </li>
                     
@@ -242,13 +211,13 @@
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>

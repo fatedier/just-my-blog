@@ -24,9 +24,15 @@ img {
     height: auto;
 }
 
-/* 文章标题 */
+/* 文章标题，内容页 */
+.post-title {
+    font-size: 32px;
+}
+
+/* 文章标题，首页 */
 .post-title a {
     color: #444;
+    font-size: 26px;
 }
 
 /* 日期时间 */

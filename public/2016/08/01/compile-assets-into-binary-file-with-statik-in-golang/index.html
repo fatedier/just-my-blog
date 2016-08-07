@@ -8,16 +8,14 @@
 <meta property="og:url" content="http://blog.fatedier.com">
 
 
-<meta property="og:type" content="website">
-
-<meta property="og:title" content="fatedier blog">
-
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang 中使用 statik 将静态资源编译进二进制文件中 &middot; fatedier blog">
 
 <meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    fatedier blog
+    golang 中使用 statik 将静态资源编译进二进制文件中
     
 </title>
 
@@ -77,225 +75,182 @@
 
 <div class="row">
     <div class="col-md-8">
-        <div class="posts">
-            
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2016年08月01日">
-                2016年08月01日
-            </time>
-        </div>
-        <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang">golang 中使用 statik 将静态资源编译进二进制文件中</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。</p>
+        <article class="post single">
 
-    </div>
-    </article>
-<hr>
+            <header>
+                <div class="post-date">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                    <time datetime="2016年08月01日">
+                        2016年08月01日
+                    </time>
+                </div>
+                <h1 class="post-title">golang 中使用 statik 将静态资源编译进二进制文件中</h1>
+            </header>
 
-            
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2016年07月25日">
-                2016年07月25日
-            </time>
-        </div>
-        <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm">使用gvm在不同go版本之间切换</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。</p>
+            <div class="post-content">
+                
 
-    </div>
-    </article>
-<hr>
+<p>现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。</p>
 
-            
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2016年07月18日">
-                2016年07月18日
-            </time>
-        </div>
-        <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux">linux下查看指定进程的所有连接信息</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。</p>
+<p>最近在阅读 InfluxDB 的源码，发现里面提供了一个 admin 管理的页面，可以通过浏览器来执行一些命令以及查看程序运行的信息。但是我运行的时候只运行了一个 influxd 的二进制文件，并没有看到 css, html 等文件。</p>
 
-    </div>
-    </article>
-<hr>
+<p>原来 InfluxDB 中使用了 statik 这个工具将静态资源都编译进了二进制文件中，这样用户只需要运行这个程序即可，而不需要管静态资源文件存放的位置。</p>
 
-            
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2016年07月10日">
-                2016年07月10日
-            </time>
-        </div>
-        <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/07/10/from-zero-to-one-just-a-dream">从0到1：遥远的理想国</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>已经记不清自己到底有多久没有认真读过一本非技术类的书籍了，大量的时间被花在职业相关的学习中，宅属性与日俱增。长此以往，渐渐发现个人的主观思想愈加匮乏，对事物的思考与理解能力逐渐下降，这真是一件令人细思极恐之事。</p>
+<h3 id="安装">安装</h3>
 
-    </div>
-    </article>
-<hr>
+<p>先下载并安装 statik 这个工具</p>
 
-            
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2016年07月06日">
-                2016年07月06日
-            </time>
-        </div>
-        <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb">InfluxDB 与 OpenTSDB 对比测试</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。</p>
+<p><code>go get -d github.com/rakyll/statik</code></p>
 
-    </div>
-    </article>
-<hr>
+<p><code>go install github.com/rakyll/statik</code></p>
 
-            
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2016年07月05日">
-                2016年07月05日
-            </time>
-        </div>
-        <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb">时间序列数据库调研之InfluxDB</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。</p>
+<p>注意将 <code>$GOPATH/bin</code> 加入到 PATH 环境变量中。</p>
 
-    </div>
-    </article>
-<hr>
+<h3 id="创建测试项目">创建测试项目</h3>
 
-            
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2016年07月04日">
-                2016年07月04日
-            </time>
-        </div>
-        <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb">时间序列数据库调研之OpenTSDB</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。</p>
+<p>创建一个测试用的 golang 项目，这里假设目录为 <code>$GOPATH/src/test/testStatikFS</code>。</p>
 
-    </div>
-    </article>
-<hr>
+<p>创建一个 assets 目录用于放静态资源文件。包括 <code>./assets/a</code> 和 <code>./assets/tmp/b</code> 两个文件，文件内容分别为 <code>aaa</code> 和 <code>bbb</code>。</p>
 
-            
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2016年06月24日">
-                2016年06月24日
-            </time>
-        </div>
-        <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment">kubernetes 初探及部署实践</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。</p>
+<p>创建 main.go 文件，代码如下：</p>
 
-    </div>
-    </article>
-<hr>
+<pre><code class="language-go">//go:generate statik -src=./assets
+//go:generate go fmt statik/statik.go
 
-            
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2016年06月15日">
-                2016年06月15日
-            </time>
-        </div>
-        <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/06/15/learn-lsm-tree">LSM Tree 学习笔记</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。</p>
+package main
 
-    </div>
-    </article>
-<hr>
+import (
+    &quot;fmt&quot;
+    &quot;io/ioutil&quot;
+    &quot;os&quot;
 
-            
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2016年05月25日">
-                2016年05月25日
-            </time>
-        </div>
-        <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/05/25/deploy-openstack-swift">部署openstack的对象存储服务swift</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。</p>
+    _ &quot;test/testStatikFS/statik&quot;
+    &quot;github.com/rakyll/statik/fs&quot;
+)
 
-    </div>
-    </article>
-<hr>
+// Before buildling, run go generate.
+func main() {
+    statikFS, err := fs.New()
+    if err != nil {
+        fmt.Printf(&quot;err: %v\n&quot;, err)
+        os.Exit(1)
+    }   
 
+    file, err := statikFS.Open(&quot;/tmp/b&quot;)
+    if err != nil {
+        fmt.Printf(&quot;err: %v\n&quot;, err)
+        os.Exit(1)
+    }   
+    content, err := ioutil.ReadAll(file)
+    if err != nil { 
+        fmt.Printf(&quot;err: %v\n&quot;, err)
+        os.Exit(1)
+    }   
+    fmt.Printf(&quot;content: %s\n&quot;, content)
+}
+</code></pre>
+
+<p>注意文件最开始的两行</p>
+
+<pre><code class="language-go">//go:generate statik -src=./assets
+//go:generate go fmt statik/statik.go
+</code></pre>
+
+<p>这个注释是告诉 <code>go generate</code> 需要执行的命令，之后就可以通过 <code>go generate</code> 生成我们需要的 go 文件。</p>
+
+<p>这段代码的功能就是从 <strong>statikFS</strong> 提供的文件系统接口中获取 <code>/tmp/b</code> 这个文件的内容并输出，可以看到操作起来和操作普通文件的方法基本一致。</p>
+
+<h3 id="将静态资源打包成-go-文件">将静态资源打包成 go 文件</h3>
+
+<p>执行 <code>go generate</code>。</p>
+
+<p>在项目目录下执行这个命令会生成一个 <strong>statik</strong> 目录，里面存放的是自动生成的 go 文件，将所有 <code>./assets</code> 下的文件变成了一个压缩后的字符串放在了这个文件中，并且在程序启动时会解析这个字符串，构造一个 <strong>http.FileSystem</strong> 对象，之后就可以使用对文件系统类似的操作来获取文件内容。</p>
+
+<h3 id="编译">编译</h3>
+
+<p><code>go build -o test ./main.go</code></p>
+
+<p>在 main.go 中我们 import 了两个包</p>
+
+<pre><code class="language-go">_ &quot;test/testStatikFS/statik&quot;
+&quot;github.com/rakyll/statik/fs&quot;
+</code></pre>
+
+<p>第一个就是 <code>go generate</code> 自动生成的目录，其中只有一个 <code>init()</code> 函数，初始化相关的资源，我们不需要调用这个包里面的函数，只执行 <code>init()</code> 函数，所以在包名前加上 <code>_</code>。</p>
+
+<h3 id="运行">运行</h3>
+
+<p>运行编译后的文件： <code>./test</code>。</p>
+
+<p>输出了文件 <code>./assets/tmp/b</code> 中的内容：</p>
+
+<pre><code class="language-bash">content: bbb
+</code></pre>
+
+<h3 id="文件系统接口">文件系统接口</h3>
+
+<p>由于 statik 实现了标准库中的 http.FileSystem 接口，所以也可以直接使用 http 包提供静态资源的访问服务，关键部分代码如下：</p>
+
+<pre><code class="language-go">import (
+  &quot;github.com/rakyll/statik/fs&quot;
+
+    _ &quot;./statik&quot; // TODO: Replace with the absolute import path
+)
+
+// ...
+
+statikFS, _ := fs.New()
+http.ListenAndServe(&quot;:8080&quot;, http.FileServer(statikFS))
+</code></pre>
+
+            </div>
             
-            <nav>
-                <ul class="pager">
-                    <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang">http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="http://blog.fatedier.com/tags/golang">
+                            <i class="fa fa-tags"></i>
+                            golang
+                        </a>
+                    </li>
+                    
                 </ul>
-            </nav>
 
-        </div>
+                
+            
+            <footer>
+
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        
+
+                        <li><a href="http://blog.fatedier.com/post">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+
+                
+            </footer>
+
+        </article>
     </div>
     <div class="col-md-4">
         

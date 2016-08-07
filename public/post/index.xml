@@ -6,8 +6,133 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2016</rights>
-    <updated>2016-07-25 00:00:00 &#43;0000 UTC</updated>
+    <updated>2016-08-01 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>golang 中使用 statik 将静态资源编译进二进制文件中</title>
+          <link>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang</link>
+          <pubDate>Mon, 01 Aug 2016 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang</guid>
+          <description>
+
+&lt;p&gt;现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。&lt;/p&gt;
+
+&lt;p&gt;最近在阅读 InfluxDB 的源码，发现里面提供了一个 admin 管理的页面，可以通过浏览器来执行一些命令以及查看程序运行的信息。但是我运行的时候只运行了一个 influxd 的二进制文件，并没有看到 css, html 等文件。&lt;/p&gt;
+
+&lt;p&gt;原来 InfluxDB 中使用了 statik 这个工具将静态资源都编译进了二进制文件中，这样用户只需要运行这个程序即可，而不需要管静态资源文件存放的位置。&lt;/p&gt;
+
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
+
+&lt;p&gt;先下载并安装 statik 这个工具&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;go get -d github.com/rakyll/statik&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;go install github.com/rakyll/statik&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;注意将 &lt;code&gt;$GOPATH/bin&lt;/code&gt; 加入到 PATH 环境变量中。&lt;/p&gt;
+
+&lt;h3 id=&#34;创建测试项目&#34;&gt;创建测试项目&lt;/h3&gt;
+
+&lt;p&gt;创建一个测试用的 golang 项目，这里假设目录为 &lt;code&gt;$GOPATH/src/test/testStatikFS&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;创建一个 assets 目录用于放静态资源文件。包括 &lt;code&gt;./assets/a&lt;/code&gt; 和 &lt;code&gt;./assets/tmp/b&lt;/code&gt; 两个文件，文件内容分别为 &lt;code&gt;aaa&lt;/code&gt; 和 &lt;code&gt;bbb&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;创建 main.go 文件，代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;//go:generate statik -src=./assets
+//go:generate go fmt statik/statik.go
+
+package main
+
+import (
+    &amp;quot;fmt&amp;quot;
+    &amp;quot;io/ioutil&amp;quot;
+    &amp;quot;os&amp;quot;
+
+    _ &amp;quot;test/testStatikFS/statik&amp;quot;
+    &amp;quot;github.com/rakyll/statik/fs&amp;quot;
+)
+
+// Before buildling, run go generate.
+func main() {
+    statikFS, err := fs.New()
+    if err != nil {
+        fmt.Printf(&amp;quot;err: %v\n&amp;quot;, err)
+        os.Exit(1)
+    }   
+
+    file, err := statikFS.Open(&amp;quot;/tmp/b&amp;quot;)
+    if err != nil {
+        fmt.Printf(&amp;quot;err: %v\n&amp;quot;, err)
+        os.Exit(1)
+    }   
+    content, err := ioutil.ReadAll(file)
+    if err != nil { 
+        fmt.Printf(&amp;quot;err: %v\n&amp;quot;, err)
+        os.Exit(1)
+    }   
+    fmt.Printf(&amp;quot;content: %s\n&amp;quot;, content)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;注意文件最开始的两行&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;//go:generate statik -src=./assets
+//go:generate go fmt statik/statik.go
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个注释是告诉 &lt;code&gt;go generate&lt;/code&gt; 需要执行的命令，之后就可以通过 &lt;code&gt;go generate&lt;/code&gt; 生成我们需要的 go 文件。&lt;/p&gt;
+
+&lt;p&gt;这段代码的功能就是从 &lt;strong&gt;statikFS&lt;/strong&gt; 提供的文件系统接口中获取 &lt;code&gt;/tmp/b&lt;/code&gt; 这个文件的内容并输出，可以看到操作起来和操作普通文件的方法基本一致。&lt;/p&gt;
+
+&lt;h3 id=&#34;将静态资源打包成-go-文件&#34;&gt;将静态资源打包成 go 文件&lt;/h3&gt;
+
+&lt;p&gt;执行 &lt;code&gt;go generate&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;在项目目录下执行这个命令会生成一个 &lt;strong&gt;statik&lt;/strong&gt; 目录，里面存放的是自动生成的 go 文件，将所有 &lt;code&gt;./assets&lt;/code&gt; 下的文件变成了一个压缩后的字符串放在了这个文件中，并且在程序启动时会解析这个字符串，构造一个 &lt;strong&gt;http.FileSystem&lt;/strong&gt; 对象，之后就可以使用对文件系统类似的操作来获取文件内容。&lt;/p&gt;
+
+&lt;h3 id=&#34;编译&#34;&gt;编译&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;go build -o test ./main.go&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;在 main.go 中我们 import 了两个包&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;_ &amp;quot;test/testStatikFS/statik&amp;quot;
+&amp;quot;github.com/rakyll/statik/fs&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第一个就是 &lt;code&gt;go generate&lt;/code&gt; 自动生成的目录，其中只有一个 &lt;code&gt;init()&lt;/code&gt; 函数，初始化相关的资源，我们不需要调用这个包里面的函数，只执行 &lt;code&gt;init()&lt;/code&gt; 函数，所以在包名前加上 &lt;code&gt;_&lt;/code&gt;。&lt;/p&gt;
+
+&lt;h3 id=&#34;运行&#34;&gt;运行&lt;/h3&gt;
+
+&lt;p&gt;运行编译后的文件： &lt;code&gt;./test&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;输出了文件 &lt;code&gt;./assets/tmp/b&lt;/code&gt; 中的内容：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;content: bbb
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;文件系统接口&#34;&gt;文件系统接口&lt;/h3&gt;
+
+&lt;p&gt;由于 statik 实现了标准库中的 http.FileSystem 接口，所以也可以直接使用 http 包提供静态资源的访问服务，关键部分代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;import (
+  &amp;quot;github.com/rakyll/statik/fs&amp;quot;
+
+    _ &amp;quot;./statik&amp;quot; // TODO: Replace with the absolute import path
+)
+
+// ...
+
+statikFS, _ := fs.New()
+http.ListenAndServe(&amp;quot;:8080&amp;quot;, http.FileServer(statikFS))
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        </item>
+      
     
       
         <item>

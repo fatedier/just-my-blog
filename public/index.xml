@@ -213,7 +213,7 @@ http.ListenAndServe(&amp;quot;:8080&amp;quot;, http.FileServer(statikFS))
 
 &lt;p&gt;&lt;code&gt;gvm list&lt;/code&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;gvm gos (installed)
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;gvm gos (installed)
 
 =&amp;gt; go1.6.3
    system

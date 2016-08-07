@@ -82,7 +82,7 @@ Go 的更新速度比较快，2015年8月发布 1.5 版本，2016年2月发布 1
 
 `gvm list`
 
-```
+```bash
 gvm gos (installed)
 
 => go1.6.3

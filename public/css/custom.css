@@ -108,3 +108,43 @@ img {
     line-height: 20px;
     vertical-align: top;
 }
+
+/* sitebar */
+.toc li {
+    line-height: 25px;
+}
+
+.toc a {
+    font-size: 14px;
+}
+
+.toc a:hover,
+.toc a:focus {
+}
+
+.affix-top {
+    position: relative;
+    width: 300px;
+}
+.affix {
+    top: 20px;
+    width: 300px;
+    float: right;
+}
+
+.affix-bottom {
+    width: 300px;
+    position: fixed;
+}
+
+@media (min-width: 1200px) {
+    .affix-top,
+    .affix,
+    .affix-bottom {
+        width: 360px;
+    }
+}
+
+#TableOfContents {
+    margin-top: 15px;
+}

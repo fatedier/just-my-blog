@@ -23,7 +23,6 @@
                 <div class="list-group">
                     {{ $baseurl := .Site.BaseURL }}
                     {{ range $name, $value := .Site.Taxonomies.tags }}
-                    <!--a href="{{ $baseurl }}/tags/{{ $name | urlize }}" style="font-size: {{ add 8 (mul 3 $value.Count) }}px;"-->
                     <a href="{{ $baseurl }}/tags/{{ $name | urlize }}" class="list-group-item">
                         <span class="badge">{{ .Count }}</span>
                         {{ $name }}

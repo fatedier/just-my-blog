@@ -77,7 +77,7 @@
             </time>
         </div>
         <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2015/11/24/give-your-shell-some-color">给shell的输出加上颜色</a>
+            <a href="http://blog.fatedier.com/2015/11/24/give-your-shell-some-color/">给shell的输出加上颜色</a>
         </h2>
     </header>
     <div class="post-content">
@@ -98,7 +98,7 @@
             </time>
         </div>
         <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell">linux shell中的条件判断</a>
+            <a href="http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>
         </h2>
     </header>
     <div class="post-content">
@@ -120,24 +120,13 @@
 </footer>
 
 
-<script src="http://blog.fatedier.com/js/jquery-2.2.1.min.js"></script>
+<script src="http://blog.fatedier.com/js/jquery-3.1.0.slim.min.js"></script>
 <script src="http://blog.fatedier.com/onlyone/onlyone.js"></script>
 
 <script>
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
-
-$("[href]").each(function(){
-    var url = $(this).attr("href");
-    if (url.indexOf('#') != -1) {
-        continuous
-    }
-    if (url[url.length - 1] != '/') {
-        url += '/';
-    }
-    $(this).attr("href", url);
-});
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>

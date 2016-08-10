@@ -77,7 +77,7 @@
             </time>
         </div>
         <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>
+            <a href="http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>
         </h2>
     </header>
     <div class="post-content">
@@ -99,24 +99,13 @@
 </footer>
 
 
-<script src="http://blog.fatedier.com/js/jquery-2.2.1.min.js"></script>
+<script src="http://blog.fatedier.com/js/jquery-3.1.0.slim.min.js"></script>
 <script src="http://blog.fatedier.com/onlyone/onlyone.js"></script>
 
 <script>
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
-
-$("[href]").each(function(){
-    var url = $(this).attr("href");
-    if (url.indexOf('#') != -1) {
-        continuous
-    }
-    if (url[url.length - 1] != '/') {
-        url += '/';
-    }
-    $(this).attr("href", url);
-});
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>

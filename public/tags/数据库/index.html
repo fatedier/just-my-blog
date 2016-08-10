@@ -77,7 +77,7 @@
             </time>
         </div>
         <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb">InfluxDB 与 OpenTSDB 对比测试</a>
+            <a href="http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb/">InfluxDB 与 OpenTSDB 对比测试</a>
         </h2>
     </header>
     <div class="post-content">
@@ -98,7 +98,7 @@
             </time>
         </div>
         <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb">时间序列数据库调研之InfluxDB</a>
+            <a href="http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/">时间序列数据库调研之InfluxDB</a>
         </h2>
     </header>
     <div class="post-content">
@@ -119,7 +119,7 @@
             </time>
         </div>
         <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb">时间序列数据库调研之OpenTSDB</a>
+            <a href="http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/">时间序列数据库调研之OpenTSDB</a>
         </h2>
     </header>
     <div class="post-content">
@@ -140,7 +140,7 @@
             </time>
         </div>
         <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb">OpenTSDB部署与使用</a>
+            <a href="http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/">OpenTSDB部署与使用</a>
         </h2>
     </header>
     <div class="post-content">
@@ -162,24 +162,13 @@
 </footer>
 
 
-<script src="http://blog.fatedier.com/js/jquery-2.2.1.min.js"></script>
+<script src="http://blog.fatedier.com/js/jquery-3.1.0.slim.min.js"></script>
 <script src="http://blog.fatedier.com/onlyone/onlyone.js"></script>
 
 <script>
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
-
-$("[href]").each(function(){
-    var url = $(this).attr("href");
-    if (url.indexOf('#') != -1) {
-        continuous
-    }
-    if (url[url.length - 1] != '/') {
-        url += '/';
-    }
-    $(this).attr("href", url);
-});
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>

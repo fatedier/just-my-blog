@@ -77,7 +77,7 @@
             </time>
         </div>
         <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two">codis 2.x版本环境搭建与测试</a>
+            <a href="http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/">codis 2.x版本环境搭建与测试</a>
         </h2>
     </header>
     <div class="post-content">
@@ -99,24 +99,13 @@
 </footer>
 
 
-<script src="http://blog.fatedier.com/js/jquery-2.2.1.min.js"></script>
+<script src="http://blog.fatedier.com/js/jquery-3.1.0.slim.min.js"></script>
 <script src="http://blog.fatedier.com/onlyone/onlyone.js"></script>
 
 <script>
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
-
-$("[href]").each(function(){
-    var url = $(this).attr("href");
-    if (url.indexOf('#') != -1) {
-        continuous
-    }
-    if (url[url.length - 1] != '/') {
-        url += '/';
-    }
-    $(this).attr("href", url);
-});
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>

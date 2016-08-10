@@ -15,7 +15,7 @@ cat ./static/css/styles.css >> ${oocss}
 cat ./static/css/custom.css >> ${oocss}
 
 # compress js
-cat ./static/js/jquery-2.2.1.min.js >> ${oojs}
+# cat ./static/js/jquery-2.2.1.min.js >> ${oojs}
 cat ./static/js/bootstrap.min.js >> ${oojs}
 cat ./static/js/highlight.min.js >> ${oojs}
 # cat ./static/js/custom.js >> ${oojs}

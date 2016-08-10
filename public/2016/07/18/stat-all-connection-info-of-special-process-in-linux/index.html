@@ -184,6 +184,14 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
 
 <script src="http://blog.fatedier.com/onlyone/onlyone.js"></script>
 
+<script>
+
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+console.log(children);
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+</script>
+
 <script>hljs.initHighlightingOnLoad();</script>
 
 <script>

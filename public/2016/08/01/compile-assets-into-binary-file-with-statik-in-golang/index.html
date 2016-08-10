@@ -283,6 +283,14 @@ http.ListenAndServe(&quot;:8080&quot;, http.FileServer(statikFS))
 
 <script src="http://blog.fatedier.com/onlyone/onlyone.js"></script>
 
+<script>
+
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+console.log(children);
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+</script>
+
 <script>hljs.initHighlightingOnLoad();</script>
 
 <script>

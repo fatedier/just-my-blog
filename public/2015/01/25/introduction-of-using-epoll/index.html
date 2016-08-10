@@ -276,6 +276,14 @@ timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指�
 
 <script src="http://blog.fatedier.com/onlyone/onlyone.js"></script>
 
+<script>
+
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+console.log(children);
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+</script>
+
 <script>hljs.initHighlightingOnLoad();</script>
 
 <script>

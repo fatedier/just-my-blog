@@ -2,7 +2,6 @@
 // 这部分放到页面最后做，不然需要等 js 文件加载完成才能生效，网速慢的时候展示效果不好
 /*
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-console.log(children);
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
 */

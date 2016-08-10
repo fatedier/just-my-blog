@@ -201,7 +201,7 @@
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code">http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code/">http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code/</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>
@@ -297,11 +297,20 @@
 <script src="http://blog.fatedier.com/onlyone/onlyone.js"></script>
 
 <script>
-
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-console.log(children);
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
+
+$("[href]").each(function(){
+    var url = $(this).attr("href");
+    if (url.indexOf('#') != -1) {
+        continuous
+    }
+    if (url[url.length - 1] != '/') {
+        url += '/';
+    }
+    $(this).attr("href", url);
+});
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>

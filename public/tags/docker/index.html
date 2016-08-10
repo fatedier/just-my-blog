@@ -145,11 +145,20 @@
 <script src="http://blog.fatedier.com/onlyone/onlyone.js"></script>
 
 <script>
-
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-console.log(children);
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
+
+$("[href]").each(function(){
+    var url = $(this).attr("href");
+    if (url.indexOf('#') != -1) {
+        continuous
+    }
+    if (url[url.length - 1] != '/') {
+        url += '/';
+    }
+    $(this).attr("href", url);
+});
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>

@@ -18,11 +18,11 @@
 
                 <div class="collapse navbar-collapse" id="navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="{{ .Site.BaseURL }}/categories/技术文章">技术文章</a></li>
-                        <li><a href="{{ .Site.BaseURL }}/categories/读书笔记">读书笔记</a></li>
-                        <li><a href="{{ .Site.BaseURL }}/tags">分类</a></li>
+                        <li><a href="{{ .Site.BaseURL }}categories/技术文章/">技术文章</a></li>
+                        <li><a href="{{ .Site.BaseURL }}categories/读书笔记/">读书笔记</a></li>
+                        <li><a href="{{ .Site.BaseURL }}tags/">分类</a></li>
                         {{ range where .Site.Pages "Type" "page" }}
-                        <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
+                        <li><a href="{{ .Permalink }}/">{{ .Title }}</a></li>
                         {{ end }}
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">

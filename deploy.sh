@@ -2,8 +2,10 @@
 
 echo "Deploying myblog to github and coding.net..."
 
+# generate static html, css file using hugo
 hugo
 
+# copy some static content to ./public to publish
 cp -rf ./cp_to_public/* ./public/
 
 git add -A
@@ -14,7 +16,7 @@ else
     git commit
 fi
 
-# if no commit messager found
+# if no commit messager found, just exit
 if [ $? -ne 0 ]; then
     exit 1
 fi

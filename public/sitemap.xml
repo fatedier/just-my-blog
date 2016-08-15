@@ -3,7 +3,12 @@
   
   <url>
     <loc>http://blog.fatedier.com/</loc>
-    <lastmod>2016-08-08T00:00:00+00:00</lastmod>
+    <lastmod>2016-08-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two</loc>
+    <lastmod>2016-08-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>

@@ -4,7 +4,7 @@ title: "fatedier blog"
 copyright: "Copyright (c) 2016. All rights reserved."
 MetaDataFormat: "yaml"
 builddrafts: false
-canonifyurls: true
+canonifyurls: false
 contentdir: "content"
 layoutdir: "layouts"
 publishdir: "public"

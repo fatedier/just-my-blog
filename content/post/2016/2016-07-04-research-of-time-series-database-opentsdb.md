@@ -24,7 +24,7 @@ opentsdb-2.2.0
 
 单机部署可以参考我之前的一篇文章，集群部署比较复杂，这里仅使用单机进行测试。
 
-[OpenTSDB部署与使用](http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/)
+[OpenTSDB部署与使用](/2016/03/12/install-and-use-opentsdb/)
 
 
 ### 概念

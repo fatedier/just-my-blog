@@ -162,7 +162,7 @@ Flannel 的目的就是为集群中的所有节点重新规划 IP 地址的使�
 
 为了便于使用，最好自己搭建内网环境的私有镜像仓库，因为 k8s 中每一台机器上的 docker 都需要 pull 镜像到本地，如果从外网环境拉镜像的话效率较低，而且以后更新镜像等操作将变的非常不方便。
 
-具体的步骤可以参考我之前的一篇文章， [『搭建私有docker仓库』](http://blog.fatedier.com/2016/05/16/install-private-docker-registry/)。
+具体的步骤可以参考我之前的一篇文章， [『搭建私有docker仓库』](/2016/05/16/install-private-docker-registry/)。
 
 #### service 访问问题
 

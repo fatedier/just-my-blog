@@ -3,16 +3,16 @@
 
 <footer class="container copy">
     <p>&copy; {{ .Site.LastChange.Year }} {{ if isset .Site.Params "Author" }} {{ .Site.Params.Author }} {{ else }} {{ .Site.Title }} {{ end }}</p>
-	<p>Powered by <a href="http://gohugo.io" target="_blank">Hugo</a></p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 
 <!--
-<script src="{{ .Site.BaseURL }}js/bootstrap.min.js"></script>
-<script src="{{ .Site.BaseURL }}js/highlight.min.js"></script>
-<script src="{{ .Site.BaseURL }}js/custom.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/highlight.min.js"></script>
+<script src="/js/custom.js"></script>
 -->
-<script src="{{ .Site.BaseURL }}js/jquery-3.1.0.slim.min.js"></script>
-<script src="{{ .Site.BaseURL }}onlyone/onlyone.js"></script>
+<script src="/js/jquery-3.1.0.slim.min.js"></script>
+<script src="/onlyone/onlyone.js"></script>
 
 <script>
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();

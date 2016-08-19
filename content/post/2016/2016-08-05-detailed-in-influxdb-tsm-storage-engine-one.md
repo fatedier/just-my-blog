@@ -16,11 +16,11 @@ InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上�
 
 我认为像这样的针对特殊场景进行优化的数据库会是今后数据库领域发展的主流，这里针对 InfluxDB 1.0.0 版本的源码深入研究一下 TSM 引擎的实现原理。TSM 存储引擎解决了 InfluxDB 之前使用的 LevelDB 和 BoltDB 时遇到的一些问题。
 
-因为 TSM 是根据 LSM Tree 针对时间序列数据优化而来，所以总体架构设计上相差并不是很大，LSM Tree 的概念可以参考 [『LSM Tree 学习笔记』](http://blog.fatedier.com/2016/06/15/learn-lsm-tree/)。
+因为 TSM 是根据 LSM Tree 针对时间序列数据优化而来，所以总体架构设计上相差并不是很大，LSM Tree 的概念可以参考 [『LSM Tree 学习笔记』](/2016/06/15/learn-lsm-tree/)。
 
 ### 概念
 
-首先需要简单了解 InfluxDB 的总体的架构以及一些关键概念，有一个总的思路，知道这个数据库是为了存储什么样的数据，解决哪些问题而诞生的，便于后面理解 TSM 存储引擎的详细的结构。可以简单看一下我之前的文章，[『时间序列数据库调研之InfluxDB』](http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/)。
+首先需要简单了解 InfluxDB 的总体的架构以及一些关键概念，有一个总的思路，知道这个数据库是为了存储什么样的数据，解决哪些问题而诞生的，便于后面理解 TSM 存储引擎的详细的结构。可以简单看一下我之前的文章，[『时间序列数据库调研之InfluxDB』](/2016/07/05/research-of-time-series-database-influxdb/)。
 
 #### 数据格式
 

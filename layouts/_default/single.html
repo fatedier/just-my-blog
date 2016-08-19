@@ -32,7 +32,7 @@
                 <ul class="list-inline post-tags">
                     {{ range .Params.tags }}
                     <li>
-                        <a href="{{ $baseurl }}tags/{{ . | urlize }}/">
+                        <a href="/tags/{{ . | urlize }}/">
                             <i class="fa fa-tags"></i>
                             {{ . }}
                         </a>
@@ -67,7 +67,7 @@
                         <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
                         {{ end }}
 
-                        <li><a href="{{ .Site.BaseURL }}post/">All Posts</a></li>
+                        <li><a href="/post/">All Posts</a></li>
 
                         {{ if .Next }}
                         <li class="next"><a href="{{ .Next.Permalink }}/">Newer <span aria-hidden="true">&rarr;</span></a></li>

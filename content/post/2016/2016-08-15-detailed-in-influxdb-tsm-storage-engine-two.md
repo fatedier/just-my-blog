@@ -14,7 +14,7 @@ url: "/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two"
 
 <!--more-->
 
-上一篇文章传送门： [『InfluxDB详解之TSM存储引擎解析（一）』](http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/)。
+上一篇文章传送门： [『InfluxDB详解之TSM存储引擎解析（一）』](/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/)。
 
 ### 主要数据结构
 

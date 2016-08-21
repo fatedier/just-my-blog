@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 
+<html lang="zh-cn">
+<head>
 <meta charset="utf-8">
-
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。
+">
 <meta property="og:url" content="http://blog.fatedier.com/">
-
-
 <meta property="og:type" content="article">
-<meta property="og:title" content="epoll使用说明 &middot; fatedier blog">
-
-<meta property="og:site_name" content="fatedier blog">
+<meta property="og:title" content="epoll使用说明 | fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
 <title>
     
@@ -19,15 +18,12 @@
     
 </title>
 
-
-
 <link rel="stylesheet" href="/onlyone/onlyone.css">
-
-
 <link rel="shortcut icon" href="/assets/favicon.ico">
-
-
+<script src="/onlyone/onlyone.js"></script>
 <link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
 
 
 <div class="container">
@@ -50,7 +46,7 @@
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
                         
-                        <li><a href="http://blog.fatedier.com/about/">关于我</a></li>
+                        <li><a href="/about/">关于我</a></li>
                         
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
@@ -72,10 +68,7 @@
 
             <header>
                 <div class="post-date">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2015年01月25日">
-                        2015年01月25日
-                    </time>
+                    2015年01月25日 
                 </div>
                 <h1 class="post-title">epoll使用说明</h1>
             </header>
@@ -213,19 +206,25 @@ timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指�
                 </ul>
 
                 
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name/">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight/">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li><li id="li-rels"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/">C/C&#43;&#43;获取精确到微秒级的系统时间</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月30日)</span></li><li id="li-rels"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty/">size() == 0和empty()的比较</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月26日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02/">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01/">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
+                
+            </aside>
+                
             
             <footer>
                 <nav>
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2014/12/16/how-to-deal-with-zombie-process/">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -273,14 +272,17 @@ timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指�
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 
-
-<script src="/js/jquery-3.1.0.slim.min.js"></script>
-<script src="/onlyone/onlyone.js"></script>
-
 <script>
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>
@@ -294,4 +296,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>
+</body>
+</html>
 

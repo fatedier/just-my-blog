@@ -22,7 +22,7 @@
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
                         {{ range where .Site.Pages "Type" "page" }}
-                        <li><a href="{{ .Permalink }}/">{{ .Title }}</a></li>
+                        <li><a href="{{ .RelPermalink }}/">{{ .Title }}</a></li>
                         {{ end }}
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">

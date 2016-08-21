@@ -2,13 +2,10 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="{{ .Date.Format .Site.Params.DateForm }}">
-                {{ .Date.Format .Site.Params.DateForm }}
-            </time>
+            {{ .Date.Format .Site.Params.DateForm }}
         </div>
         <h2 class="post-title">
-            <a href="{{ .Permalink }}/">{{ .Title }}</a>
+            <a href="{{ .RelPermalink }}/">{{ .Title }}</a>
         </h2>
     </header>
     <div class="post-content">

@@ -25,6 +25,7 @@ params:
         - "小说散文"
         - "随笔杂记"
         - "其他"
+    ShowRelatedPost: true
 menu:
     main:
         - Name: "归档"

@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 
+<html lang="zh-cn">
+<head>
 <meta charset="utf-8">
-
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。
+">
 <meta property="og:url" content="http://blog.fatedier.com/">
-
-
 <meta property="og:type" content="article">
-<meta property="og:title" content="InfluxDB 与 OpenTSDB 对比测试 &middot; fatedier blog">
-
-<meta property="og:site_name" content="fatedier blog">
+<meta property="og:title" content="InfluxDB 与 OpenTSDB 对比测试 | fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
 <title>
     
@@ -19,15 +18,12 @@
     
 </title>
 
-
-
 <link rel="stylesheet" href="/onlyone/onlyone.css">
-
-
 <link rel="shortcut icon" href="/assets/favicon.ico">
-
-
+<script src="/onlyone/onlyone.js"></script>
 <link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
 
 
 <div class="container">
@@ -50,7 +46,7 @@
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
                         
-                        <li><a href="http://blog.fatedier.com/about/">关于我</a></li>
+                        <li><a href="/about/">关于我</a></li>
                         
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
@@ -72,10 +68,7 @@
 
             <header>
                 <div class="post-date">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2016年07月06日">
-                        2016年07月06日
-                    </time>
+                    2016年07月06日 
                 </div>
                 <h1 class="post-title">InfluxDB 与 OpenTSDB 对比测试</h1>
             </header>
@@ -213,19 +206,25 @@
                 </ul>
 
                 
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/07/05/research-of-time-series-database-influxdb/">时间序列数据库调研之InfluxDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月05日)</span></li><li id="li-rels"><a href="/2016/07/04/research-of-time-series-database-opentsdb/">时间序列数据库调研之OpenTSDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月04日)</span></li><li id="li-rels"><a href="/2016/05/25/deploy-openstack-swift/">部署openstack的对象存储服务swift</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年05月25日)</span></li><li id="li-rels"><a href="/2016/03/12/install-and-use-opentsdb/">OpenTSDB部署与使用</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月12日)</span></li><li id="li-rels"><a href="/2015/10/07/installation-and-testing-of-codis-version-two/">codis 2.x版本环境搭建与测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年10月07日)</span></li><li id="li-rels"><a href="/2015/09/15/redis-cluster-survey/">Redis集群调研</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月15日)</span></li></ul>
+                
+            </aside>
+                
             
             <footer>
                 <nav>
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2016/07/10/from-zero-to-one-just-a-dream/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2016/07/10/from-zero-to-one-just-a-dream/"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2016/07/05/research-of-time-series-database-influxdb/">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -287,14 +286,17 @@
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 
-
-<script src="/js/jquery-3.1.0.slim.min.js"></script>
-<script src="/onlyone/onlyone.js"></script>
-
 <script>
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>
@@ -308,4 +310,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>
+</body>
+</html>
 

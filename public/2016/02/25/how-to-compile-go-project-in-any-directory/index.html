@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 
+<html lang="zh-cn">
+<head>
 <meta charset="utf-8">
-
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。
+">
 <meta property="og:url" content="http://blog.fatedier.com/">
-
-
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何使golang项目可以在任意目录下编译 &middot; fatedier blog">
-
-<meta property="og:site_name" content="fatedier blog">
+<meta property="og:title" content="如何使golang项目可以在任意目录下编译 | fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
 <title>
     
@@ -19,15 +18,12 @@
     
 </title>
 
-
-
 <link rel="stylesheet" href="/onlyone/onlyone.css">
-
-
 <link rel="shortcut icon" href="/assets/favicon.ico">
-
-
+<script src="/onlyone/onlyone.js"></script>
 <link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
 
 
 <div class="container">
@@ -50,7 +46,7 @@
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
                         
-                        <li><a href="http://blog.fatedier.com/about/">关于我</a></li>
+                        <li><a href="/about/">关于我</a></li>
                         
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
@@ -72,10 +68,7 @@
 
             <header>
                 <div class="post-date">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2016年02月25日">
-                        2016年02月25日
-                    </time>
+                    2016年02月25日 
                 </div>
                 <h1 class="post-title">如何使golang项目可以在任意目录下编译</h1>
             </header>
@@ -134,19 +127,25 @@
                 </ul>
 
                 
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/">go语言中使用smtp发送邮件及smtp协议的相关问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月20日)</span></li></ul>
+                
+            </aside>
+                
             
             <footer>
                 <nav>
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2016/03/12/install-and-use-opentsdb/"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -190,14 +189,17 @@
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 
-
-<script src="/js/jquery-3.1.0.slim.min.js"></script>
-<script src="/onlyone/onlyone.js"></script>
-
 <script>
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>
@@ -211,4 +213,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>
+</body>
+</html>
 

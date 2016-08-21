@@ -4,4 +4,11 @@
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+        $("#real-rels").remove();
+}
 */

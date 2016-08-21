@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 
+<html lang="zh-cn">
+<head>
 <meta charset="utf-8">
-
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
+题，如果日志较少，就很难进行进一步的查错了。但是发现在该目录下生成了一个core文件，可以帮助我们查找程序崩溃的原因。
+">
 <meta property="og:url" content="http://blog.fatedier.com/">
-
-
 <meta property="og:type" content="article">
-<meta property="og:title" content="linux core文件调试 &middot; fatedier blog">
-
-<meta property="og:site_name" content="fatedier blog">
+<meta property="og:title" content="linux core文件调试 | fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
 <title>
     
@@ -19,15 +19,12 @@
     
 </title>
 
-
-
 <link rel="stylesheet" href="/onlyone/onlyone.css">
-
-
 <link rel="shortcut icon" href="/assets/favicon.ico">
-
-
+<script src="/onlyone/onlyone.js"></script>
 <link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
 
 
 <div class="container">
@@ -50,7 +47,7 @@
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
                         
-                        <li><a href="http://blog.fatedier.com/about/">关于我</a></li>
+                        <li><a href="/about/">关于我</a></li>
                         
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
@@ -72,10 +69,7 @@
 
             <header>
                 <div class="post-date">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2014年12月07日">
-                        2014年12月07日
-                    </time>
+                    2014年12月07日 
                 </div>
                 <h1 class="post-title">linux core文件调试</h1>
             </header>
@@ -294,19 +288,25 @@ Aborted (core dumped)
                 </ul>
 
                 
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/17/git-usually-command/">Git常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月17日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/16/learn-git-website/">学习Git的常用网站</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li></ul>
+                
+            </aside>
+                
             
             <footer>
                 <nav>
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2014/12/16/how-to-deal-with-zombie-process/"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -352,14 +352,17 @@ Aborted (core dumped)
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 
-
-<script src="/js/jquery-3.1.0.slim.min.js"></script>
-<script src="/onlyone/onlyone.js"></script>
-
 <script>
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>
@@ -373,4 +376,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>
+</body>
+</html>
 

@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 
+<html lang="zh-cn">
+<head>
 <meta charset="utf-8">
-
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="fatedier，程序员。
+">
 <meta property="og:url" content="http://blog.fatedier.com/">
-
-
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于我 &middot; fatedier blog">
-
-<meta property="og:site_name" content="fatedier blog">
+<meta property="og:title" content="关于我 | fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
 <title>
     
@@ -19,15 +18,12 @@
     
 </title>
 
-
-
 <link rel="stylesheet" href="/onlyone/onlyone.css">
-
-
 <link rel="shortcut icon" href="/assets/favicon.ico">
-
-
+<script src="/onlyone/onlyone.js"></script>
 <link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
 
 
 <div class="container">
@@ -50,7 +46,7 @@
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
                         
-                        <li><a href="http://blog.fatedier.com/about/">关于我</a></li>
+                        <li><a href="/about/">关于我</a></li>
                         
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
@@ -72,10 +68,7 @@
 
             <header>
                 <div class="post-date">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="2015年09月05日">
-                        2015年09月05日
-                    </time>
+                    2015年09月05日 
                 </div>
                 <h1 class="post-title">关于我</h1>
             </header>
@@ -137,19 +130,25 @@
                 </ul>
 
                 
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"></ul>
+                
+            </aside>
+                
             
             <footer>
                 <nav>
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="http://blog.fatedier.com/2015/09/15/redis-cluster-survey/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2015/09/15/redis-cluster-survey/"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="http://blog.fatedier.com/2015/08/24/how-to-modify-process-name/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2015/08/24/how-to-modify-process-name/">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -197,14 +196,17 @@
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 
-
-<script src="/js/jquery-3.1.0.slim.min.js"></script>
-<script src="/onlyone/onlyone.js"></script>
-
 <script>
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>
@@ -218,4 +220,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>
+</body>
+</html>
 

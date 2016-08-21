@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 
+<html lang="zh-cn">
+<head>
 <meta charset="utf-8">
-
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="Redis">
 <meta property="og:url" content="http://blog.fatedier.com/">
-
-
-<meta property="og:title" content="fatedier blog">
-
-<meta property="og:site_name" content="fatedier blog">
+<meta property="og:title" content="fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
 <title>
     
@@ -18,15 +16,12 @@
     
 </title>
 
-
-
 <link rel="stylesheet" href="/onlyone/onlyone.css">
-
-
 <link rel="shortcut icon" href="/assets/favicon.ico">
-
-
+<script src="/onlyone/onlyone.js"></script>
 <link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
 
 
 <div class="container">
@@ -49,7 +44,7 @@
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
                         
-                        <li><a href="http://blog.fatedier.com/about/">关于我</a></li>
+                        <li><a href="/about/">关于我</a></li>
                         
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
@@ -71,13 +66,10 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2015年10月07日">
-                2015年10月07日
-            </time>
+            2015年10月07日
         </div>
         <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/">codis 2.x版本环境搭建与测试</a>
+            <a href="/2015/10/07/installation-and-testing-of-codis-version-two/">codis 2.x版本环境搭建与测试</a>
         </h2>
     </header>
     <div class="post-content">
@@ -92,13 +84,10 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            <span class="glyphicon glyphicon-calendar"></span>
-            <time datetime="2015年09月15日">
-                2015年09月15日
-            </time>
+            2015年09月15日
         </div>
         <h2 class="post-title">
-            <a href="http://blog.fatedier.com/2015/09/15/redis-cluster-survey/">Redis集群调研</a>
+            <a href="/2015/09/15/redis-cluster-survey/">Redis集群调研</a>
         </h2>
     </header>
     <div class="post-content">
@@ -121,14 +110,17 @@
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 
-
-<script src="/js/jquery-3.1.0.slim.min.js"></script>
-<script src="/onlyone/onlyone.js"></script>
-
 <script>
 var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
 $("#TableOfContents").children().first().remove();
 $("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
 </script>
 
 <script>hljs.initHighlightingOnLoad();</script>
@@ -142,4 +134,6 @@ var _hmt = _hmt || [];
   s.parentNode.insertBefore(hm, s);
 })();
 </script>
+</body>
+</html>
 

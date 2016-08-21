@@ -6,10 +6,7 @@
 
             <header>
                 <div class="post-date">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                    <time datetime="{{ .Date.Format .Site.Params.DateForm }}">
-                        {{ .Date.Format .Site.Params.DateForm }}
-                    </time>
+                    {{ .Date.Format .Site.Params.DateForm }} 
                 </div>
                 <h1 class="post-title">{{ .Title }}</h1>
             </header>
@@ -42,27 +39,28 @@
 
                 {{ if .Site.Params.ShowRelatedPost }}
                 <!-- Related post. -->
-                <h3>Related Post</h3>
-                <ul class="post-rels">
-                    {{ $page_link := .Permalink }}
-                    {{ $tags := .Params.tags }}
-                    {{ range .Site.Pages }}
-                    {{ $page := . }}
-                    {{ $has_common_tags := intersect $tags .Params.tags | len | lt 0 }}
-                    {{ if and $has_common_tags (ne $page_link $page.Permalink) }}
-                    <li><a href="{{ $page.Permalink }}">{{ $page.Title }}</a></li>
-                    {{ end }}
-                    {{ end }}
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels">
+                    {{- $page_link := .Permalink -}}
+                    {{- $tags := .Params.tags -}}
+                    {{- range .Site.Pages -}}
+                        {{- $page := . -}}
+                        {{- $has_common_tags := intersect $tags .Params.tags | len | lt 0 -}}
+                        {{- if and $has_common_tags (ne $page_link $page.Permalink) -}}
+                            <li id="li-rels"><a href="{{ $page.RelPermalink }}/">{{ $page.Title }}</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;({{ .Date.Format .Site.Params.DateForm }})</span></li>
+                        {{- end -}}
+                    {{- end -}}
                 </ul>
+                {{/* 通过 js 操作只显示最前面的几篇相关文章 */}}
             </aside>
-            {{ end }}
+                {{ end }}
             <!-- Pagination. -->
             <footer>
                 <nav>
                     <ul class="pager">
 
                         {{ if .Prev }}
-                        <li class="previous"><a href="{{ .Prev.Permalink }}/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="{{ .Prev.RelPermalink }}/"><span aria-hidden="true">&larr;</span> Older</a></li>
                         {{ else }}
                         <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
                         {{ end }}
@@ -70,7 +68,7 @@
                         <li><a href="/post/">All Posts</a></li>
 
                         {{ if .Next }}
-                        <li class="next"><a href="{{ .Next.Permalink }}/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="{{ .Next.RelPermalink }}/">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         {{ else }}
                         <li class="next disabled"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         {{ end }}

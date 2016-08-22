@@ -8,9 +8,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。
 ">
-<meta property="og:url" content="http://blog.fatedier.com/">
-<meta property="og:type" content="article">
-<meta property="og:title" content="如何使golang项目可以在任意目录下编译 | fatedier blog"><meta property="og:site_name" content="fatedier blog">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="如何使golang项目可以在任意目录下编译 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
 <title>
     

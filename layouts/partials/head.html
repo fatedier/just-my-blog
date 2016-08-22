@@ -7,21 +7,19 @@
 <meta name="description" content="{{- if .Description -}}{{- .Description -}}{{- else if .IsPage -}}{{- .Summary -}}{{- else -}}{{- .Title -}}{{- end -}}">
 <meta property="og:url" content="{{ .Site.BaseURL }}">
 {{- if eq .URL "/" -}}
-<!-- Index -->
 <meta property="og:type" content="website">
 {{- range first 1 .Data.Pages -}}
 <meta property="og:title" content="{{ .Site.Title }}">
 {{- end -}}
 {{- else if eq .URL "/post/" -}}
-<!-- Post -->
-<meta property="og:title" content="All Entries | {{ .Site.Title }}">
+<meta property="og:title" content="归档 - {{ .Site.Title }}">
+{{- else if eq .URL "/tags/" -}}
+<meta property="og:title" content="分类 - {{ .Site.Title }}">
 {{- else if in .URL "/tags/" -}}
-<!-- Category -->
-<meta property="og:title" content="{{ .Site.Title }}">
+<meta property="og:title" content="{{ .Title }} - {{ .Site.Title }}">
 {{- else -}}
-<!-- Article -->
 <meta property="og:type" content="article">
-<meta property="og:title" content="{{ .Title }} | {{ .Site.Title }}">
+<meta property="og:title" content="{{ .Title }} - {{ .Site.Title }}">
 {{- end -}}
 <meta property="og:site_name" content="{{ .Site.Title }}">
 
@@ -29,9 +27,11 @@
     {{ if eq .URL "/" }}
     {{ .Site.Title }}
     {{ else if eq .URL "/post/" }}
-    All Entries &middot; {{ .Site.Title }}
+    归档 - {{ .Site.Title }}
+    {{ else if eq .URL "/tags/" }}
+    分类 - {{ .Site.Title }}
     {{ else if in .URL "/tags/" }}
-    {{ .Site.Title }}
+    {{ .Title }} - {{ .Site.Title }}
     {{ else }}
     {{ .Title }}
     {{ end }}

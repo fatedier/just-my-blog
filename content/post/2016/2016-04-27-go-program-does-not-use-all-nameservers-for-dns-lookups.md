@@ -274,3 +274,7 @@ recursion no;
 allow-query-cache { none; };
 allow-recursion { none; };
 ```
+
+#### 更新
+
+发现在 go1.7 版本中对这个问题做了修复，使用纯 go 实现的 dns 解析方式也已经运行正常。具体信息可以参考 [issue 15434](https://github.com/golang/go/issues/15434)。

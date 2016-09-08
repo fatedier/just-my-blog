@@ -332,6 +332,10 @@ allow-query-cache { none; };
 allow-recursion { none; };
 </code></pre>
 
+<h4 id="更新">更新</h4>
+
+<p>发现在 go1.7 版本中对这个问题做了修复，使用纯 go 实现的 dns 解析方式也已经运行正常。具体信息可以参考 <a href="https://github.com/golang/go/issues/15434">issue 15434</a>。</p>
+
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -420,6 +424,7 @@ allow-recursion { none; };
 <li><a href="#仍然使用-go1-4-版本进行编译">仍然使用 go1.4 版本进行编译</a></li>
 <li><a href="#使用-go1-5-及以上版本编译但是通过环境变量强制使用-cgo-的-dns-查询方式">使用 go1.5 及以上版本编译但是通过环境变量强制使用 cgo 的 dns 查询方式</a></li>
 <li><a href="#修改-bind-的配置文件">修改 bind 的配置文件</a></li>
+<li><a href="#更新">更新</a></li>
 </ul></li>
 </ul></li>
 </ul></li>

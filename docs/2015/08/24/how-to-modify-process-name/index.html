@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。
+">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="如何修改进程的名称 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    如何修改进程的名称
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/读书笔记/">读书笔记</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        
+                        <li><a href="/about/">关于我</a></li>
+                        
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2015年08月24日 
+                </div>
+                <h1 class="post-title">如何修改进程的名称</h1>
+            </header>
+
+            <div class="post-content">
+                
+
+<p>在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。</p>
+
+<h3 id="效果预览">效果预览</h3>
+
+<p>要实现的效果就像 nginx 启动后通过 ps 查到的名称一样，这个名称就是自定义的，如下图</p>
+
+<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-08-24-how-to-modify-process-name-nginx-process-name.png" alt="nginx-process-name" /></p>
+
+<h3 id="方法一">方法一</h3>
+
+<pre><code class="language-cpp">prctl(PR_SET_NAME, name);
+</code></pre>
+
+<p>通过这个函数可以将当前进程的名称修改为 <code>name</code> 的内容。</p>
+
+<p>我测试了一下，发现只有使用 <code>ps -L</code> 才能看到，达不到想要的效果。</p>
+
+<h3 id="方法二">方法二</h3>
+
+<p>参考了 <strong>nginx</strong> 中的源码，主要是通过修改 <strong>argv[0]</strong> 的值来实现的，但是需要注意将后面跟着的 <strong>environ</strong> 环境表中的信息移到其他地方，避免被覆盖。</p>
+
+<pre><code class="language-c">void set_proctitle(char** argv, const char* new_name)
+{
+    int size = 0;
+    int i;
+    // 申请新的空间存放 environ 中内容
+    for (i = 0; environ[i]; i++) {
+        size += strlen(environ[i]) + 1;
+    }
+    char* p = (char*)malloc(size);
+    char* last_argv = argv[0];
+    for (i = 0; argv[i]; i++) {
+        if (last_argv == argv[i]) {
+            last_argv = argv[i] + strlen(argv[i]) + 1;
+        }
+    }  
+    for (i = 0; environ[i]; i++) {
+        if (last_argv == environ[i]) {
+            size = strlen(environ[i]) + 1;
+            last_argv = environ[i] + size;  
+   
+            memcpy(p, environ[i], size);
+            environ[i] = (char*)p;
+            p += size;
+        }  
+    }
+    last_argv--;
+    // 修改 argv[0]，argv剩余的空间全部填0
+    strncpy(argv[0], new_name, last_argv - argv[0]);
+    p = argv[0] + strlen(argv[0]) + 1;
+    if (last_argv - p &gt; 0) {
+        memset(p, 0, last_argv - p);
+    }  
+}
+</code></pre>
+
+<p>稍微解释一下，每一个 c 程序都有个 main 函数，作为程序启动入口函数。main 函数的原型是 <code>int main(int argc , char *argv[])</code>，其中 <strong>argc</strong> 表示命令行参数的个数，<strong>argv</strong> 是一个指针数组，保存所有命令行字符串。Linux进程名称是通过命令行参数 <strong>argv[0]</strong> 来表示的。</p>
+
+<p>而进程执行时的环境变量信息的存储地址就是紧接着 <strong>argv</strong> 之后，通过 <code>char **environ</code> 变量来获取，类似于下图</p>
+
+<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-08-24-how-to-modify-process-name-argv-info.png" alt="argv-info" /></p>
+
+<p>由于我们需要修改 <strong>argv[0]</strong> 的值，有可能新的字符串的长度超过原来 <strong>argv</strong> 中所有字符串长度的总和，又因为 <strong>environ</strong> 在内存空间上是紧跟着 <strong>argv</strong> 的，我们如果直接修改 <strong>argv[0]</strong> 的值，有可能会覆盖掉 <strong>environ</strong> 的内存空间，所以需要先将 <strong>environ</strong> 的内容 copy 到一块新的内存空间，之后再将 <strong>environ</strong> 指针指向新的空间。</p>
+
+<h3 id="php-扩展中遇到的困难">php 扩展中遇到的困难</h3>
+
+<p>在修改 php 扩展中 fork 的子进程名称时遇到了问题，由于 php 扩展是注入的方式，提供的动态库，无法获取到从 <strong>main</strong> 函数传入过来的 <strong>argv</strong> 参数的地址。</p>
+
+<p>经过测试，发现 <strong>environ</strong> 是一个全局变量，可以获取到它的地址，而 <strong>argv</strong> 中内容可以用另外一种方式取得，通过查看 <code>/proc/10000/cmdline</code> 中的值（10000是该进程的进程号），可以获取命令行启动参数的字符串（也就是 <strong>argv</strong> 中的内容，如果 <strong>argv</strong> 没有被其他代码修改过的话），所以用 <strong>environ</strong> 的地址减去 <strong>cmdline</strong> 中字符串的长度就可以得到 <strong>argv[0]</strong> 的地址。</p>
+
+<p><strong>注：需要注意的是 cmdline 不是一个普通文件，不能用 stat 或者 ftell 等函数来获取长度，必须用 read 等读取文件的函数去读取。</strong></p>
+
+<p>参考代码如下：</p>
+
+<pre><code class="language-c">void set_proctitle_unsafe(const char* new_name)
+{
+    // 获取该进程的启动参数字符串
+    int pid = getpid();
+    char file_name[100];
+    snprintf(file_name, sizeof(file_name), &quot;/proc/%d/cmdline&quot;, pid);
+
+    int fd = open(file_name, O_RDONLY);
+    if (fd &lt; 0)
+        return;
+
+    char tempCmd[513];
+    long cmd_length = read(fd, tempCmd, sizeof(tempCmd));
+    close(fd);
+
+    // 获取 argv[0] 的地址
+    char *argv = environ[0];
+    argv = argv - cmd_length;
+
+    int size = 0;
+    int i;
+    // 申请新的空间存放 environ 中内容
+    for (i = 0; environ[i]; i++) {
+        size += strlen(environ[i]) + 1;
+    }
+    char* p = (char*)malloc(size);
+
+    char* last_argv = argv;
+    last_argv = argv + cmd_length;
+
+    for (i = 0; environ[i]; i++) {
+        if (last_argv == environ[i]) {
+            size = strlen(environ[i]) + 1;
+            last_argv = environ[i] + size;
+
+            memcpy(p, environ[i], size);
+            environ[i] = (char*)p;
+            p += size;
+        }
+    }
+    last_argv--;
+
+    // 修改 argv[0] 的内容
+    strncpy(argv, new_name, last_argv - argv);
+    p = (argv) + strlen(argv) + 1;
+    if (last_argv - p &gt; 0) {
+        memset(p, 0, last_argv - p);
+    }
+}
+</code></pre>
+
+<p>这个函数是不安全的，需要小心使用，因为不能确定 <strong>environ</strong> 的地址是否已经被其他人修改过了，比如在 php 扩展中，有可能已经被其他程序用同样的方法修改过，这样就会造成获取到的 <strong>argv[0]</strong> 的地址是未知的，执行的程序可能就会出现内存错误。</p>
+
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2015/08/24/how-to-modify-process-name/">http://blog.fatedier.com/2015/08/24/how-to-modify-process-name/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/c/cpp/">
+                            <i class="fa fa-tags"></i>
+                            c/cpp
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight/">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li><li id="li-rels"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/">C/C&#43;&#43;获取精确到微秒级的系统时间</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月30日)</span></li><li id="li-rels"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty/">size() == 0和empty()的比较</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月26日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02/">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01/">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
+                
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/about/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#效果预览">效果预览</a></li>
+<li><a href="#方法一">方法一</a></li>
+<li><a href="#方法二">方法二</a></li>
+<li><a href="#php-扩展中遇到的困难">php 扩展中遇到的困难</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2016  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</script>
+</body>
+</html>
+

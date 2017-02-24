@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。
+">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="能否被8整除 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    能否被8整除
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/读书笔记/">读书笔记</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        
+                        <li><a href="/about/">关于我</a></li>
+                        
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2014年11月13日 
+                </div>
+                <h1 class="post-title">能否被8整除</h1>
+            </header>
+
+            <div class="post-content">
+                
+
+<p>题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。</p>
+
+<h3 id="思路">思路</h3>
+
+<ul>
+<li><p>考虑到64位整型可以直接取余8求得结果，所以当输入非负整数位数小于20位的时候，可以直接转换成64位整型进行计算。</p></li>
+
+<li><p>对于一个非负整数，最后四位相当于是 p*1000 + x*100 + y*10 + z ，可以很显然的看出p*1000必然能被8整除，所以一个非负整数只需要后三位能被8整除，那么这个数就一定能被8整除。所以如果我们能从这个数中任意取出三位，作为最后三位，其值能被8整除，就输出YES，否则NO。</p></li>
+
+<li><p>没必要对可能的10000位做全排列，因为0-9每个数最多只能用3次，我们只需要遍历一遍每一位，将0-9出现的次数记录下来，最多允许记录3次。这样最坏的情况下需要对30个数进行全排列即可，效率会非常高。</p></li>
+</ul>
+
+<h3 id="代码">代码</h3>
+
+<pre><code class="language-cpp">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;sys/types.h&gt;
+
+#define MAX 10001
+
+int has_num[10];    //0-9在这个数中出现的次数
+
+bool check()
+{
+    int deal_num[30];   //0-9每个数最多可以用3次，只需要30的空间
+    int n = 0;
+    //将所有出现过数依次存放在deal_num数组中
+    for (int i=0; i&lt;10; i++) {
+        for (int j=0; j&lt;has_num[i]; j++) {
+            deal_num[n] = i;
+            n++;
+        }
+    }
+
+    //排列任意三个数组成一个整数，其值能被8整除，返回true，否则false
+    for (int i=0; i&lt;n; i++) {
+        for (int j=0; j&lt;n; j++) {
+            if (j == i)
+                continue;
+            for (int k=0; k&lt;n; k++) {
+                if (k == i || k == j) {
+                    continue;
+                }
+                if ((deal_num[i]*100 + deal_num[j]*10 + deal_num[k]) % 8 == 0)
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+int main()
+{
+    char str_num[MAX];  //用于保存不超过10000位的整数
+    int n;
+    long long temp = 0; //如果位数小于等于19，直接转换为64位整型
+
+    for (;;) {
+        memset(str_num, 0, sizeof(str_num));
+        for (int i=0; i&lt;10; i++) {
+            has_num[i] = 0;
+        }
+        if (scanf(&quot;%s&quot;, &amp;str_num) == 1) {
+            n = strlen(str_num);
+            //转换为64位整型
+            if (n &lt;= 19) {
+                sscanf(str_num, &quot;%lld&quot;, &amp;temp);
+                if ((temp % 8) == 0)
+                    printf(&quot;YES\n&quot;);
+                else
+                    printf(&quot;NO\n&quot;);
+                continue;
+            }
+            
+            //将0-9出现的次数保存在has_num数组中，最多3次
+            for (int i=0; i&lt;n; i++) {
+                if (has_num[(int)str_num[i] - 48] &lt; 3)
+                    has_num[(int)str_num[i] - 48]++;
+            }
+            if (check())
+                printf(&quot;YES\n&quot;);
+            else
+                printf(&quot;NO\n&quot;);
+            continue;
+
+        } else {
+            break;
+        }
+    }
+    return 0;
+}
+</code></pre>
+
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight/">http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/c/cpp/">
+                            <i class="fa fa-tags"></i>
+                            c/cpp
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/%E7%AE%97%E6%B3%95/">
+                            <i class="fa fa-tags"></i>
+                            算法
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/06/15/learn-lsm-tree/">LSM Tree 学习笔记</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月15日)</span></li><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name/">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/">C/C&#43;&#43;获取精确到微秒级的系统时间</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月30日)</span></li><li id="li-rels"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty/">size() == 0和empty()的比较</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月26日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02/">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01/">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
+                
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2014/11/24/conditional-judgement-in-linux-shell/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2014/11/10/use-astyle-to-format-code/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#思路">思路</a></li>
+<li><a href="#代码">代码</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2016  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</script>
+</body>
+</html>
+

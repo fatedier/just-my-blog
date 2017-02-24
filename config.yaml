@@ -7,7 +7,7 @@ builddrafts: false
 canonifyurls: false
 contentdir: "content"
 layoutdir: "layouts"
-publishdir: "public"
+publishdir: "docs"
 
 permalinks:
     posts: /:year/:month/:day/:slug/

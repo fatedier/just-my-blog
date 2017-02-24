@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。
+">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="使用gvm在不同go版本之间切换 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    使用gvm在不同go版本之间切换
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/读书笔记/">读书笔记</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        
+                        <li><a href="/about/">关于我</a></li>
+                        
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2016年07月25日 
+                </div>
+                <h1 class="post-title">使用gvm在不同go版本之间切换</h1>
+            </header>
+
+            <div class="post-content">
+                
+
+<p>Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。</p>
+
+<p>Go 的更新速度比较快，2015年8月发布 1.5 版本，2016年2月发布 1.6 版本，2016年8月即将发布 1.7 版本，在性能以及GC方便都在不断优化，及时更新到新版本的 go 很有优势。</p>
+
+<h3 id="go-版本切换的问题">Go 版本切换的问题</h3>
+
+<p>二进制文件的管理比较简单，通过链接使用不同版本的程序即可，实际上主要是一些环境变量和标准库的设置问题，环境变量主要是 <code>GOPATH</code> 以及 <code>GOROOT</code>，标准库的话需要在切换 go 版本时也能跟着切换。<strong>gvm</strong> 实际上就是帮助完成这些配置工作。</p>
+
+<h3 id="安装-gvm">安装 gvm</h3>
+
+<p><strong>gvm</strong> 的项目地址：<a href="https://github.com/moovweb/gvm">https://github.com/moovweb/gvm</a></p>
+
+<p>安装命令：</p>
+
+<p><code>bash &lt;&lt; (curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)</code></p>
+
+<p>如果你使用的是 <code>zsh</code> 的话将前面的 <code>bash</code> 改为 <code>zsh</code> 即可，这条命令主要是下载 <strong>gvm</strong> 相关的文件，创建所需目录，并且在 <code>.bashrc</code> 或者 <code>.zshrc</code> 中加入</p>
+
+<p><code>[[ -s &quot;/home/wcl/.gvm/scripts/gvm&quot; ]] &amp;&amp; source &quot;/home/wcl/.gvm/scripts/gvm&quot;</code></p>
+
+<p>使每次登录 shell 时都可以生效。</p>
+
+<h3 id="安装指定-go-版本">安装指定 go 版本</h3>
+
+<p><code>gvm install go1.6.3</code></p>
+
+<p>需要注意这里实际上是先执行</p>
+
+<p><code>git clone https://go.googlesource.com/go $GVM_ROOT/archive/go</code></p>
+
+<p>这个网站在墙外。</p>
+
+<p>我们可以通过配置使 git 可以通过 http 代理访问，修改 <code>.gitconfig</code> 文件，加上 http 代理服务器的地址：</p>
+
+<pre><code>[http]
+        proxy = http://[proxydomain]:[port]
+</code></pre>
+
+<p>下载成功后，有可能提示编译失败，因为 go1.6.3 需要依赖于 go1.4 来编译，需要设置 <code>GOROOT_BOOTSTRAP</code> 变量。</p>
+
+<p>通过 <code>go env</code> 查看 <code>GOROOT</code> 的路径，通常 <code>GOROOT_BOOTSTRAP</code> 就设置成 <code>GOROOT</code>，centos7 下需要注意 /usr/lib/golang/bin 下并没有 <code>go</code> 的二进制文件，通过 cp 命令复制一个过去。</p>
+
+<p>之后再次执行 <code>gvm install go1.6.3</code> 即可安装完成。</p>
+
+<h3 id="修改配置信息方便使用">修改配置信息方便使用</h3>
+
+<p>最初测试时发现每次切换 go 版本后都会被修改 <code>GOPATH</code> 变量，而实际上我并不需要这个功能，只是希望用新版本来编译已有的项目，所以我们需要把 <code>~/.gvm/environments</code> 文件夹下所有 <code>GOPATH</code> 的设置全部删除。</p>
+
+<p>另外还需要将 <code>~/.zshrc</code> 或者 <code>~/.bashrc</code> 中的</p>
+
+<p><code>[[ -s &quot;~/.gvm/scripts/gvm&quot; ]] &amp;&amp; source &quot;~/.gvm/scripts/gvm&quot;</code></p>
+
+<p>移到设置 <code>GOPATH</code> 变量之前，避免登录 shell 之后被修改 <code>GOPATH</code> 变量。</p>
+
+<h3 id="使用">使用</h3>
+
+<h4 id="切换到安装好的指定-go-版本">切换到安装好的指定 go 版本</h4>
+
+<p><code>gvm use go1.6.3</code></p>
+
+<p>通过 <code>go version</code> 可以看到已经是新版本的二进制文件，通过 <code>go env</code> 可以查看 <code>GOROOT</code> 信息，例如我的就是 <code>~/.gvm/gos/go1.6.3</code>，这样编译项目时就会在这个目录下找标准库中的文件。</p>
+
+<h4 id="切换到原来的系统版本">切换到原来的系统版本</h4>
+
+<p><code>gvm use system</code></p>
+
+<h4 id="查看当前已经安装的所有版本">查看当前已经安装的所有版本</h4>
+
+<p><code>gvm list</code></p>
+
+<pre><code class="language-bash">gvm gos (installed)
+
+=&gt; go1.6.3
+   system
+</code></pre>
+
+<h4 id="设置某个版本为默认">设置某个版本为默认</h4>
+
+<p><code>gvm use go1.6.3 --default</code></p>
+
+<p>这样设置后，再登录 shell 就默认使用 <code>go1.6.3</code> 的版本，而不是系统原来的版本了。</p>
+
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/">http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/golang/">
+                            <i class="fa fa-tags"></i>
+                            golang
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/">
+                            <i class="fa fa-tags"></i>
+                            开发工具
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/">go语言中使用smtp发送邮件及smtp协议的相关问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月20日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/17/git-usually-command/">Git常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月17日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/16/learn-git-website/">学习Git的常用网站</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li></ul>
+                
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#go-版本切换的问题">Go 版本切换的问题</a></li>
+<li><a href="#安装-gvm">安装 gvm</a></li>
+<li><a href="#安装指定-go-版本">安装指定 go 版本</a></li>
+<li><a href="#修改配置信息方便使用">修改配置信息方便使用</a></li>
+<li><a href="#使用">使用</a>
+<ul>
+<li><a href="#切换到安装好的指定-go-版本">切换到安装好的指定 go 版本</a></li>
+<li><a href="#切换到原来的系统版本">切换到原来的系统版本</a></li>
+<li><a href="#查看当前已经安装的所有版本">查看当前已经安装的所有版本</a></li>
+<li><a href="#设置某个版本为默认">设置某个版本为默认</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2016  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</script>
+</body>
+</html>
+

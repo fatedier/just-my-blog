@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。
+">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="OpenTSDB部署与使用 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    OpenTSDB部署与使用
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/读书笔记/">读书笔记</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        
+                        <li><a href="/about/">关于我</a></li>
+                        
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2016年03月12日 
+                </div>
+                <h1 class="post-title">OpenTSDB部署与使用</h1>
+            </header>
+
+            <div class="post-content">
+                
+
+<p>OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。</p>
+
+<h3 id="安装-hbase">安装 HBase</h3>
+
+<p>因为 OpenTSDB 的后端存储使用的是 HBase，所以我们需要先安装 HBase。</p>
+
+<p>参考文档： <a href="https://hbase.apache.org/book.html#quickstart">Quick Start - Standalone HBase</a></p>
+
+<p>这里简单搭建了一个<strong>单机</strong>的 HBase 环境：</p>
+
+<ol>
+<li>安装 JDK 环境，centos 上可以直接通过 yum 安装。</li>
+<li>下载 HBase，<a href="http://apache.fayea.com/hbase/stable">http://apache.fayea.com/hbase/stable</a>，这里我们选择下载 stable 的 1.1.3 版本，文件名为 <code>hbase-1.1.3-bin.tar.gz</code>，解压到任意目录。</li>
+<li>修改 <code>conf/hbase-env.sh</code> ，设置  <code>JAVA_HOME=/usr</code>，这个是 <code>/bin/java</code> 所在的目录，通过 <code>which java</code> 查看。</li>
+<li>修改 <code>conf/hbase-site.xml</code>， 设置 hbase 的数据存储目录以及 zookeeper 的数据存储目录，默认会放到 <code>/tmp</code> 目录下，这个目录机器重启后会清空，所以需要更改目录。</li>
+<li>执行 <code>bin/start-hbase.sh</code> 启动 HBase，之后可以通过 <code>jps</code> 命令来查看 HMaster 进程是否启动成功。 <code>bin/stop-hbase.sh</code> 用于关闭 HBase。</li>
+</ol>
+
+<p><code>conf/hbase-site.xml</code> 的配置示例如下</p>
+
+<pre><code class="language-xml">&lt;configuration&gt;
+    &lt;property&gt;
+        &lt;name&gt;hbase.rootdir&lt;/name&gt;
+        &lt;value&gt;file:///home/testuser/hbase&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;hbase.zookeeper.property.dataDir&lt;/name&gt;
+        &lt;value&gt;/home/testuser/zookeeper&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<h3 id="通过命令行操作-hbase">通过命令行操作 HBase</h3>
+
+<p>这里可以稍微熟悉一下 HBase 的操作，非必须。</p>
+
+<h5 id="连接到-hbase">连接到 HBase</h5>
+
+<p><code>./bin/hbase shell</code></p>
+
+<h5 id="创建一张表">创建一张表</h5>
+
+<p><code>create 'test', 'cf'</code></p>
+
+<h5 id="查看表信息">查看表信息</h5>
+
+<p><code>list 'test'</code></p>
+
+<h5 id="向表中插入数据">向表中插入数据</h5>
+
+<pre><code class="language-bash">put 'test', 'row1', 'cf:a', 'value1'
+put 'test', 'row2', 'cf:b', 'value2'
+put 'test', 'row3', 'cf:c', 'value3'
+</code></pre>
+
+<h5 id="查看表中所有数据">查看表中所有数据</h5>
+
+<p><code>scan 'test'</code></p>
+
+<h5 id="查看指定行的数据">查看指定行的数据</h5>
+
+<p><code>get 'test', 'row1'</code></p>
+
+<h5 id="禁用指定表-删除表或修改表设置前需要先禁用该表">禁用指定表（删除表或修改表设置前需要先禁用该表）</h5>
+
+<p><code>disable 'test'</code></p>
+
+<h5 id="恢复指定表">恢复指定表</h5>
+
+<p><code>enable 'test'</code></p>
+
+<h5 id="删除表">删除表</h5>
+
+<p><code>drop 'test'</code></p>
+
+<h3 id="安装opentsdb">安装OpenTSDB</h3>
+
+<p><strong>参考文章</strong></p>
+
+<p><a href="http://debugo.com/opentsdb/">http://debugo.com/opentsdb/</a></p>
+
+<p><a href="http://opentsdb.net/docs/build/html/installation.html#runtime-requirements">http://opentsdb.net/docs/build/html/installation.html#runtime-requirements</a></p>
+
+<ol>
+<li><p>直接从 github 上下载 OpenTSDB 的 <a href="https://github.com/OpenTSDB/opentsdb">release</a> 版本的 RPM 包。安装 <code>yum localinstall opentsdb-2.2.0.noarch.rpm</code>。</p></li>
+
+<li><p>配置完成后，我们通过下面命令在 HBase 中建立 opentsdb 所需的表。默认情况下 opentsdb 建立的 HBase 表启用了 lzo 压缩。需要开启 Hadoop 中的 lzo 压缩支持， 这里我们直接在下面脚本中把 COMPRESSION 的支持关闭。修改 <code>/usr/share/opentsdb/tools/create_table.sh</code>，设置 <code>COMPRESSION=NONE</code>，并且在文件开始处设置 HBase 所在目录， <code>HBASE_HOME=/home/xxx/hbase-1.1.3</code>。之后执行该脚本，在 HBase 中创建相应的表。</p></li>
+
+<li><p>修改 OpenTSDB 的配置文件，<code>/etc/opentsdb/opentsdb.conf</code>，例如绑定的端口号等。<strong>这里需要注意的是 tsd.core.auto_create_metrics 从 false 改为 true。这样上传数据时会自动创建 metric，否则会提示 Unknown metric 的错误。也可以设置为 false，但是使用 <code>tsdb mkmetric proc.loadavg.1m</code> 来手动添加 metric。</strong></p></li>
+
+<li><p>启动 OpenTSDB，<code>service opentsdb start</code> 或者 <code>nohup tsdb tsd &amp;</code>。</p></li>
+
+<li><p>通过浏览器访问 <a href="http://x.x.x.x:4242">http://x.x.x.x:4242</a> 查看是否安装成功。</p></li>
+</ol>
+
+<h3 id="http-api">HTTP API</h3>
+
+<h4 id="插入数据">插入数据</h4>
+
+<p><strong>/api/put</strong></p>
+
+<p>根据 url 参数的不同，可以选择是否获取详细的信息。</p>
+
+<p><strong>/api/put?summary</strong>        // 返回失败和成功的个数</p>
+
+<pre><code class="language-json">{
+    &quot;failed&quot;: 0,
+    &quot;success&quot;: 1
+}
+</code></pre>
+
+<p><strong>/api/put?details</strong>        // 返回详细信息</p>
+
+<pre><code class="language-json">{
+    &quot;errors&quot;: [],
+    &quot;failed&quot;: 0,
+    &quot;success&quot;: 1
+}
+</code></pre>
+
+<p>通过POST方式插入数据，JSON格式，例如</p>
+
+<pre><code class="language-json">{
+    &quot;metric&quot;:&quot;self.test&quot;, 
+    &quot;timestamp&quot;:1456123787, 
+    &quot;value&quot;:20, 
+    &quot;tags&quot;:{
+        &quot;host&quot;:&quot;web1&quot;
+    }
+}
+</code></pre>
+
+<h3 id="查询数据">查询数据</h3>
+
+<p><strong>/api/query</strong></p>
+
+<p>可以选择 Get 或者 Post 两种方式，推荐使用 Post 方式，JSON 格式。</p>
+
+<pre><code class="language-json">{
+    &quot;start&quot;: 1456123705,
+    &quot;end&quot;: 1456124985,
+    &quot;queries&quot;: [
+        {
+            &quot;aggregator&quot;: &quot;sum&quot;,
+            &quot;metric&quot;: &quot;self.test&quot;,
+            &quot;tags&quot;: {
+                &quot;host&quot;: &quot;web1&quot;
+            }
+        },
+        {
+            &quot;aggregator&quot;: &quot;sum&quot;,
+            &quot;metric&quot;: &quot;self.test&quot;,
+            &quot;tags&quot;: {
+                &quot;host&quot;: &quot;web2&quot;
+            }
+        }
+    ]
+}
+</code></pre>
+
+<p>start 和 end 为指定的查询时间段。</p>
+
+<p>queries 为一个数组，可以指定多个查询。</p>
+
+<p>metric 和 tags 是用于过滤的查询条件。</p>
+
+<p><strong>返回字符串也为json格式</strong></p>
+
+<pre><code class="language-json">[
+    {
+        &quot;metric&quot;: &quot;self.test&quot;,
+        &quot;tags&quot;: {},
+        &quot;aggregateTags&quot;: [
+            &quot;host&quot;
+        ],
+        &quot;dps&quot;: {
+            &quot;1456123785&quot;: 10,
+            &quot;1456123786&quot;: 10
+        }
+    },
+    {
+        &quot;metric&quot;: &quot;self.test&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web1&quot;
+        },
+        &quot;aggregateTags&quot;: [],
+        &quot;dps&quot;: {
+            &quot;1456123784&quot;: 10,
+            &quot;1456123786&quot;: 15
+        }
+    }
+]
+</code></pre>
+
+<h4 id="聚合">聚合</h4>
+
+<p><strong>aggregator</strong> 是用于对查询结果进行聚合，将同一 unix 时间戳内的数据进行聚合计算后返回结果，例如如果 tags 不填，1456123705 有两条数据，一条 <code>host=web1</code>，另外一条 <code>host=web2</code>，值都为10，那么返回的该时间点的值为 sum 后的 20。</p>
+
+<h4 id="条件过滤">条件过滤</h4>
+
+<p>可以针对 tag 进行一些条件的过滤，返回 tag 中 host 的值以 web 开头的数据。</p>
+
+<pre><code class="language-json">&quot;queries&quot;: [
+    {
+        &quot;aggregator&quot;: &quot;sum&quot;,
+        &quot;metric&quot;: &quot;self.test&quot;,
+        &quot;filters&quot;: [
+            {
+                &quot;type&quot;: &quot;wildcard&quot;,
+                &quot;tagk&quot;: &quot;host&quot;,
+                &quot;filter&quot;: &quot;web*&quot;
+            }
+        ]
+    }
+]
+</code></pre>
+
+<h4 id="downsample">downsample</h4>
+
+<p>简单来说就是对指定时间段内的数据进行聚合后返回，例如需要返回每分钟的平均值数据</p>
+
+<pre><code class="language-json">&quot;queries&quot;: [
+    {
+        &quot;aggregator&quot;: &quot;sum&quot;,
+        &quot;metric&quot;: &quot;self.test&quot;,
+        &quot;downsample&quot;: &quot;1m-avg&quot;,
+        &quot;tags&quot;: {
+            &quot;host&quot;: &quot;web1&quot;
+        }
+    }
+]
+</code></pre>
+
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/">http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/opentsdb/">
+                            <i class="fa fa-tags"></i>
+                            opentsdb
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">
+                            <i class="fa fa-tags"></i>
+                            数据库
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/07/06/test-influxdb-and-opentsdb/">InfluxDB 与 OpenTSDB 对比测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月06日)</span></li><li id="li-rels"><a href="/2016/07/05/research-of-time-series-database-influxdb/">时间序列数据库调研之InfluxDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月05日)</span></li><li id="li-rels"><a href="/2016/07/04/research-of-time-series-database-opentsdb/">时间序列数据库调研之OpenTSDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月04日)</span></li></ul>
+                
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#安装-hbase">安装 HBase</a></li>
+<li><a href="#通过命令行操作-hbase">通过命令行操作 HBase</a>
+<ul>
+<li>
+<ul>
+<li><a href="#连接到-hbase">连接到 HBase</a></li>
+<li><a href="#创建一张表">创建一张表</a></li>
+<li><a href="#查看表信息">查看表信息</a></li>
+<li><a href="#向表中插入数据">向表中插入数据</a></li>
+<li><a href="#查看表中所有数据">查看表中所有数据</a></li>
+<li><a href="#查看指定行的数据">查看指定行的数据</a></li>
+<li><a href="#禁用指定表-删除表或修改表设置前需要先禁用该表">禁用指定表（删除表或修改表设置前需要先禁用该表）</a></li>
+<li><a href="#恢复指定表">恢复指定表</a></li>
+<li><a href="#删除表">删除表</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#安装opentsdb">安装OpenTSDB</a></li>
+<li><a href="#http-api">HTTP API</a>
+<ul>
+<li><a href="#插入数据">插入数据</a></li>
+</ul></li>
+<li><a href="#查询数据">查询数据</a>
+<ul>
+<li><a href="#聚合">聚合</a></li>
+<li><a href="#条件过滤">条件过滤</a></li>
+<li><a href="#downsample">downsample</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2016  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</script>
+</body>
+</html>
+

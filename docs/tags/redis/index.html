@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="Redis">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:title" content="Redis - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Redis - fatedier blog
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/读书笔记/">读书笔记</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        
+                        <li><a href="/about/">关于我</a></li>
+                        
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="posts">
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
+            2015年10月07日
+        </div>
+        <h2 class="post-title">
+            <a href="/2015/10/07/installation-and-testing-of-codis-version-two/">codis 2.x版本环境搭建与测试</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。</p>
+
+    </div>
+    </article>
+<hr>
+
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
+            2015年09月15日
+        </div>
+        <h2 class="post-title">
+            <a href="/2015/09/15/redis-cluster-survey/">Redis集群调研</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。</p>
+
+<p>单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。</p>
+
+    </div>
+    </article>
+<hr>
+
+    
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2016  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</script>
+</body>
+</html>
+

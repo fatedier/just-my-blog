@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="Git">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:title" content="Git - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Git - fatedier blog
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/读书笔记/">读书笔记</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        
+                        <li><a href="/about/">关于我</a></li>
+                        
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="posts">
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
+            2016年04月05日
+        </div>
+        <h2 class="post-title">
+            <a href="/2016/04/05/install-gitlab-supporting-ci-with-docker/">利用docker搭建gitlab及持续集成模块</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>版本控制的重要性应该是毋庸置疑了，git 作为现在最流行的版本控制工具，各种规模的公司都在用。通常开源项目都会放在 github 上，基础功能是免费的，私有项目收费。对于一个小团队来说，gitlab 就是另外一个替代品，可以用来搭建自己私有的git服务器。</p>
+
+    </div>
+    </article>
+<hr>
+
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
+            2014年10月17日
+        </div>
+        <h2 class="post-title">
+            <a href="/2014/10/17/git-usually-command/">Git常用命令</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。</p>
+
+    </div>
+    </article>
+<hr>
+
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
+            2014年10月16日
+        </div>
+        <h2 class="post-title">
+            <a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。</p>
+
+<p>Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。</p>
+
+    </div>
+    </article>
+<hr>
+
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
+            2014年10月16日
+        </div>
+        <h2 class="post-title">
+            <a href="/2014/10/16/learn-git-website/">学习Git的常用网站</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。</p>
+
+    </div>
+    </article>
+<hr>
+
+    
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2016  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</script>
+</body>
+</html>
+

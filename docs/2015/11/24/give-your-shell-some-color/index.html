@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。
+">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="给shell的输出加上颜色 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    给shell的输出加上颜色
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/读书笔记/">读书笔记</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        
+                        <li><a href="/about/">关于我</a></li>
+                        
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2015年11月24日 
+                </div>
+                <h1 class="post-title">给shell的输出加上颜色</h1>
+            </header>
+
+            <div class="post-content">
+                
+
+<p>在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。</p>
+
+<h3 id="前景色-文本颜色">前景色(文本颜色)</h3>
+
+<p>例如要将 <code>hello</code> 在控制台上输出为红色，执行如下的命令</p>
+
+<p><code>echo -e &quot;\033[31mhello\033[0m&quot;</code></p>
+
+<p><code>\033[31m</code> 表示将字符的显示颜色改为红色</p>
+
+<p><code>\033[0m</code> 表示将字符的显示颜色改为正常值</p>
+
+<p>可以看到 <code>\033[</code> 以及最后的 <code>m</code> 都是一样的，就是中间的数字有区别，这个数字就代表了要显示的颜色，含义如下</p>
+
+<pre><code class="language-bash">30        黑色 
+31        红色 
+32        绿色 
+33        淡红色 
+34        蓝色 
+35        紫色 
+36        淡蓝色 
+37        灰色 
+</code></pre>
+
+<h3 id="背景色">背景色</h3>
+
+<p>背景色和前景色设置的方法一样，只是使用的数字不同</p>
+
+<pre><code class="language-bash">40        黑色 
+41        红色 
+42        绿色 
+43        淡红色 
+44        蓝色 
+45        紫色 
+46        淡蓝色 
+47        灰色 
+</code></pre>
+
+<p>如果需要同时设置前景色和背景色，例如输出文本颜色为红色，背景色为绿色的字符串，需要以分号分隔两个数字，示例如下</p>
+
+<p><code>echo -e &quot;\033[31;42mhello\033[0m&quot;</code></p>
+
+<h3 id="简化">简化</h3>
+
+<p>从上面的示例可以看到这样写起来很麻烦，可以简单的将重复的内容定义为一个变量</p>
+
+<pre><code class="language-bash">lc='\033['
+rc='\033[0m'
+cred='31m'        # red
+cgreen='32m'      # green
+
+echo -e &quot;${lc}${cred}hello${rc}&quot;
+</code></pre>
+
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2015/11/24/give-your-shell-some-color/">http://blog.fatedier.com/2015/11/24/give-your-shell-some-color/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/shell/">
+                            <i class="fa fa-tags"></i>
+                            shell
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li></ul>
+                
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2015/12/06/the-solution-when-gem-source-is-shielded/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2015/10/07/installation-and-testing-of-codis-version-two/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#前景色-文本颜色">前景色(文本颜色)</a></li>
+<li><a href="#背景色">背景色</a></li>
+<li><a href="#简化">简化</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2016  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</script>
+</body>
+</html>
+

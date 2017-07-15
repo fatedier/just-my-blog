@@ -22,8 +22,7 @@ params:
     Description: "一场雨，一场梦"
     Categories:
         - "技术文章"
-        - "小说散文"
-        - "随笔杂记"
+        - "诗与远方"
         - "其他"
     ShowRelatedPost: true
 menu:

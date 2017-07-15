@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2016-07-25 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>使用gvm在不同go版本之间切换</title>
-          <link>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm</link>
+          <link>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/</link>
           <pubDate>Mon, 25 Jul 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/</guid>
+          <description>&lt;p&gt;Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。&lt;/p&gt;
 
-&lt;p&gt;Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;Go 的更新速度比较快，2015年8月发布 1.5 版本，2016年2月发布 1.6 版本，2016年8月即将发布 1.7 版本，在性能以及GC方便都在不断优化，及时更新到新版本的 go 很有优势。&lt;/p&gt;
 
@@ -98,21 +98,20 @@
 
 &lt;p&gt;&lt;code&gt;gvm use go1.6.3 --default&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;这样设置后，再登录 shell 就默认使用 &lt;code&gt;go1.6.3&lt;/code&gt; 的版本，而不是系统原来的版本了。&lt;/p&gt;
-</description>
+&lt;p&gt;这样设置后，再登录 shell 就默认使用 &lt;code&gt;go1.6.3&lt;/code&gt; 的版本，而不是系统原来的版本了。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>使用godep管理golang项目的第三方包</title>
-          <link>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects</link>
+          <link>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/</link>
           <pubDate>Fri, 15 Jan 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/</guid>
+          <description>&lt;p&gt;go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。&lt;/p&gt;
 
-&lt;p&gt;go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;目前 go 自身的包管理体系比较薄弱，go 1.5 以后开始使用 vendor 机制来管理，但是依然缺乏对第三方包的版本的管理。&lt;/p&gt;
 
@@ -155,21 +154,20 @@ godep go install
 godep go fmt
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。&lt;/p&gt;
-</description>
+&lt;p&gt;godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>终端利器 Tmux</title>
-          <link>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux</link>
+          <link>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux/</link>
           <pubDate>Fri, 18 Dec 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux/</guid>
+          <description>&lt;p&gt;开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。&lt;/p&gt;
 
-&lt;p&gt;开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;界面&#34;&gt;界面&lt;/h3&gt;
 
@@ -390,21 +388,20 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;&lt;strong&gt;由于这个插件需要 tmux 1.9 及以上的版本，而 centos7 的 yum 源里现在是1.8的版本，我的开发环境全是自动构建，不方便升级，所以暂时还没有尝试。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;关于 Tmux Resurrect 使用的相关文档： &lt;a href=&#34;http://www.linuxidc.com/Linux/2015-07/120304.htm&#34;&gt;http://www.linuxidc.com/Linux/2015-07/120304.htm&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;关于 Tmux Resurrect 使用的相关文档： &lt;a href=&#34;http://www.linuxidc.com/Linux/2015-07/120304.htm&#34;&gt;http://www.linuxidc.com/Linux/2015-07/120304.htm&lt;/a&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>mac上将socks5代理转为http代理</title>
-          <link>http://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac</link>
+          <link>http://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/</link>
           <pubDate>Sun, 20 Sep 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/</guid>
+          <description>&lt;p&gt;在 mac 上使用 ss 的时候创建的是 socks5 代理，浏览器可以正常设置使用，不过在 shell 中一些程序无法使用 socks5 代理，而需要使用 http 代理，通过设置 http_proxy 环境变量，就可以让 shell 通过 http 代理来访问网络。polipo 这款工具就可以帮助我们将 socks5 代理转换为 http 代理。&lt;/p&gt;
 
-&lt;p&gt;在 mac 上使用 ss 的时候创建的是 socks5 代理，浏览器可以正常设置使用，不过在 shell 中一些程序无法使用 socks5 代理，而需要使用 http 代理，通过设置 http_proxy 环境变量，就可以让 shell 通过 http 代理来访问网络。polipo 这款工具就可以帮助我们将 socks5 代理转换为 http 代理。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
 
@@ -426,22 +423,21 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;例如我们使用 wget 获取 google 的首页数据。&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;http_proxy=http://127.0.0.1:8123 wget http://www.google.com&lt;/code&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;code&gt;http_proxy=http://127.0.0.1:8123 wget http://www.google.com&lt;/code&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>linux core文件调试</title>
-          <link>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file</link>
+          <link>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file/</link>
           <pubDate>Sun, 07 Dec 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file</guid>
-          <description>
-
-&lt;p&gt;在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
+          <guid>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file/</guid>
+          <description>&lt;p&gt;在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
 题，如果日志较少，就很难进行进一步的查错了。但是发现在该目录下生成了一个core文件，可以帮助我们查找程序崩溃的原因。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;什么是core文件&#34;&gt;什么是core文件&lt;/h3&gt;
 
@@ -617,21 +613,20 @@ Aborted (core dumped)
 #7 0x08048712 in main ()
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;可以很明显的看出是在main函数中调用fun函数，之后delete指针的时候出错了，后面的函数调用栈就是程序输出错误信息的部分了，和我们的用户代码无关。到这一步，我们就能推断是是fun()这个函数中delete某个指针的时候出现了错误，就可以有的放矢地查找具体的问题了。&lt;/p&gt;
-</description>
+&lt;p&gt;可以很明显的看出是在main函数中调用fun函数，之后delete指针的时候出错了，后面的函数调用栈就是程序输出错误信息的部分了，和我们的用户代码无关。到这一步，我们就能推断是是fun()这个函数中delete某个指针的时候出现了错误，就可以有的放矢地查找具体的问题了。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>使用astyle进行代码格式化</title>
-          <link>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code</link>
+          <link>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code/</link>
           <pubDate>Mon, 10 Nov 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code/</guid>
+          <description>&lt;p&gt;在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &amp;ndash; &amp;ldquo;astyle&amp;rdquo;。&lt;/p&gt;
 
-&lt;p&gt;在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &amp;ndash; &amp;ldquo;astyle&amp;rdquo;。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;astyle这个工具可以将现有的代码格式转换为指定的风格，当你将乱七八糟的代码用astyle转换一下之后，就会感觉整个世界都清静了……&lt;/p&gt;
 
@@ -742,21 +737,20 @@ Aborted (core dumped)
 
 &lt;p&gt;&amp;ndash;options=####&lt;/p&gt;
 
-&lt;p&gt;可以指定读取某个文件的内容作为参数选项。&lt;/p&gt;
-</description>
+&lt;p&gt;可以指定读取某个文件的内容作为参数选项。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>使用Vim打造自己的IDE</title>
-          <link>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide</link>
+          <link>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide/</link>
           <pubDate>Wed, 29 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide/</guid>
+          <description>&lt;p&gt;之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。&lt;/p&gt;
 
-&lt;p&gt;之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;配置自己的Vim过程中参考了以下的blog和文档：&lt;/p&gt;
 
@@ -954,21 +948,20 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 &lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;let g:neocomplcache_enable_auto_select = 1
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。&lt;/p&gt;
-</description>
+&lt;p&gt;这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>vimdiff常用命令</title>
-          <link>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands</link>
+          <link>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands/</link>
           <pubDate>Fri, 24 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands/</guid>
+          <description>&lt;p&gt;整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。&lt;/p&gt;
 
-&lt;p&gt;整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;可以有多种方式使用vimdiff，例如：&lt;/p&gt;
 
@@ -1019,21 +1012,20 @@ vim -d [file1] [file2]
 
 &lt;h4 id=&#34;wqa&#34;&gt;wqa&lt;/h4&gt;
 
-&lt;p&gt;退出并保存所有已打开的文件&lt;/p&gt;
-</description>
+&lt;p&gt;退出并保存所有已打开的文件&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>Git常用命令</title>
-          <link>http://blog.fatedier.com/2014/10/17/git-usually-command</link>
+          <link>http://blog.fatedier.com/2014/10/17/git-usually-command/</link>
           <pubDate>Fri, 17 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/17/git-usually-command</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/17/git-usually-command/</guid>
+          <description>&lt;p&gt;在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。&lt;/p&gt;
 
-&lt;p&gt;在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;修改某一次提交的说明信息&#34;&gt;修改某一次提交的说明信息&lt;/h3&gt;
 
@@ -1134,23 +1126,22 @@ $ git push origin HEAD --force
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git show f4869b0:test.cpp
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。&lt;/p&gt;
-</description>
+&lt;p&gt;文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>Git使用备忘</title>
-          <link>http://blog.fatedier.com/2014/10/16/git-use-for-remind</link>
+          <link>http://blog.fatedier.com/2014/10/16/git-use-for-remind/</link>
           <pubDate>Thu, 16 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/16/git-use-for-remind</guid>
-          <description>
-
-&lt;p&gt;Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。&lt;/p&gt;
+          <guid>http://blog.fatedier.com/2014/10/16/git-use-for-remind/</guid>
+          <description>&lt;p&gt;Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。&lt;/p&gt;
 
 &lt;p&gt;Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;git的配置&#34;&gt;Git的配置&lt;/h3&gt;
 
@@ -1517,21 +1508,20 @@ $ git merge testing
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git log -p -2
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 &amp;ldquo;-&amp;rdquo; 开头，新增的部分会以 &amp;ldquo;+&amp;rdquo; 开头，方便查看。&lt;/p&gt;
-</description>
+&lt;p&gt;通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 &amp;ldquo;-&amp;rdquo; 开头，新增的部分会以 &amp;ldquo;+&amp;rdquo; 开头，方便查看。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>学习Git的常用网站</title>
-          <link>http://blog.fatedier.com/2014/10/16/learn-git-website</link>
+          <link>http://blog.fatedier.com/2014/10/16/learn-git-website/</link>
           <pubDate>Thu, 16 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/16/learn-git-website</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/16/learn-git-website/</guid>
+          <description>&lt;p&gt;学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。&lt;/p&gt;
 
-&lt;p&gt;学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;git官方文档&#34;&gt;Git官方文档&lt;/h4&gt;
 
@@ -1539,8 +1529,7 @@ $ git merge testing
 
 &lt;h4 id=&#34;廖雪峰git教程&#34;&gt;廖雪峰Git教程&lt;/h4&gt;
 
-&lt;p&gt;&lt;a href=&#34;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&#34;&gt;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;a href=&#34;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&#34;&gt;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&lt;/a&gt;&lt;/p&gt;</description>
         </item>
       
     

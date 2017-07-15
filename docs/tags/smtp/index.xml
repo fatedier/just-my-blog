@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/smtp/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2015-08-20 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>go语言中使用smtp发送邮件及smtp协议的相关问题</title>
-          <link>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp</link>
+          <link>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</link>
           <pubDate>Thu, 20 Aug 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</guid>
+          <description>&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
 
-&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;smtp-协议发送邮件&#34;&gt;smtp 协议发送邮件&lt;/h3&gt;
 
@@ -220,8 +220,7 @@ func main() {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;通过这个函数发送邮件，则身份认证时不会采用加密的方式，而是直接使用 &lt;strong&gt;PLAIN&lt;/strong&gt; 方式。&lt;/p&gt;
-</description>
+&lt;p&gt;通过这个函数发送邮件，则身份认证时不会采用加密的方式，而是直接使用 &lt;strong&gt;PLAIN&lt;/strong&gt; 方式。&lt;/p&gt;</description>
         </item>
       
     

@@ -7,6 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="使用Vim打造自己的IDE - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -44,9 +45,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -73,9 +72,9 @@
             </header>
 
             <div class="post-content">
-                
+                <p>之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。</p>
 
-<p>之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。</p>
+<p></p>
 
 <p>配置自己的Vim过程中参考了以下的blog和文档：</p>
 
@@ -274,7 +273,6 @@ nnoremap wm:WMToggle&lt;cr&gt;
 </code></pre>
 
 <p>这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。</p>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -309,7 +307,7 @@ nnoremap wm:WMToggle&lt;cr&gt;
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/17/git-usually-command/">Git常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月17日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/16/learn-git-website/">学习Git的常用网站</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang//">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm//">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux//">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files//">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects//">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux//">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac//">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll//">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process//">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file//">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell//">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code//">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux//">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands//">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/17/git-usually-command//">Git常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月17日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind//">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/16/learn-git-website//">学习Git的常用网站</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent//">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li></ul>
                 
             </aside>
                 
@@ -319,13 +317,13 @@ nnoremap wm:WMToggle&lt;cr&gt;
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2014/10/24/vimdiff-common-commands/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2014/10/24/vimdiff-common-commands//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -377,7 +375,7 @@ nnoremap wm:WMToggle&lt;cr&gt;
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

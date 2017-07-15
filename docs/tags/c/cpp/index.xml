@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/c/cpp/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2015-08-24 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>如何修改进程的名称</title>
-          <link>http://blog.fatedier.com/2015/08/24/how-to-modify-process-name</link>
+          <link>http://blog.fatedier.com/2015/08/24/how-to-modify-process-name/</link>
           <pubDate>Mon, 24 Aug 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/08/24/how-to-modify-process-name</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/08/24/how-to-modify-process-name/</guid>
+          <description>&lt;p&gt;在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。&lt;/p&gt;
 
-&lt;p&gt;在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;效果预览&#34;&gt;效果预览&lt;/h3&gt;
 
@@ -143,21 +143,20 @@
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;这个函数是不安全的，需要小心使用，因为不能确定 &lt;strong&gt;environ&lt;/strong&gt; 的地址是否已经被其他人修改过了，比如在 php 扩展中，有可能已经被其他程序用同样的方法修改过，这样就会造成获取到的 &lt;strong&gt;argv[0]&lt;/strong&gt; 的地址是未知的，执行的程序可能就会出现内存错误。&lt;/p&gt;
-</description>
+&lt;p&gt;这个函数是不安全的，需要小心使用，因为不能确定 &lt;strong&gt;environ&lt;/strong&gt; 的地址是否已经被其他人修改过了，比如在 php 扩展中，有可能已经被其他程序用同样的方法修改过，这样就会造成获取到的 &lt;strong&gt;argv[0]&lt;/strong&gt; 的地址是未知的，执行的程序可能就会出现内存错误。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</title>
-          <link>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp</link>
+          <link>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</link>
           <pubDate>Wed, 04 Mar 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</guid>
+          <description>&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;
 
-&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;业务说明&#34;&gt;业务说明&lt;/h3&gt;
 
@@ -327,21 +326,20 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
 
 &lt;p&gt;通过传入不同的银行编码，会实例化不同的银行交互类，并且执行其对应的函数。&lt;/p&gt;
 
-&lt;p&gt;如果需要增加新的银行接口，例如农业银行，只需要新增一个 &lt;strong&gt;NYBank&lt;/strong&gt; 类，实现具体的业务逻辑，不需要改动原来的任何代码，传入 &lt;strong&gt;NYBank&lt;/strong&gt; 字符串，就会执行农业银行相关的处理流程。&lt;/p&gt;
-</description>
+&lt;p&gt;如果需要增加新的银行接口，例如农业银行，只需要新增一个 &lt;strong&gt;NYBank&lt;/strong&gt; 类，实现具体的业务逻辑，不需要改动原来的任何代码，传入 &lt;strong&gt;NYBank&lt;/strong&gt; 字符串，就会执行农业银行相关的处理流程。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>epoll使用说明</title>
-          <link>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll</link>
+          <link>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll/</link>
           <pubDate>Sun, 25 Jan 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll/</guid>
+          <description>&lt;p&gt;在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。&lt;/p&gt;
 
-&lt;p&gt;在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;epoll相对于select/poll来说有很大优势：&lt;/p&gt;
 
@@ -437,21 +435,20 @@ timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指�
 
 &lt;p&gt;举个例子，可以指定事件为 EPOLLIN| EPOLLET 来使用ET工作方式获取指定文件描述符的可读事件。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;在该事件就绪后，需要不断调用read函数来获取缓冲区数据，直到产生一个EAGAIN错误或者read函数返回的读取到的数据长度小于请求的数据长度时才认为此事件处理完成。write也是一样的处理方式。&lt;/strong&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;strong&gt;在该事件就绪后，需要不断调用read函数来获取缓冲区数据，直到产生一个EAGAIN错误或者read函数返回的读取到的数据长度小于请求的数据长度时才认为此事件处理完成。write也是一样的处理方式。&lt;/strong&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>如何处理僵尸进程</title>
-          <link>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process</link>
+          <link>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process/</link>
           <pubDate>Tue, 16 Dec 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process/</guid>
+          <description>&lt;p&gt;在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。&lt;/p&gt;
 
-&lt;p&gt;在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;什么是僵尸进程&#34;&gt;什么是僵尸进程&lt;/h3&gt;
 
@@ -594,21 +591,20 @@ int main(int argc, char **argv)
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。&lt;/p&gt;
-</description>
+&lt;p&gt;再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>能否被8整除</title>
-          <link>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight</link>
+          <link>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight/</link>
           <pubDate>Thu, 13 Nov 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight/</guid>
+          <description>&lt;p&gt;题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。&lt;/p&gt;
 
-&lt;p&gt;题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;思路&#34;&gt;思路&lt;/h3&gt;
 
@@ -699,21 +695,20 @@ int main()
     }
     return 0;
 }
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>C/C&#43;&#43;获取精确到微秒级的系统时间</title>
-          <link>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp</link>
+          <link>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/</link>
           <pubDate>Tue, 30 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/</guid>
+          <description>&lt;p&gt;最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。&lt;/p&gt;
 
-&lt;p&gt;最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;先贴一下这两个函数的说明&lt;/p&gt;
 
@@ -804,27 +799,23 @@ int main()
 &lt;h3 id=&#34;输出为&#34;&gt;输出为&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;当前时间：20140930110457794678
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>size() == 0和empty()的比较</title>
-          <link>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty</link>
+          <link>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</link>
           <pubDate>Fri, 26 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty</guid>
-          <description>
-
-&lt;p&gt;最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。&lt;/p&gt;
+          <guid>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</guid>
+          <description>&lt;p&gt;最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。&lt;/p&gt;
 
 &lt;p&gt;我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：&lt;/p&gt;
 
-&lt;blockquote&gt;
-&lt;p&gt;If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;
+&amp;gt;  If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.&lt;/p&gt;
 
 &lt;p&gt;大致上的意思就是在检测容器是否为空的时候，推荐用empty()代替使用size() == 0，两者的含义是相等的，但是前者可能会更快一些。&lt;/p&gt;
 
@@ -1070,21 +1061,20 @@ size_type size() const
 
 &lt;p&gt;而在Centos上，由于STL源码的实现方式不同，需要考虑到使用的容器，不同的容器调用size()和empty()的开销也不同，但是，相对来说，使用empty()的效率更加平均，例如在使用list容器的时候，如果数据量较大，size()的开销太大，而empty()则不会出现这种极端情况。&lt;/p&gt;
 
-&lt;p&gt;如果考虑到平台迁移等等将来可能出现的状况，显然，empty()比size() == 0更加合适，可以确保你的程序不会出现太大的性能问题。&lt;/p&gt;
-</description>
+&lt;p&gt;如果考虑到平台迁移等等将来可能出现的状况，显然，empty()比size() == 0更加合适，可以确保你的程序不会出现太大的性能问题。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>从简单实例开始，学会写Makefile（二）</title>
-          <link>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02</link>
+          <link>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02/</link>
           <pubDate>Wed, 24 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02/</guid>
+          <description>&lt;p&gt;如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？&lt;/p&gt;
 
-&lt;p&gt;如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;d文件-解决文件间的相互引用&#34;&gt;.d文件，解决文件间的相互引用&lt;/h3&gt;
 
@@ -1413,21 +1403,20 @@ LIBS := -lfa_common
 $(TARGET):$(OBJS) $(LIBS)
     -rm-f $@
     $(CXX)-o $(TARGET) $(INCLUDEDIR) $(LDFLAGS) $(OBJS) $(LIBS)
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>从简单实例开始，学会写Makefile（一）</title>
-          <link>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01</link>
+          <link>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01/</link>
           <pubDate>Mon, 08 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01/</guid>
+          <description>&lt;p&gt;作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。&lt;/p&gt;
 
-&lt;p&gt;作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;不会写Makefile虽然还不至于影响到项目进度，从别的地方拷贝一份过来稍加修改就可以用了，但是，对于咱们“程序猿”来说这实在是一件让人感觉很不爽的事。于是，百度，谷歌（PS：吐槽一下，不XX的话Google已经完全不能用了，Bing的效果都要比百度好一些），各种看资料，看大牛的博客，或许是本人比较笨，也或许是网上的资料不太适合咱们这种新人，缺乏生动的实例讲解，所以决定自己动手研究一下，并把过程分享给大家，希望新人们看完这篇文章后就能够自己动手，为自己的项目编写合适的Makefile啦。&lt;/p&gt;
 
@@ -1692,8 +1681,7 @@ clean:
 
 &lt;p&gt;如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？&lt;/p&gt;
 
-&lt;p&gt;大家可以先尝试着自己解决以上的问题，在之后的篇幅中我们会就以上几点继续通过举例的方式来加以解决。&lt;/p&gt;
-</description>
+&lt;p&gt;大家可以先尝试着自己解决以上的问题，在之后的篇幅中我们会就以上几点继续通过举例的方式来加以解决。&lt;/p&gt;</description>
         </item>
       
     

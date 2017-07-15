@@ -8,8 +8,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。
 
-我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：
-">
+我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="size() == 0和empty()的比较 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
@@ -46,9 +45,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -75,15 +72,12 @@
             </header>
 
             <div class="post-content">
-                
-
-<p>最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。</p>
+                <p>最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。</p>
 
 <p>我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：</p>
 
-<blockquote>
-<p>If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.</p>
-</blockquote>
+<p>
+&gt;  If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.</p>
 
 <p>大致上的意思就是在检测容器是否为空的时候，推荐用empty()代替使用size() == 0，两者的含义是相等的，但是前者可能会更快一些。</p>
 
@@ -330,7 +324,6 @@ size_type size() const
 <p>而在Centos上，由于STL源码的实现方式不同，需要考虑到使用的容器，不同的容器调用size()和empty()的开销也不同，但是，相对来说，使用empty()的效率更加平均，例如在使用list容器的时候，如果数据量较大，size()的开销太大，而empty()则不会出现这种极端情况。</p>
 
 <p>如果考虑到平台迁移等等将来可能出现的状况，显然，empty()比size() == 0更加合适，可以确保你的程序不会出现太大的性能问题。</p>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -372,7 +365,7 @@ size_type size() const
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name/">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight/">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li><li id="li-rels"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/">C/C&#43;&#43;获取精确到微秒级的系统时间</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月30日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02/">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01/">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name//">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp//">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll//">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process//">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight//">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li><li id="li-rels"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp//">C/C&#43;&#43;获取精确到微秒级的系统时间</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月30日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02//">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01//">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
                 
             </aside>
                 
@@ -382,13 +375,13 @@ size_type size() const
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2014/09/24/learn-to-write-makefile-02/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2014/09/24/learn-to-write-makefile-02//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -456,7 +449,7 @@ size_type size() const
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

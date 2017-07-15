@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/sed/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2016-03-25 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>简记用sed对文件执行批量替换字符串的方法</title>
-          <link>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files</link>
+          <link>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</link>
           <pubDate>Fri, 25 Mar 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</guid>
+          <description>&lt;p&gt;每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。&lt;/p&gt;
 
-&lt;p&gt;每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;因为 blog 的图片迁到了七牛云上（提供CDN加速服务），原来的图片链接必然要替换成七牛云提供的二级域名，在 markdown 文件中有很多图片的标签，也不可能一个一个手动改，最好是能一个命令下去直接全部修改完毕并且以后也可以很轻松地改成其他域名。&lt;/p&gt;
 
@@ -61,8 +61,7 @@
 
 &lt;p&gt;&lt;code&gt;-n&lt;/code&gt; 表示静默模式，如果有输出内容的话，不会输出整个文件的内容，而仅仅是匹配的内容。&lt;/p&gt;
 
-&lt;p&gt;后面的 &lt;code&gt;gp&lt;/code&gt;，&lt;code&gt;g&lt;/code&gt; 前面说过是表示作用域是全局，&lt;code&gt;p&lt;/code&gt; 表示会输出匹配的内容。&lt;/p&gt;
-</description>
+&lt;p&gt;后面的 &lt;code&gt;gp&lt;/code&gt;，&lt;code&gt;g&lt;/code&gt; 前面说过是表示作用域是全局，&lt;code&gt;p&lt;/code&gt; 表示会输出匹配的内容。&lt;/p&gt;</description>
         </item>
       
     

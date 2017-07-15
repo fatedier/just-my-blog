@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/%E7%AE%97%E6%B3%95/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2016-06-15 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>LSM Tree 学习笔记</title>
-          <link>http://blog.fatedier.com/2016/06/15/learn-lsm-tree</link>
+          <link>http://blog.fatedier.com/2016/06/15/learn-lsm-tree/</link>
           <pubDate>Wed, 15 Jun 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/06/15/learn-lsm-tree</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/06/15/learn-lsm-tree/</guid>
+          <description>&lt;p&gt;最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。&lt;/p&gt;
 
-&lt;p&gt;最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;特点&#34;&gt;特点&lt;/h3&gt;
 
@@ -97,21 +97,20 @@
 
 &lt;p&gt;LSM Tree 的思想非常实用，将随机写转换为顺序写来大幅提高写入操作的性能，但是牺牲了部分读的性能。&lt;/p&gt;
 
-&lt;p&gt;由于时间序列数据库的特性，运用 LSM Tree 的算法非常合适。持续写入数据量大，数据和时间相关，编码到 key 值中很容易使 key 值有序。读取操作相对来说较少，而且通常不是读取单个 key 的值，而是一段时间范围内的数据，这样就把 LSM Tree 读取性能差的劣势缩小了，反而由于数据在 SSTable 中是按照 key 值顺序排列，读取大块连续的数据时效率也很高。&lt;/p&gt;
-</description>
+&lt;p&gt;由于时间序列数据库的特性，运用 LSM Tree 的算法非常合适。持续写入数据量大，数据和时间相关，编码到 key 值中很容易使 key 值有序。读取操作相对来说较少，而且通常不是读取单个 key 的值，而是一段时间范围内的数据，这样就把 LSM Tree 读取性能差的劣势缩小了，反而由于数据在 SSTable 中是按照 key 值顺序排列，读取大块连续的数据时效率也很高。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>能否被8整除</title>
-          <link>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight</link>
+          <link>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight/</link>
           <pubDate>Thu, 13 Nov 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight/</guid>
+          <description>&lt;p&gt;题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。&lt;/p&gt;
 
-&lt;p&gt;题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;思路&#34;&gt;思路&lt;/h3&gt;
 
@@ -202,8 +201,7 @@ int main()
     }
     return 0;
 }
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     

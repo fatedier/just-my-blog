@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/swift/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2016-05-25 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>部署openstack的对象存储服务swift</title>
-          <link>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift</link>
+          <link>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</link>
           <pubDate>Wed, 25 May 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</guid>
+          <description>&lt;p&gt;OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。&lt;/p&gt;
 
-&lt;p&gt;OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;环境&#34;&gt;环境&lt;/h3&gt;
 
@@ -622,8 +622,7 @@ swift-init object-auditor stop
 &lt;h5 id=&#34;下载object-文件&#34;&gt;下载Object（文件）&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing download default dd.cpp
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     

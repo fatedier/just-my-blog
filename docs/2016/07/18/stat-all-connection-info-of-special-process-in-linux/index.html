@@ -7,6 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="linux下查看指定进程的所有连接信息 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -44,9 +45,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -74,6 +73,8 @@
 
             <div class="post-content">
                 <p>定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。</p>
+
+<p></p>
 
 <p>例如我想要查看进程 <code>frps</code> 当前的所有连接信息，先获得进程的 pid：</p>
 
@@ -103,7 +104,6 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
 <p>从 <strong>lsof</strong> 的输出结果中可以清楚的看到 <strong>frps</strong> 进程监听了 5 个端口，并且在 7000 端口上建立了 3 个连接，连接两端的 ip 信息也都可以查到。</p>
 
 <p><strong>lsof</strong> 的 <strong>-nP</strong> 参数用于将 ip 地址和端口号显示为正常的数值类型，否则可能会用别名表示。</p>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -131,7 +131,7 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang//">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files//">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux//">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll//">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process//">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file//">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell//">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code//">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux//">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide//">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands//">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent//">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li></ul>
                 
             </aside>
                 
@@ -141,13 +141,13 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2016/07/25/use-different-go-version-by-gvm/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2016/07/25/use-different-go-version-by-gvm//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2016/07/10/from-zero-to-one-just-a-dream/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2016/07/10/from-zero-to-one-just-a-dream//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -175,7 +175,7 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

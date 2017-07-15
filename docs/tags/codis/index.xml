@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/codis/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2015-10-07 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>codis 2.x版本环境搭建与测试</title>
-          <link>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two</link>
+          <link>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</link>
           <pubDate>Wed, 07 Oct 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</guid>
+          <description>&lt;p&gt;Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。&lt;/p&gt;
 
-&lt;p&gt;Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;安装并启动-zookeeper&#34;&gt;安装并启动 zookeeper&lt;/h3&gt;
 
@@ -252,8 +252,7 @@
 &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;p&gt;通过测试可以看出，使用 codis 会在性能上比原来直接使用 redis 会有所下降，但是优势就在于可以通过横向扩展（加机器）的方式去提高 redis 的存储容量以及并发量。&lt;/p&gt;
-</description>
+&lt;p&gt;通过测试可以看出，使用 codis 会在性能上比原来直接使用 redis 会有所下降，但是优势就在于可以通过横向扩展（加机器）的方式去提高 redis 的存储容量以及并发量。&lt;/p&gt;</description>
         </item>
       
     

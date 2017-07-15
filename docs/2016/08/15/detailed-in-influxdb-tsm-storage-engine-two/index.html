@@ -7,6 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="InfluxDB详解之TSM存储引擎解析（二） - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -44,9 +45,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -73,9 +72,9 @@
             </header>
 
             <div class="post-content">
-                
+                <p>上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。</p>
 
-<p>上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。</p>
+<p></p>
 
 <p>上一篇文章传送门： <a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">『InfluxDB详解之TSM存储引擎解析（一）』</a>。</p>
 
@@ -540,7 +539,6 @@ func (e *Engine) compactCache() {
 <p>官方设计文档里也提到了一些方案缓解这类问题，例如采用 LRU 策略，或是采用和 OpenTSDB 中类似的对 key 进行压缩的方法。还有一个方案是将索引数据放到另外一个数据库例如 BoltDB 中进行存储。</p>
 
 <p>综合来说，InfluxDB 在性能和资源占用等方面都表现得很优秀，1.0.0 版本的稳定性也很高，我在测试环境中使用的一个月中没有出现过异常状况。可能目前最重要的问题就是不支持集群，对数据量有要求的公司需要自己进行二次开发。</p>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -582,7 +580,7 @@ func (e *Engine) compactCache() {
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/06/test-influxdb-and-opentsdb/">InfluxDB 与 OpenTSDB 对比测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月06日)</span></li><li id="li-rels"><a href="/2016/07/05/research-of-time-series-database-influxdb/">时间序列数据库调研之InfluxDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月05日)</span></li><li id="li-rels"><a href="/2016/07/04/research-of-time-series-database-opentsdb/">时间序列数据库调研之OpenTSDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月04日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/03/12/install-and-use-opentsdb/">OpenTSDB部署与使用</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月12日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/">go语言中使用smtp发送邮件及smtp协议的相关问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月20日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang//">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one//">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang//">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm//">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/06/test-influxdb-and-opentsdb//">InfluxDB 与 OpenTSDB 对比测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月06日)</span></li><li id="li-rels"><a href="/2016/07/05/research-of-time-series-database-influxdb//">时间序列数据库调研之InfluxDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月05日)</span></li><li id="li-rels"><a href="/2016/07/04/research-of-time-series-database-opentsdb//">时间序列数据库调研之OpenTSDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月04日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups//">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/03/12/install-and-use-opentsdb//">OpenTSDB部署与使用</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月12日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory//">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully//">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects//">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp//">go语言中使用smtp发送邮件及smtp协议的相关问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月20日)</span></li></ul>
                 
             </aside>
                 
@@ -592,13 +590,13 @@ func (e *Engine) compactCache() {
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2016/10/22/travel-coding-and-writing/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2016/10/22/travel-coding-and-writing//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -663,7 +661,7 @@ func (e *Engine) compactCache() {
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

@@ -7,6 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="时间序列数据库调研之OpenTSDB - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -44,9 +45,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -73,9 +72,9 @@
             </header>
 
             <div class="post-content">
-                
+                <p>Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。</p>
 
-<p>Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。</p>
+<p></p>
 
 <h3 id="测试版本">测试版本</h3>
 
@@ -204,7 +203,6 @@
 <p>底层存储依托于 HBase，采用特殊设计过的数据存储格式，提供了非常快的查询速度，在此基础之上也更容易横向扩展。</p>
 
 <p>但是，相对于 InfluxDB 这种即使是新手也可以在两分钟内部署运行完成，OpenTSDB 的部署和运维显然要麻烦很多，由于底层依赖于 HBase，想要大规模运行起来，需要相当专业、细心的运维工作。</p>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -246,7 +244,7 @@
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/07/06/test-influxdb-and-opentsdb/">InfluxDB 与 OpenTSDB 对比测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月06日)</span></li><li id="li-rels"><a href="/2016/07/05/research-of-time-series-database-influxdb/">时间序列数据库调研之InfluxDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月05日)</span></li><li id="li-rels"><a href="/2016/05/25/deploy-openstack-swift/">部署openstack的对象存储服务swift</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年05月25日)</span></li><li id="li-rels"><a href="/2016/03/12/install-and-use-opentsdb/">OpenTSDB部署与使用</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月12日)</span></li><li id="li-rels"><a href="/2015/10/07/installation-and-testing-of-codis-version-two/">codis 2.x版本环境搭建与测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年10月07日)</span></li><li id="li-rels"><a href="/2015/09/15/redis-cluster-survey/">Redis集群调研</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月15日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two//">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one//">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/07/06/test-influxdb-and-opentsdb//">InfluxDB 与 OpenTSDB 对比测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月06日)</span></li><li id="li-rels"><a href="/2016/07/05/research-of-time-series-database-influxdb//">时间序列数据库调研之InfluxDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月05日)</span></li><li id="li-rels"><a href="/2016/05/25/deploy-openstack-swift//">部署openstack的对象存储服务swift</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年05月25日)</span></li><li id="li-rels"><a href="/2016/03/12/install-and-use-opentsdb//">OpenTSDB部署与使用</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月12日)</span></li><li id="li-rels"><a href="/2015/10/07/installation-and-testing-of-codis-version-two//">codis 2.x版本环境搭建与测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年10月07日)</span></li><li id="li-rels"><a href="/2015/09/15/redis-cluster-survey//">Redis集群调研</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月15日)</span></li></ul>
                 
             </aside>
                 
@@ -256,13 +254,13 @@
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2016/07/05/research-of-time-series-database-influxdb/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2016/07/05/research-of-time-series-database-influxdb//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2016/06/24/demystifying-kubernetes-and-deployment//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -315,7 +313,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

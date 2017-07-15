@@ -7,6 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="LSM Tree 学习笔记 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -44,9 +45,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -73,9 +72,9 @@
             </header>
 
             <div class="post-content">
-                
+                <p>最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。</p>
 
-<p>最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。</p>
+<p></p>
 
 <h3 id="特点">特点</h3>
 
@@ -155,7 +154,6 @@
 <p>LSM Tree 的思想非常实用，将随机写转换为顺序写来大幅提高写入操作的性能，但是牺牲了部分读的性能。</p>
 
 <p>由于时间序列数据库的特性，运用 LSM Tree 的算法非常合适。持续写入数据量大，数据和时间相关，编码到 key 值中很容易使 key 值有序。读取操作相对来说较少，而且通常不是读取单个 key 的值，而是一段时间范围内的数据，这样就把 LSM Tree 读取性能差的劣势缩小了，反而由于数据在 SSTable 中是按照 key 值顺序排列，读取大块连续的数据时效率也很高。</p>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -183,7 +181,7 @@
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight/">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight//">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li></ul>
                 
             </aside>
                 
@@ -193,13 +191,13 @@
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2016/06/24/demystifying-kubernetes-and-deployment//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2016/05/25/deploy-openstack-swift/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2016/05/25/deploy-openstack-swift//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -254,7 +252,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

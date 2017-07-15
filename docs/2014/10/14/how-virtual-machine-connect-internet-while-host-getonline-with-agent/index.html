@@ -9,6 +9,7 @@
 <meta name="description" content="在公司电脑上网都需要使用代理，虚拟机里面装的Linux系统需要使用yum命令来安装软件，所以需要在shell界面能连上外网才行。
 
 因为公司限制了每个人只能用一个IP，所以虚拟机中的Linux系统使用NAT方式和主机相连。主机是Win7操作系统，会发现网络里面多了VMnet8这个网络。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="主机使用代理上网，虚拟机Linux的shell如何连外网 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -46,9 +47,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -78,6 +77,8 @@
                 <p>在公司电脑上网都需要使用代理，虚拟机里面装的Linux系统需要使用yum命令来安装软件，所以需要在shell界面能连上外网才行。</p>
 
 <p>因为公司限制了每个人只能用一个IP，所以虚拟机中的Linux系统使用NAT方式和主机相连。主机是Win7操作系统，会发现网络里面多了VMnet8这个网络。</p>
+
+<p></p>
 
 <p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg" alt="vmware-net" /></p>
 
@@ -124,7 +125,6 @@ export ftp_proxy=&quot;http://proxy_addr:port&quot;
 </code></pre>
 
 <p>现在就可以使用yum命令安装需要的软件了。</p>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -152,7 +152,7 @@ export ftp_proxy=&quot;http://proxy_addr:port&quot;
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang//">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux//">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files//">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux//">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll//">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process//">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file//">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell//">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code//">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux//">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide//">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands//">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li></ul>
                 
             </aside>
                 
@@ -162,13 +162,13 @@ export ftp_proxy=&quot;http://proxy_addr:port&quot;
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2014/10/16/learn-git-website/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2014/10/16/learn-git-website//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -196,7 +196,7 @@ export ftp_proxy=&quot;http://proxy_addr:port&quot;
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

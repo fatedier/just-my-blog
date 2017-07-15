@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2015-03-04 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</title>
-          <link>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp</link>
+          <link>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</link>
           <pubDate>Wed, 04 Mar 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</guid>
+          <description>&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;
 
-&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;业务说明&#34;&gt;业务说明&lt;/h3&gt;
 
@@ -188,8 +188,7 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
 
 &lt;p&gt;通过传入不同的银行编码，会实例化不同的银行交互类，并且执行其对应的函数。&lt;/p&gt;
 
-&lt;p&gt;如果需要增加新的银行接口，例如农业银行，只需要新增一个 &lt;strong&gt;NYBank&lt;/strong&gt; 类，实现具体的业务逻辑，不需要改动原来的任何代码，传入 &lt;strong&gt;NYBank&lt;/strong&gt; 字符串，就会执行农业银行相关的处理流程。&lt;/p&gt;
-</description>
+&lt;p&gt;如果需要增加新的银行接口，例如农业银行，只需要新增一个 &lt;strong&gt;NYBank&lt;/strong&gt; 类，实现具体的业务逻辑，不需要改动原来的任何代码，传入 &lt;strong&gt;NYBank&lt;/strong&gt; 字符串，就会执行农业银行相关的处理流程。&lt;/p&gt;</description>
         </item>
       
     

@@ -5,21 +5,21 @@
     <link>http://blog.fatedier.com/tags/linux/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2016-08-08 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>go 程序中获取虚拟块设备的读写速度</title>
-          <link>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang</link>
+          <link>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/</link>
           <pubDate>Mon, 08 Aug 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang</guid>
-          <description>
-
-&lt;p&gt;最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
+          <guid>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/</guid>
+          <description>&lt;p&gt;最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
 go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特殊信息的，或者是需要一些小技巧来实现。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;获取磁盘读写速度&#34;&gt;获取磁盘读写速度&lt;/h3&gt;
 
@@ -142,19 +142,20 @@ major := sys.Rdev / 256
 minor := sys.Rdev % 256
 devNumStr := fmt.Sprintf(&amp;quot;%d:%d&amp;quot;, major, minor)
 fmt.Printf(&amp;quot;get dev mapper [%s] [%s]&amp;quot;, dev.Name, devNumStr)
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>linux下查看指定进程的所有连接信息</title>
-          <link>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux</link>
+          <link>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux/</link>
           <pubDate>Mon, 18 Jul 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux</guid>
+          <guid>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux/</guid>
           <description>&lt;p&gt;定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;例如我想要查看进程 &lt;code&gt;frps&lt;/code&gt; 当前的所有连接信息，先获得进程的 pid：&lt;/p&gt;
 
@@ -183,21 +184,20 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
 
 &lt;p&gt;从 &lt;strong&gt;lsof&lt;/strong&gt; 的输出结果中可以清楚的看到 &lt;strong&gt;frps&lt;/strong&gt; 进程监听了 5 个端口，并且在 7000 端口上建立了 3 个连接，连接两端的 ip 信息也都可以查到。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;lsof&lt;/strong&gt; 的 &lt;strong&gt;-nP&lt;/strong&gt; 参数用于将 ip 地址和端口号显示为正常的数值类型，否则可能会用别名表示。&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;strong&gt;lsof&lt;/strong&gt; 的 &lt;strong&gt;-nP&lt;/strong&gt; 参数用于将 ip 地址和端口号显示为正常的数值类型，否则可能会用别名表示。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>简记用sed对文件执行批量替换字符串的方法</title>
-          <link>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files</link>
+          <link>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</link>
           <pubDate>Fri, 25 Mar 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</guid>
+          <description>&lt;p&gt;每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。&lt;/p&gt;
 
-&lt;p&gt;每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;因为 blog 的图片迁到了七牛云上（提供CDN加速服务），原来的图片链接必然要替换成七牛云提供的二级域名，在 markdown 文件中有很多图片的标签，也不可能一个一个手动改，最好是能一个命令下去直接全部修改完毕并且以后也可以很轻松地改成其他域名。&lt;/p&gt;
 
@@ -240,21 +240,20 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
 
 &lt;p&gt;&lt;code&gt;-n&lt;/code&gt; 表示静默模式，如果有输出内容的话，不会输出整个文件的内容，而仅仅是匹配的内容。&lt;/p&gt;
 
-&lt;p&gt;后面的 &lt;code&gt;gp&lt;/code&gt;，&lt;code&gt;g&lt;/code&gt; 前面说过是表示作用域是全局，&lt;code&gt;p&lt;/code&gt; 表示会输出匹配的内容。&lt;/p&gt;
-</description>
+&lt;p&gt;后面的 &lt;code&gt;gp&lt;/code&gt;，&lt;code&gt;g&lt;/code&gt; 前面说过是表示作用域是全局，&lt;code&gt;p&lt;/code&gt; 表示会输出匹配的内容。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>终端利器 Tmux</title>
-          <link>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux</link>
+          <link>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux/</link>
           <pubDate>Fri, 18 Dec 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux/</guid>
+          <description>&lt;p&gt;开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。&lt;/p&gt;
 
-&lt;p&gt;开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;界面&#34;&gt;界面&lt;/h3&gt;
 
@@ -475,21 +474,20 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;&lt;strong&gt;由于这个插件需要 tmux 1.9 及以上的版本，而 centos7 的 yum 源里现在是1.8的版本，我的开发环境全是自动构建，不方便升级，所以暂时还没有尝试。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;关于 Tmux Resurrect 使用的相关文档： &lt;a href=&#34;http://www.linuxidc.com/Linux/2015-07/120304.htm&#34;&gt;http://www.linuxidc.com/Linux/2015-07/120304.htm&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;关于 Tmux Resurrect 使用的相关文档： &lt;a href=&#34;http://www.linuxidc.com/Linux/2015-07/120304.htm&#34;&gt;http://www.linuxidc.com/Linux/2015-07/120304.htm&lt;/a&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>epoll使用说明</title>
-          <link>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll</link>
+          <link>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll/</link>
           <pubDate>Sun, 25 Jan 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll/</guid>
+          <description>&lt;p&gt;在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。&lt;/p&gt;
 
-&lt;p&gt;在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;epoll相对于select/poll来说有很大优势：&lt;/p&gt;
 
@@ -585,21 +583,20 @@ timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指�
 
 &lt;p&gt;举个例子，可以指定事件为 EPOLLIN| EPOLLET 来使用ET工作方式获取指定文件描述符的可读事件。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;在该事件就绪后，需要不断调用read函数来获取缓冲区数据，直到产生一个EAGAIN错误或者read函数返回的读取到的数据长度小于请求的数据长度时才认为此事件处理完成。write也是一样的处理方式。&lt;/strong&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;strong&gt;在该事件就绪后，需要不断调用read函数来获取缓冲区数据，直到产生一个EAGAIN错误或者read函数返回的读取到的数据长度小于请求的数据长度时才认为此事件处理完成。write也是一样的处理方式。&lt;/strong&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>如何处理僵尸进程</title>
-          <link>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process</link>
+          <link>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process/</link>
           <pubDate>Tue, 16 Dec 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process/</guid>
+          <description>&lt;p&gt;在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。&lt;/p&gt;
 
-&lt;p&gt;在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;什么是僵尸进程&#34;&gt;什么是僵尸进程&lt;/h3&gt;
 
@@ -742,22 +739,21 @@ int main(int argc, char **argv)
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。&lt;/p&gt;
-</description>
+&lt;p&gt;再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>linux core文件调试</title>
-          <link>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file</link>
+          <link>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file/</link>
           <pubDate>Sun, 07 Dec 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file</guid>
-          <description>
-
-&lt;p&gt;在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
+          <guid>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file/</guid>
+          <description>&lt;p&gt;在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
 题，如果日志较少，就很难进行进一步的查错了。但是发现在该目录下生成了一个core文件，可以帮助我们查找程序崩溃的原因。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;什么是core文件&#34;&gt;什么是core文件&lt;/h3&gt;
 
@@ -933,21 +929,20 @@ Aborted (core dumped)
 #7 0x08048712 in main ()
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;可以很明显的看出是在main函数中调用fun函数，之后delete指针的时候出错了，后面的函数调用栈就是程序输出错误信息的部分了，和我们的用户代码无关。到这一步，我们就能推断是是fun()这个函数中delete某个指针的时候出现了错误，就可以有的放矢地查找具体的问题了。&lt;/p&gt;
-</description>
+&lt;p&gt;可以很明显的看出是在main函数中调用fun函数，之后delete指针的时候出错了，后面的函数调用栈就是程序输出错误信息的部分了，和我们的用户代码无关。到这一步，我们就能推断是是fun()这个函数中delete某个指针的时候出现了错误，就可以有的放矢地查找具体的问题了。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>linux shell中的条件判断</title>
-          <link>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell</link>
+          <link>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/</link>
           <pubDate>Mon, 24 Nov 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/</guid>
+          <description>&lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;
 
-&lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;退出状态&#34;&gt;退出状态&lt;/h3&gt;
 
@@ -1031,21 +1026,20 @@ expression1 -o expression2  # 或
 &lt;p&gt;多重的嵌套&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;if [ $a == 1 ] &amp;amp;&amp;amp; [ $b == 1 -o $b == 3 ]
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>使用astyle进行代码格式化</title>
-          <link>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code</link>
+          <link>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code/</link>
           <pubDate>Mon, 10 Nov 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code/</guid>
+          <description>&lt;p&gt;在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &amp;ndash; &amp;ldquo;astyle&amp;rdquo;。&lt;/p&gt;
 
-&lt;p&gt;在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &amp;ndash; &amp;ldquo;astyle&amp;rdquo;。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;astyle这个工具可以将现有的代码格式转换为指定的风格，当你将乱七八糟的代码用astyle转换一下之后，就会感觉整个世界都清静了……&lt;/p&gt;
 
@@ -1156,21 +1150,20 @@ expression1 -o expression2  # 或
 
 &lt;p&gt;&amp;ndash;options=####&lt;/p&gt;
 
-&lt;p&gt;可以指定读取某个文件的内容作为参数选项。&lt;/p&gt;
-</description>
+&lt;p&gt;可以指定读取某个文件的内容作为参数选项。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>Linux下如何进行文件编码格式转换</title>
-          <link>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux</link>
+          <link>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux/</link>
           <pubDate>Mon, 03 Nov 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux/</guid>
+          <description>&lt;p&gt;最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。&lt;/p&gt;
 
-&lt;p&gt;最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;查了资料后发现可以使用 &lt;strong&gt;iconv&lt;/strong&gt; 命令。&lt;/p&gt;
 
@@ -1291,21 +1284,20 @@ case &amp;quot;$1&amp;quot; in
     fi
     ;;
 esac
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>使用Vim打造自己的IDE</title>
-          <link>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide</link>
+          <link>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide/</link>
           <pubDate>Wed, 29 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide/</guid>
+          <description>&lt;p&gt;之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。&lt;/p&gt;
 
-&lt;p&gt;之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;配置自己的Vim过程中参考了以下的blog和文档：&lt;/p&gt;
 
@@ -1503,21 +1495,20 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 &lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;let g:neocomplcache_enable_auto_select = 1
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。&lt;/p&gt;
-</description>
+&lt;p&gt;这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>vimdiff常用命令</title>
-          <link>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands</link>
+          <link>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands/</link>
           <pubDate>Fri, 24 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands/</guid>
+          <description>&lt;p&gt;整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。&lt;/p&gt;
 
-&lt;p&gt;整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;可以有多种方式使用vimdiff，例如：&lt;/p&gt;
 
@@ -1568,21 +1559,22 @@ vim -d [file1] [file2]
 
 &lt;h4 id=&#34;wqa&#34;&gt;wqa&lt;/h4&gt;
 
-&lt;p&gt;退出并保存所有已打开的文件&lt;/p&gt;
-</description>
+&lt;p&gt;退出并保存所有已打开的文件&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>主机使用代理上网，虚拟机Linux的shell如何连外网</title>
-          <link>http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent</link>
+          <link>http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/</link>
           <pubDate>Tue, 14 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent</guid>
+          <guid>http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/</guid>
           <description>&lt;p&gt;在公司电脑上网都需要使用代理，虚拟机里面装的Linux系统需要使用yum命令来安装软件，所以需要在shell界面能连上外网才行。&lt;/p&gt;
 
 &lt;p&gt;因为公司限制了每个人只能用一个IP，所以虚拟机中的Linux系统使用NAT方式和主机相连。主机是Win7操作系统，会发现网络里面多了VMnet8这个网络。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg&#34; alt=&#34;vmware-net&#34; /&gt;&lt;/p&gt;
 
@@ -1628,27 +1620,23 @@ export ftp_proxy=&amp;quot;http://proxy_addr:port&amp;quot;
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;export http_proxy=&amp;quot;http://username:password@proxy_addr:port&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;现在就可以使用yum命令安装需要的软件了。&lt;/p&gt;
-</description>
+&lt;p&gt;现在就可以使用yum命令安装需要的软件了。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>size() == 0和empty()的比较</title>
-          <link>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty</link>
+          <link>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</link>
           <pubDate>Fri, 26 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty</guid>
-          <description>
-
-&lt;p&gt;最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。&lt;/p&gt;
+          <guid>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</guid>
+          <description>&lt;p&gt;最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。&lt;/p&gt;
 
 &lt;p&gt;我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：&lt;/p&gt;
 
-&lt;blockquote&gt;
-&lt;p&gt;If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;
+&amp;gt;  If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.&lt;/p&gt;
 
 &lt;p&gt;大致上的意思就是在检测容器是否为空的时候，推荐用empty()代替使用size() == 0，两者的含义是相等的，但是前者可能会更快一些。&lt;/p&gt;
 
@@ -1894,21 +1882,20 @@ size_type size() const
 
 &lt;p&gt;而在Centos上，由于STL源码的实现方式不同，需要考虑到使用的容器，不同的容器调用size()和empty()的开销也不同，但是，相对来说，使用empty()的效率更加平均，例如在使用list容器的时候，如果数据量较大，size()的开销太大，而empty()则不会出现这种极端情况。&lt;/p&gt;
 
-&lt;p&gt;如果考虑到平台迁移等等将来可能出现的状况，显然，empty()比size() == 0更加合适，可以确保你的程序不会出现太大的性能问题。&lt;/p&gt;
-</description>
+&lt;p&gt;如果考虑到平台迁移等等将来可能出现的状况，显然，empty()比size() == 0更加合适，可以确保你的程序不会出现太大的性能问题。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>从简单实例开始，学会写Makefile（二）</title>
-          <link>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02</link>
+          <link>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02/</link>
           <pubDate>Wed, 24 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02/</guid>
+          <description>&lt;p&gt;如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？&lt;/p&gt;
 
-&lt;p&gt;如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;d文件-解决文件间的相互引用&#34;&gt;.d文件，解决文件间的相互引用&lt;/h3&gt;
 
@@ -2237,21 +2224,20 @@ LIBS := -lfa_common
 $(TARGET):$(OBJS) $(LIBS)
     -rm-f $@
     $(CXX)-o $(TARGET) $(INCLUDEDIR) $(LDFLAGS) $(OBJS) $(LIBS)
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>从简单实例开始，学会写Makefile（一）</title>
-          <link>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01</link>
+          <link>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01/</link>
           <pubDate>Mon, 08 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01/</guid>
+          <description>&lt;p&gt;作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。&lt;/p&gt;
 
-&lt;p&gt;作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;不会写Makefile虽然还不至于影响到项目进度，从别的地方拷贝一份过来稍加修改就可以用了，但是，对于咱们“程序猿”来说这实在是一件让人感觉很不爽的事。于是，百度，谷歌（PS：吐槽一下，不XX的话Google已经完全不能用了，Bing的效果都要比百度好一些），各种看资料，看大牛的博客，或许是本人比较笨，也或许是网上的资料不太适合咱们这种新人，缺乏生动的实例讲解，所以决定自己动手研究一下，并把过程分享给大家，希望新人们看完这篇文章后就能够自己动手，为自己的项目编写合适的Makefile啦。&lt;/p&gt;
 
@@ -2516,8 +2502,7 @@ clean:
 
 &lt;p&gt;如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？&lt;/p&gt;
 
-&lt;p&gt;大家可以先尝试着自己解决以上的问题，在之后的篇幅中我们会就以上几点继续通过举例的方式来加以解决。&lt;/p&gt;
-</description>
+&lt;p&gt;大家可以先尝试着自己解决以上的问题，在之后的篇幅中我们会就以上几点继续通过举例的方式来加以解决。&lt;/p&gt;</description>
         </item>
       
     

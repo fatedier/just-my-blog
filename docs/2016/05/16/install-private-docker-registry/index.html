@@ -7,6 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的 docker 镜像仓库，方便在集群上快速部署 docker 服务。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="搭建私有docker仓库 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -44,9 +45,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -73,9 +72,9 @@
             </header>
 
             <div class="post-content">
-                
+                <p>docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的 docker 镜像仓库，方便在集群上快速部署 docker 服务。</p>
 
-<p>docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的 docker 镜像仓库，方便在集群上快速部署 docker 服务。</p>
+<p></p>
 
 <h3 id="registry-镜像下载">registry 镜像下载</h3>
 
@@ -130,7 +129,6 @@
 <h3 id="api">API</h3>
 
 <p>Registry 的 API 也更新到了 V2 版本，可以通过 HTTP API 对私有仓库进行一些管理操作。具体的说明可以参考 github 上的项目文档 <a href="https://github.com/docker/distribution。">https://github.com/docker/distribution。</a></p>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -158,7 +156,7 @@
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li><li id="li-rels"><a href="/2016/04/05/install-gitlab-supporting-ci-with-docker/">利用docker搭建gitlab及持续集成模块</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月05日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/07/16/record-problem-resolve-for-docker-stop-slow//">记一次mesos集群停容器时间过长的问题排查</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年07月16日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment//">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li><li id="li-rels"><a href="/2016/04/05/install-gitlab-supporting-ci-with-docker//">利用docker搭建gitlab及持续集成模块</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月05日)</span></li></ul>
                 
             </aside>
                 
@@ -168,13 +166,13 @@
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2016/05/25/deploy-openstack-swift/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2016/05/25/deploy-openstack-swift//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -219,7 +217,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

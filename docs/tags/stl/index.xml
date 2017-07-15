@@ -5,26 +5,23 @@
     <link>http://blog.fatedier.com/tags/stl/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2014-09-26 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>size() == 0和empty()的比较</title>
-          <link>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty</link>
+          <link>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</link>
           <pubDate>Fri, 26 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty</guid>
-          <description>
-
-&lt;p&gt;最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。&lt;/p&gt;
+          <guid>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</guid>
+          <description>&lt;p&gt;最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。&lt;/p&gt;
 
 &lt;p&gt;我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：&lt;/p&gt;
 
-&lt;blockquote&gt;
-&lt;p&gt;If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;
+&amp;gt;  If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.&lt;/p&gt;
 
 &lt;p&gt;大致上的意思就是在检测容器是否为空的时候，推荐用empty()代替使用size() == 0，两者的含义是相等的，但是前者可能会更快一些。&lt;/p&gt;
 
@@ -270,8 +267,7 @@ size_type size() const
 
 &lt;p&gt;而在Centos上，由于STL源码的实现方式不同，需要考虑到使用的容器，不同的容器调用size()和empty()的开销也不同，但是，相对来说，使用empty()的效率更加平均，例如在使用list容器的时候，如果数据量较大，size()的开销太大，而empty()则不会出现这种极端情况。&lt;/p&gt;
 
-&lt;p&gt;如果考虑到平台迁移等等将来可能出现的状况，显然，empty()比size() == 0更加合适，可以确保你的程序不会出现太大的性能问题。&lt;/p&gt;
-</description>
+&lt;p&gt;如果考虑到平台迁移等等将来可能出现的状况，显然，empty()比size() == 0更加合适，可以确保你的程序不会出现太大的性能问题。&lt;/p&gt;</description>
         </item>
       
     

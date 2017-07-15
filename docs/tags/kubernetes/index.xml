@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/kubernetes/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2016-06-24 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>kubernetes 初探及部署实践</title>
-          <link>http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment</link>
+          <link>http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment/</link>
           <pubDate>Fri, 24 Jun 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment/</guid>
+          <description>&lt;p&gt;Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。&lt;/p&gt;
 
-&lt;p&gt;Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;主要概念&#34;&gt;主要概念&lt;/h3&gt;
 
@@ -243,8 +243,7 @@ spec:
 
 &lt;p&gt;&lt;code&gt;kubectl -s http://192.168.2.129:8080 get service&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;之后就可以通过 curl 来验证是否能够成功访问到之前部署的 nginx 容器，由于启用了 service，会自动帮我们进行负载均衡，流量会被分发到后端的多个 pod 中。&lt;/p&gt;
-</description>
+&lt;p&gt;之后就可以通过 curl 来验证是否能够成功访问到之前部署的 nginx 容器，由于启用了 service，会自动帮我们进行负载均衡，流量会被分发到后端的多个 pod 中。&lt;/p&gt;</description>
         </item>
       
     

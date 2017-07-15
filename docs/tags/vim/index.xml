@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/vim/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2015-07-30 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>关于vim的一些小技巧</title>
-          <link>http://blog.fatedier.com/2015/07/30/some-skills-about-vim</link>
+          <link>http://blog.fatedier.com/2015/07/30/some-skills-about-vim/</link>
           <pubDate>Thu, 30 Jul 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/07/30/some-skills-about-vim</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/07/30/some-skills-about-vim/</guid>
+          <description>&lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;
 
-&lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;插入与删除&#34;&gt;插入与删除&lt;/h3&gt;
 
@@ -67,8 +67,7 @@ help vimgrep                  // 查看vimgrep帮助
 
 &lt;h3 id=&#34;从vim正文复制单词到vim命令行&#34;&gt;从vim正文复制单词到vim命令行&lt;/h3&gt;
 
-&lt;p&gt;例如使用 &lt;code&gt;vimgrep&lt;/code&gt; 搜索时，光标先移动到要复制的单词的起始位置，之后切到命令模式， 先按 &lt;code&gt;ctrl + r&lt;/code&gt; ，之后再按 &lt;code&gt;ctrl + w&lt;/code&gt; 即可。&lt;/p&gt;
-</description>
+&lt;p&gt;例如使用 &lt;code&gt;vimgrep&lt;/code&gt; 搜索时，光标先移动到要复制的单词的起始位置，之后切到命令模式， 先按 &lt;code&gt;ctrl + r&lt;/code&gt; ，之后再按 &lt;code&gt;ctrl + w&lt;/code&gt; 即可。&lt;/p&gt;</description>
         </item>
       
     

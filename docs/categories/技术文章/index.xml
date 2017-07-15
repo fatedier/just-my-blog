@@ -5,20 +5,183 @@
     <link>http://blog.fatedier.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
-    <updated>2016-08-15 00:00:00 &#43;0000 UTC</updated>
+    <rights>(C) 2017</rights>
+    <updated>2017-07-16 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
+          <title>记一次mesos集群停容器时间过长的问题排查</title>
+          <link>http://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</link>
+          <pubDate>Sun, 16 Jul 2017 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</guid>
+          <description>&lt;p&gt;公司 mesos 集群某个 app 已经有数千的实例数，每次做滚动升级时，由于总资源不足，需要分批操作，每次起一批新版本实例，再停一批旧版本实例。目前停容器的策略是，先从服务发现中摘除需要停掉的节点，等待 60 秒后再停止容器，释放资源，但是实际上每次从发送停止容器的请求到容器资源被实际释放需要长达 6 分钟，导致滚动升级耗时过长。经过排查，最终确认问题出在我们使用 docker 的方式上，这里记录下分析和解决问题的过程。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;集群环境&#34;&gt;集群环境&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ubuntu 14.04&lt;/li&gt;
+&lt;li&gt;mesos 1.0.1&lt;/li&gt;
+&lt;li&gt;docker 1.12.1&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;现象&#34;&gt;现象&lt;/h3&gt;
+
+&lt;p&gt;从发送停止容器请求给 mesos 调度器到实际资源被释放，耗时超过 6 分钟。登录机器手动调用 &lt;code&gt;docker stop&lt;/code&gt; 停止容器只需 10 秒。&lt;/p&gt;
+
+&lt;h3 id=&#34;排查问题&#34;&gt;排查问题&lt;/h3&gt;
+
+&lt;p&gt;停止一个容器的请求，经过的步骤如下：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;client 发送停止容器请求给 scheduler。&lt;/li&gt;
+&lt;li&gt;scheduler 和 mesos-master 交互，请求停止对应的 TASK。&lt;/li&gt;
+&lt;li&gt;mesos-master 发送请求给对应机器的 mesos-agent 要求停止这个容器。&lt;/li&gt;
+&lt;li&gt;mesos-agent 发送 &lt;code&gt;TASK_KILL&lt;/code&gt; 消息给对应的 executor（这里用的是 mesos-docker-executor）。&lt;/li&gt;
+&lt;li&gt;mesos-docker-executor 收到 &lt;code&gt;TASK_KILL&lt;/code&gt; 消息，调用 docker stop 停止容器，确认容器被停止后，发送确认消息给 mesos-agent。&lt;/li&gt;
+&lt;li&gt;mesos-docker-executor 退出。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;其中步骤二 scheduler 和 mesos-master 的交互会延迟 60s，是为了让容器平滑的关闭，处理完已经接收到的请求。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;初步推测可能是 mesos-agent 或者 mesos-docker-executor 组件哪里出现了问题。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;检查是否是-mesos-agent-或-executor-的问题&#34;&gt;检查是否是 mesos-agent 或 executor 的问题&lt;/h4&gt;
+
+&lt;p&gt;登录要停止的容器的机器，通过 &lt;code&gt;docker ps&lt;/code&gt; 查看对应容器的 name，这里假设是 &lt;code&gt;mesos-5ff75923-a2fd-4959-bb3b-4b128e43e9eb-S353.d008ad6c-37be-4cc5-ae40-3ba6a7ebca20&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;通过 &lt;code&gt;ps -ef|grep mesos-5ff75923-a2fd-4959-bb3b-4b128e43e9eb-S353.d008ad6c-37be-4cc5-ae40-3ba6a7ebca20&lt;/code&gt; 获取这个容器对应的 mesos-docker-executor 的 pid，这里假设是 &lt;code&gt;24235&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;通过 &lt;code&gt;ss -antp|grep 24235|grep LIS&lt;/code&gt; 查看这个进程目前监听的端口，mesos-agent 会通过这个端口和 mesos-docker-executor 通信，我们需要使用 &lt;strong&gt;tcpdump&lt;/strong&gt; 抓包跟踪这两个组件之间的通信，这里假设端口为 &lt;code&gt;20017&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;抓包命令 &lt;code&gt;tcpdump -i any -ASnn port 20017&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;结果如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;00:39:22.202763 IP 192.168.76.53.21877 &amp;gt; 192.168.76.53.20017: Flags [P.], seq 3399346312:3399346653, ack 3564212561, win 342, length 341
+E..}..@.@.&amp;lt;...L5..L5UuN1.....q.QP..V.+..POST /executor(1)/mesos.internal.KillTaskMessage HTTP/1.1
+User-Agent: libprocess/slave(1)@192.168.76.53:5051
+Libprocess-From: slave(1)@192.168.76.53:5051
+Connection: Keep-Alive
+Host:
+Transfer-Encoding: chunked
+
+6f
++
+)5ff75923-a2fd-4959-bb3b-4b128e43e9eb-0000.@
+&amp;gt;image.cb5aeece-697b-11e7-ad61-6c92bf2f06d8.1500136612181605046
+0
+
+00:44:22.516118 IP 192.168.76.53.21877 &amp;gt; 192.168.76.53.20017: Flags [P.], seq 3399346994:3399347417, ack 3564212561, win 342, length 423
+E.....@.@.&amp;lt;...L5..L5UuN1...2.q.QP..V.}..POST /executor(1)/mesos.internal.StatusUpdateAcknowledgementMessage HTTP/1.1
+User-Agent: libprocess/slave(1)@192.168.76.53:5051
+Libprocess-From: slave(1)@192.168.76.53:5051
+Connection: Keep-Alive
+Host:
+Transfer-Encoding: chunked
+
+ae
+
++
+)5ff75923-a2fd-4959-bb3b-4b128e43e9eb-S353.+
+)5ff75923-a2fd-4959-bb3b-4b128e43e9eb-0000.@
+&amp;gt;image.cb5aeece-697b-11e7-ad61-6c92bf2f06d8.1500136612181605046&amp;quot;..!....Hn.&#39;.j&amp;amp;.6.
+0
+
+
+00:44:22.516137 IP 192.168.76.53.20017 &amp;gt; 192.168.76.53.21877: Flags [.], ack 3399347417, win 2523, length 0
+E..(..@.@.u...L5..L5N1Uu.q.Q....P.      .....
+00:44:23.486916 IP 192.168.76.53.20017 &amp;gt; 192.168.76.53.21877: Flags [F.], seq 3564212561, ack 3399347417, win 2523, length 0
+E..(..@.@.u...L5..L5N1Uu.q.Q....P.      .....
+00:44:23.487507 IP 192.168.76.53.21877 &amp;gt; 192.168.76.53.20017: Flags [F.], seq 3399347417, ack 3564212562, win 342, length 0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;查看 meso-agent 日志如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-agent-log.png&#34; alt=&#34;mesos-agent-log&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;确认 mesos-agent 在 &lt;strong&gt;00:39:22&lt;/strong&gt; 给 mesos-docker-executor 发送了 kill task 的消息，但是 mesos-docker-executor 在 &lt;strong&gt;00:44:22&lt;/strong&gt; 时才回复消息确认实例被停止了。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;说明问题出在 mesos-docker-executor。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;分析-mesos-docker-executor-源码&#34;&gt;分析 mesos-docker-executor 源码&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-docker-executor.png&#34; alt=&#34;mesos-docker-executor&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;可以看出，这里有一个很关键的 &lt;code&gt;gracePeriod&lt;/code&gt; 变量，如果停止任务的请求中有设置 &lt;code&gt;killPolicy&lt;/code&gt; 则此值为 &lt;code&gt;killPolicy&lt;/code&gt; 中的值，否则使用默认值。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-executor-shutdown-code.png&#34; alt=&#34;shutdown-code&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这个值在 mesos-agent 启动的时候通过 &lt;code&gt;--executor_shutdown_grace_period&lt;/code&gt; 传进去，实际环境中我们配置的是 5 分钟。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-docker-stop-code.png&#34; alt=&#34;docker-stop-code&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;mesos-docker-executor 会根据 &lt;code&gt;gracePeriod&lt;/code&gt; 的值调用 &lt;code&gt;docker stop -t&lt;/code&gt; 来停止容器。&lt;/p&gt;
+
+&lt;h4 id=&#34;docker-问题排查&#34;&gt;docker 问题排查&lt;/h4&gt;
+
+&lt;p&gt;&lt;code&gt;docker stop&lt;/code&gt; 停止一个容器会先发送 &lt;strong&gt;SIGTERM&lt;/strong&gt; 信号给容器，如果在 &lt;code&gt;-t&lt;/code&gt; 指定的时间仍然没有结束，则发送 &lt;strong&gt;SIGKILL&lt;/strong&gt; 信号强行杀掉。所以问题就是为什么我们的容器收到 &lt;strong&gt;SIGTERM&lt;/strong&gt; 信号后没有退出。&lt;/p&gt;
+
+&lt;p&gt;使用 &lt;code&gt;docker exec -ti {container_name} bash&lt;/code&gt; 登录容器，查看容器内进程：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 00:04 ?        00:00:00 /bin/sh /root/start.sh
+root         8     1 99 00:04 ?        01:25:14 /root/dora-image -f /root/doraimage.conf
+root      1111     0  2 01:23 ?        00:00:00 bash
+root      1216  1111  0 01:23 ?        00:00:00 ps -ef
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;手动向 PID 为 1 的进程发送 SIGTERM 信号，结果无响应，到这一步已经定位到问题所在了。&lt;/p&gt;
+
+&lt;p&gt;通过 Google 搜索后了解到原因。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;如果 pid 为 1 的进程，无法向其子进程传递信号，可能导致容器发送 SIGTERM 信号之后，父进程等待子进程退出。此时，如果父进程不能将信号传递到子进程，则整个容器就将无法正常退出，除非向父进程发送 SIGKILL 信号，使其强行退出。&lt;/p&gt;
+
+&lt;p&gt;考虑如下进程树：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;bash（PID 1）
+
+&lt;ul&gt;
+&lt;li&gt;app（PID2）&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;bash 进程在接受到 SIGTERM 信号的时候，不会向 app 进程传递这个信号，这会导致 app 进程仍然不会退出。对于传统 Linux 系统（bash 进程 PID 不为 1），在 bash进程退出之后，app进程的父进程会被 init 进程（PID 为 1）接管，成为其父进程。但是在容器环境中，这样的行为会使 app 进程失去父进程，因此 bash 进程不会退出。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&#34;解决方案&#34;&gt;解决方案&lt;/h3&gt;
+
+&lt;p&gt;最后找到了一个解决 init 问题的项目 &lt;a href=&#34;https://github.com/krallin/tini&#34;&gt;tini&lt;/a&gt;。而对于我们遇到的问题，目前想到的解决方案有三个：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;docker 1.13 及以后的版本已经解决了 init 问题，就是内置了 &lt;strong&gt;tini&lt;/strong&gt;，使 &lt;strong&gt;tini&lt;/strong&gt; 作为 PID  为 1 的进程启动。&lt;/li&gt;
+&lt;li&gt;升级 docker 版本难度较大，既然明确了新版本 docker 是如何解决问题的，我们就直接使用 &lt;strong&gt;tini&lt;/strong&gt; 作为 init 进程即可。&lt;/li&gt;
+&lt;li&gt;修改 mesos-agent 的启动参数，将 &lt;code&gt;executor_shutdown_grace_period&lt;/code&gt; 设置的短一些，但是这样会影响到其他正常的容器。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;经过考虑，采用方案二较为简单和稳妥。&lt;/p&gt;
+
+&lt;h3 id=&#34;总结&#34;&gt;总结&lt;/h3&gt;
+
+&lt;p&gt;对于 mesos 和 docker 的使用姿势还不熟悉，并且这两个项目的生态系统也并不成熟，导致在实际使用的过程中容易遇到各种各样的问题。通过日志，抓包，源码分析等手段相结合，就能够快速地定位到问题，再通过搜索引擎和官方文档资料等来解决问题。如果是一些社区当前还没有解决的问题，可能需要自己修改源码来 fix。&lt;/p&gt;</description>
+        </item>
+      
+    
+      
+        <item>
           <title>InfluxDB详解之TSM存储引擎解析（二）</title>
-          <link>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two</link>
+          <link>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</link>
           <pubDate>Mon, 15 Aug 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</guid>
+          <description>&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;
 
-&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;上一篇文章传送门： &lt;a href=&#34;http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/&#34;&gt;『InfluxDB详解之TSM存储引擎解析（一）』&lt;/a&gt;。&lt;/p&gt;
 
@@ -482,22 +645,21 @@ func (e *Engine) compactCache() {
 
 &lt;p&gt;官方设计文档里也提到了一些方案缓解这类问题，例如采用 LRU 策略，或是采用和 OpenTSDB 中类似的对 key 进行压缩的方法。还有一个方案是将索引数据放到另外一个数据库例如 BoltDB 中进行存储。&lt;/p&gt;
 
-&lt;p&gt;综合来说，InfluxDB 在性能和资源占用等方面都表现得很优秀，1.0.0 版本的稳定性也很高，我在测试环境中使用的一个月中没有出现过异常状况。可能目前最重要的问题就是不支持集群，对数据量有要求的公司需要自己进行二次开发。&lt;/p&gt;
-</description>
+&lt;p&gt;综合来说，InfluxDB 在性能和资源占用等方面都表现得很优秀，1.0.0 版本的稳定性也很高，我在测试环境中使用的一个月中没有出现过异常状况。可能目前最重要的问题就是不支持集群，对数据量有要求的公司需要自己进行二次开发。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>go 程序中获取虚拟块设备的读写速度</title>
-          <link>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang</link>
+          <link>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/</link>
           <pubDate>Mon, 08 Aug 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang</guid>
-          <description>
-
-&lt;p&gt;最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
+          <guid>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/</guid>
+          <description>&lt;p&gt;最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
 go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特殊信息的，或者是需要一些小技巧来实现。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;获取磁盘读写速度&#34;&gt;获取磁盘读写速度&lt;/h3&gt;
 
@@ -620,21 +782,20 @@ major := sys.Rdev / 256
 minor := sys.Rdev % 256
 devNumStr := fmt.Sprintf(&amp;quot;%d:%d&amp;quot;, major, minor)
 fmt.Printf(&amp;quot;get dev mapper [%s] [%s]&amp;quot;, dev.Name, devNumStr)
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>InfluxDB详解之TSM存储引擎解析（一）</title>
-          <link>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one</link>
+          <link>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</link>
           <pubDate>Fri, 05 Aug 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</guid>
+          <description>&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;
 
-&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;我认为像这样的针对特殊场景进行优化的数据库会是今后数据库领域发展的主流，这里针对 InfluxDB 1.0.0 版本的源码深入研究一下 TSM 引擎的实现原理。TSM 存储引擎解决了 InfluxDB 之前使用的 LevelDB 和 BoltDB 时遇到的一些问题。&lt;/p&gt;
 
@@ -910,21 +1071,20 @@ type Index []*KeyIndex
 
 &lt;p&gt;tsm file 的最后8字节的内容存放了 Index 部分的起始位置在 tsm file 中的偏移量，方便将索引信息加载到内存中。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;由于内容较多，具体的写入与查询操作的流程，以及部分代码的详解会在下一篇文章中介绍。&lt;/strong&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;strong&gt;由于内容较多，具体的写入与查询操作的流程，以及部分代码的详解会在下一篇文章中介绍。&lt;/strong&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>golang 中使用 statik 将静态资源编译进二进制文件中</title>
-          <link>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang</link>
+          <link>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/</link>
           <pubDate>Mon, 01 Aug 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/</guid>
+          <description>&lt;p&gt;现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。&lt;/p&gt;
 
-&lt;p&gt;现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;最近在阅读 InfluxDB 的源码，发现里面提供了一个 admin 管理的页面，可以通过浏览器来执行一些命令以及查看程序运行的信息。但是我运行的时候只运行了一个 influxd 的二进制文件，并没有看到 css, html 等文件。&lt;/p&gt;
 
@@ -1035,21 +1195,20 @@ func main() {
 
 statikFS, _ := fs.New()
 http.ListenAndServe(&amp;quot;:8080&amp;quot;, http.FileServer(statikFS))
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>使用gvm在不同go版本之间切换</title>
-          <link>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm</link>
+          <link>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/</link>
           <pubDate>Mon, 25 Jul 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/</guid>
+          <description>&lt;p&gt;Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。&lt;/p&gt;
 
-&lt;p&gt;Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;Go 的更新速度比较快，2015年8月发布 1.5 版本，2016年2月发布 1.6 版本，2016年8月即将发布 1.7 版本，在性能以及GC方便都在不断优化，及时更新到新版本的 go 很有优势。&lt;/p&gt;
 
@@ -1129,19 +1288,20 @@ http.ListenAndServe(&amp;quot;:8080&amp;quot;, http.FileServer(statikFS))
 
 &lt;p&gt;&lt;code&gt;gvm use go1.6.3 --default&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;这样设置后，再登录 shell 就默认使用 &lt;code&gt;go1.6.3&lt;/code&gt; 的版本，而不是系统原来的版本了。&lt;/p&gt;
-</description>
+&lt;p&gt;这样设置后，再登录 shell 就默认使用 &lt;code&gt;go1.6.3&lt;/code&gt; 的版本，而不是系统原来的版本了。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>linux下查看指定进程的所有连接信息</title>
-          <link>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux</link>
+          <link>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux/</link>
           <pubDate>Mon, 18 Jul 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux</guid>
+          <guid>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux/</guid>
           <description>&lt;p&gt;定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;例如我想要查看进程 &lt;code&gt;frps&lt;/code&gt; 当前的所有连接信息，先获得进程的 pid：&lt;/p&gt;
 
@@ -1170,21 +1330,20 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
 
 &lt;p&gt;从 &lt;strong&gt;lsof&lt;/strong&gt; 的输出结果中可以清楚的看到 &lt;strong&gt;frps&lt;/strong&gt; 进程监听了 5 个端口，并且在 7000 端口上建立了 3 个连接，连接两端的 ip 信息也都可以查到。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;lsof&lt;/strong&gt; 的 &lt;strong&gt;-nP&lt;/strong&gt; 参数用于将 ip 地址和端口号显示为正常的数值类型，否则可能会用别名表示。&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;strong&gt;lsof&lt;/strong&gt; 的 &lt;strong&gt;-nP&lt;/strong&gt; 参数用于将 ip 地址和端口号显示为正常的数值类型，否则可能会用别名表示。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>InfluxDB 与 OpenTSDB 对比测试</title>
-          <link>http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb</link>
+          <link>http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb/</link>
           <pubDate>Wed, 06 Jul 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb/</guid>
+          <description>&lt;p&gt;通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。&lt;/p&gt;
 
-&lt;p&gt;通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;时间序列数据库热度排名&#34;&gt;时间序列数据库热度排名&lt;/h3&gt;
 
@@ -1280,21 +1439,20 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
 
 &lt;p&gt;查询速度，由于测试样本数据量还不够大，速度都非常快，可以看到 InfluxDB 的查询在 10ms 这个数量级，而 OpenTSDB 则慢了接近 10 倍，第二次查询时，由于缓存的原因，OpenTSDB 的查询速度也相当快。&lt;/p&gt;
 
-&lt;p&gt;集群方面，目前 InfluxDB 还没有比较好的解决方案，而 OpenTSDB 基于 HBase，这一套集群方案已经被很多大公司采用，稳定运行。&lt;/p&gt;
-</description>
+&lt;p&gt;集群方面，目前 InfluxDB 还没有比较好的解决方案，而 OpenTSDB 基于 HBase，这一套集群方案已经被很多大公司采用，稳定运行。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>时间序列数据库调研之InfluxDB</title>
-          <link>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb</link>
+          <link>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</link>
           <pubDate>Tue, 05 Jul 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</guid>
+          <description>&lt;p&gt;基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。&lt;/p&gt;
 
-&lt;p&gt;基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;测试版本&#34;&gt;测试版本&lt;/h3&gt;
 
@@ -1540,21 +1698,20 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;就单机来说，在磁盘占用、cpu使用率、读写速度方面都让人眼前一亮。如果数据量级不是非常大的情况下，单节点的 InfluxDB 就可以承载数十万每秒的写入，是一个比较合适的选择。&lt;/p&gt;
 
-&lt;p&gt;另一方面，从 0.12 版本开始不再开源其集群代码（虽然之前的集群部分就比较烂），如果考虑到之后进行扩展的话，需要进行二次开发。&lt;/p&gt;
-</description>
+&lt;p&gt;另一方面，从 0.12 版本开始不再开源其集群代码（虽然之前的集群部分就比较烂），如果考虑到之后进行扩展的话，需要进行二次开发。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>时间序列数据库调研之OpenTSDB</title>
-          <link>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb</link>
+          <link>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</link>
           <pubDate>Mon, 04 Jul 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</guid>
+          <description>&lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;
 
-&lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;测试版本&#34;&gt;测试版本&lt;/h3&gt;
 
@@ -1682,21 +1839,20 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;底层存储依托于 HBase，采用特殊设计过的数据存储格式，提供了非常快的查询速度，在此基础之上也更容易横向扩展。&lt;/p&gt;
 
-&lt;p&gt;但是，相对于 InfluxDB 这种即使是新手也可以在两分钟内部署运行完成，OpenTSDB 的部署和运维显然要麻烦很多，由于底层依赖于 HBase，想要大规模运行起来，需要相当专业、细心的运维工作。&lt;/p&gt;
-</description>
+&lt;p&gt;但是，相对于 InfluxDB 这种即使是新手也可以在两分钟内部署运行完成，OpenTSDB 的部署和运维显然要麻烦很多，由于底层依赖于 HBase，想要大规模运行起来，需要相当专业、细心的运维工作。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>kubernetes 初探及部署实践</title>
-          <link>http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment</link>
+          <link>http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment/</link>
           <pubDate>Fri, 24 Jun 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment/</guid>
+          <description>&lt;p&gt;Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。&lt;/p&gt;
 
-&lt;p&gt;Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;主要概念&#34;&gt;主要概念&lt;/h3&gt;
 
@@ -1921,21 +2077,20 @@ spec:
 
 &lt;p&gt;&lt;code&gt;kubectl -s http://192.168.2.129:8080 get service&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;之后就可以通过 curl 来验证是否能够成功访问到之前部署的 nginx 容器，由于启用了 service，会自动帮我们进行负载均衡，流量会被分发到后端的多个 pod 中。&lt;/p&gt;
-</description>
+&lt;p&gt;之后就可以通过 curl 来验证是否能够成功访问到之前部署的 nginx 容器，由于启用了 service，会自动帮我们进行负载均衡，流量会被分发到后端的多个 pod 中。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>LSM Tree 学习笔记</title>
-          <link>http://blog.fatedier.com/2016/06/15/learn-lsm-tree</link>
+          <link>http://blog.fatedier.com/2016/06/15/learn-lsm-tree/</link>
           <pubDate>Wed, 15 Jun 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/06/15/learn-lsm-tree</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/06/15/learn-lsm-tree/</guid>
+          <description>&lt;p&gt;最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。&lt;/p&gt;
 
-&lt;p&gt;最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;特点&#34;&gt;特点&lt;/h3&gt;
 
@@ -2014,21 +2169,20 @@ spec:
 
 &lt;p&gt;LSM Tree 的思想非常实用，将随机写转换为顺序写来大幅提高写入操作的性能，但是牺牲了部分读的性能。&lt;/p&gt;
 
-&lt;p&gt;由于时间序列数据库的特性，运用 LSM Tree 的算法非常合适。持续写入数据量大，数据和时间相关，编码到 key 值中很容易使 key 值有序。读取操作相对来说较少，而且通常不是读取单个 key 的值，而是一段时间范围内的数据，这样就把 LSM Tree 读取性能差的劣势缩小了，反而由于数据在 SSTable 中是按照 key 值顺序排列，读取大块连续的数据时效率也很高。&lt;/p&gt;
-</description>
+&lt;p&gt;由于时间序列数据库的特性，运用 LSM Tree 的算法非常合适。持续写入数据量大，数据和时间相关，编码到 key 值中很容易使 key 值有序。读取操作相对来说较少，而且通常不是读取单个 key 的值，而是一段时间范围内的数据，这样就把 LSM Tree 读取性能差的劣势缩小了，反而由于数据在 SSTable 中是按照 key 值顺序排列，读取大块连续的数据时效率也很高。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>部署openstack的对象存储服务swift</title>
-          <link>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift</link>
+          <link>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</link>
           <pubDate>Wed, 25 May 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</guid>
+          <description>&lt;p&gt;OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。&lt;/p&gt;
 
-&lt;p&gt;OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;环境&#34;&gt;环境&lt;/h3&gt;
 
@@ -2632,21 +2786,20 @@ swift-init object-auditor stop
 &lt;h5 id=&#34;下载object-文件&#34;&gt;下载Object（文件）&lt;/h5&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing download default dd.cpp
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>搭建私有docker仓库</title>
-          <link>http://blog.fatedier.com/2016/05/16/install-private-docker-registry</link>
+          <link>http://blog.fatedier.com/2016/05/16/install-private-docker-registry/</link>
           <pubDate>Mon, 16 May 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/05/16/install-private-docker-registry</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/05/16/install-private-docker-registry/</guid>
+          <description>&lt;p&gt;docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的 docker 镜像仓库，方便在集群上快速部署 docker 服务。&lt;/p&gt;
 
-&lt;p&gt;docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的 docker 镜像仓库，方便在集群上快速部署 docker 服务。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;registry-镜像下载&#34;&gt;registry 镜像下载&lt;/h3&gt;
 
@@ -2700,21 +2853,20 @@ swift-init object-auditor stop
 
 &lt;h3 id=&#34;api&#34;&gt;API&lt;/h3&gt;
 
-&lt;p&gt;Registry 的 API 也更新到了 V2 版本，可以通过 HTTP API 对私有仓库进行一些管理操作。具体的说明可以参考 github 上的项目文档 &lt;a href=&#34;https://github.com/docker/distribution。&#34;&gt;https://github.com/docker/distribution。&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;Registry 的 API 也更新到了 V2 版本，可以通过 HTTP API 对私有仓库进行一些管理操作。具体的说明可以参考 github 上的项目文档 &lt;a href=&#34;https://github.com/docker/distribution。&#34;&gt;https://github.com/docker/distribution。&lt;/a&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>go程序中dns解析无法使用所有域名服务器</title>
-          <link>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups</link>
+          <link>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/</link>
           <pubDate>Wed, 27 Apr 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/</guid>
+          <description>&lt;p&gt;最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。&lt;/p&gt;
 
-&lt;p&gt;最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;背景&#34;&gt;背景&lt;/h3&gt;
 
@@ -2973,21 +3125,20 @@ allow-recursion { none; };
 
 &lt;h4 id=&#34;更新&#34;&gt;更新&lt;/h4&gt;
 
-&lt;p&gt;发现在 go1.7 版本中对这个问题做了修复，使用纯 go 实现的 dns 解析方式也已经运行正常。具体信息可以参考 &lt;a href=&#34;https://github.com/golang/go/issues/15434&#34;&gt;issue 15434&lt;/a&gt;。&lt;/p&gt;
-</description>
+&lt;p&gt;发现在 go1.7 版本中对这个问题做了修复，使用纯 go 实现的 dns 解析方式也已经运行正常。具体信息可以参考 &lt;a href=&#34;https://github.com/golang/go/issues/15434&#34;&gt;issue 15434&lt;/a&gt;。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>利用docker搭建gitlab及持续集成模块</title>
-          <link>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker</link>
+          <link>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</link>
           <pubDate>Tue, 05 Apr 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</guid>
+          <description>&lt;p&gt;版本控制的重要性应该是毋庸置疑了，git 作为现在最流行的版本控制工具，各种规模的公司都在用。通常开源项目都会放在 github 上，基础功能是免费的，私有项目收费。对于一个小团队来说，gitlab 就是另外一个替代品，可以用来搭建自己私有的git服务器。&lt;/p&gt;
 
-&lt;p&gt;版本控制的重要性应该是毋庸置疑了，git 作为现在最流行的版本控制工具，各种规模的公司都在用。通常开源项目都会放在 github 上，基础功能是免费的，私有项目收费。对于一个小团队来说，gitlab 就是另外一个替代品，可以用来搭建自己私有的git服务器。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;为什么需要版本控制和持续继承&#34;&gt;为什么需要版本控制和持续继承？&lt;/h3&gt;
 
@@ -3180,21 +3331,20 @@ func main() {
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit-all.png&#34; alt=&#34;test-commit-all&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png&#34; alt=&#34;test-succ-detail&#34; /&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png&#34; alt=&#34;test-succ-detail&#34; /&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>简记用sed对文件执行批量替换字符串的方法</title>
-          <link>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files</link>
+          <link>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</link>
           <pubDate>Fri, 25 Mar 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</guid>
+          <description>&lt;p&gt;每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。&lt;/p&gt;
 
-&lt;p&gt;每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;因为 blog 的图片迁到了七牛云上（提供CDN加速服务），原来的图片链接必然要替换成七牛云提供的二级域名，在 markdown 文件中有很多图片的标签，也不可能一个一个手动改，最好是能一个命令下去直接全部修改完毕并且以后也可以很轻松地改成其他域名。&lt;/p&gt;
 
@@ -3237,21 +3387,20 @@ func main() {
 
 &lt;p&gt;&lt;code&gt;-n&lt;/code&gt; 表示静默模式，如果有输出内容的话，不会输出整个文件的内容，而仅仅是匹配的内容。&lt;/p&gt;
 
-&lt;p&gt;后面的 &lt;code&gt;gp&lt;/code&gt;，&lt;code&gt;g&lt;/code&gt; 前面说过是表示作用域是全局，&lt;code&gt;p&lt;/code&gt; 表示会输出匹配的内容。&lt;/p&gt;
-</description>
+&lt;p&gt;后面的 &lt;code&gt;gp&lt;/code&gt;，&lt;code&gt;g&lt;/code&gt; 前面说过是表示作用域是全局，&lt;code&gt;p&lt;/code&gt; 表示会输出匹配的内容。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>OpenTSDB部署与使用</title>
-          <link>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb</link>
+          <link>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</link>
           <pubDate>Sat, 12 Mar 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</guid>
+          <description>&lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;
 
-&lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;安装-hbase&#34;&gt;安装 HBase&lt;/h3&gt;
 
@@ -3482,21 +3631,20 @@ put &#39;test&#39;, &#39;row3&#39;, &#39;cf:c&#39;, &#39;value3&#39;
         }
     }
 ]
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>如何使golang项目可以在任意目录下编译</title>
-          <link>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory</link>
+          <link>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory/</link>
           <pubDate>Thu, 25 Feb 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory/</guid>
+          <description>&lt;p&gt;通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。&lt;/p&gt;
 
-&lt;p&gt;通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;背景&#34;&gt;背景&lt;/h3&gt;
 
@@ -3520,19 +3668,20 @@ put &#39;test&#39;, &#39;row3&#39;, &#39;cf:c&#39;, &#39;value3&#39;
 
 &lt;p&gt;编译的时候，把项目根目录加到 &lt;code&gt;GOPATH&lt;/code&gt; 中去，例如 &lt;code&gt;GOPATH=`pwd`:${GOPATH}&lt;/code&gt;，这样就会在自己的目录里查找内部包。&lt;/p&gt;
 
-&lt;p&gt;可以看到，通过这样的方式不管把你把项目放到哪一个目录下，都可以编译成功，当然，为了便于管理，推荐还是放在 &lt;code&gt;$GOPATH/src&lt;/code&gt; 目录下，同时使用 &lt;a href=&#34;https://github.com/tools/godep&#34;&gt;godep&lt;/a&gt; 来管理第三方包。&lt;/p&gt;
-</description>
+&lt;p&gt;可以看到，通过这样的方式不管把你把项目放到哪一个目录下，都可以编译成功，当然，为了便于管理，推荐还是放在 &lt;code&gt;$GOPATH/src&lt;/code&gt; 目录下，同时使用 &lt;a href=&#34;https://github.com/tools/godep&#34;&gt;godep&lt;/a&gt; 来管理第三方包。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>Go中如何优雅地关闭net.Listener</title>
-          <link>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully</link>
+          <link>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/</link>
           <pubDate>Fri, 19 Feb 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully</guid>
+          <guid>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/</guid>
           <description>&lt;p&gt;在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;但是我在释放这个监听端口的时候遇到了一些问题，我发现很难优雅地去关闭这个 &lt;strong&gt;net.Listener&lt;/strong&gt;。在网上查阅了一下资料，基本上都是程序结束时资源被系统自动回收，没发现有需要主动释放的。这个需求确实不多，不过想一下在写测试用例的时候或许可能会用到，我们先创建一个 &lt;strong&gt;net.Listener&lt;/strong&gt; 监听一个端口，&lt;strong&gt;client&lt;/strong&gt; 发送请求进行测试，通过后关闭这个 &lt;strong&gt;net.Listener&lt;/strong&gt;，再创建另外一个 &lt;strong&gt;net.Listener&lt;/strong&gt; 用于测试其他用例。&lt;/p&gt;
 
@@ -3592,21 +3741,20 @@ func main() {
     ln.Close()
     time.Sleep(1 * time.Second)
 }
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>使用godep管理golang项目的第三方包</title>
-          <link>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects</link>
+          <link>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/</link>
           <pubDate>Fri, 15 Jan 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/</guid>
+          <description>&lt;p&gt;go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。&lt;/p&gt;
 
-&lt;p&gt;go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;目前 go 自身的包管理体系比较薄弱，go 1.5 以后开始使用 vendor 机制来管理，但是依然缺乏对第三方包的版本的管理。&lt;/p&gt;
 
@@ -3649,21 +3797,20 @@ godep go install
 godep go fmt
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。&lt;/p&gt;
-</description>
+&lt;p&gt;godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>终端利器 Tmux</title>
-          <link>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux</link>
+          <link>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux/</link>
           <pubDate>Fri, 18 Dec 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux/</guid>
+          <description>&lt;p&gt;开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。&lt;/p&gt;
 
-&lt;p&gt;开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;界面&#34;&gt;界面&lt;/h3&gt;
 
@@ -3884,19 +4031,20 @@ set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 
 &lt;p&gt;&lt;strong&gt;由于这个插件需要 tmux 1.9 及以上的版本，而 centos7 的 yum 源里现在是1.8的版本，我的开发环境全是自动构建，不方便升级，所以暂时还没有尝试。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;关于 Tmux Resurrect 使用的相关文档： &lt;a href=&#34;http://www.linuxidc.com/Linux/2015-07/120304.htm&#34;&gt;http://www.linuxidc.com/Linux/2015-07/120304.htm&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;关于 Tmux Resurrect 使用的相关文档： &lt;a href=&#34;http://www.linuxidc.com/Linux/2015-07/120304.htm&#34;&gt;http://www.linuxidc.com/Linux/2015-07/120304.htm&lt;/a&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>gem 源被屏蔽的解决方法</title>
-          <link>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded</link>
+          <link>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</link>
           <pubDate>Sun, 06 Dec 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded</guid>
+          <guid>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</guid>
           <description>&lt;p&gt;由于国内的网络环境比较特殊，使用 gem install 安装 ruby 包的时候，往往不能成功，我们可以手动替换成阿里提供的镜像源来进行下载。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;官方原先的源地址是 &lt;a href=&#34;https://rubygems.org/&#34;&gt;https://rubygems.org/&lt;/a&gt;&lt;/p&gt;
 
@@ -3916,21 +4064,20 @@ https://rubygems.org/
 https://ruby.taobao.org/
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;之后就可以使用 &lt;code&gt;gem install xxx -V&lt;/code&gt; 安装第三方包或应用并且显示详细过程。&lt;/p&gt;
-</description>
+&lt;p&gt;之后就可以使用 &lt;code&gt;gem install xxx -V&lt;/code&gt; 安装第三方包或应用并且显示详细过程。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>给shell的输出加上颜色</title>
-          <link>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color</link>
+          <link>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color/</link>
           <pubDate>Tue, 24 Nov 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color/</guid>
+          <description>&lt;p&gt;在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。&lt;/p&gt;
 
-&lt;p&gt;在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;前景色-文本颜色&#34;&gt;前景色(文本颜色)&lt;/h3&gt;
 
@@ -3982,21 +4129,20 @@ cred=&#39;31m&#39;        # red
 cgreen=&#39;32m&#39;      # green
 
 echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>codis 2.x版本环境搭建与测试</title>
-          <link>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two</link>
+          <link>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</link>
           <pubDate>Wed, 07 Oct 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</guid>
+          <description>&lt;p&gt;Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。&lt;/p&gt;
 
-&lt;p&gt;Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;安装并启动-zookeeper&#34;&gt;安装并启动 zookeeper&lt;/h3&gt;
 
@@ -4230,21 +4376,20 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;p&gt;通过测试可以看出，使用 codis 会在性能上比原来直接使用 redis 会有所下降，但是优势就在于可以通过横向扩展（加机器）的方式去提高 redis 的存储容量以及并发量。&lt;/p&gt;
-</description>
+&lt;p&gt;通过测试可以看出，使用 codis 会在性能上比原来直接使用 redis 会有所下降，但是优势就在于可以通过横向扩展（加机器）的方式去提高 redis 的存储容量以及并发量。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>mac上将socks5代理转为http代理</title>
-          <link>http://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac</link>
+          <link>http://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/</link>
           <pubDate>Sun, 20 Sep 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/</guid>
+          <description>&lt;p&gt;在 mac 上使用 ss 的时候创建的是 socks5 代理，浏览器可以正常设置使用，不过在 shell 中一些程序无法使用 socks5 代理，而需要使用 http 代理，通过设置 http_proxy 环境变量，就可以让 shell 通过 http 代理来访问网络。polipo 这款工具就可以帮助我们将 socks5 代理转换为 http 代理。&lt;/p&gt;
 
-&lt;p&gt;在 mac 上使用 ss 的时候创建的是 socks5 代理，浏览器可以正常设置使用，不过在 shell 中一些程序无法使用 socks5 代理，而需要使用 http 代理，通过设置 http_proxy 环境变量，就可以让 shell 通过 http 代理来访问网络。polipo 这款工具就可以帮助我们将 socks5 代理转换为 http 代理。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
 
@@ -4266,23 +4411,22 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 
 &lt;p&gt;例如我们使用 wget 获取 google 的首页数据。&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;http_proxy=http://127.0.0.1:8123 wget http://www.google.com&lt;/code&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;code&gt;http_proxy=http://127.0.0.1:8123 wget http://www.google.com&lt;/code&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>Redis集群调研</title>
-          <link>http://blog.fatedier.com/2015/09/15/redis-cluster-survey</link>
+          <link>http://blog.fatedier.com/2015/09/15/redis-cluster-survey/</link>
           <pubDate>Tue, 15 Sep 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/09/15/redis-cluster-survey</guid>
-          <description>
-
-&lt;p&gt;Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。&lt;/p&gt;
+          <guid>http://blog.fatedier.com/2015/09/15/redis-cluster-survey/</guid>
+          <description>&lt;p&gt;Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。&lt;/p&gt;
 
 &lt;p&gt;单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;为什么需要集群&#34;&gt;为什么需要集群&lt;/h3&gt;
 
@@ -4452,21 +4596,20 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 &lt;li&gt;Redis 只作为存储引擎&lt;/li&gt;
 &lt;li&gt;Go语言开发，可以充分利用多核，不必像 twemproxy 一样部署很多套&lt;/li&gt;
 &lt;li&gt;性能损失，在不开启pipeline的情况下会损失大概40%，通过加实例线性扩展&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
         </item>
       
     
       
         <item>
           <title>如何修改进程的名称</title>
-          <link>http://blog.fatedier.com/2015/08/24/how-to-modify-process-name</link>
+          <link>http://blog.fatedier.com/2015/08/24/how-to-modify-process-name/</link>
           <pubDate>Mon, 24 Aug 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/08/24/how-to-modify-process-name</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/08/24/how-to-modify-process-name/</guid>
+          <description>&lt;p&gt;在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。&lt;/p&gt;
 
-&lt;p&gt;在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;效果预览&#34;&gt;效果预览&lt;/h3&gt;
 
@@ -4591,21 +4734,20 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;这个函数是不安全的，需要小心使用，因为不能确定 &lt;strong&gt;environ&lt;/strong&gt; 的地址是否已经被其他人修改过了，比如在 php 扩展中，有可能已经被其他程序用同样的方法修改过，这样就会造成获取到的 &lt;strong&gt;argv[0]&lt;/strong&gt; 的地址是未知的，执行的程序可能就会出现内存错误。&lt;/p&gt;
-</description>
+&lt;p&gt;这个函数是不安全的，需要小心使用，因为不能确定 &lt;strong&gt;environ&lt;/strong&gt; 的地址是否已经被其他人修改过了，比如在 php 扩展中，有可能已经被其他程序用同样的方法修改过，这样就会造成获取到的 &lt;strong&gt;argv[0]&lt;/strong&gt; 的地址是未知的，执行的程序可能就会出现内存错误。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>go语言中使用smtp发送邮件及smtp协议的相关问题</title>
-          <link>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp</link>
+          <link>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</link>
           <pubDate>Thu, 20 Aug 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</guid>
+          <description>&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
 
-&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;smtp-协议发送邮件&#34;&gt;smtp 协议发送邮件&lt;/h3&gt;
 
@@ -4807,21 +4949,20 @@ func main() {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;通过这个函数发送邮件，则身份认证时不会采用加密的方式，而是直接使用 &lt;strong&gt;PLAIN&lt;/strong&gt; 方式。&lt;/p&gt;
-</description>
+&lt;p&gt;通过这个函数发送邮件，则身份认证时不会采用加密的方式，而是直接使用 &lt;strong&gt;PLAIN&lt;/strong&gt; 方式。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>关于vim的一些小技巧</title>
-          <link>http://blog.fatedier.com/2015/07/30/some-skills-about-vim</link>
+          <link>http://blog.fatedier.com/2015/07/30/some-skills-about-vim/</link>
           <pubDate>Thu, 30 Jul 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/07/30/some-skills-about-vim</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/07/30/some-skills-about-vim/</guid>
+          <description>&lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;
 
-&lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;插入与删除&#34;&gt;插入与删除&lt;/h3&gt;
 
@@ -4870,21 +5011,20 @@ help vimgrep                  // 查看vimgrep帮助
 
 &lt;h3 id=&#34;从vim正文复制单词到vim命令行&#34;&gt;从vim正文复制单词到vim命令行&lt;/h3&gt;
 
-&lt;p&gt;例如使用 &lt;code&gt;vimgrep&lt;/code&gt; 搜索时，光标先移动到要复制的单词的起始位置，之后切到命令模式， 先按 &lt;code&gt;ctrl + r&lt;/code&gt; ，之后再按 &lt;code&gt;ctrl + w&lt;/code&gt; 即可。&lt;/p&gt;
-</description>
+&lt;p&gt;例如使用 &lt;code&gt;vimgrep&lt;/code&gt; 搜索时，光标先移动到要复制的单词的起始位置，之后切到命令模式， 先按 &lt;code&gt;ctrl + r&lt;/code&gt; ，之后再按 &lt;code&gt;ctrl + w&lt;/code&gt; 即可。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>MongoDB常用命令</title>
-          <link>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb</link>
+          <link>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb/</link>
           <pubDate>Fri, 05 Jun 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb/</guid>
+          <description>&lt;p&gt;MongoDB 是一个基于分布式文件存储的数据库，由C++编写，介于关系数据库和非关系数据库之间的产品，所以在很多业务上可以取代 mysql，提供更高的性能以及更好的扩展性。虽然 MongoDB 不支持 sql 语法，但是从常用的操作命令上来说和 sql 的用法相类似。&lt;/p&gt;
 
-&lt;p&gt;MongoDB 是一个基于分布式文件存储的数据库，由C++编写，介于关系数据库和非关系数据库之间的产品，所以在很多业务上可以取代 mysql，提供更高的性能以及更好的扩展性。虽然 MongoDB 不支持 sql 语法，但是从常用的操作命令上来说和 sql 的用法相类似。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;查询有哪些数据库&#34;&gt;查询有哪些数据库&lt;/h4&gt;
 
@@ -5048,21 +5188,20 @@ help vimgrep                  // 查看vimgrep帮助
 
 &lt;p&gt;&lt;code&gt;db.col.remove({id:1})&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;remove 的过滤条件同 find。&lt;/p&gt;
-</description>
+&lt;p&gt;remove 的过滤条件同 find。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>python中使用pycurl库上传文件</title>
-          <link>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl</link>
+          <link>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</link>
           <pubDate>Fri, 08 May 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</guid>
+          <description>&lt;p&gt;在对外提供各种语言SDK的时候经常会遇到需要上传文件的问题，例如在python中我们可以借助pycurl库实现这个功能。&lt;/p&gt;
 
-&lt;p&gt;在对外提供各种语言SDK的时候经常会遇到需要上传文件的问题，例如在python中我们可以借助pycurl库实现这个功能。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;项目地址&#34;&gt;项目地址&lt;/h3&gt;
 
@@ -5101,21 +5240,20 @@ def do_http_request(method, url, post_data=&#39;&#39;, upload_file=None): 
 
 &lt;p&gt;&lt;strong&gt;ch.FORM_FILE&lt;/strong&gt;：指定要上传文件的路径&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;ch.FORM_FILENAME&lt;/strong&gt;：指定要上传文件的文件名&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;strong&gt;ch.FORM_FILENAME&lt;/strong&gt;：指定要上传文件的文件名&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</title>
-          <link>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp</link>
+          <link>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</link>
           <pubDate>Wed, 04 Mar 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</guid>
+          <description>&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;
 
-&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;业务说明&#34;&gt;业务说明&lt;/h3&gt;
 
@@ -5285,21 +5423,20 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
 
 &lt;p&gt;通过传入不同的银行编码，会实例化不同的银行交互类，并且执行其对应的函数。&lt;/p&gt;
 
-&lt;p&gt;如果需要增加新的银行接口，例如农业银行，只需要新增一个 &lt;strong&gt;NYBank&lt;/strong&gt; 类，实现具体的业务逻辑，不需要改动原来的任何代码，传入 &lt;strong&gt;NYBank&lt;/strong&gt; 字符串，就会执行农业银行相关的处理流程。&lt;/p&gt;
-</description>
+&lt;p&gt;如果需要增加新的银行接口，例如农业银行，只需要新增一个 &lt;strong&gt;NYBank&lt;/strong&gt; 类，实现具体的业务逻辑，不需要改动原来的任何代码，传入 &lt;strong&gt;NYBank&lt;/strong&gt; 字符串，就会执行农业银行相关的处理流程。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>epoll使用说明</title>
-          <link>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll</link>
+          <link>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll/</link>
           <pubDate>Sun, 25 Jan 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll/</guid>
+          <description>&lt;p&gt;在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。&lt;/p&gt;
 
-&lt;p&gt;在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;epoll相对于select/poll来说有很大优势：&lt;/p&gt;
 
@@ -5395,21 +5532,20 @@ timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指�
 
 &lt;p&gt;举个例子，可以指定事件为 EPOLLIN| EPOLLET 来使用ET工作方式获取指定文件描述符的可读事件。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;在该事件就绪后，需要不断调用read函数来获取缓冲区数据，直到产生一个EAGAIN错误或者read函数返回的读取到的数据长度小于请求的数据长度时才认为此事件处理完成。write也是一样的处理方式。&lt;/strong&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;strong&gt;在该事件就绪后，需要不断调用read函数来获取缓冲区数据，直到产生一个EAGAIN错误或者read函数返回的读取到的数据长度小于请求的数据长度时才认为此事件处理完成。write也是一样的处理方式。&lt;/strong&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>如何处理僵尸进程</title>
-          <link>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process</link>
+          <link>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process/</link>
           <pubDate>Tue, 16 Dec 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process/</guid>
+          <description>&lt;p&gt;在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。&lt;/p&gt;
 
-&lt;p&gt;在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;什么是僵尸进程&#34;&gt;什么是僵尸进程&lt;/h3&gt;
 
@@ -5552,22 +5688,21 @@ int main(int argc, char **argv)
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。&lt;/p&gt;
-</description>
+&lt;p&gt;再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>linux core文件调试</title>
-          <link>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file</link>
+          <link>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file/</link>
           <pubDate>Sun, 07 Dec 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file</guid>
-          <description>
-
-&lt;p&gt;在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
+          <guid>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file/</guid>
+          <description>&lt;p&gt;在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
 题，如果日志较少，就很难进行进一步的查错了。但是发现在该目录下生成了一个core文件，可以帮助我们查找程序崩溃的原因。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;什么是core文件&#34;&gt;什么是core文件&lt;/h3&gt;
 
@@ -5743,21 +5878,20 @@ Aborted (core dumped)
 #7 0x08048712 in main ()
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;可以很明显的看出是在main函数中调用fun函数，之后delete指针的时候出错了，后面的函数调用栈就是程序输出错误信息的部分了，和我们的用户代码无关。到这一步，我们就能推断是是fun()这个函数中delete某个指针的时候出现了错误，就可以有的放矢地查找具体的问题了。&lt;/p&gt;
-</description>
+&lt;p&gt;可以很明显的看出是在main函数中调用fun函数，之后delete指针的时候出错了，后面的函数调用栈就是程序输出错误信息的部分了，和我们的用户代码无关。到这一步，我们就能推断是是fun()这个函数中delete某个指针的时候出现了错误，就可以有的放矢地查找具体的问题了。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>linux shell中的条件判断</title>
-          <link>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell</link>
+          <link>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/</link>
           <pubDate>Mon, 24 Nov 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/</guid>
+          <description>&lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;
 
-&lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;退出状态&#34;&gt;退出状态&lt;/h3&gt;
 
@@ -5841,21 +5975,20 @@ expression1 -o expression2  # 或
 &lt;p&gt;多重的嵌套&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;if [ $a == 1 ] &amp;amp;&amp;amp; [ $b == 1 -o $b == 3 ]
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>能否被8整除</title>
-          <link>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight</link>
+          <link>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight/</link>
           <pubDate>Thu, 13 Nov 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight/</guid>
+          <description>&lt;p&gt;题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。&lt;/p&gt;
 
-&lt;p&gt;题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;思路&#34;&gt;思路&lt;/h3&gt;
 
@@ -5946,21 +6079,20 @@ int main()
     }
     return 0;
 }
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>使用astyle进行代码格式化</title>
-          <link>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code</link>
+          <link>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code/</link>
           <pubDate>Mon, 10 Nov 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code/</guid>
+          <description>&lt;p&gt;在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &amp;ndash; &amp;ldquo;astyle&amp;rdquo;。&lt;/p&gt;
 
-&lt;p&gt;在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &amp;ndash; &amp;ldquo;astyle&amp;rdquo;。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;astyle这个工具可以将现有的代码格式转换为指定的风格，当你将乱七八糟的代码用astyle转换一下之后，就会感觉整个世界都清静了……&lt;/p&gt;
 
@@ -6071,21 +6203,20 @@ int main()
 
 &lt;p&gt;&amp;ndash;options=####&lt;/p&gt;
 
-&lt;p&gt;可以指定读取某个文件的内容作为参数选项。&lt;/p&gt;
-</description>
+&lt;p&gt;可以指定读取某个文件的内容作为参数选项。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>Linux下如何进行文件编码格式转换</title>
-          <link>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux</link>
+          <link>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux/</link>
           <pubDate>Mon, 03 Nov 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux/</guid>
+          <description>&lt;p&gt;最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。&lt;/p&gt;
 
-&lt;p&gt;最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;查了资料后发现可以使用 &lt;strong&gt;iconv&lt;/strong&gt; 命令。&lt;/p&gt;
 
@@ -6206,21 +6337,20 @@ case &amp;quot;$1&amp;quot; in
     fi
     ;;
 esac
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>使用Vim打造自己的IDE</title>
-          <link>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide</link>
+          <link>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide/</link>
           <pubDate>Wed, 29 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide/</guid>
+          <description>&lt;p&gt;之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。&lt;/p&gt;
 
-&lt;p&gt;之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;配置自己的Vim过程中参考了以下的blog和文档：&lt;/p&gt;
 
@@ -6418,21 +6548,20 @@ nnoremap wm:WMToggle&amp;lt;cr&amp;gt;
 &lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;let g:neocomplcache_enable_auto_select = 1
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。&lt;/p&gt;
-</description>
+&lt;p&gt;这一行是设置是否启用自动选择，为1代表启用。这个时候弹出补全列表的时候会自动选择第一个，按下Enter键就会使用列表的第一项，否则每一次都需要自己多按一次进行选择。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>vimdiff常用命令</title>
-          <link>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands</link>
+          <link>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands/</link>
           <pubDate>Fri, 24 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands/</guid>
+          <description>&lt;p&gt;整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。&lt;/p&gt;
 
-&lt;p&gt;整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;可以有多种方式使用vimdiff，例如：&lt;/p&gt;
 
@@ -6483,21 +6612,20 @@ vim -d [file1] [file2]
 
 &lt;h4 id=&#34;wqa&#34;&gt;wqa&lt;/h4&gt;
 
-&lt;p&gt;退出并保存所有已打开的文件&lt;/p&gt;
-</description>
+&lt;p&gt;退出并保存所有已打开的文件&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>Git常用命令</title>
-          <link>http://blog.fatedier.com/2014/10/17/git-usually-command</link>
+          <link>http://blog.fatedier.com/2014/10/17/git-usually-command/</link>
           <pubDate>Fri, 17 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/17/git-usually-command</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/17/git-usually-command/</guid>
+          <description>&lt;p&gt;在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。&lt;/p&gt;
 
-&lt;p&gt;在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;修改某一次提交的说明信息&#34;&gt;修改某一次提交的说明信息&lt;/h3&gt;
 
@@ -6598,23 +6726,22 @@ $ git push origin HEAD --force
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git show f4869b0:test.cpp
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。&lt;/p&gt;
-</description>
+&lt;p&gt;文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>Git使用备忘</title>
-          <link>http://blog.fatedier.com/2014/10/16/git-use-for-remind</link>
+          <link>http://blog.fatedier.com/2014/10/16/git-use-for-remind/</link>
           <pubDate>Thu, 16 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/16/git-use-for-remind</guid>
-          <description>
-
-&lt;p&gt;Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。&lt;/p&gt;
+          <guid>http://blog.fatedier.com/2014/10/16/git-use-for-remind/</guid>
+          <description>&lt;p&gt;Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。&lt;/p&gt;
 
 &lt;p&gt;Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;git的配置&#34;&gt;Git的配置&lt;/h3&gt;
 
@@ -6981,21 +7108,20 @@ $ git merge testing
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git log -p -2
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 &amp;ldquo;-&amp;rdquo; 开头，新增的部分会以 &amp;ldquo;+&amp;rdquo; 开头，方便查看。&lt;/p&gt;
-</description>
+&lt;p&gt;通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 &amp;ldquo;-&amp;rdquo; 开头，新增的部分会以 &amp;ldquo;+&amp;rdquo; 开头，方便查看。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>学习Git的常用网站</title>
-          <link>http://blog.fatedier.com/2014/10/16/learn-git-website</link>
+          <link>http://blog.fatedier.com/2014/10/16/learn-git-website/</link>
           <pubDate>Thu, 16 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/16/learn-git-website</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/16/learn-git-website/</guid>
+          <description>&lt;p&gt;学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。&lt;/p&gt;
 
-&lt;p&gt;学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;git官方文档&#34;&gt;Git官方文档&lt;/h4&gt;
 
@@ -7003,21 +7129,22 @@ $ git merge testing
 
 &lt;h4 id=&#34;廖雪峰git教程&#34;&gt;廖雪峰Git教程&lt;/h4&gt;
 
-&lt;p&gt;&lt;a href=&#34;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&#34;&gt;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;a href=&#34;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&#34;&gt;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&lt;/a&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>主机使用代理上网，虚拟机Linux的shell如何连外网</title>
-          <link>http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent</link>
+          <link>http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/</link>
           <pubDate>Tue, 14 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent</guid>
+          <guid>http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/</guid>
           <description>&lt;p&gt;在公司电脑上网都需要使用代理，虚拟机里面装的Linux系统需要使用yum命令来安装软件，所以需要在shell界面能连上外网才行。&lt;/p&gt;
 
 &lt;p&gt;因为公司限制了每个人只能用一个IP，所以虚拟机中的Linux系统使用NAT方式和主机相连。主机是Win7操作系统，会发现网络里面多了VMnet8这个网络。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg&#34; alt=&#34;vmware-net&#34; /&gt;&lt;/p&gt;
 
@@ -7063,21 +7190,20 @@ export ftp_proxy=&amp;quot;http://proxy_addr:port&amp;quot;
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;export http_proxy=&amp;quot;http://username:password@proxy_addr:port&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;现在就可以使用yum命令安装需要的软件了。&lt;/p&gt;
-</description>
+&lt;p&gt;现在就可以使用yum命令安装需要的软件了。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>C/C&#43;&#43;获取精确到微秒级的系统时间</title>
-          <link>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp</link>
+          <link>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/</link>
           <pubDate>Tue, 30 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/</guid>
+          <description>&lt;p&gt;最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。&lt;/p&gt;
 
-&lt;p&gt;最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;先贴一下这两个函数的说明&lt;/p&gt;
 
@@ -7168,27 +7294,23 @@ int main()
 &lt;h3 id=&#34;输出为&#34;&gt;输出为&lt;/h3&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;当前时间：20140930110457794678
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>size() == 0和empty()的比较</title>
-          <link>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty</link>
+          <link>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</link>
           <pubDate>Fri, 26 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty</guid>
-          <description>
-
-&lt;p&gt;最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。&lt;/p&gt;
+          <guid>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</guid>
+          <description>&lt;p&gt;最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。&lt;/p&gt;
 
 &lt;p&gt;我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：&lt;/p&gt;
 
-&lt;blockquote&gt;
-&lt;p&gt;If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;
+&amp;gt;  If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.&lt;/p&gt;
 
 &lt;p&gt;大致上的意思就是在检测容器是否为空的时候，推荐用empty()代替使用size() == 0，两者的含义是相等的，但是前者可能会更快一些。&lt;/p&gt;
 
@@ -7434,21 +7556,20 @@ size_type size() const
 
 &lt;p&gt;而在Centos上，由于STL源码的实现方式不同，需要考虑到使用的容器，不同的容器调用size()和empty()的开销也不同，但是，相对来说，使用empty()的效率更加平均，例如在使用list容器的时候，如果数据量较大，size()的开销太大，而empty()则不会出现这种极端情况。&lt;/p&gt;
 
-&lt;p&gt;如果考虑到平台迁移等等将来可能出现的状况，显然，empty()比size() == 0更加合适，可以确保你的程序不会出现太大的性能问题。&lt;/p&gt;
-</description>
+&lt;p&gt;如果考虑到平台迁移等等将来可能出现的状况，显然，empty()比size() == 0更加合适，可以确保你的程序不会出现太大的性能问题。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>从简单实例开始，学会写Makefile（二）</title>
-          <link>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02</link>
+          <link>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02/</link>
           <pubDate>Wed, 24 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02/</guid>
+          <description>&lt;p&gt;如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？&lt;/p&gt;
 
-&lt;p&gt;如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;d文件-解决文件间的相互引用&#34;&gt;.d文件，解决文件间的相互引用&lt;/h3&gt;
 
@@ -7777,21 +7898,20 @@ LIBS := -lfa_common
 $(TARGET):$(OBJS) $(LIBS)
     -rm-f $@
     $(CXX)-o $(TARGET) $(INCLUDEDIR) $(LDFLAGS) $(OBJS) $(LIBS)
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>从简单实例开始，学会写Makefile（一）</title>
-          <link>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01</link>
+          <link>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01/</link>
           <pubDate>Mon, 08 Sep 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01/</guid>
+          <description>&lt;p&gt;作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。&lt;/p&gt;
 
-&lt;p&gt;作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;不会写Makefile虽然还不至于影响到项目进度，从别的地方拷贝一份过来稍加修改就可以用了，但是，对于咱们“程序猿”来说这实在是一件让人感觉很不爽的事。于是，百度，谷歌（PS：吐槽一下，不XX的话Google已经完全不能用了，Bing的效果都要比百度好一些），各种看资料，看大牛的博客，或许是本人比较笨，也或许是网上的资料不太适合咱们这种新人，缺乏生动的实例讲解，所以决定自己动手研究一下，并把过程分享给大家，希望新人们看完这篇文章后就能够自己动手，为自己的项目编写合适的Makefile啦。&lt;/p&gt;
 
@@ -8056,8 +8176,7 @@ clean:
 
 &lt;p&gt;如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？&lt;/p&gt;
 
-&lt;p&gt;大家可以先尝试着自己解决以上的问题，在之后的篇幅中我们会就以上几点继续通过举例的方式来加以解决。&lt;/p&gt;
-</description>
+&lt;p&gt;大家可以先尝试着自己解决以上的问题，在之后的篇幅中我们会就以上几点继续通过举例的方式来加以解决。&lt;/p&gt;</description>
         </item>
       
     

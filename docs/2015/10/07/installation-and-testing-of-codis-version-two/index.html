@@ -7,6 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="codis 2.x版本环境搭建与测试 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -44,9 +45,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -73,9 +72,9 @@
             </header>
 
             <div class="post-content">
-                
+                <p>Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。</p>
 
-<p>Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。</p>
+<p></p>
 
 <h3 id="安装并启动-zookeeper">安装并启动 zookeeper</h3>
 
@@ -310,7 +309,6 @@
 </table>
 
 <p>通过测试可以看出，使用 codis 会在性能上比原来直接使用 redis 会有所下降，但是优势就在于可以通过横向扩展（加机器）的方式去提高 redis 的存储容量以及并发量。</p>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -352,7 +350,7 @@
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/07/06/test-influxdb-and-opentsdb/">InfluxDB 与 OpenTSDB 对比测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月06日)</span></li><li id="li-rels"><a href="/2016/07/05/research-of-time-series-database-influxdb/">时间序列数据库调研之InfluxDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月05日)</span></li><li id="li-rels"><a href="/2016/07/04/research-of-time-series-database-opentsdb/">时间序列数据库调研之OpenTSDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月04日)</span></li><li id="li-rels"><a href="/2016/05/25/deploy-openstack-swift/">部署openstack的对象存储服务swift</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年05月25日)</span></li><li id="li-rels"><a href="/2015/09/15/redis-cluster-survey/">Redis集群调研</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月15日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/07/06/test-influxdb-and-opentsdb//">InfluxDB 与 OpenTSDB 对比测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月06日)</span></li><li id="li-rels"><a href="/2016/07/05/research-of-time-series-database-influxdb//">时间序列数据库调研之InfluxDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月05日)</span></li><li id="li-rels"><a href="/2016/07/04/research-of-time-series-database-opentsdb//">时间序列数据库调研之OpenTSDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月04日)</span></li><li id="li-rels"><a href="/2016/05/25/deploy-openstack-swift//">部署openstack的对象存储服务swift</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年05月25日)</span></li><li id="li-rels"><a href="/2015/09/15/redis-cluster-survey//">Redis集群调研</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月15日)</span></li></ul>
                 
             </aside>
                 
@@ -362,13 +360,13 @@
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2015/11/24/give-your-shell-some-color/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2015/11/24/give-your-shell-some-color//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -424,7 +422,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

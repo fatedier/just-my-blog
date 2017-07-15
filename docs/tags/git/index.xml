@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/git/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2016-04-05 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>利用docker搭建gitlab及持续集成模块</title>
-          <link>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker</link>
+          <link>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</link>
           <pubDate>Tue, 05 Apr 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</guid>
+          <description>&lt;p&gt;版本控制的重要性应该是毋庸置疑了，git 作为现在最流行的版本控制工具，各种规模的公司都在用。通常开源项目都会放在 github 上，基础功能是免费的，私有项目收费。对于一个小团队来说，gitlab 就是另外一个替代品，可以用来搭建自己私有的git服务器。&lt;/p&gt;
 
-&lt;p&gt;版本控制的重要性应该是毋庸置疑了，git 作为现在最流行的版本控制工具，各种规模的公司都在用。通常开源项目都会放在 github 上，基础功能是免费的，私有项目收费。对于一个小团队来说，gitlab 就是另外一个替代品，可以用来搭建自己私有的git服务器。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;为什么需要版本控制和持续继承&#34;&gt;为什么需要版本控制和持续继承？&lt;/h3&gt;
 
@@ -211,21 +211,20 @@ func main() {
 
 &lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit-all.png&#34; alt=&#34;test-commit-all&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png&#34; alt=&#34;test-succ-detail&#34; /&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png&#34; alt=&#34;test-succ-detail&#34; /&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>Git常用命令</title>
-          <link>http://blog.fatedier.com/2014/10/17/git-usually-command</link>
+          <link>http://blog.fatedier.com/2014/10/17/git-usually-command/</link>
           <pubDate>Fri, 17 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/17/git-usually-command</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/17/git-usually-command/</guid>
+          <description>&lt;p&gt;在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。&lt;/p&gt;
 
-&lt;p&gt;在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;修改某一次提交的说明信息&#34;&gt;修改某一次提交的说明信息&lt;/h3&gt;
 
@@ -326,23 +325,22 @@ $ git push origin HEAD --force
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git show f4869b0:test.cpp
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。&lt;/p&gt;
-</description>
+&lt;p&gt;文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>Git使用备忘</title>
-          <link>http://blog.fatedier.com/2014/10/16/git-use-for-remind</link>
+          <link>http://blog.fatedier.com/2014/10/16/git-use-for-remind/</link>
           <pubDate>Thu, 16 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/16/git-use-for-remind</guid>
-          <description>
-
-&lt;p&gt;Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。&lt;/p&gt;
+          <guid>http://blog.fatedier.com/2014/10/16/git-use-for-remind/</guid>
+          <description>&lt;p&gt;Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。&lt;/p&gt;
 
 &lt;p&gt;Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;git的配置&#34;&gt;Git的配置&lt;/h3&gt;
 
@@ -709,21 +707,20 @@ $ git merge testing
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git log -p -2
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 &amp;ldquo;-&amp;rdquo; 开头，新增的部分会以 &amp;ldquo;+&amp;rdquo; 开头，方便查看。&lt;/p&gt;
-</description>
+&lt;p&gt;通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 &amp;ldquo;-&amp;rdquo; 开头，新增的部分会以 &amp;ldquo;+&amp;rdquo; 开头，方便查看。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>学习Git的常用网站</title>
-          <link>http://blog.fatedier.com/2014/10/16/learn-git-website</link>
+          <link>http://blog.fatedier.com/2014/10/16/learn-git-website/</link>
           <pubDate>Thu, 16 Oct 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/10/16/learn-git-website</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/10/16/learn-git-website/</guid>
+          <description>&lt;p&gt;学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。&lt;/p&gt;
 
-&lt;p&gt;学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;git官方文档&#34;&gt;Git官方文档&lt;/h4&gt;
 
@@ -731,8 +728,7 @@ $ git merge testing
 
 &lt;h4 id=&#34;廖雪峰git教程&#34;&gt;廖雪峰Git教程&lt;/h4&gt;
 
-&lt;p&gt;&lt;a href=&#34;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&#34;&gt;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&lt;/a&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;a href=&#34;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&#34;&gt;http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000&lt;/a&gt;&lt;/p&gt;</description>
         </item>
       
     

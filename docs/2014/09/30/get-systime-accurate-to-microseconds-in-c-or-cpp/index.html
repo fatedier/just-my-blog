@@ -7,6 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C&#43;&#43;里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="C/C&#43;&#43;获取精确到微秒级的系统时间 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -44,9 +45,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -73,9 +72,9 @@
             </header>
 
             <div class="post-content">
-                
+                <p>最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。</p>
 
-<p>最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。</p>
+<p></p>
 
 <p>先贴一下这两个函数的说明</p>
 
@@ -167,7 +166,6 @@ int main()
 
 <pre><code class="language-bash">当前时间：20140930110457794678
 </code></pre>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -195,7 +193,7 @@ int main()
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name/">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight/">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li><li id="li-rels"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty/">size() == 0和empty()的比较</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月26日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02/">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01/">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name//">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp//">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll//">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process//">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight//">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li><li id="li-rels"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty//">size() == 0和empty()的比较</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月26日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02//">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01//">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
                 
             </aside>
                 
@@ -205,13 +203,13 @@ int main()
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -256,7 +254,7 @@ int main()
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

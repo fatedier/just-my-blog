@@ -7,6 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="使用godep管理golang项目的第三方包 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -44,9 +45,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -73,9 +72,9 @@
             </header>
 
             <div class="post-content">
-                
+                <p>go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。</p>
 
-<p>go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。</p>
+<p></p>
 
 <p>目前 go 自身的包管理体系比较薄弱，go 1.5 以后开始使用 vendor 机制来管理，但是依然缺乏对第三方包的版本的管理。</p>
 
@@ -119,7 +118,6 @@ godep go fmt
 </code></pre>
 
 <p>godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。</p>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -154,7 +152,7 @@ godep go fmt
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/">go语言中使用smtp发送邮件及smtp协议的相关问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月20日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/17/git-usually-command/">Git常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月17日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/16/learn-git-website/">学习Git的常用网站</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two//">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang//">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one//">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang//">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm//">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups//">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory//">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully//">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux//">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac//">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp//">go语言中使用smtp发送邮件及smtp协议的相关问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月20日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file//">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code//">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide//">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands//">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/17/git-usually-command//">Git常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月17日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind//">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/16/learn-git-website//">学习Git的常用网站</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li></ul>
                 
             </aside>
                 
@@ -164,13 +162,13 @@ godep go fmt
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2015/12/18/terminal-multiplexer-tmux/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2015/12/18/terminal-multiplexer-tmux//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -214,7 +212,7 @@ godep go fmt
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

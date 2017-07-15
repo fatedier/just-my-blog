@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/shell/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2015-11-24 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>给shell的输出加上颜色</title>
-          <link>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color</link>
+          <link>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color/</link>
           <pubDate>Tue, 24 Nov 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color/</guid>
+          <description>&lt;p&gt;在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。&lt;/p&gt;
 
-&lt;p&gt;在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;前景色-文本颜色&#34;&gt;前景色(文本颜色)&lt;/h3&gt;
 
@@ -70,21 +70,20 @@ cred=&#39;31m&#39;        # red
 cgreen=&#39;32m&#39;      # green
 
 echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>linux shell中的条件判断</title>
-          <link>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell</link>
+          <link>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/</link>
           <pubDate>Mon, 24 Nov 2014 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/</guid>
+          <description>&lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;
 
-&lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;退出状态&#34;&gt;退出状态&lt;/h3&gt;
 
@@ -168,8 +167,7 @@ expression1 -o expression2  # 或
 &lt;p&gt;多重的嵌套&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;if [ $a == 1 ] &amp;amp;&amp;amp; [ $b == 1 -o $b == 3 ]
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     

@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/golang/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2016-08-15 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>InfluxDB详解之TSM存储引擎解析（二）</title>
-          <link>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two</link>
+          <link>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</link>
           <pubDate>Mon, 15 Aug 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</guid>
+          <description>&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;
 
-&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;上一篇文章传送门： &lt;a href=&#34;http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/&#34;&gt;『InfluxDB详解之TSM存储引擎解析（一）』&lt;/a&gt;。&lt;/p&gt;
 
@@ -482,22 +482,21 @@ func (e *Engine) compactCache() {
 
 &lt;p&gt;官方设计文档里也提到了一些方案缓解这类问题，例如采用 LRU 策略，或是采用和 OpenTSDB 中类似的对 key 进行压缩的方法。还有一个方案是将索引数据放到另外一个数据库例如 BoltDB 中进行存储。&lt;/p&gt;
 
-&lt;p&gt;综合来说，InfluxDB 在性能和资源占用等方面都表现得很优秀，1.0.0 版本的稳定性也很高，我在测试环境中使用的一个月中没有出现过异常状况。可能目前最重要的问题就是不支持集群，对数据量有要求的公司需要自己进行二次开发。&lt;/p&gt;
-</description>
+&lt;p&gt;综合来说，InfluxDB 在性能和资源占用等方面都表现得很优秀，1.0.0 版本的稳定性也很高，我在测试环境中使用的一个月中没有出现过异常状况。可能目前最重要的问题就是不支持集群，对数据量有要求的公司需要自己进行二次开发。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>go 程序中获取虚拟块设备的读写速度</title>
-          <link>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang</link>
+          <link>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/</link>
           <pubDate>Mon, 08 Aug 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang</guid>
-          <description>
-
-&lt;p&gt;最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
+          <guid>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/</guid>
+          <description>&lt;p&gt;最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
 go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特殊信息的，或者是需要一些小技巧来实现。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;获取磁盘读写速度&#34;&gt;获取磁盘读写速度&lt;/h3&gt;
 
@@ -620,21 +619,20 @@ major := sys.Rdev / 256
 minor := sys.Rdev % 256
 devNumStr := fmt.Sprintf(&amp;quot;%d:%d&amp;quot;, major, minor)
 fmt.Printf(&amp;quot;get dev mapper [%s] [%s]&amp;quot;, dev.Name, devNumStr)
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>InfluxDB详解之TSM存储引擎解析（一）</title>
-          <link>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one</link>
+          <link>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</link>
           <pubDate>Fri, 05 Aug 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</guid>
+          <description>&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;
 
-&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;我认为像这样的针对特殊场景进行优化的数据库会是今后数据库领域发展的主流，这里针对 InfluxDB 1.0.0 版本的源码深入研究一下 TSM 引擎的实现原理。TSM 存储引擎解决了 InfluxDB 之前使用的 LevelDB 和 BoltDB 时遇到的一些问题。&lt;/p&gt;
 
@@ -910,21 +908,20 @@ type Index []*KeyIndex
 
 &lt;p&gt;tsm file 的最后8字节的内容存放了 Index 部分的起始位置在 tsm file 中的偏移量，方便将索引信息加载到内存中。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;由于内容较多，具体的写入与查询操作的流程，以及部分代码的详解会在下一篇文章中介绍。&lt;/strong&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;strong&gt;由于内容较多，具体的写入与查询操作的流程，以及部分代码的详解会在下一篇文章中介绍。&lt;/strong&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>golang 中使用 statik 将静态资源编译进二进制文件中</title>
-          <link>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang</link>
+          <link>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/</link>
           <pubDate>Mon, 01 Aug 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/</guid>
+          <description>&lt;p&gt;现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。&lt;/p&gt;
 
-&lt;p&gt;现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;最近在阅读 InfluxDB 的源码，发现里面提供了一个 admin 管理的页面，可以通过浏览器来执行一些命令以及查看程序运行的信息。但是我运行的时候只运行了一个 influxd 的二进制文件，并没有看到 css, html 等文件。&lt;/p&gt;
 
@@ -1035,21 +1032,20 @@ func main() {
 
 statikFS, _ := fs.New()
 http.ListenAndServe(&amp;quot;:8080&amp;quot;, http.FileServer(statikFS))
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>使用gvm在不同go版本之间切换</title>
-          <link>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm</link>
+          <link>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/</link>
           <pubDate>Mon, 25 Jul 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/</guid>
+          <description>&lt;p&gt;Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。&lt;/p&gt;
 
-&lt;p&gt;Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;Go 的更新速度比较快，2015年8月发布 1.5 版本，2016年2月发布 1.6 版本，2016年8月即将发布 1.7 版本，在性能以及GC方便都在不断优化，及时更新到新版本的 go 很有优势。&lt;/p&gt;
 
@@ -1129,21 +1125,20 @@ http.ListenAndServe(&amp;quot;:8080&amp;quot;, http.FileServer(statikFS))
 
 &lt;p&gt;&lt;code&gt;gvm use go1.6.3 --default&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;这样设置后，再登录 shell 就默认使用 &lt;code&gt;go1.6.3&lt;/code&gt; 的版本，而不是系统原来的版本了。&lt;/p&gt;
-</description>
+&lt;p&gt;这样设置后，再登录 shell 就默认使用 &lt;code&gt;go1.6.3&lt;/code&gt; 的版本，而不是系统原来的版本了。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>go程序中dns解析无法使用所有域名服务器</title>
-          <link>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups</link>
+          <link>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/</link>
           <pubDate>Wed, 27 Apr 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/</guid>
+          <description>&lt;p&gt;最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。&lt;/p&gt;
 
-&lt;p&gt;最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;背景&#34;&gt;背景&lt;/h3&gt;
 
@@ -1402,21 +1397,20 @@ allow-recursion { none; };
 
 &lt;h4 id=&#34;更新&#34;&gt;更新&lt;/h4&gt;
 
-&lt;p&gt;发现在 go1.7 版本中对这个问题做了修复，使用纯 go 实现的 dns 解析方式也已经运行正常。具体信息可以参考 &lt;a href=&#34;https://github.com/golang/go/issues/15434&#34;&gt;issue 15434&lt;/a&gt;。&lt;/p&gt;
-</description>
+&lt;p&gt;发现在 go1.7 版本中对这个问题做了修复，使用纯 go 实现的 dns 解析方式也已经运行正常。具体信息可以参考 &lt;a href=&#34;https://github.com/golang/go/issues/15434&#34;&gt;issue 15434&lt;/a&gt;。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>如何使golang项目可以在任意目录下编译</title>
-          <link>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory</link>
+          <link>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory/</link>
           <pubDate>Thu, 25 Feb 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory/</guid>
+          <description>&lt;p&gt;通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。&lt;/p&gt;
 
-&lt;p&gt;通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;背景&#34;&gt;背景&lt;/h3&gt;
 
@@ -1440,19 +1434,20 @@ allow-recursion { none; };
 
 &lt;p&gt;编译的时候，把项目根目录加到 &lt;code&gt;GOPATH&lt;/code&gt; 中去，例如 &lt;code&gt;GOPATH=`pwd`:${GOPATH}&lt;/code&gt;，这样就会在自己的目录里查找内部包。&lt;/p&gt;
 
-&lt;p&gt;可以看到，通过这样的方式不管把你把项目放到哪一个目录下，都可以编译成功，当然，为了便于管理，推荐还是放在 &lt;code&gt;$GOPATH/src&lt;/code&gt; 目录下，同时使用 &lt;a href=&#34;https://github.com/tools/godep&#34;&gt;godep&lt;/a&gt; 来管理第三方包。&lt;/p&gt;
-</description>
+&lt;p&gt;可以看到，通过这样的方式不管把你把项目放到哪一个目录下，都可以编译成功，当然，为了便于管理，推荐还是放在 &lt;code&gt;$GOPATH/src&lt;/code&gt; 目录下，同时使用 &lt;a href=&#34;https://github.com/tools/godep&#34;&gt;godep&lt;/a&gt; 来管理第三方包。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>Go中如何优雅地关闭net.Listener</title>
-          <link>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully</link>
+          <link>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/</link>
           <pubDate>Fri, 19 Feb 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully</guid>
+          <guid>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/</guid>
           <description>&lt;p&gt;在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;但是我在释放这个监听端口的时候遇到了一些问题，我发现很难优雅地去关闭这个 &lt;strong&gt;net.Listener&lt;/strong&gt;。在网上查阅了一下资料，基本上都是程序结束时资源被系统自动回收，没发现有需要主动释放的。这个需求确实不多，不过想一下在写测试用例的时候或许可能会用到，我们先创建一个 &lt;strong&gt;net.Listener&lt;/strong&gt; 监听一个端口，&lt;strong&gt;client&lt;/strong&gt; 发送请求进行测试，通过后关闭这个 &lt;strong&gt;net.Listener&lt;/strong&gt;，再创建另外一个 &lt;strong&gt;net.Listener&lt;/strong&gt; 用于测试其他用例。&lt;/p&gt;
 
@@ -1512,21 +1507,20 @@ func main() {
     ln.Close()
     time.Sleep(1 * time.Second)
 }
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     
       
         <item>
           <title>使用godep管理golang项目的第三方包</title>
-          <link>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects</link>
+          <link>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/</link>
           <pubDate>Fri, 15 Jan 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/</guid>
+          <description>&lt;p&gt;go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。&lt;/p&gt;
 
-&lt;p&gt;go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;目前 go 自身的包管理体系比较薄弱，go 1.5 以后开始使用 vendor 机制来管理，但是依然缺乏对第三方包的版本的管理。&lt;/p&gt;
 
@@ -1569,21 +1563,20 @@ godep go install
 godep go fmt
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。&lt;/p&gt;
-</description>
+&lt;p&gt;godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>go语言中使用smtp发送邮件及smtp协议的相关问题</title>
-          <link>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp</link>
+          <link>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</link>
           <pubDate>Thu, 20 Aug 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</guid>
+          <description>&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
 
-&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;smtp-协议发送邮件&#34;&gt;smtp 协议发送邮件&lt;/h3&gt;
 
@@ -1785,8 +1778,7 @@ func main() {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;通过这个函数发送邮件，则身份认证时不会采用加密的方式，而是直接使用 &lt;strong&gt;PLAIN&lt;/strong&gt; 方式。&lt;/p&gt;
-</description>
+&lt;p&gt;通过这个函数发送邮件，则身份认证时不会采用加密的方式，而是直接使用 &lt;strong&gt;PLAIN&lt;/strong&gt; 方式。&lt;/p&gt;</description>
         </item>
       
     

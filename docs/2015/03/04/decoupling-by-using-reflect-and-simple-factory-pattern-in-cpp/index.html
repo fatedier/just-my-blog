@@ -7,6 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C&#43;&#43;中就需要自己去一步步实现。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -44,9 +45,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -73,9 +72,9 @@
             </header>
 
             <div class="post-content">
-                
+                <p>在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。</p>
 
-<p>在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。</p>
+<p></p>
 
 <h3 id="业务说明">业务说明</h3>
 
@@ -246,7 +245,6 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
 <p>通过传入不同的银行编码，会实例化不同的银行交互类，并且执行其对应的函数。</p>
 
 <p>如果需要增加新的银行接口，例如农业银行，只需要新增一个 <strong>NYBank</strong> 类，实现具体的业务逻辑，不需要改动原来的任何代码，传入 <strong>NYBank</strong> 字符串，就会执行农业银行相关的处理流程。</p>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -281,7 +279,7 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name/">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight/">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li><li id="li-rels"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/">C/C&#43;&#43;获取精确到微秒级的系统时间</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月30日)</span></li><li id="li-rels"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty/">size() == 0和empty()的比较</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月26日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02/">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01/">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name//">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll//">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process//">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight//">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li><li id="li-rels"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp//">C/C&#43;&#43;获取精确到微秒级的系统时间</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月30日)</span></li><li id="li-rels"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty//">size() == 0和empty()的比较</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月26日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02//">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01//">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
                 
             </aside>
                 
@@ -291,13 +289,13 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2015/05/08/upload-file-in-python-using-pycurl/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2015/05/08/upload-file-in-python-using-pycurl//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/2015/01/25/introduction-of-using-epoll/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/2015/01/25/introduction-of-using-epoll//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -347,7 +345,7 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

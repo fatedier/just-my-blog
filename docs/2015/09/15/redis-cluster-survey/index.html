@@ -9,6 +9,7 @@
 <meta name="description" content="Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。
 
 单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。
+
 ">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="Redis集群调研 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -46,9 +47,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -75,11 +74,11 @@
             </header>
 
             <div class="post-content">
-                
-
-<p>Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。</p>
+                <p>Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。</p>
 
 <p>单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。</p>
+
+<p></p>
 
 <h3 id="为什么需要集群">为什么需要集群</h3>
 
@@ -250,7 +249,6 @@
 <li>Go语言开发，可以充分利用多核，不必像 twemproxy 一样部署很多套</li>
 <li>性能损失，在不开启pipeline的情况下会损失大概40%，通过加实例线性扩展</li>
 </ul>
-
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -285,7 +283,7 @@
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/07/06/test-influxdb-and-opentsdb/">InfluxDB 与 OpenTSDB 对比测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月06日)</span></li><li id="li-rels"><a href="/2016/07/05/research-of-time-series-database-influxdb/">时间序列数据库调研之InfluxDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月05日)</span></li><li id="li-rels"><a href="/2016/07/04/research-of-time-series-database-opentsdb/">时间序列数据库调研之OpenTSDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月04日)</span></li><li id="li-rels"><a href="/2016/05/25/deploy-openstack-swift/">部署openstack的对象存储服务swift</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年05月25日)</span></li><li id="li-rels"><a href="/2015/10/07/installation-and-testing-of-codis-version-two/">codis 2.x版本环境搭建与测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年10月07日)</span></li></ul>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/07/06/test-influxdb-and-opentsdb//">InfluxDB 与 OpenTSDB 对比测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月06日)</span></li><li id="li-rels"><a href="/2016/07/05/research-of-time-series-database-influxdb//">时间序列数据库调研之InfluxDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月05日)</span></li><li id="li-rels"><a href="/2016/07/04/research-of-time-series-database-opentsdb//">时间序列数据库调研之OpenTSDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月04日)</span></li><li id="li-rels"><a href="/2016/05/25/deploy-openstack-swift//">部署openstack的对象存储服务swift</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年05月25日)</span></li><li id="li-rels"><a href="/2015/10/07/installation-and-testing-of-codis-version-two//">codis 2.x版本环境搭建与测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年10月07日)</span></li></ul>
                 
             </aside>
                 
@@ -295,13 +293,13 @@
                     <ul class="pager">
 
                         
-                        <li class="previous"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac//"><span aria-hidden="true">&larr;</span> Older</a></li>
                         
 
                         <li><a href="/post/">All Posts</a></li>
 
                         
-                        <li class="next"><a href="/about/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="/about//">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         
 
                     </ul>
@@ -364,7 +362,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

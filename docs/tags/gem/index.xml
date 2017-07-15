@@ -5,18 +5,20 @@
     <link>http://blog.fatedier.com/tags/gem/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2015-12-06 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>gem 源被屏蔽的解决方法</title>
-          <link>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded</link>
+          <link>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</link>
           <pubDate>Sun, 06 Dec 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded</guid>
+          <guid>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</guid>
           <description>&lt;p&gt;由于国内的网络环境比较特殊，使用 gem install 安装 ruby 包的时候，往往不能成功，我们可以手动替换成阿里提供的镜像源来进行下载。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;官方原先的源地址是 &lt;a href=&#34;https://rubygems.org/&#34;&gt;https://rubygems.org/&lt;/a&gt;&lt;/p&gt;
 
@@ -36,8 +38,7 @@ https://rubygems.org/
 https://ruby.taobao.org/
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;之后就可以使用 &lt;code&gt;gem install xxx -V&lt;/code&gt; 安装第三方包或应用并且显示详细过程。&lt;/p&gt;
-</description>
+&lt;p&gt;之后就可以使用 &lt;code&gt;gem install xxx -V&lt;/code&gt; 安装第三方包或应用并且显示详细过程。&lt;/p&gt;</description>
         </item>
       
     

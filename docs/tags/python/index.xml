@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/python/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2015-05-08 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>python中使用pycurl库上传文件</title>
-          <link>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl</link>
+          <link>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</link>
           <pubDate>Fri, 08 May 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</guid>
+          <description>&lt;p&gt;在对外提供各种语言SDK的时候经常会遇到需要上传文件的问题，例如在python中我们可以借助pycurl库实现这个功能。&lt;/p&gt;
 
-&lt;p&gt;在对外提供各种语言SDK的时候经常会遇到需要上传文件的问题，例如在python中我们可以借助pycurl库实现这个功能。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;项目地址&#34;&gt;项目地址&lt;/h3&gt;
 
@@ -57,8 +57,7 @@ def do_http_request(method, url, post_data=&#39;&#39;, upload_file=None): 
 
 &lt;p&gt;&lt;strong&gt;ch.FORM_FILE&lt;/strong&gt;：指定要上传文件的路径&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;ch.FORM_FILENAME&lt;/strong&gt;：指定要上传文件的文件名&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;strong&gt;ch.FORM_FILENAME&lt;/strong&gt;：指定要上传文件的文件名&lt;/p&gt;</description>
         </item>
       
     

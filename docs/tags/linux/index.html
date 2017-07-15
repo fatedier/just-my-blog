@@ -42,9 +42,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -68,13 +66,14 @@
             2016年08月08日
         </div>
         <h2 class="post-title">
-            <a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>
+            <a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang//">go 程序中获取虚拟块设备的读写速度</a>
         </h2>
     </header>
     <div class="post-content">
         <p>最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
 go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特殊信息的，或者是需要一些小技巧来实现。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -87,12 +86,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年07月18日
         </div>
         <h2 class="post-title">
-            <a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>
+            <a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux//">linux下查看指定进程的所有连接信息</a>
         </h2>
     </header>
     <div class="post-content">
         <p>定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -105,12 +105,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年03月25日
         </div>
         <h2 class="post-title">
-            <a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>
+            <a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files//">简记用sed对文件执行批量替换字符串的方法</a>
         </h2>
     </header>
     <div class="post-content">
         <p>每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -123,12 +124,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2015年12月18日
         </div>
         <h2 class="post-title">
-            <a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>
+            <a href="/2015/12/18/terminal-multiplexer-tmux//">终端利器 Tmux</a>
         </h2>
     </header>
     <div class="post-content">
         <p>开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -141,12 +143,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2015年01月25日
         </div>
         <h2 class="post-title">
-            <a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>
+            <a href="/2015/01/25/introduction-of-using-epoll//">epoll使用说明</a>
         </h2>
     </header>
     <div class="post-content">
         <p>在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -159,12 +162,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2014年12月16日
         </div>
         <h2 class="post-title">
-            <a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>
+            <a href="/2014/12/16/how-to-deal-with-zombie-process//">如何处理僵尸进程</a>
         </h2>
     </header>
     <div class="post-content">
         <p>在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -177,13 +181,14 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2014年12月07日
         </div>
         <h2 class="post-title">
-            <a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>
+            <a href="/2014/12/07/debug-with-linux-core-file//">linux core文件调试</a>
         </h2>
     </header>
     <div class="post-content">
         <p>在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
 题，如果日志较少，就很难进行进一步的查错了。但是发现在该目录下生成了一个core文件，可以帮助我们查找程序崩溃的原因。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -196,12 +201,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2014年11月24日
         </div>
         <h2 class="post-title">
-            <a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>
+            <a href="/2014/11/24/conditional-judgement-in-linux-shell//">linux shell中的条件判断</a>
         </h2>
     </header>
     <div class="post-content">
         <p>在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -214,12 +220,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2014年11月10日
         </div>
         <h2 class="post-title">
-            <a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>
+            <a href="/2014/11/10/use-astyle-to-format-code//">使用astyle进行代码格式化</a>
         </h2>
     </header>
     <div class="post-content">
         <p>在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &ndash; &ldquo;astyle&rdquo;。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -232,12 +239,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2014年11月03日
         </div>
         <h2 class="post-title">
-            <a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>
+            <a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux//">Linux下如何进行文件编码格式转换</a>
         </h2>
     </header>
     <div class="post-content">
         <p>最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -250,12 +258,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2014年10月29日
         </div>
         <h2 class="post-title">
-            <a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>
+            <a href="/2014/10/29/use-vim-to-make-my-ide//">使用Vim打造自己的IDE</a>
         </h2>
     </header>
     <div class="post-content">
         <p>之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -268,12 +277,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2014年10月24日
         </div>
         <h2 class="post-title">
-            <a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>
+            <a href="/2014/10/24/vimdiff-common-commands//">vimdiff常用命令</a>
         </h2>
     </header>
     <div class="post-content">
         <p>整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -286,7 +296,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2014年10月14日
         </div>
         <h2 class="post-title">
-            <a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>
+            <a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent//">主机使用代理上网，虚拟机Linux的shell如何连外网</a>
         </h2>
     </header>
     <div class="post-content">
@@ -294,6 +304,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
 
 <p>因为公司限制了每个人只能用一个IP，所以虚拟机中的Linux系统使用NAT方式和主机相连。主机是Win7操作系统，会发现网络里面多了VMnet8这个网络。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -306,14 +317,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2014年09月26日
         </div>
         <h2 class="post-title">
-            <a href="/2014/09/26/function-size-equal-zero-compare-with-empty/">size() == 0和empty()的比较</a>
+            <a href="/2014/09/26/function-size-equal-zero-compare-with-empty//">size() == 0和empty()的比较</a>
         </h2>
     </header>
     <div class="post-content">
         <p>最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。</p>
 
 <p>我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：</p>
-
     </div>
     </article>
 <hr>
@@ -326,12 +336,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2014年09月24日
         </div>
         <h2 class="post-title">
-            <a href="/2014/09/24/learn-to-write-makefile-02/">从简单实例开始，学会写Makefile（二）</a>
+            <a href="/2014/09/24/learn-to-write-makefile-02//">从简单实例开始，学会写Makefile（二）</a>
         </h2>
     </header>
     <div class="post-content">
         <p>如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -344,12 +355,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2014年09月08日
         </div>
         <h2 class="post-title">
-            <a href="/2014/09/08/learn-to-write-makefile-01/">从简单实例开始，学会写Makefile（一）</a>
+            <a href="/2014/09/08/learn-to-write-makefile-01//">从简单实例开始，学会写Makefile（一）</a>
         </h2>
     </header>
     <div class="post-content">
         <p>作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -361,7 +373,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

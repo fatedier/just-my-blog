@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/mongodb/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2015-06-05 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>MongoDB常用命令</title>
-          <link>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb</link>
+          <link>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb/</link>
           <pubDate>Fri, 05 Jun 2015 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb/</guid>
+          <description>&lt;p&gt;MongoDB 是一个基于分布式文件存储的数据库，由C++编写，介于关系数据库和非关系数据库之间的产品，所以在很多业务上可以取代 mysql，提供更高的性能以及更好的扩展性。虽然 MongoDB 不支持 sql 语法，但是从常用的操作命令上来说和 sql 的用法相类似。&lt;/p&gt;
 
-&lt;p&gt;MongoDB 是一个基于分布式文件存储的数据库，由C++编写，介于关系数据库和非关系数据库之间的产品，所以在很多业务上可以取代 mysql，提供更高的性能以及更好的扩展性。虽然 MongoDB 不支持 sql 语法，但是从常用的操作命令上来说和 sql 的用法相类似。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;查询有哪些数据库&#34;&gt;查询有哪些数据库&lt;/h4&gt;
 
@@ -182,8 +182,7 @@
 
 &lt;p&gt;&lt;code&gt;db.col.remove({id:1})&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;remove 的过滤条件同 find。&lt;/p&gt;
-</description>
+&lt;p&gt;remove 的过滤条件同 find。&lt;/p&gt;</description>
         </item>
       
     

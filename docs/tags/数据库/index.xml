@@ -5,20 +5,20 @@
     <link>http://blog.fatedier.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2016</rights>
+    <rights>(C) 2017</rights>
     <updated>2016-08-15 00:00:00 &#43;0000 UTC</updated>
 
     
       
         <item>
           <title>InfluxDB详解之TSM存储引擎解析（二）</title>
-          <link>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two</link>
+          <link>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</link>
           <pubDate>Mon, 15 Aug 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</guid>
+          <description>&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;
 
-&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;上一篇文章传送门： &lt;a href=&#34;http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/&#34;&gt;『InfluxDB详解之TSM存储引擎解析（一）』&lt;/a&gt;。&lt;/p&gt;
 
@@ -482,21 +482,20 @@ func (e *Engine) compactCache() {
 
 &lt;p&gt;官方设计文档里也提到了一些方案缓解这类问题，例如采用 LRU 策略，或是采用和 OpenTSDB 中类似的对 key 进行压缩的方法。还有一个方案是将索引数据放到另外一个数据库例如 BoltDB 中进行存储。&lt;/p&gt;
 
-&lt;p&gt;综合来说，InfluxDB 在性能和资源占用等方面都表现得很优秀，1.0.0 版本的稳定性也很高，我在测试环境中使用的一个月中没有出现过异常状况。可能目前最重要的问题就是不支持集群，对数据量有要求的公司需要自己进行二次开发。&lt;/p&gt;
-</description>
+&lt;p&gt;综合来说，InfluxDB 在性能和资源占用等方面都表现得很优秀，1.0.0 版本的稳定性也很高，我在测试环境中使用的一个月中没有出现过异常状况。可能目前最重要的问题就是不支持集群，对数据量有要求的公司需要自己进行二次开发。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>InfluxDB详解之TSM存储引擎解析（一）</title>
-          <link>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one</link>
+          <link>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</link>
           <pubDate>Fri, 05 Aug 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</guid>
+          <description>&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;
 
-&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;我认为像这样的针对特殊场景进行优化的数据库会是今后数据库领域发展的主流，这里针对 InfluxDB 1.0.0 版本的源码深入研究一下 TSM 引擎的实现原理。TSM 存储引擎解决了 InfluxDB 之前使用的 LevelDB 和 BoltDB 时遇到的一些问题。&lt;/p&gt;
 
@@ -772,21 +771,20 @@ type Index []*KeyIndex
 
 &lt;p&gt;tsm file 的最后8字节的内容存放了 Index 部分的起始位置在 tsm file 中的偏移量，方便将索引信息加载到内存中。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;由于内容较多，具体的写入与查询操作的流程，以及部分代码的详解会在下一篇文章中介绍。&lt;/strong&gt;&lt;/p&gt;
-</description>
+&lt;p&gt;&lt;strong&gt;由于内容较多，具体的写入与查询操作的流程，以及部分代码的详解会在下一篇文章中介绍。&lt;/strong&gt;&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>InfluxDB 与 OpenTSDB 对比测试</title>
-          <link>http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb</link>
+          <link>http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb/</link>
           <pubDate>Wed, 06 Jul 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb/</guid>
+          <description>&lt;p&gt;通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。&lt;/p&gt;
 
-&lt;p&gt;通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;时间序列数据库热度排名&#34;&gt;时间序列数据库热度排名&lt;/h3&gt;
 
@@ -882,21 +880,20 @@ type Index []*KeyIndex
 
 &lt;p&gt;查询速度，由于测试样本数据量还不够大，速度都非常快，可以看到 InfluxDB 的查询在 10ms 这个数量级，而 OpenTSDB 则慢了接近 10 倍，第二次查询时，由于缓存的原因，OpenTSDB 的查询速度也相当快。&lt;/p&gt;
 
-&lt;p&gt;集群方面，目前 InfluxDB 还没有比较好的解决方案，而 OpenTSDB 基于 HBase，这一套集群方案已经被很多大公司采用，稳定运行。&lt;/p&gt;
-</description>
+&lt;p&gt;集群方面，目前 InfluxDB 还没有比较好的解决方案，而 OpenTSDB 基于 HBase，这一套集群方案已经被很多大公司采用，稳定运行。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>时间序列数据库调研之InfluxDB</title>
-          <link>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb</link>
+          <link>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</link>
           <pubDate>Tue, 05 Jul 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</guid>
+          <description>&lt;p&gt;基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。&lt;/p&gt;
 
-&lt;p&gt;基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;测试版本&#34;&gt;测试版本&lt;/h3&gt;
 
@@ -1142,21 +1139,20 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;就单机来说，在磁盘占用、cpu使用率、读写速度方面都让人眼前一亮。如果数据量级不是非常大的情况下，单节点的 InfluxDB 就可以承载数十万每秒的写入，是一个比较合适的选择。&lt;/p&gt;
 
-&lt;p&gt;另一方面，从 0.12 版本开始不再开源其集群代码（虽然之前的集群部分就比较烂），如果考虑到之后进行扩展的话，需要进行二次开发。&lt;/p&gt;
-</description>
+&lt;p&gt;另一方面，从 0.12 版本开始不再开源其集群代码（虽然之前的集群部分就比较烂），如果考虑到之后进行扩展的话，需要进行二次开发。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>时间序列数据库调研之OpenTSDB</title>
-          <link>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb</link>
+          <link>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</link>
           <pubDate>Mon, 04 Jul 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</guid>
+          <description>&lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;
 
-&lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;测试版本&#34;&gt;测试版本&lt;/h3&gt;
 
@@ -1284,21 +1280,20 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;底层存储依托于 HBase，采用特殊设计过的数据存储格式，提供了非常快的查询速度，在此基础之上也更容易横向扩展。&lt;/p&gt;
 
-&lt;p&gt;但是，相对于 InfluxDB 这种即使是新手也可以在两分钟内部署运行完成，OpenTSDB 的部署和运维显然要麻烦很多，由于底层依赖于 HBase，想要大规模运行起来，需要相当专业、细心的运维工作。&lt;/p&gt;
-</description>
+&lt;p&gt;但是，相对于 InfluxDB 这种即使是新手也可以在两分钟内部署运行完成，OpenTSDB 的部署和运维显然要麻烦很多，由于底层依赖于 HBase，想要大规模运行起来，需要相当专业、细心的运维工作。&lt;/p&gt;</description>
         </item>
       
     
       
         <item>
           <title>OpenTSDB部署与使用</title>
-          <link>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb</link>
+          <link>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</link>
           <pubDate>Sat, 12 Mar 2016 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb</guid>
-          <description>
+          <guid>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</guid>
+          <description>&lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;
 
-&lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;安装-hbase&#34;&gt;安装 HBase&lt;/h3&gt;
 
@@ -1529,8 +1524,7 @@ put &#39;test&#39;, &#39;row3&#39;, &#39;cf:c&#39;, &#39;value3&#39;
         }
     }
 ]
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     

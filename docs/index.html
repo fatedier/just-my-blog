@@ -2,7 +2,7 @@
 
 <html lang="zh-cn">
 <head>
-	<meta name="generator" content="Hugo 0.16" />
+	<meta name="generator" content="Hugo 0.25.1" />
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
@@ -43,9 +43,7 @@
                         <li><a href="/categories/技术文章/">技术文章</a></li>
                         <li><a href="/categories/读书笔记/">读书笔记</a></li>
                         <li><a href="/tags/">分类</a></li>
-                        
                         <li><a href="/about/">关于我</a></li>
-                        
                         <li>
                             <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
                                 <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
@@ -68,15 +66,35 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2017年07月16日
+        </div>
+        <h2 class="post-title">
+            <a href="/2017/07/16/record-problem-resolve-for-docker-stop-slow//">记一次mesos集群停容器时间过长的问题排查</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>公司 mesos 集群某个 app 已经有数千的实例数，每次做滚动升级时，由于总资源不足，需要分批操作，每次起一批新版本实例，再停一批旧版本实例。目前停容器的策略是，先从服务发现中摘除需要停掉的节点，等待 60 秒后再停止容器，释放资源，但是实际上每次从发送停止容器的请求到容器资源被实际释放需要长达 6 分钟，导致滚动升级耗时过长。经过排查，最终确认问题出在我们使用 docker 的方式上，这里记录下分析和解决问题的过程。</p>
+
+<p></p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2016年10月22日
         </div>
         <h2 class="post-title">
-            <a href="/2016/10/22/travel-coding-and-writing/">旅行、编程与写作</a>
+            <a href="/2016/10/22/travel-coding-and-writing//">旅行、编程与写作</a>
         </h2>
     </header>
     <div class="post-content">
         <p>前段时间的精力主要放在了找工作上，压力也比较大，阅读和写博客的计划都有所耽误。后来难得利用换工作的间歇期去了云南的大理、丽江、香格里拉旅行，还看了《黑客与画家》这本书，对于工作、生活、理想的一些看法与感悟有了些许改变。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -89,12 +107,13 @@
             2016年08月15日
         </div>
         <h2 class="post-title">
-            <a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>
+            <a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two//">InfluxDB详解之TSM存储引擎解析（二）</a>
         </h2>
     </header>
     <div class="post-content">
         <p>上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -107,13 +126,14 @@
             2016年08月08日
         </div>
         <h2 class="post-title">
-            <a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>
+            <a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang//">go 程序中获取虚拟块设备的读写速度</a>
         </h2>
     </header>
     <div class="post-content">
         <p>最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
 go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特殊信息的，或者是需要一些小技巧来实现。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -126,12 +146,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年08月05日
         </div>
         <h2 class="post-title">
-            <a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>
+            <a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one//">InfluxDB详解之TSM存储引擎解析（一）</a>
         </h2>
     </header>
     <div class="post-content">
         <p>InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -144,12 +165,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年08月01日
         </div>
         <h2 class="post-title">
-            <a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>
+            <a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang//">golang 中使用 statik 将静态资源编译进二进制文件中</a>
         </h2>
     </header>
     <div class="post-content">
         <p>现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -162,12 +184,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年07月25日
         </div>
         <h2 class="post-title">
-            <a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>
+            <a href="/2016/07/25/use-different-go-version-by-gvm//">使用gvm在不同go版本之间切换</a>
         </h2>
     </header>
     <div class="post-content">
         <p>Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -180,12 +203,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年07月18日
         </div>
         <h2 class="post-title">
-            <a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>
+            <a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux//">linux下查看指定进程的所有连接信息</a>
         </h2>
     </header>
     <div class="post-content">
         <p>定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -198,12 +222,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年07月10日
         </div>
         <h2 class="post-title">
-            <a href="/2016/07/10/from-zero-to-one-just-a-dream/">从0到1：遥远的理想国</a>
+            <a href="/2016/07/10/from-zero-to-one-just-a-dream//">从0到1：遥远的理想国</a>
         </h2>
     </header>
     <div class="post-content">
         <p>已经记不清自己到底有多久没有认真读过一本非技术类的书籍了，大量的时间被花在职业相关的学习中，宅属性与日俱增。长此以往，渐渐发现个人的主观思想愈加匮乏，对事物的思考与理解能力逐渐下降，这真是一件令人细思极恐之事。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -216,12 +241,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年07月06日
         </div>
         <h2 class="post-title">
-            <a href="/2016/07/06/test-influxdb-and-opentsdb/">InfluxDB 与 OpenTSDB 对比测试</a>
+            <a href="/2016/07/06/test-influxdb-and-opentsdb//">InfluxDB 与 OpenTSDB 对比测试</a>
         </h2>
     </header>
     <div class="post-content">
         <p>通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -234,12 +260,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年07月05日
         </div>
         <h2 class="post-title">
-            <a href="/2016/07/05/research-of-time-series-database-influxdb/">时间序列数据库调研之InfluxDB</a>
+            <a href="/2016/07/05/research-of-time-series-database-influxdb//">时间序列数据库调研之InfluxDB</a>
         </h2>
     </header>
     <div class="post-content">
         <p>基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -252,12 +279,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年07月04日
         </div>
         <h2 class="post-title">
-            <a href="/2016/07/04/research-of-time-series-database-opentsdb/">时间序列数据库调研之OpenTSDB</a>
+            <a href="/2016/07/04/research-of-time-series-database-opentsdb//">时间序列数据库调研之OpenTSDB</a>
         </h2>
     </header>
     <div class="post-content">
         <p>Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -270,12 +298,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年06月24日
         </div>
         <h2 class="post-title">
-            <a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>
+            <a href="/2016/06/24/demystifying-kubernetes-and-deployment//">kubernetes 初探及部署实践</a>
         </h2>
     </header>
     <div class="post-content">
         <p>Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -288,12 +317,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年06月15日
         </div>
         <h2 class="post-title">
-            <a href="/2016/06/15/learn-lsm-tree/">LSM Tree 学习笔记</a>
+            <a href="/2016/06/15/learn-lsm-tree//">LSM Tree 学习笔记</a>
         </h2>
     </header>
     <div class="post-content">
         <p>最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。</p>
 
+<p></p>
     </div>
     </article>
 <hr>
@@ -306,30 +336,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             2016年05月25日
         </div>
         <h2 class="post-title">
-            <a href="/2016/05/25/deploy-openstack-swift/">部署openstack的对象存储服务swift</a>
+            <a href="/2016/05/25/deploy-openstack-swift//">部署openstack的对象存储服务swift</a>
         </h2>
     </header>
     <div class="post-content">
         <p>OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。</p>
 
-    </div>
-    </article>
-<hr>
-
-            
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2016年05月16日
-        </div>
-        <h2 class="post-title">
-            <a href="/2016/05/16/install-private-docker-registry/">搭建私有docker仓库</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的 docker 镜像仓库，方便在集群上快速部署 docker 服务。</p>
-
+<p></p>
     </div>
     </article>
 <hr>
@@ -355,21 +368,21 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                 </div>
                 <div class="list-group">
                     
-                    <a href="/2016/10/22/travel-coding-and-writing/" class="list-group-item">旅行、编程与写作</a>
+                    <a href="/2017/07/16/record-problem-resolve-for-docker-stop-slow//" class="list-group-item">记一次mesos集群停容器时间过长的问题排查</a>
                     
-                    <a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/" class="list-group-item">InfluxDB详解之TSM存储引擎解析（二）</a>
+                    <a href="/2016/10/22/travel-coding-and-writing//" class="list-group-item">旅行、编程与写作</a>
                     
-                    <a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/" class="list-group-item">go 程序中获取虚拟块设备的读写速度</a>
+                    <a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two//" class="list-group-item">InfluxDB详解之TSM存储引擎解析（二）</a>
                     
-                    <a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/" class="list-group-item">InfluxDB详解之TSM存储引擎解析（一）</a>
+                    <a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang//" class="list-group-item">go 程序中获取虚拟块设备的读写速度</a>
                     
-                    <a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/" class="list-group-item">golang 中使用 statik 将静态资源编译进二进制文件中</a>
+                    <a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one//" class="list-group-item">InfluxDB详解之TSM存储引擎解析（一）</a>
                     
-                    <a href="/2016/07/25/use-different-go-version-by-gvm/" class="list-group-item">使用gvm在不同go版本之间切换</a>
+                    <a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang//" class="list-group-item">golang 中使用 statik 将静态资源编译进二进制文件中</a>
                     
-                    <a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/" class="list-group-item">linux下查看指定进程的所有连接信息</a>
+                    <a href="/2016/07/25/use-different-go-version-by-gvm//" class="list-group-item">使用gvm在不同go版本之间切换</a>
                     
-                    <a href="/2016/07/10/from-zero-to-one-just-a-dream/" class="list-group-item">从0到1：遥远的理想国</a>
+                    <a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux//" class="list-group-item">linux下查看指定进程的所有连接信息</a>
                     
                 </div>
             </div>
@@ -394,7 +407,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     </a>
                     
                     <a href="/tags/docker/" class="list-group-item">
-                        <span class="badge">3</span>
+                        <span class="badge">4</span>
                         docker
                     </a>
                     
@@ -431,6 +444,11 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     <a href="/tags/mac/" class="list-group-item">
                         <span class="badge">1</span>
                         mac
+                    </a>
+                    
+                    <a href="/tags/mesos/" class="list-group-item">
+                        <span class="badge">1</span>
+                        mesos
                     </a>
                     
                     <a href="/tags/mongodb/" class="list-group-item">
@@ -542,7 +560,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2016  fatedier blog </p>
+    <p>&copy; 2017  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

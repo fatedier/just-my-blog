@@ -47,7 +47,7 @@
                         {{- $page := . -}}
                         {{- $has_common_tags := intersect $tags .Params.tags | len | lt 0 -}}
                         {{- if and $has_common_tags (ne $page_link $page.Permalink) -}}
-                            <li id="li-rels"><a href="{{ $page.RelPermalink }}/">{{ $page.Title }}</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;({{ .Date.Format .Site.Params.DateForm }})</span></li>
+                            <li id="li-rels"><a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;({{ .Date.Format .Site.Params.DateForm }})</span></li>
                         {{- end -}}
                     {{- end -}}
                 </ul>
@@ -60,7 +60,7 @@
                     <ul class="pager">
 
                         {{ if .Prev }}
-                        <li class="previous"><a href="{{ .Prev.RelPermalink }}/"><span aria-hidden="true">&larr;</span> Older</a></li>
+                        <li class="previous"><a href="{{ .Prev.RelPermalink }}"><span aria-hidden="true">&larr;</span> Older</a></li>
                         {{ else }}
                         <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
                         {{ end }}
@@ -68,7 +68,7 @@
                         <li><a href="/post/">All Posts</a></li>
 
                         {{ if .Next }}
-                        <li class="next"><a href="{{ .Next.RelPermalink }}/">Newer <span aria-hidden="true">&rarr;</span></a></li>
+                        <li class="next"><a href="{{ .Next.RelPermalink }}">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         {{ else }}
                         <li class="next disabled"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>
                         {{ end }}

@@ -9,7 +9,7 @@
                 </div>
                 <div class="list-group">
                     {{range first .Site.Params.SidebarRecentLimit .Site.Pages}}
-                    <a href="{{.RelPermalink}}/" class="list-group-item">{{ .Title }}</a>
+                    <a href="{{.RelPermalink}}" class="list-group-item">{{ .Title }}</a>
                     {{ end }}
                 </div>
             </div>

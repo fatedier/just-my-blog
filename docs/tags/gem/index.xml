@@ -1,47 +1,27 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>fatedier blog </title>
+    <title>Gem on fatedier blog</title>
     <link>http://blog.fatedier.com/tags/gem/</link>
-    <language>en-us</language>
-    <author></author>
-    <rights>(C) 2017</rights>
-    <updated>2015-12-06 00:00:00 &#43;0000 UTC</updated>
-
+    <description>Recent content in Gem on fatedier blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>Copyright (c) 2018. All rights reserved.</copyright>
+    <lastBuildDate>Sun, 06 Dec 2015 00:00:00 +0000</lastBuildDate>
     
-      
-        <item>
-          <title>gem 源被屏蔽的解决方法</title>
-          <link>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</link>
-          <pubDate>Sun, 06 Dec 2015 00:00:00 UTC</pubDate>
-          <author></author>
-          <guid>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</guid>
-          <description>&lt;p&gt;由于国内的网络环境比较特殊，使用 gem install 安装 ruby 包的时候，往往不能成功，我们可以手动替换成阿里提供的镜像源来进行下载。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;官方原先的源地址是 &lt;a href=&#34;https://rubygems.org/&#34;&gt;https://rubygems.org/&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;可以使用 &lt;code&gt;gem sources&lt;/code&gt; 命令来查看源地址。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;*** CURRENT SOURCES ***
-
-https://rubygems.org/
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;通过 &lt;code&gt;gem sources --add https://ruby.taobao.org/ --remove https://rubygems.org/&lt;/code&gt; 替换成阿里的源。&lt;/p&gt;
-
-&lt;p&gt;再次查看源地址列表。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;*** CURRENT SOURCES ***
-
-https://ruby.taobao.org/
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;之后就可以使用 &lt;code&gt;gem install xxx -V&lt;/code&gt; 安装第三方包或应用并且显示详细过程。&lt;/p&gt;</description>
-        </item>
-      
+	<atom:link href="http://blog.fatedier.com/tags/gem/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>gem 源被屏蔽的解决方法</title>
+      <link>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</link>
+      <pubDate>Sun, 06 Dec 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</guid>
+      <description>&lt;p&gt;由于国内的网络环境比较特殊，使用 gem install 安装 ruby 包的时候，往往不能成功，我们可以手动替换成阿里提供的镜像源来进行下载。&lt;/p&gt;
 
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
   </channel>
 </rss>

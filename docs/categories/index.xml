@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>fatedier blog </title>
+    <title>Categories on fatedier blog</title>
     <link>http://blog.fatedier.com/categories/</link>
-    <language>en-us</language>
-    <author></author>
-    <rights>(C) 2017</rights>
-    <updated>0001-01-01 00:00:00 &#43;0000 UTC</updated>
-
+    <description>Recent content in Categories on fatedier blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>Copyright (c) 2018. All rights reserved.</copyright>
     
+	<atom:link href="http://blog.fatedier.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>技术文章</title>
+      <link>http://blog.fatedier.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/</link>
+      <pubDate>Sun, 16 Jul 2017 00:00:00 +0000</pubDate>
       
+      <guid>http://blog.fatedier.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/</guid>
+      <description></description>
+    </item>
     
+    <item>
+      <title>诗与远方</title>
+      <link>http://blog.fatedier.com/categories/%E8%AF%97%E4%B8%8E%E8%BF%9C%E6%96%B9/</link>
+      <pubDate>Sat, 22 Oct 2016 00:00:00 +0000</pubDate>
       
+      <guid>http://blog.fatedier.com/categories/%E8%AF%97%E4%B8%8E%E8%BF%9C%E6%96%B9/</guid>
+      <description></description>
+    </item>
     
-
   </channel>
 </rss>

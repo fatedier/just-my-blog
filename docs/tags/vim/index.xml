@@ -1,76 +1,27 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>fatedier blog </title>
+    <title>Vim on fatedier blog</title>
     <link>http://blog.fatedier.com/tags/vim/</link>
-    <language>en-us</language>
-    <author></author>
-    <rights>(C) 2017</rights>
-    <updated>2015-07-30 00:00:00 &#43;0000 UTC</updated>
-
+    <description>Recent content in Vim on fatedier blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>Copyright (c) 2018. All rights reserved.</copyright>
+    <lastBuildDate>Thu, 30 Jul 2015 00:00:00 +0000</lastBuildDate>
     
-      
-        <item>
-          <title>关于vim的一些小技巧</title>
-          <link>http://blog.fatedier.com/2015/07/30/some-skills-about-vim/</link>
-          <pubDate>Thu, 30 Jul 2015 00:00:00 UTC</pubDate>
-          <author></author>
-          <guid>http://blog.fatedier.com/2015/07/30/some-skills-about-vim/</guid>
-          <description>&lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h3 id=&#34;插入与删除&#34;&gt;插入与删除&lt;/h3&gt;
-
-&lt;h4 id=&#34;插入&#34;&gt;插入&lt;/h4&gt;
-
-&lt;p&gt;&lt;code&gt;A&lt;/code&gt; 在行末插入&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;I&lt;/code&gt; 在行首插入&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;O&lt;/code&gt; 在上一行插入&lt;/p&gt;
-
-&lt;h4 id=&#34;替换字符&#34;&gt;替换字符&lt;/h4&gt;
-
-&lt;p&gt;普通模式下，先按下 &lt;code&gt;r&lt;/code&gt; 再按下其他按键，就是使用新的字符替换旧字符。&lt;/p&gt;
-
-&lt;h4 id=&#34;删除&#34;&gt;删除&lt;/h4&gt;
-
-&lt;p&gt;普通模式下，&lt;code&gt;ct;&lt;/code&gt; 依次按下三个按键，&lt;code&gt;c&lt;/code&gt; 表示删除这部分内容后直接进行插入模式，&lt;code&gt;t;&lt;/code&gt; 表示从当前位置到这一行中下一个出现 &lt;code&gt;;&lt;/code&gt; 号之前的位置，合在一起就是删除这之间的内容。 &lt;code&gt;c&lt;/code&gt; 换成 &lt;code&gt;d&lt;/code&gt; 的话就是删除当前位置到这一行中下一个出现 &lt;code&gt;;&lt;/code&gt; 之前的内容，但是不进入插入模式。&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;di&amp;quot;&lt;/code&gt; 将当前行第一次出现两个 &lt;code&gt;&amp;quot;&lt;/code&gt; 之间的内容全部清空并且进入插入模式。&lt;/p&gt;
-
-&lt;h3 id=&#34;移动&#34;&gt;移动&lt;/h3&gt;
-
-&lt;p&gt;&lt;code&gt;f;&lt;/code&gt; 表示移动到这一行中下一个 &lt;code&gt;;&lt;/code&gt; 号的位置。&lt;/p&gt;
-
-&lt;h3 id=&#34;vimgrep&#34;&gt;vimgrep&lt;/h3&gt;
-
-&lt;p&gt;&lt;code&gt;vimgrep /匹配模式/[g][j]&lt;/code&gt; 要搜索的文件/范围&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;g&lt;/code&gt; 表示是否把每一行的多个匹配结果都加入&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;j&lt;/code&gt; 表示是否搜索完后定位到第一个匹配位置&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;vimgrep /pattern/ %           // 在当前打开文件中查找
-vimgrep /pattern/ *           // 在当前目录下查找所有
-vimgrep /pattern/ **          // 在当前目录及子目录下查找所有
-vimgrep /pattern/ *.c         // 查找当前目录下所有.c文件
-vimgrep /pattern/ **/*        // 只查找子目录
-cn                            // 查找下一个
-cp                            // 查找上一个
-copen                         // 打开quickfix
-cw                            // 打开quickfix
-cclose                        // 关闭qucikfix
-help vimgrep                  // 查看vimgrep帮助
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;从vim正文复制单词到vim命令行&#34;&gt;从vim正文复制单词到vim命令行&lt;/h3&gt;
-
-&lt;p&gt;例如使用 &lt;code&gt;vimgrep&lt;/code&gt; 搜索时，光标先移动到要复制的单词的起始位置，之后切到命令模式， 先按 &lt;code&gt;ctrl + r&lt;/code&gt; ，之后再按 &lt;code&gt;ctrl + w&lt;/code&gt; 即可。&lt;/p&gt;</description>
-        </item>
-      
+	<atom:link href="http://blog.fatedier.com/tags/vim/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>关于vim的一些小技巧</title>
+      <link>http://blog.fatedier.com/2015/07/30/some-skills-about-vim/</link>
+      <pubDate>Thu, 30 Jul 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/2015/07/30/some-skills-about-vim/</guid>
+      <description>&lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;
 
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
   </channel>
 </rss>

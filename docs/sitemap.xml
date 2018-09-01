@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://blog.fatedier.com/2018/09/01/yan-ran/</loc>
+    <lastmod>2018-09-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</loc>
     <lastmod>2017-07-16T00:00:00+00:00</lastmod>
   </url>
@@ -358,7 +363,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/post/</loc>
-    <lastmod>2017-07-16T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -424,7 +429,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/</loc>
-    <lastmod>2017-07-16T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -437,6 +442,12 @@
   <url>
     <loc>http://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A/</loc>
     <lastmod>2016-07-10T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.fatedier.com/tags/%E5%B0%8F%E8%AF%B4/</loc>
+    <lastmod>2018-09-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -478,7 +489,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/categories/%E8%AF%97%E4%B8%8E%E8%BF%9C%E6%96%B9/</loc>
-    <lastmod>2016-10-22T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

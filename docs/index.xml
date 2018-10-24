@@ -286,7 +286,7 @@ E..(..@.@.u...L5..L5N1Uu.q.Q....P.      .....
 
 &lt;p&gt;查看 meso-agent 日志如下：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-agent-log.png&#34; alt=&#34;mesos-agent-log&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-agent-log.png&#34; alt=&#34;mesos-agent-log&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;确认 mesos-agent 在 &lt;strong&gt;00:39:22&lt;/strong&gt; 给 mesos-docker-executor 发送了 kill task 的消息，但是 mesos-docker-executor 在 &lt;strong&gt;00:44:22&lt;/strong&gt; 时才回复消息确认实例被停止了。&lt;/p&gt;
 
@@ -294,15 +294,15 @@ E..(..@.@.u...L5..L5N1Uu.q.Q....P.      .....
 
 &lt;h4 id=&#34;分析-mesos-docker-executor-源码&#34;&gt;分析 mesos-docker-executor 源码&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-docker-executor.png&#34; alt=&#34;mesos-docker-executor&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-docker-executor.png&#34; alt=&#34;mesos-docker-executor&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;可以看出，这里有一个很关键的 &lt;code&gt;gracePeriod&lt;/code&gt; 变量，如果停止任务的请求中有设置 &lt;code&gt;killPolicy&lt;/code&gt; 则此值为 &lt;code&gt;killPolicy&lt;/code&gt; 中的值，否则使用默认值。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-executor-shutdown-code.png&#34; alt=&#34;shutdown-code&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-executor-shutdown-code.png&#34; alt=&#34;shutdown-code&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;这个值在 mesos-agent 启动的时候通过 &lt;code&gt;--executor_shutdown_grace_period&lt;/code&gt; 传进去，实际环境中我们配置的是 5 分钟。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-docker-stop-code.png&#34; alt=&#34;docker-stop-code&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-docker-stop-code.png&#34; alt=&#34;docker-stop-code&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;mesos-docker-executor 会根据 &lt;code&gt;gracePeriod&lt;/code&gt; 的值调用 &lt;code&gt;docker stop -t&lt;/code&gt; 来停止容器。&lt;/p&gt;
 
@@ -1123,7 +1123,7 @@ fmt.Printf(&amp;quot;get dev mapper [%s] [%s]&amp;quot;, dev.Name, devNumStr)
 
 &lt;p&gt;TSM 存储引擎主要由几个部分组成： &lt;strong&gt;cache、wal、tsm file、compactor&lt;/strong&gt;。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-architecture.png&#34; alt=&#34;tsm-architecture&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-architecture.png&#34; alt=&#34;tsm-architecture&#34; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;shard-1&#34;&gt;Shard&lt;/h4&gt;
 
@@ -1227,7 +1227,7 @@ fmt.Printf(&amp;quot;get dev mapper [%s] [%s]&amp;quot;, dev.Name, devNumStr)
 
 &lt;h4 id=&#34;wal-文件&#34;&gt;WAL 文件&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-wal-entry.png&#34; alt=&#34;wal-entry&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-wal-entry.png&#34; alt=&#34;wal-entry&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;wal 文件中的一条数据，对应的是一个 key(measument + tags + fieldName) 下的所有 value 数据，按照时间排序。&lt;/p&gt;
 
@@ -1244,7 +1244,7 @@ fmt.Printf(&amp;quot;get dev mapper [%s] [%s]&amp;quot;, dev.Name, devNumStr)
 
 &lt;p&gt;单个 tsm 文件的主要格式如下：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file.png&#34; alt=&#34;tsm-file&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file.png&#34; alt=&#34;tsm-file&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;主要分为四个部分： &lt;strong&gt;Header, Blocks, Index, Footer&lt;/strong&gt;。&lt;/p&gt;
 
@@ -1252,7 +1252,7 @@ fmt.Printf(&amp;quot;get dev mapper [%s] [%s]&amp;quot;, dev.Name, devNumStr)
 
 &lt;h5 id=&#34;header&#34;&gt;Header&lt;/h5&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-header.png&#34; alt=&#34;tsm-file-header&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-header.png&#34; alt=&#34;tsm-file-header&#34; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;MagicNumber  (4 bytes)&lt;/strong&gt;: 用于区分是哪一个存储引擎，目前使用的 tsm1 引擎，MagicNumber 为 &lt;code&gt;0x16D116D1&lt;/code&gt;。&lt;/li&gt;
@@ -1261,7 +1261,7 @@ fmt.Printf(&amp;quot;get dev mapper [%s] [%s]&amp;quot;, dev.Name, devNumStr)
 
 &lt;h5 id=&#34;blocks&#34;&gt;Blocks&lt;/h5&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-blocks.png&#34; alt=&#34;tsm-file-blocks&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-blocks.png&#34; alt=&#34;tsm-file-blocks&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Blocks 内部是一些连续的 Block，block 是 InfluxDB 中的最小读取对象，每次读取操作都会读取一个 block。每一个 Block 分为 CRC32 值和 Data 两部分，CRC32 值用于校验 Data 的内容是否有问题。Data 的长度记录在之后的 Index 部分中。&lt;/p&gt;
 
@@ -1271,7 +1271,7 @@ fmt.Printf(&amp;quot;get dev mapper [%s] [%s]&amp;quot;, dev.Name, devNumStr)
 
 &lt;h5 id=&#34;index&#34;&gt;Index&lt;/h5&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index.png&#34; alt=&#34;tsm-file-index&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index.png&#34; alt=&#34;tsm-file-index&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Index 存放的是前面 Blocks 里内容的索引。索引条目的顺序是先按照 key 的字典序排序，再按照 time 排序。InfluxDB 在做查询操作时，可以根据 Index 的信息快速定位到 tsm file 中要查询的 block 的位置。&lt;/p&gt;
 
@@ -1315,9 +1315,9 @@ type Index []*KeyIndex
 
 &lt;p&gt;间接索引只存在于内存中，是为了可以快速定位到一个 key 在详细索引信息中的位置而创建的，可以被用于二分查找来实现快速检索。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index-simple.png&#34; alt=&#34;tsm-file-index-simple&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index-simple.png&#34; alt=&#34;tsm-file-index-simple&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-sub-index.png&#34; alt=&#34;tsm-file-sub-index&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-sub-index.png&#34; alt=&#34;tsm-file-sub-index&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;offsets 是一个数组，其中存储的值为每一个 key 在 Index 表中的位置，由于 key 的长度固定为 2字节，所以根据这个位置就可以找到该位置上对应的 key 的内容。&lt;/p&gt;
 
@@ -1325,7 +1325,7 @@ type Index []*KeyIndex
 
 &lt;h5 id=&#34;footer&#34;&gt;Footer&lt;/h5&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-footer.png&#34; alt=&#34;tsm-file-footer&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-footer.png&#34; alt=&#34;tsm-file-footer&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;tsm file 的最后8字节的内容存放了 Index 部分的起始位置在 tsm file 中的偏移量，方便将索引信息加载到内存中。&lt;/p&gt;
 
@@ -1730,7 +1730,7 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
 
 &lt;hr /&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-10-from-zero-to-one-just-a-dream-book-pic.png&#34; alt=&#34;book-pic&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-07-10-from-zero-to-one-just-a-dream-book-pic.png&#34; alt=&#34;book-pic&#34; /&gt;&lt;/p&gt;</description>
         </item>
       
     
@@ -1747,7 +1747,7 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
 
 &lt;h3 id=&#34;时间序列数据库热度排名&#34;&gt;时间序列数据库热度排名&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-06-test-influxdb-and-opentsdb-db-rank.png&#34; alt=&#34;db-rank&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-07-06-test-influxdb-and-opentsdb-db-rank.png&#34; alt=&#34;db-rank&#34; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;测试环境&#34;&gt;测试环境&lt;/h3&gt;
 
@@ -2148,7 +2148,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;h4 id=&#34;data-table-schema&#34;&gt;Data Table Schema&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-data-table-schema.png&#34; alt=&#34;data-table-schema&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-data-table-schema.png&#34; alt=&#34;data-table-schema&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;RowKey&lt;/strong&gt; 就是上述的 TSUID，除了时间戳占 4 byte，其余 UID 占 3 byte。&lt;/p&gt;
 
@@ -2162,7 +2162,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;p&gt;在 OpenTSDB 中，会将多列合并到一列之中以减少磁盘占用空间，这个过程会在 TSD 写数据或者查询过程中不定期的发生。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-compaction.png&#34; alt=&#34;compaction&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-compaction.png&#34; alt=&#34;compaction&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;例如图中，将列 1890 和 列 1892 合并到了一起。&lt;/p&gt;
 
@@ -2274,7 +2274,7 @@ cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702
 
 &lt;h3 id=&#34;主要组件&#34;&gt;主要组件&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-06-24-demystifying-kubernetes-and-deployment-k8s-overview.png&#34; alt=&#34;k8s-overview&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-06-24-demystifying-kubernetes-and-deployment-k8s-overview.png&#34; alt=&#34;k8s-overview&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Kubernetes 集群中主要存在两种类型的节点，分别是 master 节点，以及 minion 节点。&lt;/p&gt;
 
@@ -2516,7 +2516,7 @@ spec:
 
 &lt;h4 id=&#34;sstable&#34;&gt;SSTable&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-06-15-learn-lsm-tree-sstable.png&#34; alt=&#34;sstable&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-sstable.png&#34; alt=&#34;sstable&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;SSTable 就是 MemTable 中的数据在磁盘上的有序存储，其内部数据是根据 key 从小到大排列的。通常为了加快查找的速度，需要在 SSTable 中加入数据索引，可以快读定位到指定的 k-v 数据。&lt;/p&gt;
 
@@ -2526,7 +2526,7 @@ spec:
 
 &lt;h4 id=&#34;写入&#34;&gt;写入&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-06-15-learn-lsm-tree-write.png&#34; alt=&#34;write&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-write.png&#34; alt=&#34;write&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;在 LSM Tree 中，写入操作是相当快速的，只需要在 WAL 文件中顺序写入当次操作的内容，成功之后将该 k-v 数据写入 MemTable 中即可。尽管做了一次磁盘 IO，但是由于是顺序追加写入操作，效率相对来说很高，并不会导致写入速度的降低。数据写入 MemTable 中其实就是往 SkipList 中插入一条数据，过程也相当简单快速。&lt;/p&gt;
 
@@ -2553,7 +2553,7 @@ spec:
 
 &lt;h4 id=&#34;读取&#34;&gt;读取&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-06-15-learn-lsm-tree-read.png&#34; alt=&#34;read&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-read.png&#34; alt=&#34;read&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;LSM Tree 的读取效率并不高，当需要读取指定 key 的数据时，先在内存中的 MemTable 和 Immutable MemTable 中查找，如果没有找到，则继续从 Level 0 层开始，找不到就从更高层的 SSTable 文件中查找，如果查找失败，说明整个 LSM Tree 中都不存在这个 key 的数据。如果中间在任何一个地方找到这个 key 的数据，那么按照这个路径找到的数据都是最新的。&lt;/p&gt;
 
@@ -3434,7 +3434,7 @@ CGO_ENABLED=&amp;quot;1&amp;quot;
 
 &lt;h3 id=&#34;dns-查询协议格式&#34;&gt;dns 查询协议格式&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-27-go-program-does-not-use-all-nameservers-for-dns-lookups-dns-query-package.png&#34; alt=&#34;dns-query-package&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-04-27-go-program-does-not-use-all-nameservers-for-dns-lookups-dns-query-package.png&#34; alt=&#34;dns-query-package&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;我们只需要关注首部的12字节。&lt;/p&gt;
 
@@ -3643,7 +3643,7 @@ job1:
 
 &lt;h3 id=&#34;获取-runner-registration-token&#34;&gt;获取 Runner registration token&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-registration-token.png&#34; alt=&#34;registration-token&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-registration-token.png&#34; alt=&#34;registration-token&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;在 &lt;code&gt;gitlab&lt;/code&gt; 的管理员配置界面，左边有一个 &lt;code&gt;Runners&lt;/code&gt;，点进去之后可以看到有一个 &lt;code&gt;Registration token&lt;/code&gt;，这个是用于之后创建的 &lt;code&gt;runner&lt;/code&gt; 服务与 &lt;code&gt;gitlab&lt;/code&gt; 通信的时候认证使用。&lt;/p&gt;
 
@@ -3702,15 +3702,15 @@ running already the config should be automatically reloaded!
 
 &lt;p&gt;访问 &lt;code&gt;gitlab&lt;/code&gt; 查看 &lt;code&gt;build&lt;/code&gt; 的结果。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit.png&#34; alt=&#34;test-commit&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit.png&#34; alt=&#34;test-commit&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;可以看到提交记录右边有一个红叉，表示测试未通过，点击红叉，可以看到测试的摘要信息。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-info.png&#34; alt=&#34;test-info&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-info.png&#34; alt=&#34;test-info&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;继续点 红色的 &lt;code&gt;failed&lt;/code&gt; 按钮就可以看到详细的测试信息。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-deatil.png&#34; alt=&#34;test-deatil&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-deatil.png&#34; alt=&#34;test-deatil&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;从 &lt;code&gt;Runner&lt;/code&gt; 测试过程的输出信息可以看出来，&lt;code&gt;Runner&lt;/code&gt; 先 &lt;code&gt;pull&lt;/code&gt; 我们指定的 &lt;code&gt;docker&lt;/code&gt; 镜像，这里是 &lt;code&gt;golang:1.5&lt;/code&gt;，之后 &lt;code&gt;git clone&lt;/code&gt; 代码到测试环境，然后开始执行测试命令，在执行 &lt;code&gt;go build a.go&lt;/code&gt; 的时候出现了错误，并且显示了错误信息。&lt;/p&gt;
 
@@ -3729,9 +3729,9 @@ func main() {
 
 &lt;p&gt;可以看到能够通过测试了，执行程序后的输出 &lt;code&gt;aaa&lt;/code&gt; 也能够看到。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit-all.png&#34; alt=&#34;test-commit-all&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit-all.png&#34; alt=&#34;test-commit-all&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png&#34; alt=&#34;test-succ-detail&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png&#34; alt=&#34;test-succ-detail&#34; /&gt;&lt;/p&gt;</description>
         </item>
       
     
@@ -4214,7 +4214,7 @@ godep go fmt
 
 &lt;h3 id=&#34;界面&#34;&gt;界面&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-12-18-terminal-multiplexer-tmux-tmux-overview.png&#34; alt=&#34;tmux&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2015/2015-12-18-terminal-multiplexer-tmux-tmux-overview.png&#34; alt=&#34;tmux&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;我用了自己的配置文件，对界面做过一些优化，左下角是 &lt;strong&gt;session&lt;/strong&gt; 名称，中间是各个 &lt;strong&gt;window&lt;/strong&gt; 的名称，可以理解为一般 IDE 中的 Tab 页，右下角显示时间，这个窗口中打开了3个 &lt;strong&gt;pane&lt;/strong&gt;，通过快捷键，我就可以在不同的 &lt;strong&gt;session&lt;/strong&gt;, &lt;strong&gt;window&lt;/strong&gt;, &lt;strong&gt;pane&lt;/strong&gt; 之间来回切换，基本上脱离了鼠标的使用。&lt;/p&gt;
 
@@ -4846,7 +4846,7 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 
 &lt;p&gt;通常需要 smart-client 支持，在业务程序端根据预先设置的路由规则进行分片，从而实现对多个redis实例的分布式访问。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-jedis.png&#34; alt=&#34;jedis&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-jedis.png&#34; alt=&#34;jedis&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;鉴于redis本身的高性能，并且有一些设计良好的第三方库，例如java开发者可以使用jedis，所以很多小公司使用此方案。&lt;/p&gt;
 
@@ -4876,7 +4876,7 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 
 &lt;h4 id=&#34;整体架构图&#34;&gt;整体架构图&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-twemproxy-architecture.png&#34; alt=&#34;twemproxy_architecture&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-twemproxy-architecture.png&#34; alt=&#34;twemproxy_architecture&#34; /&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;twemproxy的特点&#34;&gt;twemproxy的特点&lt;/h4&gt;
 
@@ -4908,7 +4908,7 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 
 &lt;h4 id=&#34;数据分布-预分片&#34;&gt;数据分布：预分片&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-pre-sharding.png&#34; alt=&#34;redis-cluster-pre-sharding&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-pre-sharding.png&#34; alt=&#34;redis-cluster-pre-sharding&#34; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;预先分配好 16384 个slot&lt;/li&gt;
@@ -4919,7 +4919,7 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 
 &lt;h4 id=&#34;架构-去中心化&#34;&gt;架构：去中心化&lt;/h4&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-architecture.png&#34; alt=&#34;redis-cluster-architecture&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-architecture.png&#34; alt=&#34;redis-cluster-architecture&#34; /&gt;&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;无中心结构，每个节点都保存数据和整个集群的状态。&lt;/li&gt;
@@ -4967,7 +4967,7 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 
 &lt;p&gt;Go语言开发的分布式 Redis 解决方案，对于上层的应用来说，访问 codis 和原生的 redis server 没有明显区别（不支持发布订阅等某些命令，支持 pipeline）。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png&#34; alt=&#34;codis-architecture&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png&#34; alt=&#34;codis-architecture&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Codis由四部分组成：&lt;/p&gt;
 
@@ -5017,7 +5017,7 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 
 &lt;p&gt;要实现的效果就像 nginx 启动后通过 ps 查到的名称一样，这个名称就是自定义的，如下图&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-08-24-how-to-modify-process-name-nginx-process-name.png&#34; alt=&#34;nginx-process-name&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-nginx-process-name.png&#34; alt=&#34;nginx-process-name&#34; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;方法一&#34;&gt;方法一&lt;/h3&gt;
 
@@ -5071,7 +5071,7 @@ echo -e &amp;quot;${lc}${cred}hello${rc}&amp;quot;
 
 &lt;p&gt;而进程执行时的环境变量信息的存储地址就是紧接着 &lt;strong&gt;argv&lt;/strong&gt; 之后，通过 &lt;code&gt;char **environ&lt;/code&gt; 变量来获取，类似于下图&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-08-24-how-to-modify-process-name-argv-info.png&#34; alt=&#34;argv-info&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-argv-info.png&#34; alt=&#34;argv-info&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;由于我们需要修改 &lt;strong&gt;argv[0]&lt;/strong&gt; 的值，有可能新的字符串的长度超过原来 &lt;strong&gt;argv&lt;/strong&gt; 中所有字符串长度的总和，又因为 &lt;strong&gt;environ&lt;/strong&gt; 在内存空间上是紧跟着 &lt;strong&gt;argv&lt;/strong&gt; 的，我们如果直接修改 &lt;strong&gt;argv[0]&lt;/strong&gt; 的值，有可能会覆盖掉 &lt;strong&gt;environ&lt;/strong&gt; 的内存空间，所以需要先将 &lt;strong&gt;environ&lt;/strong&gt; 的内容 copy 到一块新的内存空间，之后再将 &lt;strong&gt;environ&lt;/strong&gt; 指针指向新的空间。&lt;/p&gt;
 
@@ -5819,9 +5819,9 @@ const Register class_name##Register::reg(#class_name,class_name##Register::newIn
 
 &lt;h3 id=&#34;测试&#34;&gt;测试&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg&#34; alt=&#34;GSBANK&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg&#34; alt=&#34;GSBANK&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg&#34; alt=&#34;RMBANK&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg&#34; alt=&#34;RMBANK&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;通过传入不同的银行编码，会实例化不同的银行交互类，并且执行其对应的函数。&lt;/p&gt;
 
@@ -6764,7 +6764,7 @@ esac
 
 &lt;p&gt;最终的效果：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-29-use-vim-to-make-my-ide-overview.jpg&#34; alt=&#34;overview&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2014/2014-10-29-use-vim-to-make-my-ide-overview.jpg&#34; alt=&#34;overview&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;现在把整个配置的过程记录下来，方便以后参考。&lt;/p&gt;
 
@@ -7042,7 +7042,7 @@ vim -d [file1] [file2]
 
 &lt;p&gt;之后会进入到文本编辑界面，如下图&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg&#34; alt=&#34;reset-commit-message&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg&#34; alt=&#34;reset-commit-message&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;将要修改的提交前面的 &lt;strong&gt;pick&lt;/strong&gt; 改为 &lt;strong&gt;edit&lt;/strong&gt; ，保存后退出。&lt;/p&gt;
 
@@ -7548,7 +7548,7 @@ $ git merge testing
 
 &lt;p&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg&#34; alt=&#34;vmware-net&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg&#34; alt=&#34;vmware-net&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;在VMware界面，点击“编辑”，“虚拟网络编辑器”&lt;/p&gt;
 
@@ -7558,11 +7558,11 @@ $ git merge testing
 
 &lt;p&gt;一般来说这时我们的主机会自动分配一个IP类似192.168.131.1这样的，子网掩码为255.255.255.0，如下图所示。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-host-net.jpg&#34; alt=&#34;host-net&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-host-net.jpg&#34; alt=&#34;host-net&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;现在进入虚拟机的Linux进行设置。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-network-configuration.jpg&#34; alt=&#34;network-configuration&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-network-configuration.jpg&#34; alt=&#34;network-configuration&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;注意IP需要设置成192.168.131.x的形势，网关是192.168.131.2。&lt;/p&gt;
 
@@ -8434,7 +8434,7 @@ w3.o:w3.cpp
 
 &lt;p&gt;这里需要注意的是，我们写的第一个规则的目标，将会成为“终极目标”，也就是我们最终希望生成的程序，这里是“test”文件。根据我们的“终极目标”，make会进行自动推导，例如“终极目标”依赖于的.o文件，make就会寻找生成这些.o文件的规则，然后执行相应的命令去生成这些文件，这样一层一层递归地进行下去，直到最终生成了“终极目标”。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg&#34; alt=&#34;gmake-target&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://image.fatedier.com/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg&#34; alt=&#34;gmake-target&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;如上图所示，虽然生成test文件的规则写在最前面，但是由于依赖于w1.o、w2.o、w3.o，make会先执行生成w1.o、w2.o、w3.o所需的命令，然后才会执行g++ -o test test.cpp w1.o w2.o w3.o 来生成test文件。&lt;/p&gt;
 

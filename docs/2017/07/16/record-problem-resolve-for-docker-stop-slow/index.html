@@ -157,7 +157,7 @@ E..(..@.@.u...L5..L5N1Uu.q.Q....P.      .....
 
 <p>查看 meso-agent 日志如下：</p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-agent-log.png" alt="mesos-agent-log" /></p>
+<p><img src="http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-agent-log.png" alt="mesos-agent-log" /></p>
 
 <p>确认 mesos-agent 在 <strong>00:39:22</strong> 给 mesos-docker-executor 发送了 kill task 的消息，但是 mesos-docker-executor 在 <strong>00:44:22</strong> 时才回复消息确认实例被停止了。</p>
 
@@ -165,15 +165,15 @@ E..(..@.@.u...L5..L5N1Uu.q.Q....P.      .....
 
 <h4 id="分析-mesos-docker-executor-源码">分析 mesos-docker-executor 源码</h4>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-docker-executor.png" alt="mesos-docker-executor" /></p>
+<p><img src="http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-docker-executor.png" alt="mesos-docker-executor" /></p>
 
 <p>可以看出，这里有一个很关键的 <code>gracePeriod</code> 变量，如果停止任务的请求中有设置 <code>killPolicy</code> 则此值为 <code>killPolicy</code> 中的值，否则使用默认值。</p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-executor-shutdown-code.png" alt="shutdown-code" /></p>
+<p><img src="http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-executor-shutdown-code.png" alt="shutdown-code" /></p>
 
 <p>这个值在 mesos-agent 启动的时候通过 <code>--executor_shutdown_grace_period</code> 传进去，实际环境中我们配置的是 5 分钟。</p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-docker-stop-code.png" alt="docker-stop-code" /></p>
+<p><img src="http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-docker-stop-code.png" alt="docker-stop-code" /></p>
 
 <p>mesos-docker-executor 会根据 <code>gracePeriod</code> 的值调用 <code>docker stop -t</code> 来停止容器。</p>
 

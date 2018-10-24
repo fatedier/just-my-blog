@@ -179,7 +179,7 @@ job1:
 
 <h3 id="获取-runner-registration-token">获取 Runner registration token</h3>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-registration-token.png" alt="registration-token" /></p>
+<p><img src="http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-registration-token.png" alt="registration-token" /></p>
 
 <p>在 <code>gitlab</code> 的管理员配置界面，左边有一个 <code>Runners</code>，点进去之后可以看到有一个 <code>Registration token</code>，这个是用于之后创建的 <code>runner</code> 服务与 <code>gitlab</code> 通信的时候认证使用。</p>
 
@@ -238,15 +238,15 @@ running already the config should be automatically reloaded!
 
 <p>访问 <code>gitlab</code> 查看 <code>build</code> 的结果。</p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit.png" alt="test-commit" /></p>
+<p><img src="http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit.png" alt="test-commit" /></p>
 
 <p>可以看到提交记录右边有一个红叉，表示测试未通过，点击红叉，可以看到测试的摘要信息。</p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-info.png" alt="test-info" /></p>
+<p><img src="http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-info.png" alt="test-info" /></p>
 
 <p>继续点 红色的 <code>failed</code> 按钮就可以看到详细的测试信息。</p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-deatil.png" alt="test-deatil" /></p>
+<p><img src="http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-deatil.png" alt="test-deatil" /></p>
 
 <p>从 <code>Runner</code> 测试过程的输出信息可以看出来，<code>Runner</code> 先 <code>pull</code> 我们指定的 <code>docker</code> 镜像，这里是 <code>golang:1.5</code>，之后 <code>git clone</code> 代码到测试环境，然后开始执行测试命令，在执行 <code>go build a.go</code> 的时候出现了错误，并且显示了错误信息。</p>
 
@@ -265,9 +265,9 @@ func main() {
 
 <p>可以看到能够通过测试了，执行程序后的输出 <code>aaa</code> 也能够看到。</p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit-all.png" alt="test-commit-all" /></p>
+<p><img src="http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit-all.png" alt="test-commit-all" /></p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png" alt="test-succ-detail" /></p>
+<p><img src="http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png" alt="test-succ-detail" /></p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

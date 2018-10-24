@@ -98,7 +98,7 @@
 
 <p>通常需要 smart-client 支持，在业务程序端根据预先设置的路由规则进行分片，从而实现对多个redis实例的分布式访问。</p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-jedis.png" alt="jedis" /></p>
+<p><img src="http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-jedis.png" alt="jedis" /></p>
 
 <p>鉴于redis本身的高性能，并且有一些设计良好的第三方库，例如java开发者可以使用jedis，所以很多小公司使用此方案。</p>
 
@@ -128,7 +128,7 @@
 
 <h4 id="整体架构图">整体架构图</h4>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-twemproxy-architecture.png" alt="twemproxy_architecture" /></p>
+<p><img src="http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-twemproxy-architecture.png" alt="twemproxy_architecture" /></p>
 
 <h4 id="twemproxy的特点">twemproxy的特点</h4>
 
@@ -160,7 +160,7 @@
 
 <h4 id="数据分布-预分片">数据分布：预分片</h4>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-pre-sharding.png" alt="redis-cluster-pre-sharding" /></p>
+<p><img src="http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-pre-sharding.png" alt="redis-cluster-pre-sharding" /></p>
 
 <ul>
 <li>预先分配好 16384 个slot</li>
@@ -171,7 +171,7 @@
 
 <h4 id="架构-去中心化">架构：去中心化</h4>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-architecture.png" alt="redis-cluster-architecture" /></p>
+<p><img src="http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-architecture.png" alt="redis-cluster-architecture" /></p>
 
 <ul>
 <li>无中心结构，每个节点都保存数据和整个集群的状态。</li>
@@ -219,7 +219,7 @@
 
 <p>Go语言开发的分布式 Redis 解决方案，对于上层的应用来说，访问 codis 和原生的 redis server 没有明显区别（不支持发布订阅等某些命令，支持 pipeline）。</p>
 
-<p><img src="http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png" alt="codis-architecture" /></p>
+<p><img src="http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png" alt="codis-architecture" /></p>
 
 <p>Codis由四部分组成：</p>
 

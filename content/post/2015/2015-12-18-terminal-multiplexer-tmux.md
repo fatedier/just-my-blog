@@ -15,7 +15,7 @@ url: "/2015/12/18/terminal-multiplexer-tmux"
 
 ### 界面
 
-![tmux](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-12-18-terminal-multiplexer-tmux-tmux-overview.png)
+![tmux](http://image.fatedier.com/pic/2015/2015-12-18-terminal-multiplexer-tmux-tmux-overview.png)
 
 我用了自己的配置文件，对界面做过一些优化，左下角是 **session** 名称，中间是各个 **window** 的名称，可以理解为一般 IDE 中的 Tab 页，右下角显示时间，这个窗口中打开了3个 **pane**，通过快捷键，我就可以在不同的 **session**, **window**, **pane** 之间来回切换，基本上脱离了鼠标的使用。
 

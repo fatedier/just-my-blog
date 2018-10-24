@@ -180,9 +180,9 @@ REGISTER_CLASS(GSBank)
 
 ### 测试
 
-![GSBANK](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg)
+![GSBANK](http://image.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg)
 
-![RMBANK](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg)
+![RMBANK](http://image.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg)
 
 通过传入不同的银行编码，会实例化不同的银行交互类，并且执行其对应的函数。
 

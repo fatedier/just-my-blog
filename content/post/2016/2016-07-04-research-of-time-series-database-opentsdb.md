@@ -48,7 +48,7 @@ opentsdb-2.2.0
 
 #### Data Table Schema
 
-![data-table-schema](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-data-table-schema.png)
+![data-table-schema](http://image.fatedier.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-data-table-schema.png)
 
 **RowKey** 就是上述的 TSUID，除了时间戳占 4 byte，其余 UID 占 3 byte。
 
@@ -62,7 +62,7 @@ opentsdb-2.2.0
 
 在 OpenTSDB 中，会将多列合并到一列之中以减少磁盘占用空间，这个过程会在 TSD 写数据或者查询过程中不定期的发生。
 
-![compaction](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-compaction.png)
+![compaction](http://image.fatedier.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-compaction.png)
 
 例如图中，将列 1890 和 列 1892 合并到了一起。
 

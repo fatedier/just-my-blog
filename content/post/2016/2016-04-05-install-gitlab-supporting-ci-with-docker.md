@@ -119,7 +119,7 @@ job1:
 ### 获取 Runner registration token
 
 
-![registration-token](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-registration-token.png)
+![registration-token](http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-registration-token.png)
 
 在 `gitlab` 的管理员配置界面，左边有一个 `Runners`，点进去之后可以看到有一个 `Registration token`，这个是用于之后创建的 `runner` 服务与 `gitlab` 通信的时候认证使用。
 
@@ -181,15 +181,15 @@ running already the config should be automatically reloaded!
 
 访问 `gitlab` 查看 `build` 的结果。
 
-![test-commit](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit.png)
+![test-commit](http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit.png)
 
 可以看到提交记录右边有一个红叉，表示测试未通过，点击红叉，可以看到测试的摘要信息。
 
-![test-info](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-info.png)
+![test-info](http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-info.png)
 
 继续点 红色的 `failed` 按钮就可以看到详细的测试信息。
 
-![test-deatil](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-deatil.png)
+![test-deatil](http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-deatil.png)
 
 从 `Runner` 测试过程的输出信息可以看出来，`Runner` 先 `pull` 我们指定的 `docker` 镜像，这里是 `golang:1.5`，之后 `git clone` 代码到测试环境，然后开始执行测试命令，在执行 `go build a.go` 的时候出现了错误，并且显示了错误信息。
 
@@ -209,6 +209,6 @@ func main() {
 
 可以看到能够通过测试了，执行程序后的输出 `aaa` 也能够看到。
 
-![test-commit-all](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit-all.png)
+![test-commit-all](http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit-all.png)
 
-![test-succ-detail](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png)
+![test-succ-detail](http://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png)

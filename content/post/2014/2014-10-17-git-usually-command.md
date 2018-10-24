@@ -27,7 +27,7 @@ $ git rebase -i HEAD~3
 
 之后会进入到文本编辑界面，如下图
 
-![reset-commit-message](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg)
+![reset-commit-message](http://image.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg)
 
 将要修改的提交前面的 **pick** 改为 **edit** ，保存后退出。
 

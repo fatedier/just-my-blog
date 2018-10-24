@@ -36,7 +36,7 @@ MemTable 对应的就是 WAL 文件，是该文件内容在内存中的存储结
 
 #### SSTable
 
-![sstable](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-06-15-learn-lsm-tree-sstable.png)
+![sstable](http://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-sstable.png)
 
 SSTable 就是 MemTable 中的数据在磁盘上的有序存储，其内部数据是根据 key 从小到大排列的。通常为了加快查找的速度，需要在 SSTable 中加入数据索引，可以快读定位到指定的 k-v 数据。
 
@@ -46,7 +46,7 @@ SSTable 通常采用的分级的结构，例如 LevelDB 中就是如此。MemTab
 
 #### 写入
 
-![write](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-06-15-learn-lsm-tree-write.png)
+![write](http://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-write.png)
 
 在 LSM Tree 中，写入操作是相当快速的，只需要在 WAL 文件中顺序写入当次操作的内容，成功之后将该 k-v 数据写入 MemTable 中即可。尽管做了一次磁盘 IO，但是由于是顺序追加写入操作，效率相对来说很高，并不会导致写入速度的降低。数据写入 MemTable 中其实就是往 SkipList 中插入一条数据，过程也相当简单快速。
 
@@ -71,7 +71,7 @@ SSTable 通常采用的分级的结构，例如 LevelDB 中就是如此。MemTab
 
 #### 读取
 
-![read](http://7xs9f1.com1.z0.glb.clouddn.com/pic/2016/2016-06-15-learn-lsm-tree-read.png)
+![read](http://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-read.png)
 
 LSM Tree 的读取效率并不高，当需要读取指定 key 的数据时，先在内存中的 MemTable 和 Immutable MemTable 中查找，如果没有找到，则继续从 Level 0 层开始，找不到就从更高层的 SSTable 文件中查找，如果查找失败，说明整个 LSM Tree 中都不存在这个 key 的数据。如果中间在任何一个地方找到这个 key 的数据，那么按照这个路径找到的数据都是最新的。
 

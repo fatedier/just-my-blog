@@ -10,7 +10,7 @@ url: "/2017/01/01/golang-cross-compile"
 
 golang 相比 c/c++ 的优势之一是更容易编写出跨平台的应用，而不需要为各个平台编写适配代码。和 JAVA 相比，对系统环境要求较低，不需要预先安装 JDK 等适配环境。
 
-<--more-->
+<!--more-->
 
 ### go build
 

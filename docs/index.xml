@@ -364,11 +364,9 @@ root      1216  1111  0 01:23 ?        00:00:00 ps -ef
           <pubDate>Sun, 01 Jan 2017 00:00:00 UTC</pubDate>
           <author></author>
           <guid>http://blog.fatedier.com/2017/01/01/golang-cross-compile/</guid>
-          <description>
+          <description>&lt;p&gt;golang 相比 c/c++ 的优势之一是更容易编写出跨平台的应用，而不需要为各个平台编写适配代码。和 JAVA 相比，对系统环境要求较低，不需要预先安装 JDK 等适配环境。&lt;/p&gt;
 
-&lt;p&gt;golang 相比 c/c++ 的优势之一是更容易编写出跨平台的应用，而不需要为各个平台编写适配代码。和 JAVA 相比，对系统环境要求较低，不需要预先安装 JDK 等适配环境。&lt;/p&gt;
-
-&lt;p&gt;&amp;lt;&amp;ndash;more&amp;ndash;&amp;gt;&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;go-build&#34;&gt;go build&lt;/h3&gt;
 
@@ -409,8 +407,7 @@ root      1216  1111  0 01:23 ?        00:00:00 ps -ef
 &lt;ul&gt;
 &lt;li&gt;推荐在 linux/amd64 上进行交叉编译，其他平台可能会出现一些意外情况，具体不明确。&lt;/li&gt;
 &lt;li&gt;使用 cgo 时交叉编译可能失败，编写跨平台应用最好禁用 cgo。&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
         </item>
       
     

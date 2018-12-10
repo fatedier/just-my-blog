@@ -104,6 +104,32 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2017年01月01日
+        </div>
+        <h2 class="post-title">
+            <a href="/2017/01/01/golang-cross-compile/">golang 交叉编译</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        golang 相比 c/c++ 的优势之一是更容易编写出跨平台的应用，而不需要为各个平台编写适配代码。和 JAVA 相比，对系统环境要求较低，不需要预先安装 JDK 等适配环境。
+&lt;&ndash;more&ndash;&gt;
+go build 这里以 frp 项目的跨平台编译脚本作为示例
+编译 linux/amd64 版本的应用：
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags &quot;-s -w&quot; -o frpc_linux_amd64 ./cmd/frpc
+编译 windows/amd64 版本的应用：
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags &quot;-s -w&quot; -o ./frpc_windows_amd64.exe ./cmd/frpc
+在 linux 上编译出 windows 的 exe 文件后，可以直接拷贝到 windows 机器上运行。
+GOOS 表明目标平台的操作系统。 GOARCH 表明目标平台的架构，通常 386 表示 32位系统，amd64 表示 64位系统。 可以通过 go tool dist list 查看支持的操作系统和对应的平台。
+-s -w 是为了去掉编译时的符号信息和调试信息，缩小编译出的程序文件大小，非必需。 CGO_ENABLED=0 可以禁用 cgo 编译，跨平台兼容性会更好。
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2016年10月22日
         </div>
         <h2 class="post-title">
@@ -329,25 +355,6 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2016年06月15日
-        </div>
-        <h2 class="post-title">
-            <a href="/2016/06/15/learn-lsm-tree/">LSM Tree 学习笔记</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。</p>
-
-<p></p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -372,6 +379,8 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     
                     <a href="/2017/07/16/record-problem-resolve-for-docker-stop-slow/" class="list-group-item">记一次mesos集群停容器时间过长的问题排查</a>
                     
+                    <a href="/2017/01/01/golang-cross-compile/" class="list-group-item">golang 交叉编译</a>
+                    
                     <a href="/2016/10/22/travel-coding-and-writing/" class="list-group-item">旅行、编程与写作</a>
                     
                     <a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/" class="list-group-item">InfluxDB详解之TSM存储引擎解析（二）</a>
@@ -381,8 +390,6 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     <a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/" class="list-group-item">InfluxDB详解之TSM存储引擎解析（一）</a>
                     
                     <a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/" class="list-group-item">golang 中使用 statik 将静态资源编译进二进制文件中</a>
-                    
-                    <a href="/2016/07/25/use-different-go-version-by-gvm/" class="list-group-item">使用gvm在不同go版本之间切换</a>
                     
                 </div>
             </div>
@@ -422,7 +429,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     </a>
                     
                     <a href="/tags/golang/" class="list-group-item">
-                        <span class="badge">10</span>
+                        <span class="badge">11</span>
                         golang
                     </a>
                     

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。
+现象 正常升级某个服务的 Deployment。
+升级策略，先起一个新实例，再停一个旧实例：
+type: RollingUpdate rollingUpdate: maxSurge: 1 maxUnavailable: 0  实例停止前如果没有请求会立即退出，如果有请求则等待最多 60 秒，仍然没有结束时会被强制杀掉。
+terminationGracePeriodSeconds: 60  升级过程中，发现服务响应时间的 98 值增长很多，95 值没有太大变化，看起来有少量请求被升级操作影响到了。
+原因 排查后，确认部分请求变慢的原因是因为和后端实例建立连接超时，由于使用的是 Go 的 DefaultTransport，所以连接超时时间为 30s，部分请求在超时 30s 后才被重试，从而导致响应时间的 98 值变慢。
+为什么建立连接会超时？
+原来在升级实例的过程中，实例被杀掉，对应的容器的虚拟 IP 就不存在了，而客户端建立连接时发送的 SYNC 包收不到回应，会一直重发，直到超时。
+之所以客户端仍然会给该 IP 发送请求，是因为我们自研的 Service Mesh 方案的服务发现没有采用 k8s 默认的 DNS 轮询方式，而是自己开发的服务发现组件，为了能够更好地配合负载均衡的能力。网关是采用轮询的方式，每隔 10s 从 Discovery 组件同步一次数据，所以被杀掉的实例没有及时被同步到各网关。
+kubernetes Pod 停止流程 为了更好解决问题，我们需要理解 k8s 中单个 Pod 停止的流程。">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2018年12月10日 
+                </div>
+                <h1 class="post-title">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</h1>
+            </header>
+
+            <div class="post-content">
+                
+
+<p>在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。</p>
+
+<h3 id="现象">现象</h3>
+
+<p>正常升级某个服务的 Deployment。</p>
+
+<p>升级策略，先起一个新实例，再停一个旧实例：</p>
+
+<pre><code>type: RollingUpdate
+rollingUpdate:
+  maxSurge: 1
+  maxUnavailable: 0
+</code></pre>
+
+<p>实例停止前如果没有请求会立即退出，如果有请求则等待最多 60 秒，仍然没有结束时会被强制杀掉。</p>
+
+<pre><code>terminationGracePeriodSeconds: 60
+</code></pre>
+
+<p>升级过程中，发现服务响应时间的 98 值增长很多，95 值没有太大变化，看起来有少量请求被升级操作影响到了。</p>
+
+<h3 id="原因">原因</h3>
+
+<p>排查后，确认部分请求变慢的原因是因为和后端实例建立连接超时，由于使用的是 Go 的 DefaultTransport，所以连接超时时间为 30s，部分请求在超时 30s 后才被重试，从而导致响应时间的 98 值变慢。</p>
+
+<p>为什么建立连接会超时？</p>
+
+<p>原来在升级实例的过程中，实例被杀掉，对应的容器的虚拟 IP 就不存在了，而客户端建立连接时发送的 SYNC 包收不到回应，会一直重发，直到超时。</p>
+
+<p>之所以客户端仍然会给该 IP 发送请求，是因为我们自研的 Service Mesh 方案的服务发现没有采用 k8s 默认的 DNS 轮询方式，而是自己开发的服务发现组件，为了能够更好地配合负载均衡的能力。网关是采用轮询的方式，每隔 10s 从 Discovery 组件同步一次数据，所以被杀掉的实例没有及时被同步到各网关。</p>
+
+<h3 id="kubernetes-pod-停止流程">kubernetes Pod 停止流程</h3>
+
+<p>为了更好解决问题，我们需要理解 k8s 中单个 Pod 停止的流程。</p>
+
+<ol>
+<li>用户发送请求删除 Pod，默认终止等待时间为 30s</li>
+<li>在 Pod 超过该等待时间后 API server 就会更新 Pod 的状态为 <strong>dead</strong></li>
+<li>在客户端命令行上显示 Pod 状态为 <strong>terminating</strong></li>
+<li>与步骤三同时，当 Kubelet 观察到一个 Pod 在步骤2被标记为 <strong>terminating</strong>，开始终止工作
+
+<ol>
+<li>如果在pod中定义了 <strong>preStop hook</strong>，在停止 pod 前会被调用。如果在等待期过后，<strong>preStop hook</strong> 依然在运行，第二步会再增加2秒的等待期</li>
+<li>向 Pod 中的进程发送 <strong>SIGTERM</strong> 信号</li>
+</ol></li>
+<li>跟第三步同时，该 Pod 将从该 service 的地址列表中删除，不再是 replication controllers 中处于运行状态的实例之一。关闭的慢的 Pod 将不会再处理流量，因为负载均衡器（像是 service proxy）会将它们移除</li>
+<li>过了等待期后，将向 Pod 中依然运行的进程发送 SIGKILL 信号而杀掉进程</li>
+<li>Kublete 会在 API server 中通过将优雅周期设置为0（立即删除）来完成 Pod 的删除。Pod 将会从 API 中消失，并且在客户端也不可见</li>
+</ol>
+
+<h3 id="解决方案">解决方案</h3>
+
+<h4 id="优化超时时间">优化超时时间</h4>
+
+<p>使用自定义的 Transport，内网的话超时时间可以减少为 1s，让请求尽快被重试，虽然不能解决问题，但是可以有效缓解问题。</p>
+
+<h4 id="确保实例被服务发现摘除后再停止">确保实例被服务发现摘除后再停止</h4>
+
+<p>思考了问题发生的原因，首先想到的就是能不能让实例先从服务发现中摘除，确认服务发现数据被同步到了各网关后，再杀实例。搜索了 k8s 的相关文档，发现通过 <strong>preStop</strong> 的 hook 机制，可以实现该功能。</p>
+
+<p>示例配置如下：</p>
+
+<pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      terminationGracePeriodSeconds: 90
+      containers:
+      - name: nginx
+        image: my-nginx:xxx
+        lifecycle:
+          preStop:
+            exec:
+              command: [&quot;/bin/sh&quot;, &quot;-c&quot;, &quot;sleep 30&quot;]
+        ports:
+        - containerPort: 80
+</code></pre>
+
+<p>重点就在于 <strong>lifecycle</strong> 的配置。对应实例停止时，会先将该实例的服务发现地址从 <strong>service</strong> 中移除，之后会调用我们给定的命令 <code>sleep 30</code>，等待 30s 后，再给实例发送 SIGTERM 信号，如果实例超过 <strong>terminationGracePeriodSeconds</strong> 配置的时间后，会再给实例发送 SIGKILL 信号，强行杀掉实例。</p>
+
+<p>我们服务发现数据同步间隔是 10s，留出 30s 的时间，所有网关的服务发现数据正常情况下已经全部同步完成，不会再有新的流量被路由到该实例上，也就不会出现新建连接超时的问题。</p>
+
+<p>需要注意的是，由于我们延迟了 30s 停止实例，所以保险起见 <strong>terminationGracePeriodSeconds</strong> 也可以相应的增加 30s。</p>
+
+<h3 id="猜想其他的解决方法">猜想其他的解决方法</h3>
+
+<h4 id="k8s-自身提供延迟停止实例的能力">k8s 自身提供延迟停止实例的能力</h4>
+
+<p>如果 k8s 自身就能通过 Deployment 参数配置实现上文中我们通过 <strong>preStop</strong> 实现的功能会更好一些，毕竟是一个比较取巧的方案，不一定完善。</p>
+
+<h4 id="ip-被摘除后建立连接可以直接返回错误">IP 被摘除后建立连接可以直接返回错误</h4>
+
+<p>涉及到 k8s 集群的网络解决方案，不一定所有的架构都能支持，需要进一步调研。</p>
+
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">http://blog.fatedier.com/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/kubernetes/">
+                            <i class="fa fa-tags"></i>
+                            kubernetes
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
+                
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2018/09/01/yan-ran/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#现象">现象</a></li>
+<li><a href="#原因">原因</a></li>
+<li><a href="#kubernetes-pod-停止流程">kubernetes Pod 停止流程</a></li>
+<li><a href="#解决方案">解决方案</a>
+<ul>
+<li><a href="#优化超时时间">优化超时时间</a></li>
+<li><a href="#确保实例被服务发现摘除后再停止">确保实例被服务发现摘除后再停止</a></li>
+</ul></li>
+<li><a href="#猜想其他的解决方法">猜想其他的解决方法</a>
+<ul>
+<li><a href="#k8s-自身提供延迟停止实例的能力">k8s 自身提供延迟停止实例的能力</a></li>
+<li><a href="#ip-被摘除后建立连接可以直接返回错误">IP 被摘除后建立连接可以直接返回错误</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2018  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

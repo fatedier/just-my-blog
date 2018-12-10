@@ -7,10 +7,28 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2018. All rights reserved.</copyright>
-    <lastBuildDate>Sat, 01 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 10 Dec 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://blog.fatedier.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</title>
+      <link>http://blog.fatedier.com/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/</link>
+      <pubDate>Mon, 10 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/</guid>
+      <description>在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。
+现象 正常升级某个服务的 Deployment。
+升级策略，先起一个新实例，再停一个旧实例：
+type: RollingUpdate rollingUpdate: maxSurge: 1 maxUnavailable: 0  实例停止前如果没有请求会立即退出，如果有请求则等待最多 60 秒，仍然没有结束时会被强制杀掉。
+terminationGracePeriodSeconds: 60  升级过程中，发现服务响应时间的 98 值增长很多，95 值没有太大变化，看起来有少量请求被升级操作影响到了。
+原因 排查后，确认部分请求变慢的原因是因为和后端实例建立连接超时，由于使用的是 Go 的 DefaultTransport，所以连接超时时间为 30s，部分请求在超时 30s 后才被重试，从而导致响应时间的 98 值变慢。
+为什么建立连接会超时？
+原来在升级实例的过程中，实例被杀掉，对应的容器的虚拟 IP 就不存在了，而客户端建立连接时发送的 SYNC 包收不到回应，会一直重发，直到超时。
+之所以客户端仍然会给该 IP 发送请求，是因为我们自研的 Service Mesh 方案的服务发现没有采用 k8s 默认的 DNS 轮询方式，而是自己开发的服务发现组件，为了能够更好地配合负载均衡的能力。网关是采用轮询的方式，每隔 10s 从 Discovery 组件同步一次数据，所以被杀掉的实例没有及时被同步到各网关。
+kubernetes Pod 停止流程 为了更好解决问题，我们需要理解 k8s 中单个 Pod 停止的流程。</description>
+    </item>
     
     <item>
       <title>烟然</title>

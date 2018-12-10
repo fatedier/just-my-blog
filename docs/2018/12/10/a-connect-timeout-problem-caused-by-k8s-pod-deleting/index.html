@@ -82,7 +82,7 @@
 
 <p>升级策略，先起一个新实例，再停一个旧实例：</p>
 
-<pre><code>type: RollingUpdate
+<pre><code class="language-yaml">type: RollingUpdate
 rollingUpdate:
   maxSurge: 1
   maxUnavailable: 0
@@ -90,7 +90,7 @@ rollingUpdate:
 
 <p>实例停止前如果没有请求会立即退出，如果有请求则等待最多 60 秒，仍然没有结束时会被强制杀掉。</p>
 
-<pre><code>terminationGracePeriodSeconds: 60
+<pre><code class="language-yaml">terminationGracePeriodSeconds: 60
 </code></pre>
 
 <p>升级过程中，发现服务响应时间的 98 值增长很多，95 值没有太大变化，看起来有少量请求被升级操作影响到了。</p>
@@ -136,7 +136,7 @@ rollingUpdate:
 
 <p>示例配置如下：</p>
 
-<pre><code>apiVersion: apps/v1
+<pre><code class="language-yaml">apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment

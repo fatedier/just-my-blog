@@ -18,7 +18,7 @@ url: "/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting"
 
 升级策略，先起一个新实例，再停一个旧实例：
 
-```
+```yaml
 type: RollingUpdate
 rollingUpdate:
   maxSurge: 1
@@ -27,7 +27,7 @@ rollingUpdate:
 
 实例停止前如果没有请求会立即退出，如果有请求则等待最多 60 秒，仍然没有结束时会被强制杀掉。
 
-```
+```yaml
 terminationGracePeriodSeconds: 60
 ```
 
@@ -69,7 +69,7 @@ terminationGracePeriodSeconds: 60
 
 示例配置如下：
 
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:

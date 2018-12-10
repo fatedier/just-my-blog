@@ -24,6 +24,17 @@
     </item>
     
     <item>
+      <title>减小 golang 编译出程序的体积</title>
+      <link>http://blog.fatedier.com/2017/02/04/reduce-golang-program-size/</link>
+      <pubDate>Sat, 04 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/2017/02/04/reduce-golang-program-size/</guid>
+      <description>&lt;p&gt;Go 语言的优势是可以很方便地编译出跨平台的应用程序，而不需要为每一个平台做代码适配，也不像 JAVA 一样需要预先安装 JDK 环境。相应的问题就是 go 编译出的程序体积较大，和 c/c++ 不同，它将大多数依赖都以静态编译的方式编译进了程序中。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>golang 交叉编译</title>
       <link>http://blog.fatedier.com/2017/01/01/golang-cross-compile/</link>
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>

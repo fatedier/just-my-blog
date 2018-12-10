@@ -359,6 +359,60 @@ root      1216  1111  0 01:23 ?        00:00:00 ps -ef
     
       
         <item>
+          <title>减小 golang 编译出程序的体积</title>
+          <link>http://blog.fatedier.com/2017/02/04/reduce-golang-program-size/</link>
+          <pubDate>Sat, 04 Feb 2017 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2017/02/04/reduce-golang-program-size/</guid>
+          <description>&lt;p&gt;Go 语言的优势是可以很方便地编译出跨平台的应用程序，而不需要为每一个平台做代码适配，也不像 JAVA 一样需要预先安装 JDK 环境。相应的问题就是 go 编译出的程序体积较大，和 c/c++ 不同，它将大多数依赖都以静态编译的方式编译进了程序中。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;ldflags&#34;&gt;-ldflags&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;go build&lt;/code&gt; 编译程序时可以通过 &lt;code&gt;-ldflags&lt;/code&gt; 来指定编译参数。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;-s&lt;/strong&gt; 的作用是去掉符号信息。
+&lt;strong&gt;-w&lt;/strong&gt; 的作用是去掉调试信息。&lt;/p&gt;
+
+&lt;p&gt;测试加与不加 &lt;code&gt;-ldflags&lt;/code&gt; 编译出的应用大小。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;go build -o tmp/frpc ./cmd/frpc
+-rwxr-xr-x  1 fate  staff  12056092 Dec 10 15:49 frpc
+
+go build -ldflags &amp;quot;-s -w&amp;quot; -o tmp/frpc2 ./cmd/frpc
+-rwxr-xr-x  1 fate  staff   8353308 Dec 10 15:49 frpc2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;减小了接近 4MB 的体积。&lt;/p&gt;
+
+&lt;h3 id=&#34;upx-压缩&#34;&gt;UPX 压缩&lt;/h3&gt;
+
+&lt;p&gt;在某些设备上动辄接近 10MB 的程序大小还是比较大的，这个时候可以采用 UPX 来进一步压缩。好处是占用磁盘空间小了，坏处是程序启动时会先进行一æ­¥解压缩，将代码还原到内存中，也就是说占用的内存大小并不会减少，当然，对于现代设备来说，启动的耗时几乎可以忽略。&lt;/p&gt;
+
+&lt;p&gt;通过各系统的包管理工具一般可以自动安装 UPX。
+例如 Centos 上 epel 库 &lt;code&gt;yum install -y upx&lt;/code&gt;。
+macos 上通过 brew 安装 &lt;code&gt;brew install upx&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;压缩命令
+&lt;code&gt;upx -9 -o ./frpc2_upx ./frpc2&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;-o&lt;/strong&gt; 指定压缩后的文件名。
+&lt;strong&gt;-9&lt;/strong&gt; 指定压缩级别，1-9。&lt;/p&gt;
+
+&lt;p&gt;压缩后的文件体积&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-rwxr-xr-x  1 fate  staff   2998928 Dec 10 15:49 frpc2_upx
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到缩小了接近 5MB，效果显著。&lt;/p&gt;
+
+&lt;p&gt;需要注意的是，UPX 可能并不能正确的压缩所有平台的程序，压缩完成后最好自行在对应平台运行测试一下。&lt;/p&gt;</description>
+        </item>
+      
+    
+      
+        <item>
           <title>golang 交叉编译</title>
           <link>http://blog.fatedier.com/2017/01/01/golang-cross-compile/</link>
           <pubDate>Sun, 01 Jan 2017 00:00:00 UTC</pubDate>

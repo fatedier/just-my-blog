@@ -10,6 +10,8 @@ url: "/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting"
 
 在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。
 
+<!--more-->
+
 ### 现象
 
 正常升级某个服务的 Deployment。

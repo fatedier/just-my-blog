@@ -16,9 +16,9 @@
           <pubDate>Mon, 10 Dec 2018 00:00:00 UTC</pubDate>
           <author></author>
           <guid>http://blog.fatedier.com/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/</guid>
-          <description>
+          <description>&lt;p&gt;在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。&lt;/p&gt;
 
-&lt;p&gt;在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。&lt;/p&gt;
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;现象&#34;&gt;现象&lt;/h3&gt;
 
@@ -122,8 +122,7 @@ spec:
 
 &lt;h4 id=&#34;ip-被摘除后建立连接可以直接返回错误&#34;&gt;IP 被摘除后建立连接可以直接返回错误&lt;/h4&gt;
 
-&lt;p&gt;涉及到 k8s 集群的网络解决方案，不一定所有的架构都能支持，需要进一步调研。&lt;/p&gt;
-</description>
+&lt;p&gt;涉及到 k8s 集群的网络解决方案，不一定所有的架构都能支持，需要进一步调研。&lt;/p&gt;</description>
         </item>
       
     

@@ -379,6 +379,17 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
     </item>
     
     <item>
+      <title>SSH 端口转发</title>
+      <link>http://blog.fatedier.com/2015/07/22/ssh-port-forwarding/</link>
+      <pubDate>Wed, 22 Jul 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/2015/07/22/ssh-port-forwarding/</guid>
+      <description>&lt;p&gt;作为程序员经常会有需要访问某个局域网内的某台机器的需求，例如帮别人调试某个程序，或者远程操作家里的电脑。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>MongoDB常用命令</title>
       <link>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb/</link>
       <pubDate>Fri, 05 Jun 2015 00:00:00 +0000</pubDate>

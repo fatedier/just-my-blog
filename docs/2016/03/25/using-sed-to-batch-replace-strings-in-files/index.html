@@ -6,9 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。
-
-">
+<meta name="description" content="每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="简记用sed对文件执行批量替换字符串的方法 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
@@ -73,8 +71,6 @@
 
             <div class="post-content">
                 <p>每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。</p>
-
-<p></p>
 
 <p>因为 blog 的图片迁到了七牛云上（提供CDN加速服务），原来的图片链接必然要替换成七牛云提供的二级域名，在 markdown 文件中有很多图片的标签，也不可能一个一个手动改，最好是能一个命令下去直接全部修改完毕并且以后也可以很轻松地改成其他域名。</p>
 

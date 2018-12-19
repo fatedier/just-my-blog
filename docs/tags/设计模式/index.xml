@@ -18,9 +18,7 @@
       <pubDate>Wed, 04 Mar 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</guid>
-      <description>&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;</description>
     </item>
     
   </channel>

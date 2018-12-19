@@ -6,9 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C&#43;&#43;里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。
-
-">
+<meta name="description" content="最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C&#43;&#43;里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="C/C&#43;&#43;获取精确到微秒级的系统时间 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
@@ -73,8 +71,6 @@
 
             <div class="post-content">
                 <p>最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。</p>
-
-<p></p>
 
 <p>先贴一下这两个函数的说明</p>
 

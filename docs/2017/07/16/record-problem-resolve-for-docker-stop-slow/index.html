@@ -6,9 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="公司 mesos 集群某个 app 已经有数千的实例数，每次做滚动升级时，由于总资源不足，需要分批操作，每次起一批新版本实例，再停一批旧版本实例。目前停容器的策略是，先从服务发现中摘除需要停掉的节点，等待 60 秒后再停止容器，释放资源，但是实际上每次从发送停止容器的请求到容器资源被实际释放需要长达 6 分钟，导致滚动升级耗时过长。经过排查，最终确认问题出在我们使用 docker 的方式上，这里记录下分析和解决问题的过程。
-
-">
+<meta name="description" content="公司 mesos 集群某个 app 已经有数千的实例数，每次做滚动升级时，由于总资源不足，需要分批操作，每次起一批新版本实例，再停一批旧版本实例。目前停容器的策略是，先从服务发现中摘除需要停掉的节点，等待 60 秒后再停止容器，释放资源，但是实际上每次从发送停止容器的请求到容器资源被实际释放需要长达 6 分钟，导致滚动升级耗时过长。经过排查，最终确认问题出在我们使用 docker 的方式上，这里记录下分析和解决问题的过程。">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="记一次mesos集群停容器时间过长的问题排查 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
@@ -73,8 +71,6 @@
 
             <div class="post-content">
                 <p>公司 mesos 集群某个 app 已经有数千的实例数，每次做滚动升级时，由于总资源不足，需要分批操作，每次起一批新版本实例，再停一批旧版本实例。目前停容器的策略是，先从服务发现中摘除需要停掉的节点，等待 60 秒后再停止容器，释放资源，但是实际上每次从发送停止容器的请求到容器资源被实际释放需要长达 6 分钟，导致滚动升级耗时过长。经过排查，最终确认问题出在我们使用 docker 的方式上，这里记录下分析和解决问题的过程。</p>
-
-<p></p>
 
 <h3 id="集群环境">集群环境</h3>
 

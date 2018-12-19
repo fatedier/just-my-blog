@@ -6,9 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。
-
-">
+<meta name="description" content="在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
@@ -73,8 +71,6 @@
 
             <div class="post-content">
                 <p>在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。</p>
-
-<p></p>
 
 <h3 id="现象">现象</h3>
 

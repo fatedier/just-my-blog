@@ -18,9 +18,7 @@
       <pubDate>Fri, 08 May 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</guid>
-      <description>&lt;p&gt;在对外提供各种语言SDK的时候经常会遇到需要上传文件的问题，例如在python中我们可以借助pycurl库实现这个功能。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在对外提供各种语言SDK的时候经常会遇到需要上传文件的问题，例如在python中我们可以借助pycurl库实现这个功能。&lt;/p&gt;</description>
     </item>
     
   </channel>

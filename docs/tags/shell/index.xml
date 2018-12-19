@@ -18,9 +18,7 @@
       <pubDate>Tue, 24 Nov 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color/</guid>
-      <description>&lt;p&gt;在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -29,9 +27,7 @@
       <pubDate>Mon, 24 Nov 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/</guid>
-      <description>&lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;</description>
     </item>
     
   </channel>

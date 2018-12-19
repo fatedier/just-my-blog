@@ -18,9 +18,7 @@
       <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</guid>
-      <description>&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;</description>
     </item>
     
   </channel>

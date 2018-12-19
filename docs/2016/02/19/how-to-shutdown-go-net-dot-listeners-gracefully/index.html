@@ -6,9 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。
-
-">
+<meta name="description" content="在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="Go中如何优雅地关闭net.Listener - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
@@ -73,8 +71,6 @@
 
             <div class="post-content">
                 <p>在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。</p>
-
-<p></p>
 
 <p>但是我在释放这个监听端口的时候遇到了一些问题，我发现很难优雅地去关闭这个 <strong>net.Listener</strong>。在网上查阅了一下资料，基本上都是程序结束时资源被系统自动回收，没发现有需要主动释放的。这个需求确实不多，不过想一下在写测试用例的时候或许可能会用到，我们先创建一个 <strong>net.Listener</strong> 监听一个端口，<strong>client</strong> 发送请求进行测试，通过后关闭这个 <strong>net.Listener</strong>，再创建另外一个 <strong>net.Listener</strong> 用于测试其他用例。</p>
 

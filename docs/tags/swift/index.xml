@@ -18,9 +18,7 @@
       <pubDate>Wed, 25 May 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</guid>
-      <description>&lt;p&gt;OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。&lt;/p&gt;</description>
     </item>
     
   </channel>

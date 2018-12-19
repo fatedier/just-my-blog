@@ -6,9 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。
-
-">
+<meta name="description" content="现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="golang 中使用 statik 将静态资源编译进二进制文件中 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
@@ -73,8 +71,6 @@
 
             <div class="post-content">
                 <p>现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。</p>
-
-<p></p>
 
 <p>最近在阅读 InfluxDB 的源码，发现里面提供了一个 admin 管理的页面，可以通过浏览器来执行一些命令以及查看程序运行的信息。但是我运行的时候只运行了一个 influxd 的二进制文件，并没有看到 css, html 等文件。</p>
 

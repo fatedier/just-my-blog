@@ -18,9 +18,7 @@
       <pubDate>Mon, 10 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/</guid>
-      <description>&lt;p&gt;在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -29,9 +27,7 @@
       <pubDate>Sun, 16 Jul 2017 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</guid>
-      <description>&lt;p&gt;公司 mesos 集群某个 app 已经有数千的实例数，每次做滚动升级时，由于总资源不足，需要分批操作，每次起一批新版本实例，再停一批旧版本实例。目前停容器的策略是，先从服务发现中摘除需要停掉的节点，等待 60 秒后再停止容器，释放资源，但是实际上每次从发送停止容器的请求到容器资源被实际释放需要长达 6 分钟，导致滚动升级耗时过长。经过排查，最终确认问题出在我们使用 docker 的方式上，这里记录下分析和解决问题的过程。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;公司 mesos 集群某个 app 已经有数千的实例数，每次做滚动升级时，由于总资源不足，需要分批操作，每次起一批新版本实例，再停一批旧版本实例。目前停容器的策略是，先从服务发现中摘除需要停掉的节点，等待 60 秒后再停止容器，释放资源，但是实际上每次从发送停止容器的请求到容器资源被实际释放需要长达 6 分钟，导致滚动升级耗时过长。经过排查，最终确认问题出在我们使用 docker 的方式上，这里记录下分析和解决问题的过程。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -40,9 +36,7 @@
       <pubDate>Sat, 04 Feb 2017 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2017/02/04/reduce-golang-program-size/</guid>
-      <description>&lt;p&gt;Go 语言的优势是可以很方便地编译出跨平台的应用程序，而不需要为每一个平台做代码适配，也不像 JAVA 一样需要预先安装 JDK 环境。相应的问题就是 go 编译出的程序体积较大，和 c/c++ 不同，它将大多数依赖都以静态编译的方式编译进了程序中。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;Go 语言的优势是可以很方便地编译出跨平台的应用程序，而不需要为每一个平台做代码适配，也不像 JAVA 一样需要预先安装 JDK 环境。相应的问题就是 go 编译出的程序体积较大，和 c/c++ 不同，它将大多数依赖都以静态编译的方式编译进了程序中。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -51,9 +45,7 @@
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2017/01/01/golang-cross-compile/</guid>
-      <description>&lt;p&gt;golang 相比 c/c++ 的优势之一是更容易编写出跨平台的应用，而不需要为各个平台编写适配代码。和 JAVA 相比，对系统环境要求较低，不需要预先安装 JDK 等适配环境。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;golang 相比 c/c++ 的优势之一是更容易编写出跨平台的应用，而不需要为各个平台编写适配代码。和 JAVA 相比，对系统环境要求较低，不需要预先安装 JDK 等适配环境。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -62,9 +54,7 @@
       <pubDate>Mon, 15 Aug 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</guid>
-      <description>&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -74,9 +64,7 @@
       
       <guid>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/</guid>
       <description>&lt;p&gt;最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
-go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特殊信息的，或者是需要一些小技巧来实现。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特殊信息的，或者是需要一些小技巧来实现。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -85,9 +73,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 05 Aug 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</guid>
-      <description>&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -96,9 +82,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 01 Aug 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/</guid>
-      <description>&lt;p&gt;现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -107,9 +91,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 25 Jul 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/</guid>
-      <description>&lt;p&gt;Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -118,9 +100,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 18 Jul 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux/</guid>
-      <description>&lt;p&gt;定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -129,9 +109,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Wed, 06 Jul 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb/</guid>
-      <description>&lt;p&gt;通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -140,9 +118,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</guid>
-      <description>&lt;p&gt;基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -151,9 +127,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 04 Jul 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</guid>
-      <description>&lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -162,9 +136,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 24 Jun 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment/</guid>
-      <description>&lt;p&gt;Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -173,9 +145,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Wed, 15 Jun 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/06/15/learn-lsm-tree/</guid>
-      <description>&lt;p&gt;最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;最近发现很多数据库都使用了 LSM Tree 的存储模型，包括 LevelDB，HBase，Google BigTable，Cassandra，InfluxDB 等。之前还没有留意这么设计的原因，最近调研时间序列数据库的时候才发现这样设计的优势所在，所以重新又复习了一遍 LSM Tree 的原理。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -184,9 +154,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Wed, 25 May 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</guid>
-      <description>&lt;p&gt;OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -195,9 +163,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 16 May 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/05/16/install-private-docker-registry/</guid>
-      <description>&lt;p&gt;docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的 docker 镜像仓库，方便在集群上快速部署 docker 服务。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的 docker 镜像仓库，方便在集群上快速部署 docker 服务。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -206,9 +172,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/</guid>
-      <description>&lt;p&gt;最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -217,9 +181,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Tue, 05 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</guid>
-      <description>&lt;p&gt;版本控制的重要性应该是毋庸置疑了，git 作为现在最流行的版本控制工具，各种规模的公司都在用。通常开源项目都会放在 github 上，基础功能是免费的，私有项目收费。对于一个小团队来说，gitlab 就是另外一个替代品，可以用来搭建自己私有的git服务器。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;版本控制的重要性应该是毋庸置疑了，git 作为现在最流行的版本控制工具，各种规模的公司都在用。通常开源项目都会放在 github 上，基础功能是免费的，私有项目收费。对于一个小团队来说，gitlab 就是另外一个替代品，可以用来搭建自己私有的git服务器。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -228,9 +190,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 25 Mar 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</guid>
-      <description>&lt;p&gt;每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -239,9 +199,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Sat, 12 Mar 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</guid>
-      <description>&lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -250,9 +208,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Thu, 25 Feb 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory/</guid>
-      <description>&lt;p&gt;通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -261,9 +217,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 19 Feb 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/</guid>
-      <description>&lt;p&gt;在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -272,9 +226,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 15 Jan 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/</guid>
-      <description>&lt;p&gt;go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -283,9 +235,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 18 Dec 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux/</guid>
-      <description>&lt;p&gt;开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -294,9 +244,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Sun, 06 Dec 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</guid>
-      <description>&lt;p&gt;由于国内的网络环境比较特殊，使用 gem install 安装 ruby 包的时候，往往不能成功，我们可以手动替换成阿里提供的镜像源来进行下载。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;由于国内的网络环境比较特殊，使用 gem install 安装 ruby 包的时候，往往不能成功，我们可以手动替换成阿里提供的镜像源来进行下载。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -305,9 +253,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Tue, 24 Nov 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color/</guid>
-      <description>&lt;p&gt;在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -316,9 +262,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Wed, 07 Oct 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</guid>
-      <description>&lt;p&gt;Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -327,9 +271,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Sun, 20 Sep 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/</guid>
-      <description>&lt;p&gt;在 mac 上使用 ss 的时候创建的是 socks5 代理，浏览器可以正常设置使用，不过在 shell 中一些程序无法使用 socks5 代理，而需要使用 http 代理，通过设置 http_proxy 环境变量，就可以让 shell 通过 http 代理来访问网络。polipo 这款工具就可以帮助我们将 socks5 代理转换为 http 代理。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在 mac 上使用 ss 的时候创建的是 socks5 代理，浏览器可以正常设置使用，不过在 shell 中一些程序无法使用 socks5 代理，而需要使用 http 代理，通过设置 http_proxy 环境变量，就可以让 shell 通过 http 代理来访问网络。polipo 这款工具就可以帮助我们将 socks5 代理转换为 http 代理。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -340,9 +282,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <guid>http://blog.fatedier.com/2015/09/15/redis-cluster-survey/</guid>
       <description>&lt;p&gt;Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。&lt;/p&gt;
 
-&lt;p&gt;单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -351,9 +291,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 24 Aug 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/08/24/how-to-modify-process-name/</guid>
-      <description>&lt;p&gt;在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -362,9 +300,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</guid>
-      <description>&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -373,9 +309,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Thu, 30 Jul 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/07/30/some-skills-about-vim/</guid>
-      <description>&lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -384,9 +318,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Wed, 22 Jul 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/07/22/ssh-port-forwarding/</guid>
-      <description>&lt;p&gt;作为程序员经常会有需要访问某个局域网内的某台机器的需求，例如帮别人调试某个程序，或者远程操作家里的电脑。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;作为程序员经常会有需要访问某个局域网内的某台机器的需求，例如帮别人调试某个程序，或者远程操作家里的电脑。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -395,9 +327,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 05 Jun 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb/</guid>
-      <description>&lt;p&gt;MongoDB 是一个基于分布式文件存储的数据库，由C++编写，介于关系数据库和非关系数据库之间的产品，所以在很多业务上可以取代 mysql，提供更高的性能以及更好的扩展性。虽然 MongoDB 不支持 sql 语法，但是从常用的操作命令上来说和 sql 的用法相类似。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;MongoDB 是一个基于分布式文件存储的数据库，由C++编写，介于关系数据库和非关系数据库之间的产品，所以在很多业务上可以取代 mysql，提供更高的性能以及更好的扩展性。虽然 MongoDB 不支持 sql 语法，但是从常用的操作命令上来说和 sql 的用法相类似。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -406,9 +336,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 08 May 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</guid>
-      <description>&lt;p&gt;在对外提供各种语言SDK的时候经常会遇到需要上传文件的问题，例如在python中我们可以借助pycurl库实现这个功能。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在对外提供各种语言SDK的时候经常会遇到需要上传文件的问题，例如在python中我们可以借助pycurl库实现这个功能。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -417,9 +345,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Wed, 04 Mar 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</guid>
-      <description>&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -428,9 +354,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Sun, 25 Jan 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll/</guid>
-      <description>&lt;p&gt;在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -439,9 +363,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Tue, 16 Dec 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process/</guid>
-      <description>&lt;p&gt;在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -451,9 +373,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       
       <guid>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file/</guid>
       <description>&lt;p&gt;在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
-题，如果日志较少，就很难进行进一步的查错了。但是发现在该目录下生成了一个core文件，可以帮助我们查找程序崩溃的原因。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+题，如果日志较少，就很难进行进一步的查错了。但是发现在该目录下生成了一个core文件，可以帮助我们查找程序崩溃的原因。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -462,9 +382,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 24 Nov 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/</guid>
-      <description>&lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在日常开发中经常需要编写一些简单的部署或者测试统计之类的脚本，直接用shell来编写几条命令就可以实现一些较为复杂的功能，十分方便。不过 linux shell 中的条件判断和其他编程语言略有不同，有一些需要特别注意的地方。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -473,9 +391,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Thu, 13 Nov 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight/</guid>
-      <description>&lt;p&gt;题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -484,9 +400,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 10 Nov 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code/</guid>
-      <description>&lt;p&gt;在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &amp;ndash; &amp;ldquo;astyle&amp;rdquo;。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &amp;ndash; &amp;ldquo;astyle&amp;rdquo;。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -495,9 +409,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 03 Nov 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux/</guid>
-      <description>&lt;p&gt;最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -506,9 +418,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Wed, 29 Oct 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide/</guid>
-      <description>&lt;p&gt;之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -517,9 +427,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 24 Oct 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands/</guid>
-      <description>&lt;p&gt;整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -528,9 +436,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 17 Oct 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/10/17/git-usually-command/</guid>
-      <description>&lt;p&gt;在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -541,9 +447,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <guid>http://blog.fatedier.com/2014/10/16/git-use-for-remind/</guid>
       <description>&lt;p&gt;Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。&lt;/p&gt;
 
-&lt;p&gt;Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -552,9 +456,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Thu, 16 Oct 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/10/16/learn-git-website/</guid>
-      <description>&lt;p&gt;学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -565,9 +467,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <guid>http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/</guid>
       <description>&lt;p&gt;在公司电脑上网都需要使用代理，虚拟机里面装的Linux系统需要使用yum命令来安装软件，所以需要在shell界面能连上外网才行。&lt;/p&gt;
 
-&lt;p&gt;因为公司限制了每个人只能用一个IP，所以虚拟机中的Linux系统使用NAT方式和主机相连。主机是Win7操作系统，会发现网络里面多了VMnet8这个网络。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;因为公司限制了每个人只能用一个IP，所以虚拟机中的Linux系统使用NAT方式和主机相连。主机是Win7操作系统，会发现网络里面多了VMnet8这个网络。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -576,9 +476,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Tue, 30 Sep 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/</guid>
-      <description>&lt;p&gt;最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -598,9 +496,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Wed, 24 Sep 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02/</guid>
-      <description>&lt;p&gt;如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -609,9 +505,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 08 Sep 2014 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01/</guid>
-      <description>&lt;p&gt;作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。&lt;/p&gt;</description>
     </item>
     
   </channel>

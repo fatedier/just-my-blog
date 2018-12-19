@@ -76,8 +76,9 @@
 
 <p>我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：</p>
 
-<p>
-&gt;  If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.</p>
+<blockquote>
+<p>If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.</p>
+</blockquote>
 
 <p>大致上的意思就是在检测容器是否为空的时候，推荐用empty()代替使用size() == 0，两者的含义是相等的，但是前者可能会更快一些。</p>
 

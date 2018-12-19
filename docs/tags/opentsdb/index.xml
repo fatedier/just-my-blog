@@ -18,9 +18,7 @@
       <pubDate>Mon, 04 Jul 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</guid>
-      <description>&lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -29,9 +27,7 @@
       <pubDate>Sat, 12 Mar 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</guid>
-      <description>&lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;</description>
     </item>
     
   </channel>

@@ -18,9 +18,7 @@
       <pubDate>Sun, 06 Dec 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</guid>
-      <description>&lt;p&gt;由于国内的网络环境比较特殊，使用 gem install 安装 ruby 包的时候，往往不能成功，我们可以手动替换成阿里提供的镜像源来进行下载。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;由于国内的网络环境比较特殊，使用 gem install 安装 ruby 包的时候，往往不能成功，我们可以手动替换成阿里提供的镜像源来进行下载。&lt;/p&gt;</description>
     </item>
     
   </channel>

@@ -6,9 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。
-
-">
+<meta name="description" content="在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="epoll使用说明 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
@@ -73,8 +71,6 @@
 
             <div class="post-content">
                 <p>在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。</p>
-
-<p></p>
 
 <p>epoll相对于select/poll来说有很大优势：</p>
 

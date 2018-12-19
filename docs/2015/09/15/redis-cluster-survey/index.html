@@ -8,9 +8,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。
 
-单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。
-
-">
+单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="Redis集群调研 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
@@ -77,8 +75,6 @@
                 <p>Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。</p>
 
 <p>单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。</p>
-
-<p></p>
 
 <h3 id="为什么需要集群">为什么需要集群</h3>
 

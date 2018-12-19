@@ -6,12 +6,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="开发工具">
-<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:title" content="开发工具 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+<meta name="description" content="C/Cpp">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:title" content="C/Cpp - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    开发工具 - fatedier blog
+    C/Cpp - fatedier blog
     
 </title>
 
@@ -63,14 +63,14 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            2016年07月25日
+            2015年08月24日
         </div>
         <h2 class="post-title">
-            <a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>
+            <a href="/2015/08/24/how-to-modify-process-name/">如何修改进程的名称</a>
         </h2>
     </header>
     <div class="post-content">
-        <p>Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。</p>
+        <p>在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。</p>
     </div>
     </article>
 <hr>
@@ -80,14 +80,14 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            2016年01月15日
+            2015年03月04日
         </div>
         <h2 class="post-title">
-            <a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>
+            <a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>
         </h2>
     </header>
     <div class="post-content">
-        <p>go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。</p>
+        <p>在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。</p>
     </div>
     </article>
 <hr>
@@ -97,14 +97,14 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            2015年12月18日
+            2015年01月25日
         </div>
         <h2 class="post-title">
-            <a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>
+            <a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>
         </h2>
     </header>
     <div class="post-content">
-        <p>开发过程中通过ssh到服务器是很常见的，工作中基本上90%的时间在和终端打交道，如果没有一个称手的工具，将会在不停打开新的 tab 页，窗口切换中耗费大量的时间。Tmux 是终端复用器的意思，和 screen 类似，但是高度可定制，通过 tmux 可以方便地管理大量的 ssh 连接，并且灵活地在不同窗口，不同面板之间切换。</p>
+        <p>在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。</p>
     </div>
     </article>
 <hr>
@@ -114,14 +114,14 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            2015年09月20日
+            2014年12月16日
         </div>
         <h2 class="post-title">
-            <a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>
+            <a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>
         </h2>
     </header>
     <div class="post-content">
-        <p>在 mac 上使用 ss 的时候创建的是 socks5 代理，浏览器可以正常设置使用，不过在 shell 中一些程序无法使用 socks5 代理，而需要使用 http 代理，通过设置 http_proxy 环境变量，就可以让 shell 通过 http 代理来访问网络。polipo 这款工具就可以帮助我们将 socks5 代理转换为 http 代理。</p>
+        <p>在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。</p>
     </div>
     </article>
 <hr>
@@ -131,15 +131,14 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            2014年12月07日
+            2014年11月13日
         </div>
         <h2 class="post-title">
-            <a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>
+            <a href="/2014/11/13/can-be-divisible-by-eight/">能否被8整除</a>
         </h2>
     </header>
     <div class="post-content">
-        <p>在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
-题，如果日志较少，就很难进行进一步的查错了。但是发现在该目录下生成了一个core文件，可以帮助我们查找程序崩溃的原因。</p>
+        <p>题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。</p>
     </div>
     </article>
 <hr>
@@ -149,14 +148,14 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            2014年11月10日
+            2014年09月30日
         </div>
         <h2 class="post-title">
-            <a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>
+            <a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/">C/C&#43;&#43;获取精确到微秒级的系统时间</a>
         </h2>
     </header>
     <div class="post-content">
-        <p>在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &ndash; &ldquo;astyle&rdquo;。</p>
+        <p>最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。</p>
     </div>
     </article>
 <hr>
@@ -166,14 +165,16 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            2014年10月29日
+            2014年09月26日
         </div>
         <h2 class="post-title">
-            <a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>
+            <a href="/2014/09/26/function-size-equal-zero-compare-with-empty/">size() == 0和empty()的比较</a>
         </h2>
     </header>
     <div class="post-content">
-        <p>之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。</p>
+        <p>最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。</p>
+
+<p>我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：</p>
     </div>
     </article>
 <hr>
@@ -183,14 +184,14 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            2014年10月24日
+            2014年09月24日
         </div>
         <h2 class="post-title">
-            <a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>
+            <a href="/2014/09/24/learn-to-write-makefile-02/">从简单实例开始，学会写Makefile（二）</a>
         </h2>
     </header>
     <div class="post-content">
-        <p>整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。</p>
+        <p>如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？</p>
     </div>
     </article>
 <hr>
@@ -200,50 +201,14 @@
 <article class="post li">
     <header>
         <div class="post-date">
-            2014年10月17日
+            2014年09月08日
         </div>
         <h2 class="post-title">
-            <a href="/2014/10/17/git-usually-command/">Git常用命令</a>
+            <a href="/2014/09/08/learn-to-write-makefile-01/">从简单实例开始，学会写Makefile（一）</a>
         </h2>
     </header>
     <div class="post-content">
-        <p>在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。</p>
-    </div>
-    </article>
-<hr>
-
-    
-    
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2014年10月16日
-        </div>
-        <h2 class="post-title">
-            <a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。</p>
-
-<p>Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。</p>
-    </div>
-    </article>
-<hr>
-
-    
-    
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2014年10月16日
-        </div>
-        <h2 class="post-title">
-            <a href="/2014/10/16/learn-git-website/">学习Git的常用网站</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。</p>
+        <p>作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。</p>
     </div>
     </article>
 <hr>

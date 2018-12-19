@@ -18,9 +18,7 @@
       <pubDate>Mon, 10 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/</guid>
-      <description>&lt;p&gt;在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -29,9 +27,7 @@
       <pubDate>Fri, 24 Jun 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment/</guid>
-      <description>&lt;p&gt;Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。&lt;/p&gt;</description>
     </item>
     
   </channel>

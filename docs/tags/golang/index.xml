@@ -18,9 +18,7 @@
       <pubDate>Sat, 04 Feb 2017 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2017/02/04/reduce-golang-program-size/</guid>
-      <description>&lt;p&gt;Go 语言的优势是可以很方便地编译出跨平台的应用程序，而不需要为每一个平台做代码适配，也不像 JAVA 一样需要预先安装 JDK 环境。相应的问题就是 go 编译出的程序体积较大，和 c/c++ 不同，它将大多数依赖都以静态编译的方式编译进了程序中。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;Go 语言的优势是可以很方便地编译出跨平台的应用程序，而不需要为每一个平台做代码适配，也不像 JAVA 一样需要预先安装 JDK 环境。相应的问题就是 go 编译出的程序体积较大，和 c/c++ 不同，它将大多数依赖都以静态编译的方式编译进了程序中。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -29,9 +27,7 @@
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2017/01/01/golang-cross-compile/</guid>
-      <description>&lt;p&gt;golang 相比 c/c++ 的优势之一是更容易编写出跨平台的应用，而不需要为各个平台编写适配代码。和 JAVA 相比，对系统环境要求较低，不需要预先安装 JDK 等适配环境。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;golang 相比 c/c++ 的优势之一是更容易编写出跨平台的应用，而不需要为各个平台编写适配代码。和 JAVA 相比，对系统环境要求较低，不需要预先安装 JDK 等适配环境。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -40,9 +36,7 @@
       <pubDate>Mon, 15 Aug 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</guid>
-      <description>&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -52,9 +46,7 @@
       
       <guid>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/</guid>
       <description>&lt;p&gt;最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
-go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特殊信息的，或者是需要一些小技巧来实现。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特殊信息的，或者是需要一些小技巧来实现。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -63,9 +55,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 05 Aug 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</guid>
-      <description>&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -74,9 +64,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 01 Aug 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/</guid>
-      <description>&lt;p&gt;现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -85,9 +73,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Mon, 25 Jul 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/</guid>
-      <description>&lt;p&gt;Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -96,9 +82,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/</guid>
-      <description>&lt;p&gt;最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -107,9 +91,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Thu, 25 Feb 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory/</guid>
-      <description>&lt;p&gt;通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -118,9 +100,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 19 Feb 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/</guid>
-      <description>&lt;p&gt;在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -129,9 +109,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Fri, 15 Jan 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/</guid>
-      <description>&lt;p&gt;go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -140,9 +118,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
       <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</guid>
-      <description>&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。&lt;/p&gt;</description>
     </item>
     
   </channel>

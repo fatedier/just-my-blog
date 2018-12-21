@@ -7237,7 +7237,7 @@ vim -d [file1] [file2]
 
 &lt;p&gt;执行这条命令后，后续的提交说明将不会改变。&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;注：不要修改已经push到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注：不要修改已经 push 到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！&lt;/strong&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;查看-删除-重命名远程分支&#34;&gt;查看、删除、重命名远程分支&lt;/h3&gt;
 
@@ -7307,7 +7307,14 @@ $ git push origin HEAD --force
 &lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git show f4869b0:test.cpp
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。&lt;/p&gt;</description>
+&lt;p&gt;文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。&lt;/p&gt;
+
+&lt;h3 id=&#34;将远程分支已经删除的残留的本地分支追踪信息删除&#34;&gt;将远程分支已经删除的残留的本地分支追踪信息删除&lt;/h3&gt;
+
+&lt;p&gt;经过一段时间的开发后，远端的一些被 merge 后删除的分支，在本地使用 &lt;code&gt;git branch -a&lt;/code&gt; 还是能看到，需要取消追踪并删除。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ git fetch --prune
+&lt;/code&gt;&lt;/pre&gt;</description>
         </item>
       
     

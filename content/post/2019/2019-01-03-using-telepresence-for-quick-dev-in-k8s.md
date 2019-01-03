@@ -45,9 +45,9 @@ telepresence --new-deployment myserver --run-shell --also-proxy 192.168.0.0/16
 
 telepresence 默认会使用当前的 kubectl 的 current context 来进行请求。
 
-**--new-deployment** 表示新创建一个名为 **myserver** 的 deployment。
-**--run-shell** 表示启动完成后进入一个 shell 命令行环境，可以继续执行自己需要的服务或命令。
-**--also-proxy** 表示我们需要在本地通过 IP 的方式访问 192.168 网段的 k8s 服务。这个 IP 段是 k8s 上容器会被分配到的 IP 段。如果不设置这个参数，就只能通过 service 名来访问服务。
+* **--new-deployment** 表示新创建一个名为 **myserver** 的 deployment。
+* **--run-shell** 表示启动完成后进入一个 shell 命令行环境，可以继续执行自己需要的服务或命令。
+* **--also-proxy** 表示我们需要在本地通过 IP 的方式访问 192.168 网段的 k8s 服务。这个 IP 段是 k8s 上容器会被分配到的 IP 段。如果不设置这个参数，就只能通过 service 名来访问服务。
 
 启动成功后，会进入到一个 shell 终端。在这个终端里运行的命令都能够访问到 k8s 集群里的服务。
 
@@ -61,8 +61,8 @@ telepresence 默认会使用当前的 kubectl 的 current context 来进行请�
 telepresence --swap-deployment proxy:proxy --expose 9100:9100 --also-proxy 192.168.0.0/16
 ```
 
-**--swap-deployment** 表示替换一个远端集群的 Deployment。
-**proxy:proxy** 是要替换的 Deployment 中的指定容器的名字。如果要替换所有，可以不用加冒号。格式为 **{Deployment}:{Container}** 。
-**--expose 9100:9100** 表示要将远端容器 9100 端口的流量转发到本地的 9100 端口，格式为 **--expose PORT[:REMOTE_PORT]** 。
+* **--swap-deployment** 表示替换一个远端集群的 Deployment。
+* **proxy:proxy** 是要替换的 Deployment 中的指定容器的名字。如果要替换所有，可以不用加冒号。格式为 **{Deployment}:{Container}** 。
+* **--expose 9100:9100** 表示要将远端容器 9100 端口的流量转发到本地的 9100 端口，格式为 **--expose PORT[:REMOTE_PORT]** 。
 
 启动成功后，使用方式和 **--new-deployment** 一样，但是发往 proxy 这个服务的 9100 端口的流量会被路由到本地的 9100 端口的服务，此时只需要让本地调试的程序监听在 9100 端口，就可以实时接收 k8s 集群内部的流量，方便我们测试开发。

@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2018. All rights reserved.</copyright>
-    <lastBuildDate>Mon, 10 Dec 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 03 Jan 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://blog.fatedier.com/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>使用 telepresence 在 k8s 环境中实现快速开发</title>
+      <link>http://blog.fatedier.com/2019/01/03/using-telepresence-for-quick-dev-in-k8s/</link>
+      <pubDate>Thu, 03 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/2019/01/03/using-telepresence-for-quick-dev-in-k8s/</guid>
+      <description>&lt;p&gt;随着容器化，微服务的概念逐渐成为主流，在日常的开发测试中，会遇到一些新的问题。例如如果服务跑在 istio 这样的 ServiceMesh 平台上，依赖于 k8s 的 sidecar 功能，在本地模拟这样的场景来调试和测试是比较复杂的。而 telepresence 帮助我们缓解了这样的问题。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</title>

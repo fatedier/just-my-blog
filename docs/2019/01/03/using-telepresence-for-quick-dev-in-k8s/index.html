@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="随着容器化，微服务的概念逐渐成为主流，在日常的开发测试中，会遇到一些新的问题。例如如果服务跑在 istio 这样的 ServiceMesh 平台上，依赖于 k8s 的 sidecar 功能，在本地模拟这样的场景来调试和测试是比较复杂的。而 telepresence 帮助我们缓解了这样的问题。">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="使用 telepresence 在 k8s 环境中实现快速开发 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    使用 telepresence 在 k8s 环境中实现快速开发
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2019年01月03日 
+                </div>
+                <h1 class="post-title">使用 telepresence 在 k8s 环境中实现快速开发</h1>
+            </header>
+
+            <div class="post-content">
+                <p>随着容器化，微服务的概念逐渐成为主流，在日常的开发测试中，会遇到一些新的问题。例如如果服务跑在 istio 这样的 ServiceMesh 平台上，依赖于 k8s 的 sidecar 功能，在本地模拟这样的场景来调试和测试是比较复杂的。而 telepresence 帮助我们缓解了这样的问题。</p>
+
+<h3 id="安装">安装</h3>
+
+<p>telepresence 的项目地址：<a href="https://github.com/telepresenceio/telepresence">https://github.com/telepresenceio/telepresence</a></p>
+
+<p>OS X</p>
+
+<pre><code>brew cask install osxfuse
+brew install datawire/blackbird/telepresence
+</code></pre>
+
+<p>其他的系统环境安装参考 <a href="https://www.telepresence.io/reference/install">https://www.telepresence.io/reference/install</a></p>
+
+<h3 id="简介">简介</h3>
+
+<p>Telepresence 是用 python 编写的用于帮助我们在本地运行一个服务，同时能够访问到远端的 kubernetes 集群的服务。</p>
+
+<p>这样的话，我们不再需要每次修改代码后，重新编译，推送镜像，部署到 k8s 集群，然后调试，如果出现错误，再重复这样的步骤。并且由于服务是在本地运行，可以更方便地利用本地环境的一些调试工具来帮助我们排查分析问题。</p>
+
+<h3 id="原理">原理</h3>
+
+<p>Telepresence 在远端 k8s 集群部署了一个和本地环境网络互通的 pod，可以选择 VPN 的方式。这个 pod 会将指定的网络流量，环境变量，磁盘等数据转发到本地的服务。且本地服务的 DNS 查询，网络流量，都可以被路由到远端的 k8s 集群。</p>
+
+<h3 id="常用的功能">常用的功能</h3>
+
+<h4 id="新建一个-deployment-用于测试本地服务访问远端服务">新建一个 Deployment 用于测试本地服务访问远端服务</h4>
+
+<pre><code>telepresence --new-deployment myserver --run-shell --also-proxy 192.168.0.0/16
+</code></pre>
+
+<p>telepresence 默认会使用当前的 kubectl 的 current context 来进行请求。</p>
+
+<p><strong>&ndash;new-deployment</strong> 表示新创建一个名为 <strong>myserver</strong> 的 deployment。
+<strong>&ndash;run-shell</strong> 表示启动完成后进入一个 shell 命令行环境，可以继续执行自己需要的服务或命令。
+<strong>&ndash;also-proxy</strong> 表示我们需要在本地通过 IP 的方式访问 192.168 网段的 k8s 服务。这个 IP 段是 k8s 上容器会被分配到的 IP 段。如果不设置这个参数，就只能通过 service 名来访问服务。</p>
+
+<p>启动成功后，会进入到一个 shell 终端。在这个终端里运行的命令都能够访问到 k8s 集群里的服务。</p>
+
+<p>因为只打开了一个 shell 终端，如果需要同时调试多个服务就比较麻烦。最好能够借助于 <strong>tmux</strong> 这样的工具来打开多个终端窗口。</p>
+
+<h4 id="替换一个远端的-deployment-服务">替换一个远端的 Deployment 服务</h4>
+
+<p>有时在远端 k8s 集群我们已经部署了一套完整的服务，但是其中某个服务可能有问题。我们希望能够将集群内的流量劫持到本地的进程，来进行调试，这样就可以快速修改代码，加日志，方便排查问题。</p>
+
+<pre><code>telepresence --swap-deployment proxy:proxy --expose 9100:9100 --also-proxy 192.168.0.0/16
+</code></pre>
+
+<p><strong>&ndash;swap-deployment</strong> 表示替换一个远端集群的 Deployment。
+<strong>proxy:proxy</strong> 是要替换的 Deployment 中的指定容器的名字。如果要替换所有，可以不用加冒号。格式为 <strong>{Deployment}:{Container}</strong> 。
+<strong>&ndash;expose 9100:9100</strong> 表示要将远端容器 9100 端口的流量转发到本地的 9100 端口，格式为 <strong>&ndash;expose PORT[:REMOTE_PORT]</strong> 。</p>
+
+<p>启动成功后，使用方式和 <strong>&ndash;new-deployment</strong> 一样，但是发往 proxy 这个服务的 9100 端口的流量会被路由到本地的 9100 端口的服务，此时只需要让本地调试的程序监听在 9100 端口，就可以实时接收 k8s 集群内部的流量，方便我们测试开发。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">http://blog.fatedier.com/2019/01/03/using-telepresence-for-quick-dev-in-k8s/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/kubernetes/">
+                            <i class="fa fa-tags"></i>
+                            kubernetes
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月10日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
+                
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#安装">安装</a></li>
+<li><a href="#简介">简介</a></li>
+<li><a href="#原理">原理</a></li>
+<li><a href="#常用的功能">常用的功能</a>
+<ul>
+<li><a href="#新建一个-deployment-用于测试本地服务访问远端服务">新建一个 Deployment 用于测试本地服务访问远端服务</a></li>
+<li><a href="#替换一个远端的-deployment-服务">替换一个远端的 Deployment 服务</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2019  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

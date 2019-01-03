@@ -537,6 +537,76 @@ root      1216  1111  0 01:23 ?        00:00:00 ps -ef
     
       
         <item>
+          <title>为 mtcp 项目添加 udp 支持</title>
+          <link>http://blog.fatedier.com/2017/03/03/support-udp-in-mtcp/</link>
+          <pubDate>Fri, 03 Mar 2017 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2017/03/03/support-udp-in-mtcp/</guid>
+          <description>
+
+&lt;p&gt;mtcp 是一个用户态的 tcp 协议栈，结合 dpdk 可以实现高性能的收发包。mtcp 不支持 udp 协议，想要在 bind 里利用 mtcp 进行加速，需要改动源码以提供支持。&lt;/p&gt;
+
+&lt;h3 id=&#34;大致思路&#34;&gt;大致思路&lt;/h3&gt;
+
+&lt;p&gt;mtcp 项目地址：&lt;a href=&#34;https://github.com/mtcp-stack/mtcp&#34;&gt;https://github.com/mtcp-stack/mtcp&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;我们需要实现和 udp 数据收发相关的函数，提供给其他程序使用的 SDK。各个所需函数的实现方式如下。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;mtcp_socket()&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;创建 socket 对象，对象池数组，分配一个与其他 socket 对象不冲突的 id(fd)。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;mtcp_bind()&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;将绑定的本地 IP 地址和端口等数据写入 socket 对象，将此 socket 对象的地址放入一个存放正在监听中的 socket 对象的 hashmap。&lt;/p&gt;
+
+&lt;p&gt;需要创建一个 hashmap，存放所有处于监听状态的 socket 对象，key 是本地 IP，Port。&lt;/p&gt;
+
+&lt;h3 id=&#34;udp-数据包的接收&#34;&gt;UDP 数据包的接收&lt;/h3&gt;
+
+&lt;p&gt;解析到 以太网帧 -&amp;gt; ip -&amp;gt; udp&lt;/p&gt;
+
+&lt;p&gt;解析出目的 ip，port，检查 hashmap 中是否有正处于监听状态的 socket 对象，如果没有，丢弃，否则加入到该 socket 对象的读缓冲区（这里需要一个队列）。&lt;/p&gt;
+
+&lt;p&gt;调用 pthread_cond_singal 唤醒处于 recvfrom 的线程，或者是 epoll 队列中有该socket 的可读事件监听，pthread_cond_singal 唤醒 mtcp_epoll_wait 线程。&lt;/p&gt;
+
+&lt;h4 id=&#34;mtcp-recvfrom&#34;&gt;mtcp_recvfrom()&lt;/h4&gt;
+
+&lt;ol&gt;
+&lt;li&gt;不使用 epoll，阻塞：使用 pthread_cond_wait 等待主线程轮询网卡数据包，有此socket 的 udp 包的时候会被唤醒，从读缓冲区中取出内容返回。&lt;/li&gt;
+&lt;li&gt;不使用 epoll，非阻塞：直接查询监听中socket-hashmap的此socket的读缓冲区，取出内容并返回。&lt;/li&gt;
+&lt;li&gt;使用 epoll（非阻塞）：将此 socket 的可读事件加入监听，epoll_wait 被唤醒，检查到可读事件，非阻塞模式读缓冲区内容。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&#34;mtcp-sendto&#34;&gt;mtcp_sendto()&lt;/h4&gt;
+
+&lt;ol&gt;
+&lt;li&gt;不使用 epoll，阻塞：如果此 socket 的写缓冲区未满，直接写入并返回，如果已满（需要等到有空间后被唤醒，考虑 socket 对象需要加一个 send_wait_list，统一触发）&lt;/li&gt;
+&lt;li&gt;不使用 epoll，非阻塞：已满就返回错误。&lt;/li&gt;
+&lt;li&gt;使用 epoll（非阻塞）：将可写事件加入 epoll 事件队列，当 socket 可写时写入缓冲区。
+（如果原来写缓冲区是空的，现在有内容了，加入到一个全局的 send_list 队列中）&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;如果此 socket 的 udp_stream 为 NULL，说明是一个客户端的 socket，创建一个新的udp_stream，分配一个随机的 udp 端口，加入到正在监听中的 socket 对象的 hashmap。&lt;/p&gt;
+
+&lt;h3 id=&#34;udp-数据包发送&#34;&gt;udp 数据包发送&lt;/h3&gt;
+
+&lt;p&gt;这里需要一开始创建一个全局的 udp_sender 对象，有一个 send_list 队列，存放需要发送数据的所有的 socket 对象。&lt;/p&gt;
+
+&lt;p&gt;轮询这些 socket 对象，构造数据包，udp -&amp;gt; ip -&amp;gt; 以太网帧，调用 dpdk 发送包的接口。&lt;/p&gt;
+
+&lt;h3 id=&#34;主线程循环&#34;&gt;主线程循环&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;udp 数据包的接收&lt;/li&gt;
+&lt;li&gt;udp 数据包发送&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+      
+    
+      
+        <item>
           <title>减小 golang 编译出程序的体积</title>
           <link>http://blog.fatedier.com/2017/02/04/reduce-golang-program-size/</link>
           <pubDate>Sat, 04 Feb 2017 00:00:00 UTC</pubDate>

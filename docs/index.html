@@ -134,6 +134,33 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2017年03月03日
+        </div>
+        <h2 class="post-title">
+            <a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        mtcp 是一个用户态的 tcp 协议栈，结合 dpdk 可以实现高性能的收发包。mtcp 不支持 udp 协议，想要在 bind 里利用 mtcp 进行加速，需要改动源码以提供支持。
+大致思路 mtcp 项目地址：https://github.com/mtcp-stack/mtcp
+我们需要实现和 udp 数据收发相关的函数，提供给其他程序使用的 SDK。各个所需函数的实现方式如下。
+mtcp_socket()
+创建 socket 对象，对象池数组，分配一个与其他 socket 对象不冲突的 id(fd)。
+mtcp_bind()
+将绑定的本地 IP 地址和端口等数据写入 socket 对象，将此 socket 对象的地址放入一个存放正在监听中的 socket 对象的 hashmap。
+需要创建一个 hashmap，存放所有处于监听状态的 socket 对象，key 是本地 IP，Port。
+UDP 数据包的接收 解析到 以太网帧 -&gt; ip -&gt; udp
+解析出目的 ip，port，检查 hashmap 中是否有正处于监听状态的 socket 对象，如果没有，丢弃，否则加入到该 socket 对象的读缓冲区（这里需要一个队列）。
+调用 pthread_cond_singal 唤醒处于 recvfrom 的线程，或者是 epoll 队列中有该socket 的可读事件监听，pthread_cond_singal 唤醒 mtcp_epoll_wait 线程。
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2017年02月04日
         </div>
         <h2 class="post-title">
@@ -301,23 +328,6 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2016年07月06日
-        </div>
-        <h2 class="post-title">
-            <a href="/2016/07/06/test-influxdb-and-opentsdb/">InfluxDB 与 OpenTSDB 对比测试</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -346,13 +356,13 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     
                     <a href="/2017/07/16/record-problem-resolve-for-docker-stop-slow/" class="list-group-item">记一次mesos集群停容器时间过长的问题排查</a>
                     
+                    <a href="/2017/03/03/support-udp-in-mtcp/" class="list-group-item">为 mtcp 项目添加 udp 支持</a>
+                    
                     <a href="/2017/02/04/reduce-golang-program-size/" class="list-group-item">减小 golang 编译出程序的体积</a>
                     
                     <a href="/2017/01/01/golang-cross-compile/" class="list-group-item">golang 交叉编译</a>
                     
                     <a href="/2016/10/22/travel-coding-and-writing/" class="list-group-item">旅行、编程与写作</a>
-                    
-                    <a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/" class="list-group-item">InfluxDB详解之TSM存储引擎解析（二）</a>
                     
                 </div>
             </div>
@@ -367,7 +377,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     
                     
                     <a href="/tags/c/cpp/" class="list-group-item">
-                        <span class="badge">9</span>
+                        <span class="badge">10</span>
                         c/cpp
                     </a>
                     
@@ -407,7 +417,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     </a>
                     
                     <a href="/tags/linux/" class="list-group-item">
-                        <span class="badge">17</span>
+                        <span class="badge">18</span>
                         linux
                     </a>
                     

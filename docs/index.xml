@@ -542,9 +542,7 @@ root      1216  1111  0 01:23 ?        00:00:00 ps -ef
           <pubDate>Fri, 03 Mar 2017 00:00:00 UTC</pubDate>
           <author></author>
           <guid>http://blog.fatedier.com/2017/03/03/support-udp-in-mtcp/</guid>
-          <description>
-
-&lt;p&gt;mtcp 是一个用户态的 tcp 协议栈，结合 dpdk 可以实现高性能的收发包。mtcp 不支持 udp 协议，想要在 bind 里利用 mtcp 进行加速，需要改动源码以提供支持。&lt;/p&gt;
+          <description>&lt;p&gt;mtcp 是一个用户态的 tcp 协议栈，结合 dpdk 可以实现高性能的收发包。mtcp 不支持 udp 协议，想要在 bind 里利用 mtcp 进行加速，需要改动源码以提供支持。&lt;/p&gt;
 
 &lt;h3 id=&#34;大致思路&#34;&gt;大致思路&lt;/h3&gt;
 
@@ -600,8 +598,7 @@ root      1216  1111  0 01:23 ?        00:00:00 ps -ef
 &lt;ul&gt;
 &lt;li&gt;udp 数据包的接收&lt;/li&gt;
 &lt;li&gt;udp 数据包发送&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+&lt;/ul&gt;</description>
         </item>
       
     

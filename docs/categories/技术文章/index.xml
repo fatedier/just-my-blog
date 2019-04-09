@@ -31,6 +31,15 @@
     </item>
     
     <item>
+      <title>Service Mesh 探索之优先本地访问</title>
+      <link>http://blog.fatedier.com/2018/12/01/service-mesh-explore-local-node-lb/</link>
+      <pubDate>Sat, 01 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/2018/12/01/service-mesh-explore-local-node-lb/</guid>
+      <description>&lt;p&gt;在设计 Service Mesh 架构方案时，考虑到有一些基础服务，访问频率高，流量大，如果在 kubernetes 平台上采用 DaemonSet 的部署方式，每一个机器部署一个实例，访问方能够优先访问同一个节点上的该服务，则可以极大地减少网络开销和延迟。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Service Mesh 自研实践</title>
       <link>http://blog.fatedier.com/2018/10/15/self-designed-service-mesh/</link>
       <pubDate>Mon, 15 Oct 2018 00:00:00 +0000</pubDate>

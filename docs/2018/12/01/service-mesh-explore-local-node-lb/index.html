@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="在设计 Service Mesh 架构方案时，考虑到有一些基础服务，访问频率高，流量大，如果在 kubernetes 平台上采用 DaemonSet 的部署方式，每一个机器部署一个实例，访问方能够优先访问同一个节点上的该服务，则可以极大地减少网络开销和延迟。">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="Service Mesh 探索之优先本地访问 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Service Mesh 探索之优先本地访问
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2018年12月01日 
+                </div>
+                <h1 class="post-title">Service Mesh 探索之优先本地访问</h1>
+            </header>
+
+            <div class="post-content">
+                <p>在设计 Service Mesh 架构方案时，考虑到有一些基础服务，访问频率高，流量大，如果在 kubernetes 平台上采用 DaemonSet 的部署方式，每一个机器部署一个实例，访问方能够优先访问同一个节点上的该服务，则可以极大地减少网络开销和延迟。</p>
+
+<p>目前开源的项目中还没有支持这一功能，所以我们需要实现自己的负载均衡策略来达到这一目的。</p>
+
+<h3 id="discovery-组件">discovery 组件</h3>
+
+<p>和 Istio 的 pilot 类似，一般 Service Mesh 平台中会有一个 discovery 组件，通过 discovery 组件，proxy 才能获得要访问的服务的所有节点信息，discovery 屏蔽了各个服务注册中心的细节。</p>
+
+<p>我们的 discovery 组件对外提供 GRPC 接口。有以下几个概念:</p>
+
+<ul>
+<li>Zone: 区域，一个区域有多个集群，通常物理上不在一起，互相访问存在网络开销或不能直接访问。</li>
+<li>Cluster: 集群，一个集群是一组服务的集合，集群之间通常在一个区域的内部网络环境中。</li>
+<li>Service: 服务，一个服务对应 N 个实例。</li>
+<li>Instance: 实例，服务的最小实现单元。</li>
+</ul>
+
+<p>这里主要关心 Instance 这个结构，其 protobuf 定义如下:</p>
+
+<pre><code>message Instance {
+    NetworkEndpoint endpoint = 1;
+    Labels labels = 2;
+}
+
+message NetworkEndpoint {
+    string address = 1;
+    int64 port = 2;
+    string port_name = 3;
+}
+</code></pre>
+
+<p>其中 Labels 是一个 map 结构，每一个实例都会有一些标签，例如 <code>cluster=c1, zone=z1, node=n1</code>。</p>
+
+<p>我们需要利用的就是 <code>node</code> 这个标签，表示该实例所在的物理机器节点。这个标签可以为空，表示未知。</p>
+
+<h3 id="kubernetes-中获取-node-信息">kubernetes 中获取 Node 信息</h3>
+
+<p>在 kubernetes 中获取 NodeName 的简单代码示例:</p>
+
+<pre><code class="language-golang">out := make([]*model.Instance, 0)
+for _, item := range d.factory.Core().V1().Endpoints().Informer().GetStore().List() {
+    ep := *item.(*corev1.Endpoints)
+    
+    for _, ss := range ep.Subsets {
+        for _, ea := range ss.Addresses {
+            for _, port := range ss.Ports {
+                labels := make(model.Labels)
+                labels[&quot;namespace&quot;] = ep.Namespace
+                labels[&quot;registry&quot;] = string(registry.KubernetesRegistry)
+                labels[&quot;service&quot;] = ep.Name
+                labels[&quot;cluster_id&quot;] = d.clusterID
+                if ea.NodeName != nil {
+                    labels[&quot;node&quot;] = *ea.NodeName
+                }
+
+                out = append(out, &amp;model.Instance{
+                    Endpoint: &amp;model.NetworkEndpoint{
+                        Address:  ea.IP,
+                        Port:     int(port.Port),
+                        PortName: port.Name,
+                    },
+                    Labels: labels,
+                })
+            }
+        }
+    }
+}
+</code></pre>
+
+<p>k8s 的 Endpoint 信息中会附加上 NodeName，需要注意的是这个参数有可能不存在。</p>
+
+<h3 id="proxy-组件">proxy 组件</h3>
+
+<p>proxy 在启动时，会通过环境变量 <code>NODE_NAME</code> 识别出自己所在的物理节点。</p>
+
+<h4 id="部署在-k8s">部署在 k8s</h4>
+
+<p>proxy 组件在 k8s 中是以 sidecar 的方式和服务的容器部署在同一个 pod 中，所以必然是在同一个物理机器上。我们通过修改 proxy 的 yaml 文件配置附加上 <code>NODE_NAME</code> 这一环境变量。</p>
+
+<p>示例如下:</p>
+
+<pre><code class="language-yaml">env:
+- name: NODE_NAME
+  valueFrom:
+    fieldRef:
+      fieldPath: spec.nodeName
+</code></pre>
+
+<h4 id="部署在物理机">部署在物理机</h4>
+
+<p>通过启动 proxy 时主动指定 <code>NODE_NAME</code>。</p>
+
+<p><code>env NODE_NAME=`hostname` ./proxy</code></p>
+
+<h3 id="负载均衡算法">负载均衡算法</h3>
+
+<p>假设 A 服务希望通过 proxy 访问以 DaemonSet 方式部署的 B 服务。</p>
+
+<p>具体的步骤:</p>
+
+<ul>
+<li>A 服务的 proxy 从环境变量中知道自身所在的 Node。</li>
+<li>从 discovery 中获取到 B 服务的所有 Instance 对应的 Node 信息。</li>
+<li>从 B 服务的所有 Instance 中选择具有相同 Node 的节点。</li>
+<li>优先访问该节点。</li>
+</ul>
+
+<p>注意事项:</p>
+
+<ul>
+<li>当 B 服务的本地节点出现故障时，需要依靠重试机制来保证可靠性。</li>
+<li>重试时会优先以轮询的方式重试具有相同 Node 的节点。</li>
+<li>如果相同 Node 的节点全部重试过一遍，则继续以轮询的方式重试剩余其他节点。</li>
+</ul>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2018/12/01/service-mesh-explore-local-node-lb/">http://blog.fatedier.com/2018/12/01/service-mesh-explore-local-node-lb/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/kubernetes/">
+                            <i class="fa fa-tags"></i>
+                            kubernetes
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">使用 telepresence 在 k8s 环境中实现快速开发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月03日)</span></li><li id="li-rels"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月10日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
+                
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2018/10/15/self-designed-service-mesh/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#discovery-组件">discovery 组件</a></li>
+<li><a href="#kubernetes-中获取-node-信息">kubernetes 中获取 Node 信息</a></li>
+<li><a href="#proxy-组件">proxy 组件</a>
+<ul>
+<li><a href="#部署在-k8s">部署在 k8s</a></li>
+<li><a href="#部署在物理机">部署在物理机</a></li>
+</ul></li>
+<li><a href="#负载均衡算法">负载均衡算法</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2019  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

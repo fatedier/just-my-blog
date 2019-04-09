@@ -13,6 +13,11 @@
   </url>
   
   <url>
+    <loc>http://blog.fatedier.com/2018/12/01/service-mesh-explore-local-node-lb/</loc>
+    <lastmod>2018-12-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.fatedier.com/2018/10/15/self-designed-service-mesh/</loc>
     <lastmod>2018-10-15T00:00:00+00:00</lastmod>
   </url>
@@ -428,7 +433,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/tags/service-mesh/</loc>
-    <lastmod>2018-10-15T00:00:00+00:00</lastmod>
+    <lastmod>2018-12-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

@@ -31,6 +31,15 @@
     </item>
     
     <item>
+      <title>Service Mesh 自研实践</title>
+      <link>http://blog.fatedier.com/2018/10/15/self-designed-service-mesh/</link>
+      <pubDate>Mon, 15 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/2018/10/15/self-designed-service-mesh/</guid>
+      <description>&lt;p&gt;最近都在做自研 Service Mesh 方案的落地和后续迭代优化，目前稳定承接了旧系统的大部分流量，这里分享一下这套架构，以及过程中的思考和遇到的一些问题。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>记一次mesos集群停容器时间过长的问题排查</title>
       <link>http://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</link>
       <pubDate>Sun, 16 Jul 2017 00:00:00 +0000</pubDate>

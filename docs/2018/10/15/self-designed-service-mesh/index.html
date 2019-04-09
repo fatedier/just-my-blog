@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="最近都在做自研 Service Mesh 方案的落地和后续迭代优化，目前稳定承接了旧系统的大部分流量，这里分享一下这套架构，以及过程中的思考和遇到的一些问题。">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="Service Mesh 自研实践 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Service Mesh 自研实践
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2018年10月15日 
+                </div>
+                <h1 class="post-title">Service Mesh 自研实践</h1>
+            </header>
+
+            <div class="post-content">
+                <p>最近都在做自研 Service Mesh 方案的落地和后续迭代优化，目前稳定承接了旧系统的大部分流量，这里分享一下这套架构，以及过程中的思考和遇到的一些问题。</p>
+
+<h3 id="service-mesh-现状">Service Mesh 现状</h3>
+
+<blockquote>
+<p>服务网格（Service Mesh）是致力于解决服务间通讯的基础设施层。它负责在现代云原生应用程序的复杂服务拓扑来可靠地传递请求。实际上，Service Mesh 通常是通过一组轻量级网络代理（Sidecar proxy），与应用程序代码部署在一起来实现，而无需感知应用程序本身。</p>
+</blockquote>
+
+<p>微服务发展到一定阶段，Service Mesh 更像是借助于容器平台的兴起而对 API 网关的一种解耦和优化。</p>
+
+<p>目前看来最主要的开源解决方案是 Istio 和 Linkerd。前者甚至已经隐隐成为一种事实上的标准，是谈论 Service Mesh 绕不过去的一个项目，当你提及任何一个其他项目时，与 Istio 的对比可以检验一个项目的成熟度。</p>
+
+<h3 id="为什么需要自研-service-mesh-方案">为什么需要自研 Service Mesh 方案</h3>
+
+<ul>
+<li>在开始设计这套 Service Mesh 架构时，Istio 尚处于 0.X 的版本，没有达到一个生产级别的可用性，但是其所展现出的一些功能特性和理念还是很有吸引力。</li>
+<li>Istio 的 proxy 使用了 envoy，兼具丰富的功能和高性能。但是采用 C++ 开发，对于以 Golang 为主的开发团队来说，将我们需要的功能移植上去，且保证可靠性是有一定难度的。反过来看，用 Golang 实现一个 proxy，确是非常简单且可靠的，虽然在性能上做了一些取舍。</li>
+<li>公司内部本身已经有现成的网关组件以及丰富的 Golang 的 package，如果直接使用开源的方案，会放弃很多已有的功能，例如自定义的负载均衡策略。</li>
+<li>Istio 通过 iptables 进行流量劫持，大大降低了服务接入 Service Mesh 平台的难度，但是对于不需要劫持的流量却需要通过定义白名单的方式排除在外，不是很友好，且有额外不多的一些性能损耗。而通过环境变量或代码指定 proxy 的方式，有一定侵入性，但是几乎没什么难度，且可以根据用户需要自行管理。</li>
+<li>旧的服务迁移并非一件简单的事情，在这个过渡的过程中，需要考虑同时兼容多个多个平台和架构。Istio 虽然说是跨平台，但是实际上目前还是主要基于 kubernetes，对于运行在 kubernetes 之外的服务来说并不友好。自研的架构会针对这个问题做优化，帮助服务平滑迁移。</li>
+</ul>
+
+<h3 id="核心功能">核心功能</h3>
+
+<h4 id="流量管理">流量管理</h4>
+
+<p>流量管理是最核心的一部分内容，大部分功能是从原先的 API 网关中剥离出来抽象而成。</p>
+
+<p>提供了针对服务级别的断路器，超时，重试等功能，且支持复杂的规则配置，例如根据 HTTP Response Header 进行正则匹配来判断该请求是否需要重试。开发，运维可以根据需要动态调整集群中各个服务的参数配置。</p>
+
+<p>支持策略路由，例如将指定用户或按照百分比过滤的流量切到一个指定某个服务的指定版本的实例上，在灰度发布，A/B 测试等场景下可以提供帮助。</p>
+
+<h4 id="安全性">安全性</h4>
+
+<p>支持服务级别的访问控制，目前没有支持 TLS 和身份验证，因为当前只考虑内部的服务，没有这个需求。</p>
+
+<h4 id="负载均衡">负载均衡</h4>
+
+<p>支持轮询，最小连接数，优先本地节点和 Remote API 等负载均衡算法。通过规则配置，实现错误检测并自动摘除后端故障节点。</p>
+
+<p>对某些均衡性要求较高的服务，支持 Remote API，利用远端全局视角来做负载均衡，避免由于 proxy 较多而导致负载均衡的能力下降。</p>
+
+<h4 id="多种接入方式">多种接入方式</h4>
+
+<p>由于新的架构中所有服务的入流量和出流量都需要经过 proxy 中转才能使用其中的能力，目前支持两种方式来实现这个需求，服务可以选择其中任意一种方式来接入到这个平台。</p>
+
+<ol>
+<li>支持 HTTP_PROXY 这种主动指定代理的方式，A 服务访问 B 服务时，主动向 proxy 发送请求，由 proxy 转发给 B 服务。这种方式的优点是一次转发，性能消耗小，且对外的请求是否需要经过 proxy 可以根据服务需要来指定，灵活性更高。缺点是服务需要感知 proxy 的存在并做针对的设置。</li>
+<li>流量劫持的方式，通过 iptables 等方式将指定出口的流量劫持到 proxy 中。优缺点和第一种代理的方式正好相反。</li>
+</ol>
+
+<h4 id="多协议支持">多协议支持</h4>
+
+<p>支持 HTTP, HTTP2, grpc 等 rpc 协议，可扩展。</p>
+
+<h4 id="统一的监控及日志">统一的监控及日志</h4>
+
+<p>对于服务调用之间的响应时间，请求数，状态码等会由 proxy 对外提供统一的监控数据 (通过 prometheus 采集和 grafana 展示) 和审计日志。</p>
+
+<h4 id="跨区域访问">跨区域访问</h4>
+
+<p>对于不在一个机房的多个 k8s 集群，能够共享服务发现数据，实现跨区域访问服务的功能。</p>
+
+<p>在某个机房出现故障或资源不足问题时，多机房的集群可以互为灾备。</p>
+
+<h4 id="多平台-架构支持">多平台，架构支持</h4>
+
+<p>架构上尽量的抽象，屏蔽底层平台的细节，能够通过扩展的方式方便地支持在 k8s, mesos 或是在物理机上部署的服务。</p>
+
+<h3 id="架构">架构</h3>
+
+<p><img src="http://image.fatedier.com/pic/2018/2018-10-15-self-designed-service-mesh-architecture.jpg" alt="architecture" /></p>
+
+<h4 id="discovery">discovery</h4>
+
+<p>discovery 为平台提供服务发现的能力，通过抽象，支持同时对接多种后端数据源，例如 k8s, consul, config 等。</p>
+
+<p>discovery 屏蔽了后端各个数据源的细节，对外提供统一的 GRPC 服务发现接口，将服务发现的数据传播到 proxy 中。</p>
+
+<h4 id="commander">commander</h4>
+
+<p>平台中的所有功能都依赖于配置来管理，commander 提供了对这些配置的抽象。开发，运维通过 commander 提供的统一接口来管理集群的流量及行为。</p>
+
+<p>这些配置可能来自于 k8s CRD，静态配置文件，远端 API。commander 会将这些配置发送给所有的 proxy。</p>
+
+<h4 id="proxy">proxy</h4>
+
+<p>在 k8s 中，proxy 会以 sidecar 的方式和每一个服务部署在一起，负责代理服务的出入流量。通过 discovery 获取服务发现数据源，从 commander 获取策略配置，来实现管理服务调用的能力。</p>
+
+<p>和 Istio 不同的是，绝大多数核心能力在这个组件中实现，而不是额外的 mixer 组件。</p>
+
+<h4 id="global-lb">global-lb</h4>
+
+<p>global-lb 提供统一视角负载均衡的功能。</p>
+
+<p>由于新架构的变更，每一个服务实例都会有一个与之对应的 proxy。而每一个 proxy 的负载均衡都使用的是自身视角的数据，均衡性会大打折扣。在某些对均衡性需求较高的场景下， proxy 可以借助于 global-lb 来实现统一视角的负载均衡。</p>
+
+<h4 id="zone-agent">zone-agent</h4>
+
+<p>跨集群服务代理组件。</p>
+
+<p>在跨区域服务访问中，由于 k8s 集群之间的服务不能直接通信，A 集群的服务访问 B 集群的服务，需要经过 zone-agent 代理。zone-agent 作为一个反向代理会通过 ingress 的方式暴露给集群外部的服务。</p>
+
+<h3 id="一些思考">一些思考</h3>
+
+<h4 id="mixer-组件">Mixer 组件</h4>
+
+<p>Istio 一个很好的抽象就是独立出了 Mixer 组件，也就是 Service Mesh 中的控制面。为 Mixer 开发一些 Adapter 就可以很方便的在这套架构上扩展新的功能，例如 QPS 限制，监控，日志收集等。</p>
+
+<p>但是对于我们目前而言，每一个请求都需要经过 Mixer 组件，存在一定的性能和可靠性的问题。我觉得这是一个过于超前的设计，在目前的架构上可能并不是最合适的解决方案。虽然可以在 proxy 中通过缓存来缓解压力，但是目前看来也不够完善，不能解决所有问题，且还存在着一些隐患，例如缓存的内存占用问题，在量级小的时候不明显，后期上量之后可能才会暴露。</p>
+
+<p>我们将 Mixer 中的大部分功能都合并到了 proxy 中，虽然 proxy 因此变得复杂，但是带来的收益确实实实在在的。减少了一次额外的链路访问，降低延迟。Mixer 虽然可以水平扩展，但是通常和 proxy 的数量比起来还是较少，监控和日志的量级，如果都放在 Mixer 上去做，未必可靠，加上我们已有的监控和日志收集的体系，proxy 可以很方便的接入，所以这套架构中没有了类似 Mixer 的组件。</p>
+
+<h4 id="流量劫持">流量劫持</h4>
+
+<p>Istio 的一个理念就是让平台上的服务对这套架构完全没有感知，可以不需要任何改动的情况下从旧的平台架构中迁移过来。</p>
+
+<p>我个人认为这并不是一个需要十分在意的点。服务感知 proxy 的存在，收益远大于成本。当前 Istio 通过 iptables 流量劫持的方式，虽然服务几乎不需要改动，但是非常暴力，如果有额外的数据库或者不需要经过代理的集群外部的服务，都需要通过白名单的方式不去劫持这部分流量，不友好。</p>
+
+<p>目前的架构中同时支持流量劫持和 HTTP_PROXY，并且 HTTP_PROXY 是推荐的使用姿势，适配起来几乎没有难度。只有在服务自身难以通过修改代码来使用代理的时候才会采用流量劫持的方式，且这一方式和 Istio 也存在一些差异，后面会专门写一篇文章讲下这个方案。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2018/10/15/self-designed-service-mesh/">http://blog.fatedier.com/2018/10/15/self-designed-service-mesh/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/kubernetes/">
+                            <i class="fa fa-tags"></i>
+                            kubernetes
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">使用 telepresence 在 k8s 环境中实现快速开发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月03日)</span></li><li id="li-rels"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月10日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
+                
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2018/09/01/yan-ran/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#service-mesh-现状">Service Mesh 现状</a></li>
+<li><a href="#为什么需要自研-service-mesh-方案">为什么需要自研 Service Mesh 方案</a></li>
+<li><a href="#核心功能">核心功能</a>
+<ul>
+<li><a href="#流量管理">流量管理</a></li>
+<li><a href="#安全性">安全性</a></li>
+<li><a href="#负载均衡">负载均衡</a></li>
+<li><a href="#多种接入方式">多种接入方式</a></li>
+<li><a href="#多协议支持">多协议支持</a></li>
+<li><a href="#统一的监控及日志">统一的监控及日志</a></li>
+<li><a href="#跨区域访问">跨区域访问</a></li>
+<li><a href="#多平台-架构支持">多平台，架构支持</a></li>
+</ul></li>
+<li><a href="#架构">架构</a>
+<ul>
+<li><a href="#discovery">discovery</a></li>
+<li><a href="#commander">commander</a></li>
+<li><a href="#proxy">proxy</a></li>
+<li><a href="#global-lb">global-lb</a></li>
+<li><a href="#zone-agent">zone-agent</a></li>
+</ul></li>
+<li><a href="#一些思考">一些思考</a>
+<ul>
+<li><a href="#mixer-组件">Mixer 组件</a></li>
+<li><a href="#流量劫持">流量劫持</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2019  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

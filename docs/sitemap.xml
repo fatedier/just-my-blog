@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://blog.fatedier.com/2019/01/12/service-mesh-explore-upgrade-http2/</loc>
+    <lastmod>2019-01-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.fatedier.com/2019/01/03/using-telepresence-for-quick-dev-in-k8s/</loc>
     <lastmod>2019-01-03T00:00:00+00:00</lastmod>
   </url>
@@ -361,7 +366,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/tags/kubernetes/</loc>
-    <lastmod>2019-01-03T00:00:00+00:00</lastmod>
+    <lastmod>2019-01-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -403,7 +408,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/post/</loc>
-    <lastmod>2019-01-03T00:00:00+00:00</lastmod>
+    <lastmod>2019-01-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -433,7 +438,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/tags/service-mesh/</loc>
-    <lastmod>2018-12-01T00:00:00+00:00</lastmod>
+    <lastmod>2019-01-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -475,7 +480,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/</loc>
-    <lastmod>2019-01-03T00:00:00+00:00</lastmod>
+    <lastmod>2019-01-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -511,7 +516,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/</loc>
-    <lastmod>2019-01-03T00:00:00+00:00</lastmod>
+    <lastmod>2019-01-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

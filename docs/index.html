@@ -66,6 +66,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2019年01月12日
+        </div>
+        <h2 class="post-title">
+            <a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>HTTP/2 是 HTTP/1.1 的升级，在请求方法、状态码乃至 URI 和绝大多数 HTTP 头部字段等方面保持高度兼容性，同时能够减少网络延迟和连接资源占用。Service Mesh 架构中，由于两个服务之间的通信由 proxy 介入，对于依靠 HTTP/1.1 通信的服务来说，可以无缝升级到 HTTP/2 协议。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2019年01月03日
         </div>
         <h2 class="post-title">
@@ -301,23 +318,6 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2016年07月25日
-        </div>
-        <h2 class="post-title">
-            <a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>Centos7上通过 yum 从 epel 仓库里直接安装的 go 版本还是 1.4.2，从源码编译安装最新的 go 版本比较麻烦，而且开发中有时需要调试在不同编译环境下可能存在的问题，不能忽略使用最新版本是存在某些 bug 的可能性。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -338,6 +338,8 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                 </div>
                 <div class="list-group">
                     
+                    <a href="/2019/01/12/service-mesh-explore-upgrade-http2/" class="list-group-item">Service Mesh 探索之升级 HTTP/2 协议</a>
+                    
                     <a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/" class="list-group-item">使用 telepresence 在 k8s 环境中实现快速开发</a>
                     
                     <a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/" class="list-group-item">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>
@@ -351,8 +353,6 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     <a href="/2017/07/16/record-problem-resolve-for-docker-stop-slow/" class="list-group-item">记一次mesos集群停容器时间过长的问题排查</a>
                     
                     <a href="/2017/03/03/support-udp-in-mtcp/" class="list-group-item">为 mtcp 项目添加 udp 支持</a>
-                    
-                    <a href="/2017/02/04/reduce-golang-program-size/" class="list-group-item">减小 golang 编译出程序的体积</a>
                     
                 </div>
             </div>
@@ -402,7 +402,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     </a>
                     
                     <a href="/tags/kubernetes/" class="list-group-item">
-                        <span class="badge">5</span>
+                        <span class="badge">6</span>
                         kubernetes
                     </a>
                     
@@ -457,7 +457,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     </a>
                     
                     <a href="/tags/service-mesh/" class="list-group-item">
-                        <span class="badge">2</span>
+                        <span class="badge">3</span>
                         service-mesh
                     </a>
                     

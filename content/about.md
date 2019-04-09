@@ -12,7 +12,7 @@ fatedier，程序员，热衷于技术研究。
 
 * 2014-2015 后端研发，服务中间件开发（江苏新大陆科技有限公司，南京）
 * 2015-2016 php性能监控，服务器及网站监控，包括数据的采集、处理以及后端存储的设计开发。基础平台研究，分布式系统、存储相关开发（性能魔方，上海）
-* 2017-至今 数据处理平台，容器集群管理平台，微服务架构设计 （七牛云，上海）
+* 2017-至今 数据处理平台，容器集群管理平台，微服务平台设计 （七牛云，上海）
 
 #### 技能
 
@@ -29,8 +29,9 @@ fatedier，程序员，热衷于技术研究。
 
 * Email: fatedier@gmail.com
 * Github: [https://github.com/fatedier](https://github.com/fatedier)
-* 新浪微博: [@fateder](http://weibo.com/fatedier)（不怎么用）
 
 #### 开源项目
 
 * [frp](https://github.com/fatedier/frp)，一个用于内网穿透的高性能且易于部署的反向代理应用。
+* [freebot](https://github.com/fatedier/freebot)，github 工作流管理的 robot，类似于 kubernetes 用的 prow，但是支持丰富的自定义规则以组合出复杂的流程管理。
+* [fft](https://github.com/fatedier/fft)，分布式的文件传输工具，可以同时利用多个中转节点来并行传输文件。

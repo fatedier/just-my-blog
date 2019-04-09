@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="在研究 Service Mesh 的过程中，发现 Istio 很多参数都通过 kubernetes CRD 来管理，例如 VirtualService 和 DestinationRule，这种方式使部署在 k8s 集群上的服务的管理方式更趋向一致。">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="kubernetes 自定义资源(CRD) - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    kubernetes 自定义资源(CRD)
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2019年03月20日 
+                </div>
+                <h1 class="post-title">kubernetes 自定义资源(CRD)</h1>
+            </header>
+
+            <div class="post-content">
+                <p>在研究 Service Mesh 的过程中，发现 Istio 很多参数都通过 kubernetes CRD 来管理，例如 VirtualService 和 DestinationRule，这种方式使部署在 k8s 集群上的服务的管理方式更趋向一致。</p>
+
+<p>kubernetes 的资源管理方式和声明式 API 的良好设计使得在这个平台上的功能扩展变得异常容易。例如 CoreOS 推出的 Operator 框架就是一个很好的例子。</p>
+
+<p>这篇文章通过一个简短的示例来演示如何创建自定义资源。</p>
+
+<h3 id="创建-crd-customresourcedefinition">创建 CRD(CustomResourceDefinition)</h3>
+
+<p>这里以创建一个简单的弹性伸缩配置的 CRD 为例。将下面的内容保存在 <code>scaling_crd.yaml</code> 文件中。</p>
+
+<pre><code class="language-yaml">apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  # name must match the spec fields below, and be in the form: &lt;plural&gt;.&lt;group&gt;
+  name: scalings.control.example.com
+spec:
+  # group name to use for REST API: /apis/&lt;group&gt;/&lt;version&gt;
+  group: control.example.com
+  # list of versions supported by this CustomResourceDefinition
+  versions:
+    - name: v1
+      # Each version can be enabled/disabled by Served flag.
+      served: true
+      # One and only one version must be marked as the storage version.
+      storage: true
+  # either Namespaced or Cluster
+  scope: Namespaced
+  names:
+    # plural name to be used in the URL: /apis/&lt;group&gt;/&lt;version&gt;/&lt;plural&gt;
+    plural: scalings
+    # singular name to be used as an alias on the CLI and for display
+    singular: scaling
+    # kind is normally the CamelCased singular type. Your resource manifests use this.
+    kind: Scaling
+    # shortNames allow shorter string to match your resource on the CLI
+    shortNames:
+    - sc
+</code></pre>
+
+<p>通过 kubectl 创建这个 CRD:</p>
+
+<p><code>kubectl apply -f scaling_crd.yaml</code></p>
+
+<h3 id="创建自定义资源的对象">创建自定义资源的对象</h3>
+
+<p>我们编写一个 <code>test.yaml</code> 文件来创建一个自定义的 <code>Scaling</code> 对象。</p>
+
+<pre><code class="language-yaml">apiVersion: &quot;control.example.io/v1&quot;
+kind: Scaling
+metadata:
+  name: test
+spec:
+  targetDeployment: test
+  minReplicas: 1
+  maxReplicas: 5
+  metricType: CPU
+  step: 1
+  scaleUp: 80
+  scaleDown: 40
+</code></pre>
+
+<p>通过 kubectl 创建:</p>
+
+<p><code>kubectl apply -f test.yaml</code></p>
+
+<p>提示:</p>
+
+<p><code>scaling.control.example.io/test created</code></p>
+
+<p>你可以通过 kubectl 查看已经创建的名为 <code>test</code> 的 Scaling 对象。</p>
+
+<p><code>kubectl get scalings.control.example.io test -o yaml</code></p>
+
+<p>会输出类似如下的结果:</p>
+
+<pre><code class="language-yaml">apiVersion: control.example.io/v1
+kind: Scaling
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {&quot;apiVersion&quot;:&quot;control.example.io/v1&quot;,&quot;kind&quot;:&quot;Scaling&quot;,&quot;metadata&quot;:{&quot;annotations&quot;:{},&quot;name&quot;:&quot;test&quot;,&quot;namespace&quot;:&quot;default&quot;},&quot;spec&quot;:{&quot;maxReplicas&quot;:5,&quot;metricType&quot;:&quot;CPU&quot;,&quot;minReplicas&quot;:1,&quot;scaleDown&quot;:40,&quot;scaleUp&quot;:80,&quot;step&quot;:1,&quot;targetDeployment&quot;:&quot;test&quot;}}
+  creationTimestamp: &quot;2019-01-09T12:22:36Z&quot;
+  generation: 1
+  name: test
+  namespace: default
+  resourceVersion: &quot;1316610&quot;
+  selfLink: /apis/control.example.io/v1/namespaces/default/scalings/test
+  uid: 28717b37-5ac2-11e9-89f8-080027a9fd96
+spec:
+  maxReplicas: 5
+  metricType: CPU
+  minReplicas: 1
+  scaleDown: 40
+  scaleUp: 80
+  step: 1
+  targetDeployment: test
+</code></pre>
+
+<p>我们可以像操作 k8s 内置的 Deployment 资源一样操作我们创建的 Scaling 资源，同样可以对它进行更新和删除的操作。</p>
+
+<h3 id="参数校验">参数校验</h3>
+
+<p>上面的 CRD 配置中我们并没有指定这个资源的 Spec，也就是说用户可以使用任意的 Spec 创建这个 Scaling 资源，这并不符合我们的要求。我们希望在用户创建 Scaling 对象时，可以像 k8s 的原生资源一样进行参数校验，如果出错的情况下，就不会去创建或更新这个对象，而是给用户错误提示。</p>
+
+<p>k8s 目前提供了两种方式来实现参数校验，<code>OpenAPI v3 schema</code> 和 <code>validatingadmissionwebhook</code>。</p>
+
+<p>这里主要使用比较简单的 <code>OpenAPI v3 schema</code> 来实现。<code>validatingadmissionwebhook</code> 需要用户自己提供一个检查服务，通过创建 <code>ValidatingWebhookConfiguration</code> 让 APIServer 将指定的操作请求转发给这个检查服务，检查服务返回 true 或者 false，决定参数校验是否成功。</p>
+
+<p>我们将之前的 CRD 配置文件 <code>scaling_crd.yaml</code> 做一下修改，增加参数校验的部分:</p>
+
+<pre><code class="language-yaml">apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: scalings.control.example.io
+spec:
+  group: control.example.io
+  versions:
+    - name: v1
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    plural: scalings
+    singular: scaling
+    kind: Scaling
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          required:
+          - targetDeployment
+          - minReplicas
+          - maxReplicas
+          - metricType
+          - step
+          - scaleUp
+          - scaleDown
+          properties:
+            targetDeployment:
+              type: string
+            minReplicas:
+              type: integer
+              minimum: 0
+            maxReplicas:
+              type: integer
+              minimum: 0
+            metricType:
+              type: string
+              enum:
+              - CPU
+              - MEMORY
+              - REQUESTS
+            step:
+              type: integer
+              minimum: 1
+            scaleUp:
+              type: integer
+            scaleDown:
+              type: integer
+              minimum: 0
+</code></pre>
+
+<p>可以看到 spec 中增加了 validation 字段，其中定义了对各个参数的检验要求。</p>
+
+<ul>
+<li><code>required</code> 表示数组中的参数必须要设置。</li>
+<li><code>type string</code> 和 <code>type integer</code> 表示限制参数类型。</li>
+<li><code>minimum: 0</code> 表示数字最小值为 0。</li>
+<li><code>enum</code> 表示参数只能在指定的值中。</li>
+</ul>
+
+<p>具体支持哪些校验方法可以通过 <a href="https://github.com/OAI/OpenAPI-Specification">https://github.com/OAI/OpenAPI-Specification</a> 查看。</p>
+
+<p>更新 CRD 资源:</p>
+
+<p><code>kubectl apply -f scaling_crd.yaml</code></p>
+
+<p>再次修改 <code>test.yaml</code> 测试我们的参数校验是否生效，将 <code>targetDeployment: test</code> 这一行删除。</p>
+
+<p>更新 Name 为 test 的 Scaling 对象。</p>
+
+<p><code>kubectl apply -f test.yaml</code></p>
+
+<p>可以看到错误提示输出如下:</p>
+
+<pre><code>validation failure list:
+spec.targetDeployment in body is required
+</code></pre>
+
+<p>至此，不符合我们要求的 Scaling 对象将不被允许创建。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2019/03/20/k8s-crd/">http://blog.fatedier.com/2019/03/20/k8s-crd/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/kubernetes/">
+                            <i class="fa fa-tags"></i>
+                            kubernetes
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">使用 telepresence 在 k8s 环境中实现快速开发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月03日)</span></li><li id="li-rels"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月10日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
+                
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#创建-crd-customresourcedefinition">创建 CRD(CustomResourceDefinition)</a></li>
+<li><a href="#创建自定义资源的对象">创建自定义资源的对象</a></li>
+<li><a href="#参数校验">参数校验</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2019  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

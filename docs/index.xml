@@ -6,8 +6,208 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2019</rights>
-    <updated>2019-01-12 00:00:00 &#43;0000 UTC</updated>
+    <updated>2019-03-20 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>kubernetes 自定义资源(CRD)</title>
+          <link>http://blog.fatedier.com/2019/03/20/k8s-crd/</link>
+          <pubDate>Wed, 20 Mar 2019 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2019/03/20/k8s-crd/</guid>
+          <description>&lt;p&gt;在研究 Service Mesh 的过程中，发现 Istio 很多参数都通过 kubernetes CRD 来管理，例如 VirtualService 和 DestinationRule，这种方式使部署在 k8s 集群上的服务的管理方式更趋向一致。&lt;/p&gt;
+
+&lt;p&gt;kubernetes 的资源管理方式和声明式 API 的良好设计使得在这个平台上的功能扩展变得异常容易。例如 CoreOS 推出的 Operator 框架就是一个很好的例子。&lt;/p&gt;
+
+&lt;p&gt;这篇文章通过一个简短的示例来演示如何创建自定义资源。&lt;/p&gt;
+
+&lt;h3 id=&#34;创建-crd-customresourcedefinition&#34;&gt;创建 CRD(CustomResourceDefinition)&lt;/h3&gt;
+
+&lt;p&gt;这里以创建一个简单的弹性伸缩配置的 CRD 为例。将下面的内容保存在 &lt;code&gt;scaling_crd.yaml&lt;/code&gt; 文件中。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  # name must match the spec fields below, and be in the form: &amp;lt;plural&amp;gt;.&amp;lt;group&amp;gt;
+  name: scalings.control.example.com
+spec:
+  # group name to use for REST API: /apis/&amp;lt;group&amp;gt;/&amp;lt;version&amp;gt;
+  group: control.example.com
+  # list of versions supported by this CustomResourceDefinition
+  versions:
+    - name: v1
+      # Each version can be enabled/disabled by Served flag.
+      served: true
+      # One and only one version must be marked as the storage version.
+      storage: true
+  # either Namespaced or Cluster
+  scope: Namespaced
+  names:
+    # plural name to be used in the URL: /apis/&amp;lt;group&amp;gt;/&amp;lt;version&amp;gt;/&amp;lt;plural&amp;gt;
+    plural: scalings
+    # singular name to be used as an alias on the CLI and for display
+    singular: scaling
+    # kind is normally the CamelCased singular type. Your resource manifests use this.
+    kind: Scaling
+    # shortNames allow shorter string to match your resource on the CLI
+    shortNames:
+    - sc
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;通过 kubectl 创建这个 CRD:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;kubectl apply -f scaling_crd.yaml&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;创建自定义资源的对象&#34;&gt;创建自定义资源的对象&lt;/h3&gt;
+
+&lt;p&gt;我们编写一个 &lt;code&gt;test.yaml&lt;/code&gt; 文件来创建一个自定义的 &lt;code&gt;Scaling&lt;/code&gt; 对象。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;apiVersion: &amp;quot;control.example.io/v1&amp;quot;
+kind: Scaling
+metadata:
+  name: test
+spec:
+  targetDeployment: test
+  minReplicas: 1
+  maxReplicas: 5
+  metricType: CPU
+  step: 1
+  scaleUp: 80
+  scaleDown: 40
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;通过 kubectl 创建:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;kubectl apply -f test.yaml&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;提示:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;scaling.control.example.io/test created&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;你可以通过 kubectl 查看已经创建的名为 &lt;code&gt;test&lt;/code&gt; 的 Scaling 对象。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;kubectl get scalings.control.example.io test -o yaml&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;会输出类似如下的结果:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;apiVersion: control.example.io/v1
+kind: Scaling
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {&amp;quot;apiVersion&amp;quot;:&amp;quot;control.example.io/v1&amp;quot;,&amp;quot;kind&amp;quot;:&amp;quot;Scaling&amp;quot;,&amp;quot;metadata&amp;quot;:{&amp;quot;annotations&amp;quot;:{},&amp;quot;name&amp;quot;:&amp;quot;test&amp;quot;,&amp;quot;namespace&amp;quot;:&amp;quot;default&amp;quot;},&amp;quot;spec&amp;quot;:{&amp;quot;maxReplicas&amp;quot;:5,&amp;quot;metricType&amp;quot;:&amp;quot;CPU&amp;quot;,&amp;quot;minReplicas&amp;quot;:1,&amp;quot;scaleDown&amp;quot;:40,&amp;quot;scaleUp&amp;quot;:80,&amp;quot;step&amp;quot;:1,&amp;quot;targetDeployment&amp;quot;:&amp;quot;test&amp;quot;}}
+  creationTimestamp: &amp;quot;2019-01-09T12:22:36Z&amp;quot;
+  generation: 1
+  name: test
+  namespace: default
+  resourceVersion: &amp;quot;1316610&amp;quot;
+  selfLink: /apis/control.example.io/v1/namespaces/default/scalings/test
+  uid: 28717b37-5ac2-11e9-89f8-080027a9fd96
+spec:
+  maxReplicas: 5
+  metricType: CPU
+  minReplicas: 1
+  scaleDown: 40
+  scaleUp: 80
+  step: 1
+  targetDeployment: test
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我们可以像操作 k8s 内置的 Deployment 资源一样操作我们创建的 Scaling 资源，同样可以对它进行更新和删除的操作。&lt;/p&gt;
+
+&lt;h3 id=&#34;参数校验&#34;&gt;参数校验&lt;/h3&gt;
+
+&lt;p&gt;上面的 CRD 配置中我们并没有指定这个资源的 Spec，也就是说用户可以使用任意的 Spec 创建这个 Scaling 资源，这并不符合我们的要求。我们希望在用户创建 Scaling 对象时，可以像 k8s 的原生资源一样进行参数校验，如果出错的情况下，就不会去创建或更新这个对象，而是给用户错误提示。&lt;/p&gt;
+
+&lt;p&gt;k8s 目前提供了两种方式来实现参数校验，&lt;code&gt;OpenAPI v3 schema&lt;/code&gt; 和 &lt;code&gt;validatingadmissionwebhook&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;这里主要使用比较简单的 &lt;code&gt;OpenAPI v3 schema&lt;/code&gt; 来实现。&lt;code&gt;validatingadmissionwebhook&lt;/code&gt; 需要用户自己提供一个检查服务，通过创建 &lt;code&gt;ValidatingWebhookConfiguration&lt;/code&gt; 让 APIServer 将指定的操作请求转发给这个检查服务，检查服务返回 true 或者 false，决定参数校验是否成功。&lt;/p&gt;
+
+&lt;p&gt;我们将之前的 CRD 配置文件 &lt;code&gt;scaling_crd.yaml&lt;/code&gt; 做一下修改，增加参数校验的部分:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: scalings.control.example.io
+spec:
+  group: control.example.io
+  versions:
+    - name: v1
+      served: true
+      storage: true
+  scope: Namespaced
+  names:
+    plural: scalings
+    singular: scaling
+    kind: Scaling
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          required:
+          - targetDeployment
+          - minReplicas
+          - maxReplicas
+          - metricType
+          - step
+          - scaleUp
+          - scaleDown
+          properties:
+            targetDeployment:
+              type: string
+            minReplicas:
+              type: integer
+              minimum: 0
+            maxReplicas:
+              type: integer
+              minimum: 0
+            metricType:
+              type: string
+              enum:
+              - CPU
+              - MEMORY
+              - REQUESTS
+            step:
+              type: integer
+              minimum: 1
+            scaleUp:
+              type: integer
+            scaleDown:
+              type: integer
+              minimum: 0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到 spec 中增加了 validation 字段，其中定义了对各个参数的检验要求。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;required&lt;/code&gt; 表示数组中的参数必须要设置。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;type string&lt;/code&gt; 和 &lt;code&gt;type integer&lt;/code&gt; 表示限制参数类型。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;minimum: 0&lt;/code&gt; 表示数字最小值为 0。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;enum&lt;/code&gt; 表示参数只能在指定的值中。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;具体支持哪些校验方法可以通过 &lt;a href=&#34;https://github.com/OAI/OpenAPI-Specification&#34;&gt;https://github.com/OAI/OpenAPI-Specification&lt;/a&gt; 查看。&lt;/p&gt;
+
+&lt;p&gt;更新 CRD 资源:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;kubectl apply -f scaling_crd.yaml&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;再次修改 &lt;code&gt;test.yaml&lt;/code&gt; 测试我们的参数校验是否生效，将 &lt;code&gt;targetDeployment: test&lt;/code&gt; 这一行删除。&lt;/p&gt;
+
+&lt;p&gt;更新 Name 为 test 的 Scaling 对象。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;kubectl apply -f test.yaml&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;可以看到错误提示输出如下:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;validation failure list:
+spec.targetDeployment in body is required
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;至此，不符合我们要求的 Scaling 对象将不被允许创建。&lt;/p&gt;</description>
+        </item>
+      
     
       
         <item>

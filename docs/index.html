@@ -66,6 +66,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2019年03月20日
+        </div>
+        <h2 class="post-title">
+            <a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>在研究 Service Mesh 的过程中，发现 Istio 很多参数都通过 kubernetes CRD 来管理，例如 VirtualService 和 DestinationRule，这种方式使部署在 k8s 集群上的服务的管理方式更趋向一致。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2019年01月12日
         </div>
         <h2 class="post-title">
@@ -301,23 +318,6 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2016年08月01日
-        </div>
-        <h2 class="post-title">
-            <a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>现在的很多程序都会提供一个 Dashboard 类似的页面用于查看程序状态并进行一些管理的功能，通常都不会很复杂，但是其中用到的图片和网页的一些静态资源，如果需要用户额外存放在一个目录，也不是很方便，如果能打包进程序发布的二进制文件中，用户下载以后可以直接使用，就方便很多。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -338,6 +338,8 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                 </div>
                 <div class="list-group">
                     
+                    <a href="/2019/03/20/k8s-crd/" class="list-group-item">kubernetes 自定义资源(CRD)</a>
+                    
                     <a href="/2019/01/12/service-mesh-explore-upgrade-http2/" class="list-group-item">Service Mesh 探索之升级 HTTP/2 协议</a>
                     
                     <a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/" class="list-group-item">使用 telepresence 在 k8s 环境中实现快速开发</a>
@@ -351,8 +353,6 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     <a href="/2018/09/01/yan-ran/" class="list-group-item">烟然</a>
                     
                     <a href="/2017/07/16/record-problem-resolve-for-docker-stop-slow/" class="list-group-item">记一次mesos集群停容器时间过长的问题排查</a>
-                    
-                    <a href="/2017/03/03/support-udp-in-mtcp/" class="list-group-item">为 mtcp 项目添加 udp 支持</a>
                     
                 </div>
             </div>
@@ -402,7 +402,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     </a>
                     
                     <a href="/tags/kubernetes/" class="list-group-item">
-                        <span class="badge">6</span>
+                        <span class="badge">7</span>
                         kubernetes
                     </a>
                     

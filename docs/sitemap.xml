@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://blog.fatedier.com/2019/03/25/k8s-crd-authorization/</loc>
+    <lastmod>2019-03-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://blog.fatedier.com/2019/03/20/k8s-crd/</loc>
     <lastmod>2019-03-20T00:00:00+00:00</lastmod>
   </url>
@@ -371,7 +376,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/tags/kubernetes/</loc>
-    <lastmod>2019-03-20T00:00:00+00:00</lastmod>
+    <lastmod>2019-03-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -413,7 +418,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/post/</loc>
-    <lastmod>2019-03-20T00:00:00+00:00</lastmod>
+    <lastmod>2019-03-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -485,7 +490,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/</loc>
-    <lastmod>2019-03-20T00:00:00+00:00</lastmod>
+    <lastmod>2019-03-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -521,7 +526,7 @@
   
   <url>
     <loc>http://blog.fatedier.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/</loc>
-    <lastmod>2019-03-20T00:00:00+00:00</lastmod>
+    <lastmod>2019-03-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

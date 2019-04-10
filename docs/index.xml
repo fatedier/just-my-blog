@@ -6,8 +6,133 @@
     <language>en-us</language>
     <author></author>
     <rights>(C) 2019</rights>
-    <updated>2019-03-20 00:00:00 &#43;0000 UTC</updated>
+    <updated>2019-03-25 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>kubernetes CRD 权限管理</title>
+          <link>http://blog.fatedier.com/2019/03/25/k8s-crd-authorization/</link>
+          <pubDate>Mon, 25 Mar 2019 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2019/03/25/k8s-crd-authorization/</guid>
+          <description>&lt;p&gt;对于一个多个用户的集群而言，通常单个用户只有自己 namespace 的相关权限，而 kubernetes CRD 需要配置额外的权限才能使用。&lt;/p&gt;
+
+&lt;p&gt;在 &lt;a href=&#34;http://blog.fatedier.com/2019/03/20/k8s-crd/&#34;&gt;kubernetes 自定义资源(CRD)&lt;/a&gt; 一文中，我们尝试创建了一个 scalings 资源，对于拥有 Admin 权限的用户没有问题，但是对于普通用户，创建时则会提示&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;
+customresourcedefinitions.apiextensions.k8s.io &amp;quot;scalings.control.example.io&amp;quot; is forbidden: User &amp;quot;test&amp;quot; cannot get customresourcedefinitions.apiextensions.k8s.io at the cluster scope
+&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;kubernetes-中的权限管理&#34;&gt;kubernetes 中的权限管理&lt;/h3&gt;
+
+&lt;p&gt;当前 kubernetes 通常采用 RBAC(Role-Based Access Control) 的授权管理方式，可以很好的实现资源隔离效果。&lt;/p&gt;
+
+&lt;p&gt;这种方法引入了几个概念: Role, ClusterRole, RoleBinding, ClusterRoleBinding&lt;/p&gt;
+
+&lt;p&gt;Role 表示角色，每一个角色都可以定义一些规则表征这个角色对哪些资源有哪些操作的权限。Role 和 ClusterRole 的区别就在于 Role 是区分 Namespace 的，而 ClusterRole 则是整个集群的权限。&lt;/p&gt;
+
+&lt;p&gt;比如如下的配置表示 Role &lt;code&gt;pod-reader&lt;/code&gt; 拥有对 &lt;code&gt;default&lt;/code&gt; Namespace 的 &lt;code&gt;pods&lt;/code&gt; 的只读权限。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups: [&amp;quot;&amp;quot;] # 空字符串表明使用 core API group
+  resources: [&amp;quot;pods&amp;quot;]
+  verbs: [&amp;quot;get&amp;quot;, &amp;quot;watch&amp;quot;, &amp;quot;list&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;接着我们需要将这个 Role 和具体的用户绑定起来使其生效。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods
+  namespace: default
+subjects:
+- kind: User
+  name: jane
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role # this must be Role or ClusterRole
+  name: pod-reader # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;通过这两个配置，jane 这个用户就具备了 &lt;code&gt;default&lt;/code&gt; Namespace 的 &lt;code&gt;pods&lt;/code&gt; 资源的只读权限。&lt;/p&gt;
+
+&lt;p&gt;ClusterRole 和 ClusterRoleBinding 的使用姿势没有太大区别，只是作用域是整个集群，不需要指定 Namespace。&lt;/p&gt;
+
+&lt;h3 id=&#34;crd-资源操作权限&#34;&gt;CRD 资源操作权限&lt;/h3&gt;
+
+&lt;p&gt;CustomResourceDefinition 存在于所有 namespace 下，所以需要创建 ClusterRole 和 ClusterRoleBinding 来让普通用户拥有操作 CRD 的 admin 权限。&lt;/p&gt;
+
+&lt;p&gt;参考配置如下:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: crd-admin
+rules:
+- apiGroups: [&amp;quot;apiextensions.k8s.io&amp;quot;]
+  resources: [&amp;quot;customresourcedefinitions&amp;quot;]
+  verbs: [&amp;quot;create&amp;quot;, &amp;quot;delete&amp;quot;, &amp;quot;deletecollection&amp;quot;, &amp;quot;patch&amp;quot;, &amp;quot;update&amp;quot;, &amp;quot;get&amp;quot;, &amp;quot;list&amp;quot;, &amp;quot;watch&amp;quot;]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: test-crd-admin
+subjects:
+- kind: User
+  name: test
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: crd-admin
+  apiGroup: rbac.authorization.k8s.io
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;kubectl apply 该配置，则 test 用户具备了对 &lt;code&gt;customresourcedefinitions.apiextensions.k8s.io&lt;/code&gt; 的所有操作权限，可以正常创建，删除，更新 CRD 资源。&lt;/p&gt;
+
+&lt;p&gt;但是对于我们通过 CRD 创建出来的自定义资源，例如 &lt;code&gt;scalings.control.example.com&lt;/code&gt;，还没有任何权限，不能创建和查看对象。&lt;/p&gt;
+
+&lt;h3 id=&#34;crd-对象操作权限&#34;&gt;CRD 对象操作权限&lt;/h3&gt;
+
+&lt;p&gt;对于 &lt;code&gt;scalings.control.example.com&lt;/code&gt; 这样的我们自己创建出来的资源，也需要对普通用户授予权限，但是不需要是集群范围内的，只需要授予用户关联的 namespace 下的权限即可。所以可以通过创建新的 Role 和 RoleBinding 来实现这一能力。&lt;/p&gt;
+
+&lt;p&gt;参考配置如下:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: default-crd-object
+  namespace: default
+rules:
+- apiGroups: [&amp;quot;control.example.com&amp;quot;]
+  resources: [&amp;quot;scalings&amp;quot;]
+  verbs: [&amp;quot;create&amp;quot;, &amp;quot;delete&amp;quot;, &amp;quot;deletecollection&amp;quot;, &amp;quot;patch&amp;quot;, &amp;quot;update&amp;quot;, &amp;quot;get&amp;quot;, &amp;quot;list&amp;quot;, &amp;quot;watch&amp;quot;]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: default-crd-object
+  namespace: default
+subjects:
+- kind: User
+  name: test
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: default-crd-object
+  apiGroup: rbac.authorization.k8s.io
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;kubectl apply 该配置，则 test 用户可以正常创建和查看 scalings 资源对象。&lt;/p&gt;</description>
+        </item>
+      
     
       
         <item>

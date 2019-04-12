@@ -64,6 +64,25 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2019年04月02日
+        </div>
+        <h2 class="post-title">
+            <a href="/2019/04/02/k8s-custom-controller/">kubernetes 自定义控制器</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>kubernetes 的 controller-manager 通过 APIServer 实时监控内部资源的变化情况，通过各种操作将系统维持在一个我们预期的状态上。比如当我们将 Deployment 的副本数增加时，controller-manager 会监听到此变化，主动创建新的 Pod。</p>
+
+<p>对于通过 CRD 创建的资源，也可以创建一个自定义的 controller 来管理。</p>
+    </div>
+    </article>
+<hr>
+
+        
+        
+<article class="post li">
+    <header>
+        <div class="post-date">
             2019年03月25日
         </div>
         <h2 class="post-title">

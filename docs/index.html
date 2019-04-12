@@ -66,6 +66,25 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2019年04月02日
+        </div>
+        <h2 class="post-title">
+            <a href="/2019/04/02/k8s-custom-controller/">kubernetes 自定义控制器</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>kubernetes 的 controller-manager 通过 APIServer 实时监控内部资源的变化情况，通过各种操作将系统维持在一个我们预期的状态上。比如当我们将 Deployment 的副本数增加时，controller-manager 会监听到此变化，主动创建新的 Pod。</p>
+
+<p>对于通过 CRD 创建的资源，也可以创建一个自定义的 controller 来管理。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2019年03月25日
         </div>
         <h2 class="post-title">
@@ -300,24 +319,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2016年08月08日
-        </div>
-        <h2 class="post-title">
-            <a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
-go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特殊信息的，或者是需要一些小技巧来实现。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -338,6 +339,8 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                 </div>
                 <div class="list-group">
                     
+                    <a href="/2019/04/02/k8s-custom-controller/" class="list-group-item">kubernetes 自定义控制器</a>
+                    
                     <a href="/2019/03/25/k8s-crd-authorization/" class="list-group-item">kubernetes CRD 权限管理</a>
                     
                     <a href="/2019/03/20/k8s-crd/" class="list-group-item">kubernetes 自定义资源(CRD)</a>
@@ -351,8 +354,6 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     <a href="/2018/12/01/service-mesh-explore-local-node-lb/" class="list-group-item">Service Mesh 探索之优先本地访问</a>
                     
                     <a href="/2018/10/15/self-designed-service-mesh/" class="list-group-item">Service Mesh 自研实践</a>
-                    
-                    <a href="/2018/09/01/yan-ran/" class="list-group-item">烟然</a>
                     
                 </div>
             </div>
@@ -402,7 +403,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
                     </a>
                     
                     <a href="/tags/kubernetes/" class="list-group-item">
-                        <span class="badge">8</span>
+                        <span class="badge">9</span>
                         kubernetes
                     </a>
                     

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="Istio 的项目中有一个亮点就是可以将旧的应用无缝接入到 Service Mesh 的平台上来，不用修改一行代码。实现这个功能，目前主要是通过 iptables 来截获流量转发给 proxy。">
+<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="Service Mesh 探索之流量劫持 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Service Mesh 探索之流量劫持
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2018年11月21日 
+                </div>
+                <h1 class="post-title">Service Mesh 探索之流量劫持</h1>
+            </header>
+
+            <div class="post-content">
+                <p>Istio 的项目中有一个亮点就是可以将旧的应用无缝接入到 Service Mesh 的平台上来，不用修改一行代码。实现这个功能，目前主要是通过 iptables 来截获流量转发给 proxy。</p>
+
+<h3 id="如何实现">如何实现？</h3>
+
+<p>参考 Istio 的实现方式，我们可以自己设计一个简单的流量劫持的方案。</p>
+
+<p>要做哪些事？</p>
+
+<ul>
+<li>首先要有一个支持透明代理的 proxy，处理被劫持的流量，能够获取到连接建立时的原来的目的地址。在 k8s 中这个 proxy 采用 sidecar 的方式和要劫持流量的服务部署在一个 Pod 中。</li>
+<li>通过 iptables 将我们想要劫持的流量劫持到 proxy 中。proxy 自身的流量要排除在外。</li>
+<li>要实现零侵入，最好不修改服务的镜像，在 k8s 中可以采用 Init 容器的方式在应用容器启动之前做 iptables 的修改。</li>
+</ul>
+
+<h4 id="透明代理">透明代理</h4>
+
+<p>proxy 作为一个透明代理，对于自身能处理的流量，会经过一系列的处理逻辑，包括重试，超时，负载均衡等，再转发给对端服务。对于自身不能处理的流量，会直接透传，不作处理。</p>
+
+<p>通过 iptables 将流量转发给 proxy 后，proxy 需要能够获取到原来建立连接时的目的地址。在 Go 中的实现稍微麻烦一些，需要通过 <code>syscall</code> 调用来获取，</p>
+
+<p>示例代码:</p>
+
+<pre><code class="language-golang">package redirect
+
+import (
+    &quot;errors&quot;
+    &quot;fmt&quot;
+    &quot;net&quot;
+    &quot;os&quot;
+    &quot;syscall&quot;
+)
+
+const SO_ORIGINAL_DST = 80
+
+var (
+    ErrGetSocketoptIPv6 = errors.New(&quot;get socketopt ipv6 error&quot;)
+    ErrResolveTCPAddr   = errors.New(&quot;resolve tcp address error&quot;)
+    ErrTCPConn          = errors.New(&quot;not a valid TCPConn&quot;)
+)
+
+// For transparent proxy.
+// Get REDIRECT package's originial dst address.
+// Note: it may be only support linux.
+func GetOriginalDstAddr(conn *net.TCPConn) (addr net.Addr, c *net.TCPConn, err error) {
+    fc, errRet := conn.File()
+    if errRet != nil {
+        conn.Close()
+        err = ErrTCPConn
+        return
+    } else {
+        conn.Close()
+    }
+    defer fc.Close()
+
+    mreq, errRet := syscall.GetsockoptIPv6Mreq(int(fc.Fd()), syscall.IPPROTO_IP, SO_ORIGINAL_DST)
+    if errRet != nil {
+        err = ErrGetSocketoptIPv6
+        c, _ = getTCPConnFromFile(fc)
+        return
+    }
+
+    // only support ipv4
+    ip := net.IPv4(mreq.Multiaddr[4], mreq.Multiaddr[5], mreq.Multiaddr[6], mreq.Multiaddr[7])
+    port := uint16(mreq.Multiaddr[2])&lt;&lt;8 + uint16(mreq.Multiaddr[3])
+    addr, err = net.ResolveTCPAddr(&quot;tcp4&quot;, fmt.Sprintf(&quot;%s:%d&quot;, ip.String(), port))
+    if err != nil {
+        err = ErrResolveTCPAddr
+        return
+    }
+
+    c, errRet = getTCPConnFromFile(fc)
+    if errRet != nil {
+        err = ErrTCPConn
+        return
+    }
+    return
+}
+
+func getTCPConnFromFile(f *os.File) (*net.TCPConn, error) {
+    newConn, err := net.FileConn(f)
+    if err != nil {
+        return nil, ErrTCPConn
+    }
+
+    c, ok := newConn.(*net.TCPConn)
+    if !ok {
+        return nil, ErrTCPConn
+    }
+    return c, nil
+}
+</code></pre>
+
+<p>通过 <code>GetOriginalDstAddr</code> 函数可以获取到连接原来的目的地址。</p>
+
+<p>这里需要格外注意的是，当启用 iptables 转发后，proxy 如果接收到直接访问自己的连接时，会识别到自身不能处理，会再去连接此目的地址(就是自己绑定的地址)，这样就会导致死循环。所以在服务启动时，需要将目的地址为自身 IP 的连接直接断开。</p>
+
+<h4 id="sidecar">Sidecar</h4>
+
+<p>使用 Sidecar 模式部署服务网格时，会在每一个服务身边额外启一个 proxy 去接管容器的部分流量。在 kubernetes 中一个 Pod 可以有多个容器，这多个容器可以共享网络，存储等资源，从概念上将服务容器和 proxy 容器部署成一个 Pod，proxy 容器就相当于是 sidecar 容器。</p>
+
+<p>我们通过一个 Deployment 来演示，这个 Deployment 的 yaml 配置中包括了 test 和 proxy 两个 container，它们共享网络，所以登录 test 容器后，通过 <code>127.0.0.1:30000</code> 可以访问到 proxy 容器。</p>
+
+<pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test
+  namespace: default
+  labels:
+    app: test
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: test
+    spec:
+      containers:
+      - name: test
+        image: {test-image}
+        ports:
+          - containerPort: 9100
+      - name: proxy
+        image: {proxy-image}
+        ports:
+          - containerPort: 30000    
+</code></pre>
+
+<p>为每一个服务都编写 sidecar 容器的配置是一件比较繁琐的事情，当架构成熟后，我们就可以利用 kubernetes 的 <code>MutatingAdmissionWebhook</code> 功能，在用户创建 Deployment 时，主动注入 sidecar 相关的配置。</p>
+
+<p>例如，我们在 Deployment 的 annotations 中加入如下的字段:</p>
+
+<pre><code class="language-yaml">annotations:
+  xxx.com/sidecar.enable: &quot;true&quot;
+  xxx.com/sidecar.version: &quot;v1&quot;
+</code></pre>
+
+<p>表示在此 Deployment 中需要注入 v1 版本的 sidecar。当我们的服务收到这个 webhook 后，就可以检查相关的 annotations 字段，根据字段配置来决定是否注入 sidecar 配置以及注入什么版本的配置，如果其中有一些需要根据服务改变的参数，也可以通过这种方式传递，极大地提高了灵活性。</p>
+
+<h4 id="iptables">iptables</h4>
+
+<p>通过 iptables 我们可以将指定的流量劫持到 proxy，并将部分流量排除在外。</p>
+
+<pre><code>iptables -t nat -A OUTPUT -p tcp -m owner --uid-owner 9527 -j RETURN
+iptables -t nat -A OUTPUT -p tcp -d 172.17.0.0/16 -j REDIRECT --to-port 30000
+</code></pre>
+
+<p>上面的命令，表示将目标地址是 <code>172.17.0.0/16</code> 的流量 <code>REDIRECT</code> 到 30000 端口(proxy 所监听的端口)。但是 UID 为 9527 启动的进程除外。<code>172.17.0.0/16</code> 这个地址是 k8s 集群内部的 IP 段，我们只需要劫持这部分流量，对于访问集群外部的流量，暂时不劫持，如果劫持全部流量，对于 proxy 不能处理的请求，就需要通过 iptables 的规则去排除。</p>
+
+<h4 id="init-容器">Init 容器</h4>
+
+<p>前文说过为了实现零侵入，我们需要通过 Init 容器的方式，在启动用户服务容器之前，就修改 iptables。这部分配置也可以通过 kubernetes 的 <code>MutatingAdmissionWebhook</code> 功能注入到用户的 Deployment 配置中。</p>
+
+<p>将前面 sidecar 的配置中加上 Init 容器的配置:</p>
+
+<pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test
+  namespace: default
+  labels:
+    app: test
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: test
+    spec:
+      initContainers:
+      - name: iptables-init
+        image: {iptables-image}
+        imagePullPolicy: IfNotPresent
+        command: ['sh', '-c', 'iptables -t nat -A OUTPUT -p tcp -m owner --uid-owner 9527 -j RETURN &amp;&amp; iptables -t nat -A OUTPUT -p tcp -d 172.17.0.0/16 -j REDIRECT --to-port 30000']
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+          privileged: true
+      containers:
+      - name: test
+        image: {test-image}
+        ports:
+          - containerPort: 9100
+      - name: proxy
+        image: {proxy-image}
+        ports:
+          - containerPort: 30000    
+</code></pre>
+
+<p>这个 Init 容器需要安装 iptables，在启动时会执行我们配置的 iptables 命令。</p>
+
+<p>需要额外注意的是 <code>securityContext</code> 这个配置项，我们加了 <code>NET_ADMIN</code> 的权限。它用于定义 Pod 或 Container 的权限，如果不配置，则 iptables 执行命令时会提示错误。</p>
+
+<h3 id="问题">问题</h3>
+
+<h4 id="如何判断目标服务的类型">如何判断目标服务的类型</h4>
+
+<p>我们将 <code>172.17.0.0/16</code> 的流量都劫持到了 proxy 内部，那么如何判断目标服务的协议类型？如果不知道协议类型，就不能确定如何去解析后续的请求。</p>
+
+<p>在 kubernetes 的 service 中，我们可以为每一个 service 的端口指定一个名字，这个名字的格式可以固定为 <code>{name}-{protocol}</code>，例如 <code>{test-http}</code>，表示这个 service 的某个端口是 http 协议。</p>
+
+<pre><code class="language-yaml">kind: Service
+apiVersion: v1
+metadata:
+  name: test
+  namespace: default
+spec:
+  selector:
+    app: test
+  ports:
+    - name: test-http
+      port: 9100
+      targetPort: 9100
+      protocol: TCP
+</code></pre>
+
+<p>proxy 通过 discovery 服务获取到 service 对应的 Cluster IP 和端口名称，这样通过目标服务的 IP 和 port 就可以知道这个连接的通信协议类型，后面就可以交给对应的 Handler 去处理。</p>
+
+<h4 id="cluster-ip">Cluster IP</h4>
+
+<p>在 kubernetes 中创建 Service，如果没有指定，默认采用 Cluster IP 的方式来访问，kube-proxy 会为此创建 iptables 规则，将 Cluster IP 转换为以负载均衡的方式转发到 Pod IP。</p>
+
+<p>当存在 Cluster IP 时，service 的 DNS 解析会指向 Cluster IP，负载均衡由 iptables 来做。如果不存在，DNS 解析的结果会直接指向 Pod IP。</p>
+
+<p>proxy 依赖于 service 的 Cluster IP 来判断用户访问的是哪一个服务，所以不能设置为 <code>clusterIP: None</code>。因为 Pod IP 是有可能会经常变动的，当增减实例时，Pod IP 的集合都会改变，proxy 并不能实时的获取到这些变化。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/">http://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/kubernetes/">
+                            <i class="fa fa-tags"></i>
+                            kubernetes
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2019/04/02/k8s-custom-controller/">kubernetes 自定义控制器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月02日)</span></li><li id="li-rels"><a href="/2019/03/25/k8s-crd-authorization/">kubernetes CRD 权限管理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月25日)</span></li><li id="li-rels"><a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月20日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">使用 telepresence 在 k8s 环境中实现快速开发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月03日)</span></li><li id="li-rels"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月10日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
+                
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2018/12/01/service-mesh-explore-local-node-lb/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2018/10/15/self-designed-service-mesh/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#如何实现">如何实现？</a>
+<ul>
+<li><a href="#透明代理">透明代理</a></li>
+<li><a href="#sidecar">Sidecar</a></li>
+<li><a href="#iptables">iptables</a></li>
+<li><a href="#init-容器">Init 容器</a></li>
+</ul></li>
+<li><a href="#问题">问题</a>
+<ul>
+<li><a href="#如何判断目标服务的类型">如何判断目标服务的类型</a></li>
+<li><a href="#cluster-ip">Cluster IP</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2019  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>
+var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
+$("#TableOfContents").children().first().remove();
+$("#TableOfContents").append(children);
+
+var real = $("li#li-rels:lt(8)");
+$("ul.post-rels").children().remove();
+$("ul.post-rels").append(real);
+if ($("ul.post-rels").children().length == 0) {
+    $("#real-rels").remove();
+}
+</script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

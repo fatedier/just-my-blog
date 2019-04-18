@@ -78,6 +78,15 @@
     </item>
     
     <item>
+      <title>Service Mesh 探索之流量劫持</title>
+      <link>http://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/</link>
+      <pubDate>Wed, 21 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/</guid>
+      <description>&lt;p&gt;Istio 的项目中有一个亮点就是可以将旧的应用无缝接入到 Service Mesh 的平台上来，不用修改一行代码。实现这个功能，目前主要是通过 iptables 来截获流量转发给 proxy。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Service Mesh 自研实践</title>
       <link>http://blog.fatedier.com/2018/10/15/self-designed-service-mesh/</link>
       <pubDate>Mon, 15 Oct 2018 00:00:00 +0000</pubDate>

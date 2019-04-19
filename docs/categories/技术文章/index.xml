@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2018. All rights reserved.</copyright>
-    <lastBuildDate>Tue, 02 Apr 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 17 Apr 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://blog.fatedier.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>kubernetes 自定义控制器的高可用</title>
+      <link>http://blog.fatedier.com/2019/04/17/k8s-custom-controller-high-available/</link>
+      <pubDate>Wed, 17 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/2019/04/17/k8s-custom-controller-high-available/</guid>
+      <description>&lt;p&gt;自定义 controller 通常要求只能有一个实例在工作，但是为了保证高可用，就需要有一个选主的机制，保证在 leader 因为某个异常挂掉后，其他节点可以提升为 leader，然后正常工作。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>kubernetes 自定义控制器</title>

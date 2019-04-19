@@ -66,6 +66,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2019年04月17日
+        </div>
+        <h2 class="post-title">
+            <a href="/2019/04/17/k8s-custom-controller-high-available/">kubernetes 自定义控制器的高可用</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>自定义 controller 通常要求只能有一个实例在工作，但是为了保证高可用，就需要有一个选主的机制，保证在 leader 因为某个异常挂掉后，其他节点可以提升为 leader，然后正常工作。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2019年04月02日
         </div>
         <h2 class="post-title">
@@ -302,23 +319,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2016年10月22日
-        </div>
-        <h2 class="post-title">
-            <a href="/2016/10/22/travel-coding-and-writing/">旅行、编程与写作</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>前段时间的精力主要放在了找工作上，压力也比较大，阅读和写博客的计划都有所耽误。后来难得利用换工作的间歇期去了云南的大理、丽江、香格里拉旅行，还看了《黑客与画家》这本书，对于工作、生活、理想的一些看法与感悟有了些许改变。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -339,6 +339,8 @@
                 </div>
                 <div class="list-group">
                     
+                    <a href="/2019/04/17/k8s-custom-controller-high-available/" class="list-group-item">kubernetes 自定义控制器的高可用</a>
+                    
                     <a href="/2019/04/02/k8s-custom-controller/" class="list-group-item">kubernetes 自定义控制器</a>
                     
                     <a href="/2019/03/25/k8s-crd-authorization/" class="list-group-item">kubernetes CRD 权限管理</a>
@@ -352,8 +354,6 @@
                     <a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/" class="list-group-item">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>
                     
                     <a href="/2018/12/01/service-mesh-explore-local-node-lb/" class="list-group-item">Service Mesh 探索之优先本地访问</a>
-                    
-                    <a href="/2018/11/21/service-mesh-traffic-hijack/" class="list-group-item">Service Mesh 探索之流量劫持</a>
                     
                 </div>
             </div>
@@ -403,7 +403,7 @@
                     </a>
                     
                     <a href="/tags/kubernetes/" class="list-group-item">
-                        <span class="badge">10</span>
+                        <span class="badge">11</span>
                         kubernetes
                     </a>
                     

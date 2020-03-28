@@ -79,16 +79,16 @@
 <p>大致上的意思就是在检测容器是否为空的时候，推荐用empty()代替使用size() == 0，两者的含义是相等的，但是前者可能会更快一些。</p>
 <p>之后又在stackoverflow上看到有人提了一个类似的问题，并且贴出了STL的实现源码：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">bool</span> empty()<span style="color:#cdcd00">const</span>
-    {<span style="color:#cdcd00">return</span>(size() <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>); }
+    {<span style="color:#cdcd00">return</span>(size() <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>); }
 </code></pre></div><p>这就让我更诧异了，这样的话empty()会比size() == 0更高效吗？</p>
 <p>实践是检验真理的唯一标准，那么我们就亲自来测试一下吧。</p>
 <p>为了公平起见，也为了测试方便，我分别在两个平台上进行测试，分别是Aix5.3以及Centos6.5。</p>
 <p>由于容器的内部实现的不同，我们测试三种比较典型也用的较多的容器：vector、list以及map。</p>
 <p>测试的代码如下，因为代码基本上差别不大，这里只贴一下测试vector的代码：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;iostream&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;sys/time.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;stdlib.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;vector&gt;</span><span style="color:#000080">
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#include</span> <span style="color:#000080">&lt;iostream&gt;</span><span style="color:#000080">
+</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;sys/time.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdlib.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;vector&gt;</span><span style="color:#000080">
 </span><span style="color:#000080"></span><span style="color:#cdcd00">using</span> <span style="color:#cdcd00">namespace</span> std;
 
 <span style="color:#cdcd00">class</span> <span style="color:#00cdcd">A</span>
@@ -99,7 +99,7 @@
 
 <span style="color:#00cd00">int</span> main()
 {
-    cout <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">vector:</span><span style="color:#cd0000">&#34;</span> <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> endl;
+    cout <span style="color:#39c">&lt;&lt;</span> <span style="color:#cd0000">&#34;vector:&#34;</span> <span style="color:#39c">&lt;&lt;</span> endl;
 
     <span style="color:#00cd00">long</span> number <span style="color:#39c">=</span> <span style="color:#cd00cd">20000000</span>;
     vector<span style="color:#39c">&lt;</span>A<span style="color:#39c">&gt;</span> tmpList;
@@ -114,25 +114,25 @@
     <span style="color:#000080">//对size() == 0计时
 </span><span style="color:#000080"></span>    <span style="color:#00cd00">int</span> flag <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
     gettimeofday(<span style="color:#39c">&amp;</span>tv_begin, <span style="color:#cd00cd">NULL</span>);
-    <span style="color:#cdcd00">for</span>(<span style="color:#00cd00">long</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span>number<span style="color:#39c">*</span><span style="color:#cd00cd">5</span>; i<span style="color:#39c">+</span><span style="color:#39c">+</span>)
+    <span style="color:#cdcd00">for</span>(<span style="color:#00cd00">long</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span>number<span style="color:#39c">*</span><span style="color:#cd00cd">5</span>; i<span style="color:#39c">++</span>)
     {
-        <span style="color:#cdcd00">if</span>(tmpList.size() <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>)
+        <span style="color:#cdcd00">if</span>(tmpList.size() <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>)
         {
         }
     }
     gettimeofday(<span style="color:#39c">&amp;</span>tv_end, <span style="color:#cd00cd">NULL</span>);
-    cout <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">size() msec: </span><span style="color:#cd0000">&#34;</span> <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> (tv_end.tv_sec <span style="color:#39c">-</span> tv_begin.tv_sec)<span style="color:#39c">*</span><span style="color:#cd00cd">1000</span> <span style="color:#39c">+</span> (tv_end.tv_usec <span style="color:#39c">-</span> tv_begin.tv_usec)<span style="color:#39c">/</span><span style="color:#cd00cd">1000</span> <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> endl;
+    cout <span style="color:#39c">&lt;&lt;</span> <span style="color:#cd0000">&#34;size() msec: &#34;</span> <span style="color:#39c">&lt;&lt;</span> (tv_end.tv_sec <span style="color:#39c">-</span> tv_begin.tv_sec)<span style="color:#39c">*</span><span style="color:#cd00cd">1000</span> <span style="color:#39c">+</span> (tv_end.tv_usec <span style="color:#39c">-</span> tv_begin.tv_usec)<span style="color:#39c">/</span><span style="color:#cd00cd">1000</span> <span style="color:#39c">&lt;&lt;</span> endl;
 
     <span style="color:#000080">//对empty()计时
 </span><span style="color:#000080"></span>    gettimeofday(<span style="color:#39c">&amp;</span>tv_begin, <span style="color:#cd00cd">NULL</span>);
-    <span style="color:#cdcd00">for</span>(<span style="color:#00cd00">long</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span>number<span style="color:#39c">*</span><span style="color:#cd00cd">5</span>; i<span style="color:#39c">+</span><span style="color:#39c">+</span>)
+    <span style="color:#cdcd00">for</span>(<span style="color:#00cd00">long</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span>number<span style="color:#39c">*</span><span style="color:#cd00cd">5</span>; i<span style="color:#39c">++</span>)
     {
         <span style="color:#cdcd00">if</span>(tmpList.empty())
         {
         }
     }
     gettimeofday(<span style="color:#39c">&amp;</span>tv_end, <span style="color:#cd00cd">NULL</span>);
-    cout <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">empty() msec: </span><span style="color:#cd0000">&#34;</span> <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> (tv_end.tv_sec <span style="color:#39c">-</span> tv_begin.tv_sec)<span style="color:#39c">*</span><span style="color:#cd00cd">1000</span> <span style="color:#39c">+</span> (tv_end.tv_usec <span style="color:#39c">-</span> tv_begin.tv_usec)<span style="color:#39c">/</span><span style="color:#cd00cd">1000</span> <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> endl;
+    cout <span style="color:#39c">&lt;&lt;</span> <span style="color:#cd0000">&#34;empty() msec: &#34;</span> <span style="color:#39c">&lt;&lt;</span> (tv_end.tv_sec <span style="color:#39c">-</span> tv_begin.tv_sec)<span style="color:#39c">*</span><span style="color:#cd00cd">1000</span> <span style="color:#39c">+</span> (tv_end.tv_usec <span style="color:#39c">-</span> tv_begin.tv_usec)<span style="color:#39c">/</span><span style="color:#cd00cd">1000</span> <span style="color:#39c">&lt;&lt;</span> endl;
     <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
 }
 </code></pre></div><p>这里用到了gettimeofday这个函数用来计时，在需要计时的地方分别调用两次该函数之后得到的时间相减即可获得该代码段执行的时间。</p>
@@ -209,14 +209,14 @@ empty() msec: 304
     {<span style="color:#cdcd00">return</span> (_Size); }
  
 <span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
-    {<span style="color:#cdcd00">return</span> (size() <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>); }
+    {<span style="color:#cdcd00">return</span> (size() <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>); }
 </code></pre></div><p>可以看出Aix上vector的empty()函数实际上是调用了size()函数进行判断，size()函数返回的是表示当前容器数量的一个变量，所以，显然，size() == 0的效率是要高于empty()的，因为少了函数调用部分的耗时。</p>
 <h4 id="centos-3">Centos</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">size_type size() <span style="color:#cdcd00">const</span>
-    { <span style="color:#cdcd00">return</span> size_type(<span style="color:#cdcd00">this</span><span style="color:#39c">-</span><span style="color:#39c">&gt;</span>_M_impl._M_finish <span style="color:#39c">-</span><span style="color:#cdcd00">this</span><span style="color:#39c">-</span><span style="color:#39c">&gt;</span>_M_impl._M_start); }
+    { <span style="color:#cdcd00">return</span> size_type(<span style="color:#cdcd00">this</span><span style="color:#39c">-&gt;</span>_M_impl._M_finish <span style="color:#39c">-</span><span style="color:#cdcd00">this</span><span style="color:#39c">-&gt;</span>_M_impl._M_start); }
  
 <span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
-    { <span style="color:#cdcd00">return</span> begin() <span style="color:#39c">=</span><span style="color:#39c">=</span> end(); }
+    { <span style="color:#cdcd00">return</span> begin() <span style="color:#39c">==</span> end(); }
 </code></pre></div><p>这里size()是尾指针减去头指针得到的，而empty()是比较头指针和尾指针是否相等。在empty()里多了函数调用以及临时变量赋值等操作。</p>
 <h3 id="list源码">list源码</h3>
 <h4 id="aix-4">Aix</h4>
@@ -224,14 +224,14 @@ empty() msec: 304
     {<span style="color:#cdcd00">return</span> (_Size); }
  
 <span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
-    {<span style="color:#cdcd00">return</span> (size() <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>); }
+    {<span style="color:#cdcd00">return</span> (size() <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>); }
 </code></pre></div><p>Aix上对于在list中的处理方式依然和vector一样，维护了一个_Size变量，empty()多了一层函数调用，效率较低。</p>
 <h4 id="centos-4">Centos</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">size_type size() <span style="color:#cdcd00">const</span>
-    { <span style="color:#cdcd00">return</span> std<span style="color:#39c">:</span><span style="color:#39c">:</span>distance(begin(), end()); }
+    { <span style="color:#cdcd00">return</span> std<span style="color:#39c">::</span>distance(begin(), end()); }
  
 <span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
-    { <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">this</span><span style="color:#39c">-</span><span style="color:#39c">&gt;</span>_M_impl._M_node._M_next <span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">&amp;</span><span style="color:#cdcd00">this</span><span style="color:#39c">-</span><span style="color:#39c">&gt;</span>_M_impl._M_node; }
+    { <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">this</span><span style="color:#39c">-&gt;</span>_M_impl._M_node._M_next <span style="color:#39c">==&amp;</span><span style="color:#cdcd00">this</span><span style="color:#39c">-&gt;</span>_M_impl._M_node; }
 </code></pre></div><p>size()函数调用了distance函数用遍历的方法取得两个指针间的元素个数，然后返回。而empty()函数则是判断头指针的下一个节点是否是自己本身，只需要进行一次判断。所以，当list容器元素个数较多的时候，这里的empty()效率远大于size() == 0。</p>
 <h3 id="map源码">map源码</h3>
 <h4 id="aix-5">Aix</h4>
@@ -239,11 +239,11 @@ empty() msec: 304
     {<span style="color:#cdcd00">return</span> (_Size); }
  
 <span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
-    {<span style="color:#cdcd00">return</span> (size() <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>); }
+    {<span style="color:#cdcd00">return</span> (size() <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>); }
 </code></pre></div><p>不出意外，可以看出Aix上依然维护了一个_Size变量，在判断的时候都是用这个变量来判断，但是empty()多了一层函数调用，所以效率上会稍微低一些。</p>
 <h4 id="centos-5">Centos</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
-    { <span style="color:#cdcd00">return</span> _M_impl._M_node_count <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; }
+    { <span style="color:#cdcd00">return</span> _M_impl._M_node_count <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>; }
  
 size_type size() <span style="color:#cdcd00">const</span>
     { <span style="color:#cdcd00">return</span> _M_impl._M_node_count; }

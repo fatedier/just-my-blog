@@ -123,7 +123,7 @@
 </code></pre></div><p>之后进入gdb调试状态，输入 where 就可以看到程序崩溃时堆栈信息（当前函数之前的所有已调用函数的列表（包括当前函数），我们可以借此找出是程序中的哪个部分导致了程序崩溃。注意：在编译程序的时候要加入选项-g。</p>
 <h3 id="一个简单的例子">一个简单的例子</h3>
 <p>编译如下的程序</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;iostream&gt;</span><span style="color:#000080">
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#include</span> <span style="color:#000080">&lt;iostream&gt;</span><span style="color:#000080">
 </span><span style="color:#000080"></span><span style="color:#cdcd00">using</span> <span style="color:#cdcd00">namespace</span> std;
  
 <span style="color:#cdcd00">class</span> <span style="color:#00cdcd">A</span>
@@ -135,8 +135,8 @@
 <span style="color:#00cd00">void</span> fun()
 {
     A<span style="color:#39c">*</span>t <span style="color:#39c">=</span> <span style="color:#cdcd00">new</span> A();
-    t<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>a <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span>;
-    cout <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> t<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>a <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> endl;
+    t<span style="color:#39c">-&gt;</span>a <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span>;
+    cout <span style="color:#39c">&lt;&lt;</span> t<span style="color:#39c">-&gt;</span>a <span style="color:#39c">&lt;&lt;</span> endl;
     <span style="color:#cdcd00">delete</span> t;
     <span style="color:#cdcd00">delete</span> t;
 }
@@ -151,14 +151,14 @@
 </code></pre></div><p>结果为</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">1</span>
 *** glibc detected *** ./test: double freeor corruption <span style="color:#39c">(</span>fasttop<span style="color:#39c">)</span>: 0x09fd7008 ***
-<span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span> Backtrace: <span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span>
+<span style="color:#39c">=======</span> Backtrace: <span style="color:#39c">=========</span>
 /lib/libc.so.6<span style="color:#39c">[</span>0x3ebe31<span style="color:#39c">]</span>
-/usr/lib/libstdc++.so.6<span style="color:#39c">(</span>_ZdlPv+0x22<span style="color:#39c">)</span><span style="color:#39c">[</span>0x43fc552<span style="color:#39c">]</span>
+/usr/lib/libstdc++.so.6<span style="color:#39c">(</span>_ZdlPv+0x22<span style="color:#39c">)[</span>0x43fc552<span style="color:#39c">]</span>
 ./test<span style="color:#39c">[</span>0x8048705<span style="color:#39c">]</span>
 ./test<span style="color:#39c">[</span>0x8048712<span style="color:#39c">]</span>
-/lib/libc.so.6<span style="color:#39c">(</span>__libc_start_main+0xe6<span style="color:#39c">)</span><span style="color:#39c">[</span>0x391d26<span style="color:#39c">]</span>
+/lib/libc.so.6<span style="color:#39c">(</span>__libc_start_main+0xe6<span style="color:#39c">)[</span>0x391d26<span style="color:#39c">]</span>
 ./test<span style="color:#39c">[</span>0x8048611<span style="color:#39c">]</span>
-<span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span> Memory map: <span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span>
+<span style="color:#39c">=======</span> Memory map: <span style="color:#39c">========</span>
 00327000-00328000 r-xp <span style="color:#cd00cd">00000000</span> 00:000          <span style="color:#39c">[</span>vdso<span style="color:#39c">]</span>
 00334000-00351000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926955    /lib/libgcc_s-4.4.7-20120601.so.1
 00351000-00352000 rw-p 0001d000 08:02926955    /lib/libgcc_s-4.4.7-20120601.so.1

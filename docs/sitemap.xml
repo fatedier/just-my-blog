@@ -8,11 +8,6 @@
   </url>
   
   <url>
-    <loc>https://blog.fatedier.com/</loc>
-    <lastmod>2020-03-28T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://blog.fatedier.com/tags/golang/</loc>
     <lastmod>2020-03-28T00:00:00+00:00</lastmod>
   </url>
@@ -125,11 +120,6 @@
   <url>
     <loc>https://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</loc>
     <lastmod>2017-07-16T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://blog.fatedier.com/tags/c/cpp/</loc>
-    <lastmod>2017-03-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -383,6 +373,11 @@
   </url>
   
   <url>
+    <loc>https://blog.fatedier.com/</loc>
+    <lastmod>2015-09-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://blog.fatedier.com/about/</loc>
     <lastmod>2015-09-05T00:00:00+00:00</lastmod>
   </url>
@@ -535,6 +530,10 @@
   <url>
     <loc>https://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01/</loc>
     <lastmod>2014-09-08T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://blog.fatedier.com/tags/c/cpp/</loc>
   </url>
   
 </urlset>

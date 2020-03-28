@@ -106,12 +106,12 @@
 <h3 id="使用说明">使用说明</h3>
 <p>我们先调用gettimeofday函数获取到从公元 1970年1 月1 日的UTC 时间从0 时0 分0 秒算起到现在所经过的秒数加上微秒数，然后将秒数作为参数再调用localtime函数，转换为本地时区的当前时间即可，之后可以使用localtime函数返回的tm结构体对象来获取具体的年月日时分秒等数据。</p>
 <h3 id="示例代码">示例代码</h3>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;iostream&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;string&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;sys/time.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;time.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;unistd.h&gt;</span><span style="color:#000080">
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#include</span> <span style="color:#000080">&lt;iostream&gt;</span><span style="color:#000080">
+</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;string&gt;</span><span style="color:#000080">
+</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;sys/time.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;time.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;unistd.h&gt;</span><span style="color:#000080">
 </span><span style="color:#000080"></span><span style="color:#cdcd00">using</span> <span style="color:#cdcd00">namespace</span> std;
  
 string fa_getSysTime()
@@ -122,15 +122,15 @@ string fa_getSysTime()
     pTime <span style="color:#39c">=</span> localtime(<span style="color:#39c">&amp;</span>tv.tv_sec);
     
     charsTemp[<span style="color:#cd00cd">30</span>] <span style="color:#39c">=</span> {<span style="color:#cd00cd">0</span>};
-    snprintf(sTemp, <span style="color:#cdcd00">sizeof</span>(sTemp), <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">%04d%02d%02d%02d%02d%02d%03d%03d</span><span style="color:#cd0000">&#34;</span>, pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_year<span style="color:#39c">+</span><span style="color:#cd00cd">1900</span>, \
-    pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_mon<span style="color:#39c">+</span><span style="color:#cd00cd">1</span>, pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_mday, pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_hour, pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_min, pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_sec, \
+    snprintf(sTemp, <span style="color:#cdcd00">sizeof</span>(sTemp), <span style="color:#cd0000">&#34;%04d%02d%02d%02d%02d%02d%03d%03d&#34;</span>, pTime<span style="color:#39c">-&gt;</span>tm_year<span style="color:#39c">+</span><span style="color:#cd00cd">1900</span>, \
+    pTime<span style="color:#39c">-&gt;</span>tm_mon<span style="color:#39c">+</span><span style="color:#cd00cd">1</span>, pTime<span style="color:#39c">-&gt;</span>tm_mday, pTime<span style="color:#39c">-&gt;</span>tm_hour, pTime<span style="color:#39c">-&gt;</span>tm_min, pTime<span style="color:#39c">-&gt;</span>tm_sec, \
     tv.tv_usec<span style="color:#39c">/</span><span style="color:#cd00cd">1000</span>,tv.tv_usec<span style="color:#39c">%</span><span style="color:#cd00cd">1000</span>);
     <span style="color:#cdcd00">return</span> (string)sTemp;
 }
  
 <span style="color:#00cd00">int</span> main()
 {
-    cout<span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">当前时间：</span><span style="color:#cd0000">&#34;</span> <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> fa_getSysTime() <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> endl;
+    cout<span style="color:#39c">&lt;&lt;</span> <span style="color:#cd0000">&#34;当前时间：&#34;</span> <span style="color:#39c">&lt;&lt;</span> fa_getSysTime() <span style="color:#39c">&lt;&lt;</span> endl;
     <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
 }
 </code></pre></div><h3 id="输出为">输出为</h3>

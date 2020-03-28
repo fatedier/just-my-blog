@@ -131,7 +131,7 @@ EPOLLET： 将EPOLL设为边缘触发<span style="color:#39c">(</span>EdgeTrigge
 EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里
 </code></pre></div><h4 id="int-epoll_waitint-epfd-struct-epoll_event--events-int-maxeventsint-timeout">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</h4>
 <p>该函数等待epoll实例中的fd集合有就绪事件。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">epfd：使用epoll_create<span style="color:#39c">(</span><span style="color:#39c">)</span>返回的文件描述符
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">epfd：使用epoll_create<span style="color:#39c">()</span>返回的文件描述符
 events：指向处于就绪状态的事件集合
 maxevents：最多maxevents数量的事件集合会被返回
 timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指定为0则立即返回并返回0

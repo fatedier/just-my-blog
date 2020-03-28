@@ -80,14 +80,14 @@
 <span style="color:#000080"># 用于执行http请求的通用函数</span>
 <span style="color:#000080"># post_data: post参数字符串</span>
 <span style="color:#000080"># upload_file: dict类型，需要有file_path(指定要上传的文件路径)和file_name(指定上传后的文件名)</span>
-<span style="color:#cdcd00">def</span> do_http_request(method, url, post_data<span style="color:#39c">=</span><span style="color:#cd0000"></span><span style="color:#cd0000">&#39;</span><span style="color:#cd0000">&#39;</span>, upload_file<span style="color:#39c">=</span>None): 
+<span style="color:#cdcd00">def</span> do_http_request(method, url, post_data<span style="color:#39c">=</span><span style="color:#cd0000">&#39;&#39;</span>, upload_file<span style="color:#39c">=</span>None): 
     ch <span style="color:#39c">=</span> pycurl<span style="color:#39c">.</span>Curl() 
     buf <span style="color:#39c">=</span> StringIO<span style="color:#39c">.</span>StringIO() 
     ch<span style="color:#39c">.</span>setopt(ch<span style="color:#39c">.</span>URL, url) 
     ch<span style="color:#39c">.</span>setopt(ch<span style="color:#39c">.</span>CUSTOMREQUEST, method) 
     <span style="color:#cdcd00">if</span> upload_file <span style="color:#39c">!=</span> None: 
-        ch<span style="color:#39c">.</span>setopt(ch<span style="color:#39c">.</span>HTTPPOST, [(<span style="color:#cd0000"></span><span style="color:#cd0000">&#39;</span><span style="color:#cd0000">file</span><span style="color:#cd0000">&#39;</span>, (ch<span style="color:#39c">.</span>FORM_FILE, upload_file[<span style="color:#cd0000"></span><span style="color:#cd0000">&#39;</span><span style="color:#cd0000">file_path</span><span style="color:#cd0000">&#39;</span>], \ 
-            ch<span style="color:#39c">.</span>FORM_FILENAME, upload_file[<span style="color:#cd0000"></span><span style="color:#cd0000">&#39;</span><span style="color:#cd0000">file_name</span><span style="color:#cd0000">&#39;</span>]))]) 
+        ch<span style="color:#39c">.</span>setopt(ch<span style="color:#39c">.</span>HTTPPOST, [(<span style="color:#cd0000">&#39;file&#39;</span>, (ch<span style="color:#39c">.</span>FORM_FILE, upload_file[<span style="color:#cd0000">&#39;file_path&#39;</span>], \ 
+            ch<span style="color:#39c">.</span>FORM_FILENAME, upload_file[<span style="color:#cd0000">&#39;file_name&#39;</span>]))]) 
     <span style="color:#cdcd00">else</span>: 
         <span style="color:#cdcd00">if</span> method <span style="color:#39c">==</span> self<span style="color:#39c">.</span>METHOD_POST: 
             ch<span style="color:#39c">.</span>setopt(ch<span style="color:#39c">.</span>POSTFIELDS,  urlencode(post_data)) 

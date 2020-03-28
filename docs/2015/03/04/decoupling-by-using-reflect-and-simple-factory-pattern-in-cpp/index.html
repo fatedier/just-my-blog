@@ -100,9 +100,9 @@
 {
 <span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
     BaseBank<span style="color:#39c">*</span> createBank(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> bank_name) {
-    <span style="color:#cdcd00">if</span> (bank_name <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">SBank</span><span style="color:#cd0000">&#34;</span>) 
+    <span style="color:#cdcd00">if</span> (bank_name <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;SBank&#34;</span>) 
         <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">new</span> GSBank();
-    <span style="color:#cdcd00">else</span> if (bank_name <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">MBank</span><span style="color:#cd0000">&#34;</span>)
+    <span style="color:#cdcd00">else</span> if (bank_name <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;MBank&#34;</span>)
         <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">new</span> RMBank();
     }
 };
@@ -110,14 +110,14 @@
 <h4 id="在主流程中调用">在主流程中调用</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">BankFactory bf;
 BaseBank<span style="color:#39c">*</span> t <span style="color:#39c">=</span> (BaseBank<span style="color:#39c">*</span>)bf.createBank(bank_name);
-<span style="color:#cdcd00">if</span> (t <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">NULL</span>) {
-    cout <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">银行编码错误！</span><span style="color:#cd0000">&#34;</span> <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> endl;
+<span style="color:#cdcd00">if</span> (t <span style="color:#39c">==</span> <span style="color:#cd00cd">NULL</span>) {
+    cout <span style="color:#39c">&lt;&lt;</span> <span style="color:#cd0000">&#34;银行编码错误！&#34;</span> <span style="color:#39c">&lt;&lt;</span> endl;
     <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">2</span>;
 }
-t<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>setMsg();
-t<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>sendMsg();
-t<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>getMsg();
-t<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>parseMsg();
+t<span style="color:#39c">-&gt;</span>setMsg();
+t<span style="color:#39c">-&gt;</span>sendMsg();
+t<span style="color:#39c">-&gt;</span>getMsg();
+t<span style="color:#39c">-&gt;</span>parseMsg();
 </code></pre></div><h4 id="优缺点">优缺点</h4>
 <p>利用简单工厂模式，当我们后续接入另外的银行时，只需要添加具体的银行交互类，实现业务函数，然后在工厂类的 <strong>createBank</strong> 函数中添加一个 <strong>else if</strong> 子句。相对于原来的设计已经改进很多了，但是仍然需要修改原来的工厂类的代码，没有彻底实现解耦。</p>
 <h3 id="反射">反射</h3>
@@ -143,11 +143,11 @@ t<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>parseMsg()
 {
 <span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
 <span style="color:#cdcd00">static</span> <span style="color:#00cd00">void</span><span style="color:#39c">*</span> newInstance(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> class_name) {
-    map<span style="color:#39c">&lt;</span>string, register_func<span style="color:#39c">&gt;</span><span style="color:#39c">:</span><span style="color:#39c">:</span>iterator it <span style="color:#39c">=</span> m_register.find(class_name);
-    <span style="color:#cdcd00">if</span> (it <span style="color:#39c">=</span><span style="color:#39c">=</span> m_register.end())
+    map<span style="color:#39c">&lt;</span>string, register_func<span style="color:#39c">&gt;::</span>iterator it <span style="color:#39c">=</span> m_register.find(class_name);
+    <span style="color:#cdcd00">if</span> (it <span style="color:#39c">==</span> m_register.end())
         <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">NULL</span>;
     <span style="color:#cdcd00">else</span>
-        <span style="color:#cdcd00">return</span> it<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>second();
+        <span style="color:#cdcd00">return</span> it<span style="color:#39c">-&gt;</span>second();
 }
 <span style="color:#cdcd00">static</span> <span style="color:#00cd00">void</span> registerClass(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> class_name, register_func func) {
     m_register[class_name] <span style="color:#39c">=</span> func;
@@ -163,23 +163,23 @@ t<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>parseMsg()
 {
 <span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
     Register(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> class_name, register_func func) {
-        Class<span style="color:#39c">:</span><span style="color:#39c">:</span>registerClass(class_name, func);
+        Class<span style="color:#39c">::</span>registerClass(class_name, func);
     }
 };
 
-<span style="color:#000080">#</span><span style="color:#000080">define REGISTER_CLASS(class_name) \</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">    class class_name##Register { \</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">    public: \</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">        static void* newInstance() { \</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">            return new class_name; \</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">        } \</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">    private: \</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">        static const Register reg; \</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">    };\</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#000080">const Register class_name##Register::reg(#class_name,class_name##Register::newInstance);</span><span style="color:#000080">
+<span style="color:#000080">#define REGISTER_CLASS(class_name) \
+</span><span style="color:#000080">    class class_name##Register { \
+</span><span style="color:#000080">    public: \
+</span><span style="color:#000080">        static void* newInstance() { \
+</span><span style="color:#000080">            return new class_name; \
+</span><span style="color:#000080">        } \
+</span><span style="color:#000080">    private: \
+</span><span style="color:#000080">        static const Register reg; \
+</span><span style="color:#000080">    };\
+</span><span style="color:#000080">const Register class_name##Register::reg(#class_name,class_name##Register::newInstance);
 </span></code></pre></div><p>还需要修改工厂类的 <strong>createBank</strong> 函数，利用Class的 <strong>newInstance</strong> 函数来创建实例：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">BaseBank<span style="color:#39c">*</span> createBank(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> bank_name) {
-    <span style="color:#cdcd00">return</span> (BaseBank<span style="color:#39c">*</span>)Class<span style="color:#39c">:</span><span style="color:#39c">:</span>newInstance(bank_name);
+    <span style="color:#cdcd00">return</span> (BaseBank<span style="color:#39c">*</span>)Class<span style="color:#39c">::</span>newInstance(bank_name);
 }
 </code></pre></div><p>Class类中的 <strong>m_register</strong> 变量是 <strong>static</strong> 类型的map，相当于全局变量。</p>
 <p><strong>newInstance</strong> 函数，传入类名，查找map，调用回调函数，返回一个对应类的实例。</p>

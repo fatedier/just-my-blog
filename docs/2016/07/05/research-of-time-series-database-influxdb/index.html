@@ -158,10 +158,10 @@ cpu_load,host_id<span style="color:#39c">=</span><span style="color:#cd00cd">1</
 </code></pre></div><p>这里创建了一个 CQ，每个5分钟将 two_hours.orders 中的数据计算5分钟的平均值后存入 default.downsampled_orders 中，default 这个 RP 中的数据是永久保存的。</p>
 <h4 id="where">WHERE</h4>
 <p>查询时指定查询的限制条件，例如查询最近1小时内 host_id=1 的机器的 cpu 数据。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">SELECT value FROM cpu_load WHERE <span style="color:#cd00cd">time</span> &gt; now<span style="color:#39c">(</span><span style="color:#39c">)</span> - 1h and <span style="color:#00cdcd">host_id</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">SELECT value FROM cpu_load WHERE <span style="color:#cd00cd">time</span> &gt; now<span style="color:#39c">()</span> - 1h and <span style="color:#00cdcd">host_id</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span>
 </code></pre></div><h4 id="group-by">GROUP BY</h4>
 <p>类似于 SQL 中的语法，可以对细粒度数据进行聚合计算，例如查询最近1小时内 host_id=1 的机器的 cpu 的数据，并且采样为每5分钟的平均值。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">SELECT mean<span style="color:#39c">(</span>value<span style="color:#39c">)</span> FROM cpu_load WHERE <span style="color:#cd00cd">time</span> &gt; now<span style="color:#39c">(</span><span style="color:#39c">)</span> - 1h and <span style="color:#00cdcd">host_id</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span> GROUP BY time<span style="color:#39c">(</span>5m<span style="color:#39c">)</span>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">SELECT mean<span style="color:#39c">(</span>value<span style="color:#39c">)</span> FROM cpu_load WHERE <span style="color:#cd00cd">time</span> &gt; now<span style="color:#39c">()</span> - 1h and <span style="color:#00cdcd">host_id</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span> GROUP BY time<span style="color:#39c">(</span>5m<span style="color:#39c">)</span>
 </code></pre></div><h3 id="官方推荐硬件配置">官方推荐硬件配置</h3>
 <h4 id="单节点">单节点</h4>
 <table>

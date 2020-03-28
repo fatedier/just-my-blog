@@ -109,7 +109,7 @@ Options:
 <span style="color:#39c">}</span>
 
 <span style="color:#000080"># param 1: directory name</span>
-<span style="color:#cdcd00">function</span> convert_rescursive<span style="color:#39c">(</span><span style="color:#39c">)</span>
+<span style="color:#cdcd00">function</span> convert_rescursive<span style="color:#39c">()</span>
 <span style="color:#39c">{</span>
    <span style="color:#cd00cd">local</span> <span style="color:#00cdcd">dir_path</span><span style="color:#39c">=</span><span style="color:#cd0000">`</span><span style="color:#cd00cd">echo</span> <span style="color:#00cdcd">$1</span> | sed <span style="color:#cd0000">&#39;s/\(.*\)\/$/\1/g&#39;</span><span style="color:#cd0000">`</span>
    <span style="color:#cd00cd">local</span> <span style="color:#00cdcd">dir_names</span><span style="color:#39c">=</span><span style="color:#cd0000">`</span>ls <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span> -l | awk <span style="color:#cd0000">&#39;/^d/{print $NF}&#39;</span><span style="color:#cd0000">`</span>
@@ -119,16 +119,16 @@ Options:
    <span style="color:#cdcd00">for</span> file in <span style="color:#cd0000">${</span><span style="color:#00cdcd">file_names</span><span style="color:#cd0000">}</span>
    <span style="color:#cdcd00">do</span>
        iconv -f <span style="color:#cd0000">${</span><span style="color:#00cdcd">from_code</span><span style="color:#cd0000">}</span> -t <span style="color:#cd0000">${</span><span style="color:#00cdcd">to_code</span><span style="color:#cd0000">}</span> <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span>/<span style="color:#cd0000">${</span><span style="color:#00cdcd">file</span><span style="color:#cd0000">}</span> &amp;&gt; /dev/null
-       <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#00cdcd">$?</span> <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
-           iconv -f <span style="color:#cd0000">${</span><span style="color:#00cdcd">from_code</span><span style="color:#cd0000">}</span> -t <span style="color:#cd0000">${</span><span style="color:#00cdcd">to_code</span><span style="color:#cd0000">}</span> &lt; <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span>/<span style="color:#cd0000">${</span><span style="color:#00cdcd">file</span><span style="color:#cd0000">}</span> &gt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
-           cp <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span> <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span>/<span style="color:#cd0000">${</span><span style="color:#00cdcd">file</span><span style="color:#cd0000">}</span>
-           rm -f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
-           <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;</span><span style="color:#cd0000">File </span><span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span><span style="color:#cd0000">/</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">file</span><span style="color:#cd0000">}</span><span style="color:#cd0000"> is formatted.</span><span style="color:#cd0000">&#34;</span>
+       <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#00cdcd">$?</span> <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
+           iconv -f <span style="color:#cd0000">${</span><span style="color:#00cdcd">from_code</span><span style="color:#cd0000">}</span> -t <span style="color:#cd0000">${</span><span style="color:#00cdcd">to_code</span><span style="color:#cd0000">}</span> &lt; <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span>/<span style="color:#cd0000">${</span><span style="color:#00cdcd">file</span><span style="color:#cd0000">}</span> &gt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span>
+           cp <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span> <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span>/<span style="color:#cd0000">${</span><span style="color:#00cdcd">file</span><span style="color:#cd0000">}</span>
+           rm -f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span>
+           <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;File </span><span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span><span style="color:#cd0000">/</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">file</span><span style="color:#cd0000">}</span><span style="color:#cd0000"> is formatted.&#34;</span>
        <span style="color:#cdcd00">fi</span>
    <span style="color:#cdcd00">done</span>
 
    <span style="color:#000080"># if the directory has no other directory, return 0</span>
-   <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#cd0000">&#34;</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_names</span><span style="color:#cd0000">}</span><span style="color:#cd0000">X</span><span style="color:#cd0000">&#34;</span> <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd0000">&#34;X&#34;</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
+   <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#cd0000">&#34;</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_names</span><span style="color:#cd0000">}</span><span style="color:#cd0000">X&#34;</span> <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;X&#34;</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
        <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>
    <span style="color:#cdcd00">fi</span>
 
@@ -146,7 +146,7 @@ Options:
 <span style="color:#cdcd00">case</span> <span style="color:#cd0000">&#34;</span><span style="color:#00cdcd">$1</span><span style="color:#cd0000">&#34;</span> in
 <span style="color:#cd0000">&#34;-R&#34;</span><span style="color:#39c">)</span>
     ls <span style="color:#00cdcd">$2</span> &amp;&gt; /dev/null
-    <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#00cdcd">$?</span> !<span style="color:#39c">=</span> <span style="color:#cd00cd">0</span> -o <span style="color:#cd0000">&#34;</span><span style="color:#00cdcd">$2</span><span style="color:#cd0000">X</span><span style="color:#cd0000">&#34;</span> <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd0000">&#34;X&#34;</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
+    <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#00cdcd">$?</span> !<span style="color:#39c">=</span> <span style="color:#cd00cd">0</span> -o <span style="color:#cd0000">&#34;</span><span style="color:#00cdcd">$2</span><span style="color:#cd0000">X&#34;</span> <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;X&#34;</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
         <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;#### error: please check the directory name following the &#39;-R&#39; option!&#34;</span>
         <span style="color:#cd00cd">exit</span> <span style="color:#cd00cd">1</span>
     <span style="color:#cdcd00">fi</span>
@@ -157,11 +157,11 @@ Options:
     ;;
 *<span style="color:#39c">)</span>
     iconv -f <span style="color:#cd0000">${</span><span style="color:#00cdcd">from_code</span><span style="color:#cd0000">}</span> -t <span style="color:#cd0000">${</span><span style="color:#00cdcd">to_code</span><span style="color:#cd0000">}</span> <span style="color:#00cdcd">$1</span> &amp;&gt; /dev/null
-    <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#00cdcd">$?</span> <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
-        iconv -f <span style="color:#cd0000">${</span><span style="color:#00cdcd">from_code</span><span style="color:#cd0000">}</span> -t <span style="color:#cd0000">${</span><span style="color:#00cdcd">to_code</span><span style="color:#cd0000">}</span> &lt; <span style="color:#00cdcd">$1</span> &gt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
-        cp <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span> <span style="color:#00cdcd">$1</span>
-        rm -f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
-        <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;</span><span style="color:#cd0000">File </span><span style="color:#00cdcd">$1</span><span style="color:#cd0000"> is formatted.</span><span style="color:#cd0000">&#34;</span>
+    <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#00cdcd">$?</span> <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
+        iconv -f <span style="color:#cd0000">${</span><span style="color:#00cdcd">from_code</span><span style="color:#cd0000">}</span> -t <span style="color:#cd0000">${</span><span style="color:#00cdcd">to_code</span><span style="color:#cd0000">}</span> &lt; <span style="color:#00cdcd">$1</span> &gt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span>
+        cp <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span> <span style="color:#00cdcd">$1</span>
+        rm -f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span>
+        <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;File </span><span style="color:#00cdcd">$1</span><span style="color:#cd0000"> is formatted.&#34;</span>
     <span style="color:#cdcd00">else</span>
         <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;Convert wrong!&#34;</span>
     <span style="color:#cdcd00">fi</span>

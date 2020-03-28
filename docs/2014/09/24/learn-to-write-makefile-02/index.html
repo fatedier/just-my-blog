@@ -89,9 +89,9 @@
 </span><span style="color:#cd0000"></span>        mkdir -p dep;<span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>    <span style="color:#cdcd00">fi</span>; <span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>    <span style="color:#cd00cd">set</span> -e; rm -f <span style="color:#00cdcd">$@</span>;
-    g++ -MM $&lt; &gt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>; <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    sed <span style="color:#cd0000">&#39;s/$*\.o[ :]*/obj\/$*\.o dep\/$*\.d: /g&#39;</span> &lt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span> &gt; <span style="color:#00cdcd">$@</span>; <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    rm -f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
+    g++ -MM $&lt; &gt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span>; <span style="color:#cd0000">\
+</span><span style="color:#cd0000"></span>    sed <span style="color:#cd0000">&#39;s/$*\.o[ :]*/obj\/$*\.o dep\/$*\.d: /g&#39;</span> &lt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span> &gt; <span style="color:#00cdcd">$@</span>; <span style="color:#cd0000">\
+</span><span style="color:#cd0000"></span>    rm -f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span>
 </code></pre></div><p>在Makefile中加上如上的代码，就可以生成我们所需要的.d文件了。</p>
 <p>又是一堆莫名其妙的符号，我们还是来逐句进行分析。</p>
 <h5 id="depd-cpp">dep/%.d: %.cpp</h5>
@@ -189,7 +189,7 @@ CC :<span style="color:#39c">=</span> gcc
 
 <span style="color:#000080">#设置编译.d文件相关内容</span>
 DEPFLAGS :<span style="color:#39c">=</span> -MM
-<span style="color:#00cdcd">DEPFILE</span> <span style="color:#39c">=</span> <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
+<span style="color:#00cdcd">DEPFILE</span> <span style="color:#39c">=</span> <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span>
 
 <span style="color:#000080">#设置所有静态库文件所在位置，会根据每个Makefile文件的top_srcdir设置相对位置</span>
 LIBDIR :<span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>top_srcdir<span style="color:#cdcd00">)</span>/lib
@@ -227,9 +227,9 @@ dep/%.d: %.cpp
 </span><span style="color:#cd0000"></span>            mkdir-p dep;<span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>    <span style="color:#cdcd00">fi</span>;<span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>    set-e; rm -f <span style="color:#00cdcd">$@</span>;
-    <span style="color:#cdcd00">$(</span>CXX<span style="color:#cdcd00">)</span><span style="color:#cdcd00">$(</span>DEPFLAGS<span style="color:#cdcd00">)</span> <span style="color:#cdcd00">$(</span>INCLUDEDIR<span style="color:#cdcd00">)</span> $&lt; &gt;<span style="color:#cdcd00">$(</span>DEPFILE<span style="color:#cdcd00">)</span>; <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    sed<span style="color:#cd0000">&#39;s/$*\.o[ :]*/obj\/$*\.o dep\/$*\.d : /g&#39;</span> &lt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span> &gt; <span style="color:#00cdcd">$@</span>;<span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    rm-f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
+    <span style="color:#cdcd00">$(</span>CXX<span style="color:#cdcd00">)$(</span>DEPFLAGS<span style="color:#cdcd00">)</span> <span style="color:#cdcd00">$(</span>INCLUDEDIR<span style="color:#cdcd00">)</span> $&lt; &gt;<span style="color:#cdcd00">$(</span>DEPFILE<span style="color:#cdcd00">)</span>; <span style="color:#cd0000">\
+</span><span style="color:#cd0000"></span>    sed<span style="color:#cd0000">&#39;s/$*\.o[ :]*/obj\/$*\.o dep\/$*\.d : /g&#39;</span> &lt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span> &gt; <span style="color:#00cdcd">$@</span>;<span style="color:#cd0000">\
+</span><span style="color:#cd0000"></span>    rm-f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span>
 
 <span style="color:#000080">#生成.d文件,存放.c文件的所有依赖规则</span>
 dep/%.d: %.c
@@ -237,9 +237,9 @@ dep/%.d: %.c
 </span><span style="color:#cd0000"></span>            mkdir-p dep;<span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>    <span style="color:#cdcd00">fi</span>;<span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>    set-e; rm -f <span style="color:#00cdcd">$@</span>;
-    <span style="color:#cdcd00">$(</span>CC<span style="color:#cdcd00">)</span><span style="color:#cdcd00">$(</span>DEPFLAGS<span style="color:#cdcd00">)</span> <span style="color:#cdcd00">$(</span>INCLUDEDIR<span style="color:#cdcd00">)</span> $&lt; &gt; <span style="color:#cdcd00">$(</span>DEPFILE<span style="color:#cdcd00">)</span>; <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    sed<span style="color:#cd0000">&#39;s/$*\.o[ :]*/obj\/$*\.o dep\/$*\.d : /g&#39;</span> &lt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span> &gt; <span style="color:#00cdcd">$@</span>; <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    rm-f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
+    <span style="color:#cdcd00">$(</span>CC<span style="color:#cdcd00">)$(</span>DEPFLAGS<span style="color:#cdcd00">)</span> <span style="color:#cdcd00">$(</span>INCLUDEDIR<span style="color:#cdcd00">)</span> $&lt; &gt; <span style="color:#cdcd00">$(</span>DEPFILE<span style="color:#cdcd00">)</span>; <span style="color:#cd0000">\
+</span><span style="color:#cd0000"></span>    sed<span style="color:#cd0000">&#39;s/$*\.o[ :]*/obj\/$*\.o dep\/$*\.d : /g&#39;</span> &lt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span> &gt; <span style="color:#00cdcd">$@</span>; <span style="color:#cd0000">\
+</span><span style="color:#cd0000"></span>    rm-f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$$$</span>
 
 include <span style="color:#cdcd00">$(</span>DEPS<span style="color:#cdcd00">)</span>
 
@@ -269,9 +269,9 @@ clean:
 <span style="color:#00cdcd">CPP_FILES</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>shell ls *.cpp<span style="color:#cdcd00">)</span>
 <span style="color:#00cdcd">C_FILES</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>-shell ls *.c<span style="color:#cdcd00">)</span>
 <span style="color:#00cdcd">SRCS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>CPP_FILES<span style="color:#cdcd00">)</span> <span style="color:#cdcd00">$(</span>C_FILES<span style="color:#cdcd00">)</span>
-<span style="color:#00cdcd">BASE</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>basename <span style="color:#cdcd00">$(</span>SRCS<span style="color:#cdcd00">)</span><span style="color:#cdcd00">)</span>
-<span style="color:#00cdcd">OBJS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>addsuffix .o, <span style="color:#cdcd00">$(</span>addprefixobj/,<span style="color:#cdcd00">$(</span>BASE<span style="color:#cdcd00">)</span><span style="color:#cdcd00">)</span><span style="color:#cdcd00">)</span>
-<span style="color:#00cdcd">DEPS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>addsuffix .d, <span style="color:#cdcd00">$(</span>addprefixdep/,<span style="color:#cdcd00">$(</span>BASE<span style="color:#cdcd00">)</span><span style="color:#cdcd00">)</span><span style="color:#cdcd00">)</span>
+<span style="color:#00cdcd">BASE</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>basename <span style="color:#cdcd00">$(</span>SRCS<span style="color:#cdcd00">))</span>
+<span style="color:#00cdcd">OBJS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>addsuffix .o, <span style="color:#cdcd00">$(</span>addprefixobj/,<span style="color:#cdcd00">$(</span>BASE<span style="color:#cdcd00">)))</span>
+<span style="color:#00cdcd">DEPS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>addsuffix .d, <span style="color:#cdcd00">$(</span>addprefixdep/,<span style="color:#cdcd00">$(</span>BASE<span style="color:#cdcd00">)))</span>
 
 <span style="color:#000080">#包含公共Make规则</span>
 include<span style="color:#cdcd00">$(</span>top_srcdir<span style="color:#cdcd00">)</span>/makeinclude/Make.rules
@@ -294,9 +294,9 @@ INCLUDEDIR :<span style="color:#39c">=</span> <span style="color:#cdcd00">$(</sp
 <span style="color:#00cdcd">CPP_FILES</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>shell ls *.cpp<span style="color:#cdcd00">)</span>
 <span style="color:#00cdcd">C_FILES</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>-shell ls *.c<span style="color:#cdcd00">)</span>
 <span style="color:#00cdcd">SRCS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>CPP_FILES<span style="color:#cdcd00">)</span> <span style="color:#cdcd00">$(</span>C_FILES<span style="color:#cdcd00">)</span>
-<span style="color:#00cdcd">BASE</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>basename <span style="color:#cdcd00">$(</span>SRCS<span style="color:#cdcd00">)</span><span style="color:#cdcd00">)</span>
-<span style="color:#00cdcd">OBJS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>addsuffix .o, <span style="color:#cdcd00">$(</span>addprefixobj/,<span style="color:#cdcd00">$(</span>BASE<span style="color:#cdcd00">)</span><span style="color:#cdcd00">)</span><span style="color:#cdcd00">)</span>
-<span style="color:#00cdcd">DEPS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>addsuffix .d, <span style="color:#cdcd00">$(</span>addprefixdep/,<span style="color:#cdcd00">$(</span>BASE<span style="color:#cdcd00">)</span><span style="color:#cdcd00">)</span><span style="color:#cdcd00">)</span>
+<span style="color:#00cdcd">BASE</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>basename <span style="color:#cdcd00">$(</span>SRCS<span style="color:#cdcd00">))</span>
+<span style="color:#00cdcd">OBJS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>addsuffix .o, <span style="color:#cdcd00">$(</span>addprefixobj/,<span style="color:#cdcd00">$(</span>BASE<span style="color:#cdcd00">)))</span>
+<span style="color:#00cdcd">DEPS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>addsuffix .d, <span style="color:#cdcd00">$(</span>addprefixdep/,<span style="color:#cdcd00">$(</span>BASE<span style="color:#cdcd00">)))</span>
 
 <span style="color:#000080">#包含公共Make规则</span>
 include <span style="color:#cdcd00">$(</span>top_srcdir<span style="color:#cdcd00">)</span>/makeinclude/Make.rules
@@ -389,8 +389,8 @@ LIBS :<span style="color:#39c">=</span> -lfa_common
             <li><a href="#depd-cpp">dep/%.d: %.cpp</a></li>
             <li><a href="#if-test---d-dep-then">@if test ! -d &ldquo;dep&rdquo;; then\</a></li>
             <li><a href="#set--e-rm--f-">set -e; rm -f $@;</a></li>
-            <li><a href="#g--mm----">g++ -MM $< > $@.$$$$; \</a></li>
-            <li><a href="#sed-so-objo-depd--g----">sed &lsquo;s/$*\.o[ :]*/obj\/$*\.o dep\/$*\.d : /g&rsquo; < $@.$$$$ > $@;\</a></li>
+            <li><a href="#g--mm----">g++ -MM $&lt; &gt; $@.$$$$; \</a></li>
+            <li><a href="#sed-so-objo-depd--g----">sed &lsquo;s/$*.o[ :]*/obj/$*.o dep/$*.d : /g&rsquo; &lt; $@.$$$$ &gt; $@;\</a></li>
             <li><a href="#rm--f-">rm -f $@.$$$$</a></li>
           </ul>
         </li>

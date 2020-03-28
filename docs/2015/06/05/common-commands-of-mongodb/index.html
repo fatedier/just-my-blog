@@ -162,13 +162,13 @@
 <p>find() 方法可以传入多个键，每个键以逗号隔开。</p>
 <p><code>db.col.find({key1:value1, key2:value2}).pretty()</code></p>
 <h5 id="or-条件">or 条件</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="">d</span><span style="">b</span><span style="">.</span><span style="">c</span><span style="">o</span><span style="">l</span><span style="">.</span><span style="">f</span><span style="">i</span><span style="">n</span><span style="">d</span><span style="">(</span>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="">db.col.find(</span>
     {
-        <span style="">$</span><span style="">o</span><span style="">r</span><span style="">:</span> <span style="">[</span>
-            <span style="">{</span><span style="">k</span><span style="">e</span><span style="">y</span><span style="">1</span><span style="">:</span> <span style="">v</span><span style="">a</span><span style="">l</span><span style="">u</span><span style="">e</span><span style="">1</span>}<span style="">,</span> {<span style="">k</span><span style="">e</span><span style="">y</span><span style="">2</span><span style="">:</span><span style="">v</span><span style="">a</span><span style="">l</span><span style="">u</span><span style="">e</span><span style="">2</span>}
+        <span style="">$or:</span> <span style="">[</span>
+            <span style="">{key1:</span> <span style="">value1</span>}<span style="">,</span> {<span style="">key2:value2</span>}
         <span style="">]</span>
     <span style="">}</span>
-<span style="">)</span><span style="">.</span><span style="">p</span><span style="">r</span><span style="">e</span><span style="">t</span><span style="">t</span><span style="">y</span><span style="">(</span><span style="">)</span>
+<span style="">).pretty()</span>
 </code></pre></div><p>例如 <code>db.col.find({$or:[{&quot;key1&quot;:&quot;value1&quot;}, {&quot;key2&quot;: &quot;value2&quot;}]}).pretty()</code></p>
 <h5 id="更新操作">更新操作</h5>
 <p><code>db.collection.update( query, update, upsert, multi )</code></p>

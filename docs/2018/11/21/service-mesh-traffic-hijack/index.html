@@ -102,8 +102,8 @@
 )
 
 <span style="color:#000080">// For transparent proxy.
-</span><span style="color:#000080"></span><span style="color:#000080">// Get REDIRECT package&#39;s originial dst address.
-</span><span style="color:#000080"></span><span style="color:#000080">// Note: it may be only support linux.
+</span><span style="color:#000080">// Get REDIRECT package&#39;s originial dst address.
+</span><span style="color:#000080">// Note: it may be only support linux.
 </span><span style="color:#000080"></span><span style="color:#00cd00">func</span> GetOriginalDstAddr(conn <span style="color:#39c">*</span>net.TCPConn) (addr net.Addr, c <span style="color:#39c">*</span>net.TCPConn, err <span style="color:#00cd00">error</span>) {
     fc, errRet <span style="color:#39c">:=</span> conn.File()
     <span style="color:#cdcd00">if</span> errRet <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {

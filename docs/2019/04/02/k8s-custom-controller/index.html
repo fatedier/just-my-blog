@@ -106,33 +106,33 @@
 )
 
 <span style="color:#000080">// +genclient
-</span><span style="color:#000080"></span><span style="color:#000080">// +genclient:noStatus
-</span><span style="color:#000080"></span><span style="color:#000080">// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+</span><span style="color:#000080">// +genclient:noStatus
+</span><span style="color:#000080">// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 </span><span style="color:#000080"></span>
 <span style="color:#00cd00">type</span> Scaling <span style="color:#00cd00">struct</span> {
-    metav1.TypeMeta   <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;,inline&#34;</span><span style="color:#cd0000">`</span>
-    metav1.ObjectMeta <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;metadata,omitempty&#34;</span><span style="color:#cd0000">`</span>
+    metav1.TypeMeta   <span style="color:#cd0000">`json:&#34;,inline&#34;`</span>
+    metav1.ObjectMeta <span style="color:#cd0000">`json:&#34;metadata,omitempty&#34;`</span>
 
-    Spec ScalingSpec <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;spec&#34;</span><span style="color:#cd0000">`</span>
+    Spec ScalingSpec <span style="color:#cd0000">`json:&#34;spec&#34;`</span>
 }
 
 <span style="color:#00cd00">type</span> ScalingSpec <span style="color:#00cd00">struct</span> {
-    TargetDeployment <span style="color:#00cd00">string</span> <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;targetDeployment&#34;</span><span style="color:#cd0000">`</span>
-    MinReplicas      <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;minReplicas&#34;</span><span style="color:#cd0000">`</span>
-    MaxReplicas      <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;maxReplicas&#34;</span><span style="color:#cd0000">`</span>
-    MetricType       <span style="color:#00cd00">string</span> <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;metricType&#34;</span><span style="color:#cd0000">`</span>
-    Step             <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;step&#34;</span><span style="color:#cd0000">`</span>
-    ScaleUp          <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;scaleUp&#34;</span><span style="color:#cd0000">`</span>
-    ScaleDown        <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;scaleDown&#34;</span><span style="color:#cd0000">`</span>
+    TargetDeployment <span style="color:#00cd00">string</span> <span style="color:#cd0000">`json:&#34;targetDeployment&#34;`</span>
+    MinReplicas      <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`json:&#34;minReplicas&#34;`</span>
+    MaxReplicas      <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`json:&#34;maxReplicas&#34;`</span>
+    MetricType       <span style="color:#00cd00">string</span> <span style="color:#cd0000">`json:&#34;metricType&#34;`</span>
+    Step             <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`json:&#34;step&#34;`</span>
+    ScaleUp          <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`json:&#34;scaleUp&#34;`</span>
+    ScaleDown        <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`json:&#34;scaleDown&#34;`</span>
 }
 
 <span style="color:#000080">// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 </span><span style="color:#000080"></span>
 <span style="color:#00cd00">type</span> ScalingList <span style="color:#00cd00">struct</span> {
-    metav1.TypeMeta <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;,inline&#34;</span><span style="color:#cd0000">`</span>
-    metav1.ListMeta <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;metadata,omitempty&#34;</span><span style="color:#cd0000">`</span>
+    metav1.TypeMeta <span style="color:#cd0000">`json:&#34;,inline&#34;`</span>
+    metav1.ListMeta <span style="color:#cd0000">`json:&#34;metadata,omitempty&#34;`</span>
 
-    Items []Scaling <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;items&#34;</span><span style="color:#cd0000">`</span>
+    Items []Scaling <span style="color:#cd0000">`json:&#34;items&#34;`</span>
 }
 </code></pre></div><p>这个文件中我们定义了 <code>Scaling</code> 这个自定义资源的结构体。</p>
 <p>其中，类似 <code>// +&lt;tag_name&gt;[=value]</code> 这样格式的注释，可以控制代码生成器的一些行为。</p>
@@ -143,7 +143,7 @@
 </ul>
 <p>创建 doc 文件，<code>pkg/apis/control/v1/doc.go</code>:</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#000080">// +k8s:deepcopy-gen=package
-</span><span style="color:#000080"></span><span style="color:#000080">// +groupName=control.example.com
+</span><span style="color:#000080">// +groupName=control.example.com
 </span><span style="color:#000080"></span>
 <span style="color:#cd00cd">package</span> v1
 </code></pre></div><p>最后 client 对于自定义资源结构还需要一些接口，例如 <code>AddToScheme</code> 和 <code>Resource</code>，这些函数负责将结构体注册到 schemes 中去。</p>

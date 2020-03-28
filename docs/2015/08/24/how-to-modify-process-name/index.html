@@ -80,32 +80,32 @@
 <p>我测试了一下，发现只有使用 <code>ps -L</code> 才能看到，达不到想要的效果。</p>
 <h3 id="方法二">方法二</h3>
 <p>参考了 <strong>nginx</strong> 中的源码，主要是通过修改 <strong>argv[0]</strong> 的值来实现的，但是需要注意将后面跟着的 <strong>environ</strong> 环境表中的信息移到其他地方，避免被覆盖。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#00cd00">void</span> set_proctitle(<span style="color:#00cd00">char</span><span style="color:#39c">*</span><span style="color:#39c">*</span> argv, <span style="color:#cdcd00">const</span> <span style="color:#00cd00">char</span><span style="color:#39c">*</span> new_name)
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#00cd00">void</span> set_proctitle(<span style="color:#00cd00">char</span><span style="color:#39c">**</span> argv, <span style="color:#cdcd00">const</span> <span style="color:#00cd00">char</span><span style="color:#39c">*</span> new_name)
 {
     <span style="color:#00cd00">int</span> size <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
     <span style="color:#00cd00">int</span> i;
     <span style="color:#000080">// 申请新的空间存放 environ 中内容
-</span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">+</span><span style="color:#39c">+</span>) {
-        size <span style="color:#39c">+</span><span style="color:#39c">=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
+</span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
+        size <span style="color:#39c">+=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
     }
     <span style="color:#00cd00">char</span><span style="color:#39c">*</span> p <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)malloc(size);
     <span style="color:#00cd00">char</span><span style="color:#39c">*</span> last_argv <span style="color:#39c">=</span> argv[<span style="color:#cd00cd">0</span>];
-    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; argv[i]; i<span style="color:#39c">+</span><span style="color:#39c">+</span>) {
-        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">=</span><span style="color:#39c">=</span> argv[i]) {
+    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; argv[i]; i<span style="color:#39c">++</span>) {
+        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">==</span> argv[i]) {
             last_argv <span style="color:#39c">=</span> argv[i] <span style="color:#39c">+</span> strlen(argv[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
         }
     }  
-    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">+</span><span style="color:#39c">+</span>) {
-        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">=</span><span style="color:#39c">=</span> environ[i]) {
+    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
+        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">==</span> environ[i]) {
             size <span style="color:#39c">=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
             last_argv <span style="color:#39c">=</span> environ[i] <span style="color:#39c">+</span> size;  
    
             memcpy(p, environ[i], size);
             environ[i] <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)p;
-            p <span style="color:#39c">+</span><span style="color:#39c">=</span> size;
+            p <span style="color:#39c">+=</span> size;
         }  
     }
-    last_argv<span style="color:#39c">-</span><span style="color:#39c">-</span>;
+    last_argv<span style="color:#39c">--</span>;
     <span style="color:#000080">// 修改 argv[0]，argv剩余的空间全部填0
 </span><span style="color:#000080"></span>    strncpy(argv[<span style="color:#cd00cd">0</span>], new_name, last_argv <span style="color:#39c">-</span> argv[<span style="color:#cd00cd">0</span>]);
     p <span style="color:#39c">=</span> argv[<span style="color:#cd00cd">0</span>] <span style="color:#39c">+</span> strlen(argv[<span style="color:#cd00cd">0</span>]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
@@ -127,7 +127,7 @@
     <span style="color:#000080">// 获取该进程的启动参数字符串
 </span><span style="color:#000080"></span>    <span style="color:#00cd00">int</span> pid <span style="color:#39c">=</span> getpid();
     <span style="color:#00cd00">char</span> file_name[<span style="color:#cd00cd">100</span>];
-    snprintf(file_name, <span style="color:#cdcd00">sizeof</span>(file_name), <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">/proc/%d/cmdline</span><span style="color:#cd0000">&#34;</span>, pid);
+    snprintf(file_name, <span style="color:#cdcd00">sizeof</span>(file_name), <span style="color:#cd0000">&#34;/proc/%d/cmdline&#34;</span>, pid);
 
     <span style="color:#00cd00">int</span> fd <span style="color:#39c">=</span> open(file_name, O_RDONLY);
     <span style="color:#cdcd00">if</span> (fd <span style="color:#39c">&lt;</span> <span style="color:#cd00cd">0</span>)
@@ -144,25 +144,25 @@
     <span style="color:#00cd00">int</span> size <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
     <span style="color:#00cd00">int</span> i;
     <span style="color:#000080">// 申请新的空间存放 environ 中内容
-</span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">+</span><span style="color:#39c">+</span>) {
-        size <span style="color:#39c">+</span><span style="color:#39c">=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
+</span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
+        size <span style="color:#39c">+=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
     }
     <span style="color:#00cd00">char</span><span style="color:#39c">*</span> p <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)malloc(size);
 
     <span style="color:#00cd00">char</span><span style="color:#39c">*</span> last_argv <span style="color:#39c">=</span> argv;
     last_argv <span style="color:#39c">=</span> argv <span style="color:#39c">+</span> cmd_length;
 
-    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">+</span><span style="color:#39c">+</span>) {
-        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">=</span><span style="color:#39c">=</span> environ[i]) {
+    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
+        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">==</span> environ[i]) {
             size <span style="color:#39c">=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
             last_argv <span style="color:#39c">=</span> environ[i] <span style="color:#39c">+</span> size;
 
             memcpy(p, environ[i], size);
             environ[i] <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)p;
-            p <span style="color:#39c">+</span><span style="color:#39c">=</span> size;
+            p <span style="color:#39c">+=</span> size;
         }
     }
-    last_argv<span style="color:#39c">-</span><span style="color:#39c">-</span>;
+    last_argv<span style="color:#39c">--</span>;
 
     <span style="color:#000080">// 修改 argv[0] 的内容
 </span><span style="color:#000080"></span>    strncpy(argv, new_name, last_argv <span style="color:#39c">-</span> argv);

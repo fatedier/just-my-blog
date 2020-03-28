@@ -83,7 +83,7 @@
 <p>创建一个 assets 目录用于放静态资源文件。包括 <code>./assets/a</code> 和 <code>./assets/tmp/b</code> 两个文件，文件内容分别为 <code>aaa</code> 和 <code>bbb</code>。</p>
 <p>创建 main.go 文件，代码如下：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#000080">//go:generate statik -src=./assets
-</span><span style="color:#000080"></span><span style="color:#000080">//go:generate go fmt statik/statik.go
+</span><span style="color:#000080">//go:generate go fmt statik/statik.go
 </span><span style="color:#000080"></span>
 <span style="color:#cd00cd">package</span> main
 
@@ -118,7 +118,7 @@
 }
 </code></pre></div><p>注意文件最开始的两行</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#000080">//go:generate statik -src=./assets
-</span><span style="color:#000080"></span><span style="color:#000080">//go:generate go fmt statik/statik.go
+</span><span style="color:#000080">//go:generate go fmt statik/statik.go
 </span></code></pre></div><p>这个注释是告诉 <code>go generate</code> 需要执行的命令，之后就可以通过 <code>go generate</code> 生成我们需要的 go 文件。</p>
 <p>这段代码的功能就是从 <strong>statikFS</strong> 提供的文件系统接口中获取 <code>/tmp/b</code> 这个文件的内容并输出，可以看到操作起来和操作普通文件的方法基本一致。</p>
 <h3 id="将静态资源打包成-go-文件">将静态资源打包成 go 文件</h3>

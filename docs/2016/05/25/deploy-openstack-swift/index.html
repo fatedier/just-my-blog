@@ -151,7 +151,7 @@ sudo service rsyncd start
 <span style="color:#000080">#local1,local2,local3,local4,local5.*   /var/log/swift/all.log</span>
 
 <span style="color:#000080"># Uncomment the following to have hourly proxy logs for stats processing</span>
-<span style="color:#00cdcd">$template</span> HourlyProxyLog,<span style="color:#cd0000">&#34;</span><span style="color:#cd0000">/var/log/swift/hourly/%</span><span style="color:#00cdcd">$YEAR</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$MONTH</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$DAY</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$HOUR</span><span style="color:#cd0000">%</span><span style="color:#cd0000">&#34;</span>
+<span style="color:#00cdcd">$template</span> HourlyProxyLog,<span style="color:#cd0000">&#34;/var/log/swift/hourly/%</span><span style="color:#00cdcd">$YEAR</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$MONTH</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$DAY</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$HOUR</span><span style="color:#cd0000">%&#34;</span>
 <span style="color:#000080">#local1.*;local1.!notice ?HourlyProxyLog</span>
 
 local1.*;local1.!notice /var/log/swift/proxy.log
@@ -350,7 +350,7 @@ swift-ring-builder object.builder rebalance
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
 </span><span style="color:#000080"></span>swift-init all stop
 
-find /var/log/swift -type f -exec rm -f <span style="color:#39c">{</span><span style="color:#39c">}</span> <span style="color:#cd0000">\;</span>
+find /var/log/swift -type f -exec rm -f <span style="color:#39c">{}</span> <span style="color:#cd0000">\;</span>
 
 sudo umount /srv/node/sdb1
 sudo mkfs.xfs -f -i <span style="color:#00cdcd">size</span><span style="color:#39c">=</span><span style="color:#cd00cd">1024</span> /srv/swift-disk

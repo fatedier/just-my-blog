@@ -176,14 +176,14 @@
 </code></pre></div><p>上面的代码可以看出 leaderelection 其实是利用 kubernetes 的 resource 来实现分布式锁。在对应 resource 的 annotations 中会更新 <code>control-plane.alpha.kubernetes.io/leader</code> 这个字段的值，更新成功的就是 leader。其中的内容是下面这个结构体的序列化结果:</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#00cd00">type</span> LeaderElectionRecord <span style="color:#00cd00">struct</span> {
     <span style="color:#000080">// Holder 的 ID，如果为空，表示没有 Holder
-</span><span style="color:#000080"></span>    HolderIdentity       <span style="color:#00cd00">string</span>      <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;holderIdentity&#34;</span><span style="color:#cd0000">`</span>
+</span><span style="color:#000080"></span>    HolderIdentity       <span style="color:#00cd00">string</span>      <span style="color:#cd0000">`json:&#34;holderIdentity&#34;`</span>
     <span style="color:#000080">// 租约期限
-</span><span style="color:#000080"></span>    LeaseDurationSeconds <span style="color:#00cd00">int</span>         <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;leaseDurationSeconds&#34;</span><span style="color:#cd0000">`</span>
+</span><span style="color:#000080"></span>    LeaseDurationSeconds <span style="color:#00cd00">int</span>         <span style="color:#cd0000">`json:&#34;leaseDurationSeconds&#34;`</span>
     <span style="color:#000080">// 获取租约的时间
-</span><span style="color:#000080"></span>    AcquireTime          metav1.Time <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;acquireTime&#34;</span><span style="color:#cd0000">`</span>
+</span><span style="color:#000080"></span>    AcquireTime          metav1.Time <span style="color:#cd0000">`json:&#34;acquireTime&#34;`</span>
     <span style="color:#000080">// 更新租约的时间
-</span><span style="color:#000080"></span>    RenewTime            metav1.Time <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;renewTime&#34;</span><span style="color:#cd0000">`</span>
-    LeaderTransitions    <span style="color:#00cd00">int</span>         <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;leaderTransitions&#34;</span><span style="color:#cd0000">`</span>
+</span><span style="color:#000080"></span>    RenewTime            metav1.Time <span style="color:#cd0000">`json:&#34;renewTime&#34;`</span>
+    LeaderTransitions    <span style="color:#00cd00">int</span>         <span style="color:#cd0000">`json:&#34;leaderTransitions&#34;`</span>
 }
 </code></pre></div><p><code>leaderelection.RunOrDie</code> 函数会调用创建好的 LeaderElector 的 Run 函数。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#00cd00">func</span> (le <span style="color:#39c">*</span>LeaderElector) Run(ctx context.Context) {

@@ -8,7 +8,7 @@
 <meta property="og:url" content="{{ .Site.BaseURL }}">
 {{- if eq .RelPermalink "/" -}}
 <meta property="og:type" content="website">
-{{- range first 1 .Pages -}}
+{{- range first 1 .Site.RegularPages -}}
 <meta property="og:title" content="{{ .Site.Title }}">
 {{- end -}}
 {{- else if eq .RelPermalink "/post/" -}}

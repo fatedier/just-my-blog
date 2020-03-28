@@ -8,7 +8,7 @@
                     <h2 class="panel-title">Recent Posts</h2>
                 </div>
                 <div class="list-group">
-                    {{range first .Site.Params.SidebarRecentLimit .Pages.ByPublishDate.Reverse}}
+                    {{range first .Site.Params.SidebarRecentLimit .Site.RegularPages.ByPublishDate.Reverse}}
                     <a href="{{.RelPermalink}}" class="list-group-item">{{ .Title }}</a>
                     {{ end }}
                 </div>

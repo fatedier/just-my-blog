@@ -5,9 +5,144 @@
     <link>http://blog.fatedier.com/</link>
     <language>en-us</language>
     <author></author>
-    <rights>(C) 2019</rights>
-    <updated>2019-04-17 00:00:00 &#43;0000 UTC</updated>
+    <rights>(C) 2020</rights>
+    <updated>2020-03-28 00:00:00 &#43;0000 UTC</updated>
 
+    
+      
+        <item>
+          <title>Golang 中使用 JWT 做用户认证</title>
+          <link>http://blog.fatedier.com/2020/03/28/golang-jwt/</link>
+          <pubDate>Sat, 28 Mar 2020 00:00:00 UTC</pubDate>
+          <author></author>
+          <guid>http://blog.fatedier.com/2020/03/28/golang-jwt/</guid>
+          <description>&lt;p&gt;借助 JWT 做用户认证是比较简单的一种方式。&lt;/p&gt;
+
+&lt;h3 id=&#34;常见的认证方式&#34;&gt;常见的认证方式&lt;/h3&gt;
+
+&lt;p&gt;一般用户认证主流的方式大致上分为基于 session 和基于 token 这两种。&lt;/p&gt;
+
+&lt;h4 id=&#34;基于-sesion-的认证方式&#34;&gt;基于 sesion 的认证方式&lt;/h4&gt;
+
+&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;用户向服务器发送用户名和密码。&lt;/li&gt;
+&lt;li&gt;服务器验证通过后，在当前对话(sesion）里面保存相关数据，比如用户角色、登录时间等等。&lt;/li&gt;
+&lt;li&gt;服务器向用户返回一个 session_id，写入用户的 Cookie 或其他存储。&lt;/li&gt;
+&lt;li&gt;用户随后的每一次请求，都会通过 Cookie，将 session_id 传回服务器。&lt;/li&gt;
+&lt;li&gt;服务器收到 session_id，找到前期保存的数据，由此得知用户的身份。&lt;/li&gt;
+&lt;li&gt;用户退出登录，服务器将对应 session_id 的数据清除。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;这种方式服务端需要将 session_id 及相关的数据保存起来，在接收到用户请求时进行校验，比如可以存储到 Redis 中。&lt;/p&gt;
+
+&lt;h4 id=&#34;基于-token-的认证方式&#34;&gt;基于 token 的认证方式&lt;/h4&gt;
+
+&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;用户向服务器发送用户名和密码。&lt;/li&gt;
+&lt;li&gt;服务器将相关数据，比如用户 ID，认证有效期等信息签名后生成 token 返回给客户端。&lt;/li&gt;
+&lt;li&gt;客户端将 token 写入本地存储。&lt;/li&gt;
+&lt;li&gt;用户随后的每一次请求，都将 token 附加到 header 中。&lt;/li&gt;
+&lt;li&gt;服务端获取到用户请求的 header，拿到用户数据并且做签名校验，如果校验成功则说明数据没有被篡改，是有效的，确认 token 在有效期内，用户数据就是有效的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;jwt 是基于 token 的认证方式的一种。这里我们使用 &lt;a href=&#34;https://github.com/dgrijalva/jwt-go&#34;&gt;jwt-go&lt;/a&gt; 在 Golang 项目中使用 jwt。以下代码均为示例代码，部分内容有所删减，仅供参考。&lt;/p&gt;
+
+&lt;h3 id=&#34;生成-token&#34;&gt;生成 Token&lt;/h3&gt;
+
+&lt;p&gt;服务器端需要提供一个登录接口用于用户登录。客户端提供用户名和密码，服务器端进行校验，如果校验通过，则生成 Token 返回给客户端。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;import (
+    jwt &amp;quot;github.com/dgrijalva/jwt-go&amp;quot;
+)
+
+func GenerateToken(uid string, role int, expireDuration time.Duration) (string, error) {
+    expire := time.Now().Add(expireDuration)
+    // 将 uid，用户角色， 过期时间作为数据写入 token 中
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, util.LoginClaims{
+        Uid:  uid,
+        Role: role,
+        StandardClaims: jwt.StandardClaims{
+            ExpiresAt: expire.Unix(),
+        },
+    })
+    // SecretKey 用于对用户数据进行签名，不能暴露
+    return token.SignedString([]byte(util.SecretKey))
+}
+
+func (ctl *LoginController) Login(rw http.ResponseWriter, req *http.Request) {
+    var u loginRequest
+    json.NewDecoder(req.Body).Decode(&amp;amp;u)
+
+    // 将用户传入的用户名和密码和数据库中的进行比对
+    user, err := ctl.db.GetUserByName(req.Context(), u.User)
+    if err != nil {
+        log.Warn(&amp;quot;get user from db by name error: %v&amp;quot;, err)
+        httputil.Error(rw, errors.ErrInternal)
+        return
+    }
+
+    if common.EncodePassowrd(u.Password, u.User) != user.Password {
+        log.Warn(&amp;quot;name [%s] password incorrent&amp;quot;, u.User)
+        httputil.Error(rw, errors.ErrLoginFailed)
+        return
+    }
+
+    // 生成返回给用户的 token
+    token, err := GenerateToken(user.UID, user.Role, 3*24*time.Hour)
+    if err != nil {
+        log.Warn(&amp;quot;name [%s] generateToken error: %v&amp;quot;, u.User, err)
+        httputil.Error(rw, errors.ErrInternal)
+        return
+    }
+
+    res := struct {
+        Token string `json:&amp;quot;token&amp;quot;`
+    }{
+        Token: token,
+    }
+    httputil.Reply(rw, &amp;amp;res)
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;校验-token&#34;&gt;校验 Token&lt;/h3&gt;
+
+&lt;p&gt;这里要求客户端每次将通过登录接口获取到的 token 设置在发送请求的 &lt;code&gt;Authorization&lt;/code&gt; header 中。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;func (a *AuthFilter) Filter(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+        tokenStr := req.Header.Get(&amp;quot;Authorization&amp;quot;)
+        token, err := jwt.ParseWithClaims(tokenStr, &amp;amp;util.LoginClaims{}, func(token *jwt.Token) (interface{}, error) {
+            return []byte(util.SecretKey), nil 
+        }   
+        if err != nil {
+            httputil.Error(rw, errors.ErrUnauthorized)
+            return
+        }   
+
+        if claims, ok := token.Claims.(*util.LoginClaims); ok &amp;amp;&amp;amp; token.Valid {
+            log.Infof(&amp;quot;uid: %s, role: %v&amp;quot;, claims.Uid, claims.Role)
+        } else {
+            httputil.Error(rw, errors.ErrUnauthorized)
+            return
+        }   
+        next.ServeHTTP(rw, req)
+    }   
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;注意点&#34;&gt;注意点&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;由于 jwt 返回的 Token 中的数据仅做了 Base64 处理，没有加密，所以不应放入重要的信息。&lt;/li&gt;
+&lt;li&gt;jwt Token 由于是无状态的，任何获取到此 Token 的人都可以访问，所以为了减少盗用，可以将 Token 有效期设置短一些。对一些重要的操作，尽量再次进行认证。&lt;/li&gt;
+&lt;li&gt;网站尽量使用 HTTPS，可以减少 Token 的泄漏。&lt;/li&gt;
+&lt;/ul&gt;</description>
+        </item>
+      
     
       
         <item>

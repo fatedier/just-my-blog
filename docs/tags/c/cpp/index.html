@@ -63,6 +63,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2017年03月03日
+        </div>
+        <h2 class="post-title">
+            <a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>mtcp 是一个用户态的 tcp 协议栈，结合 dpdk 可以实现高性能的收发包。mtcp 不支持 udp 协议，想要在 bind 里利用 mtcp 进行加速，需要改动源码以提供支持。</p>
+    </div>
+    </article>
+<hr>
+
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
             2015年08月24日
         </div>
         <h2 class="post-title">
@@ -71,8 +88,6 @@
     </header>
     <div class="post-content">
         <p>在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。</p>
-
-<p></p>
     </div>
     </article>
 <hr>
@@ -90,8 +105,6 @@
     </header>
     <div class="post-content">
         <p>在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。</p>
-
-<p></p>
     </div>
     </article>
 <hr>
@@ -109,8 +122,6 @@
     </header>
     <div class="post-content">
         <p>在《UNIX网络编程》一书中介绍了如何使用select/poll来实现I/O多路复用，简而言之就是通过内核的一种机制，监视多个文件描述符，一旦某个文件描述符处于就绪状态，就通知用户程序进行相应的读写操作，这样用户程序就不用阻塞在每一个文件描述符上。</p>
-
-<p></p>
     </div>
     </article>
 <hr>
@@ -128,8 +139,6 @@
     </header>
     <div class="post-content">
         <p>在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。</p>
-
-<p></p>
     </div>
     </article>
 <hr>
@@ -147,8 +156,6 @@
     </header>
     <div class="post-content">
         <p>题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。</p>
-
-<p></p>
     </div>
     </article>
 <hr>
@@ -166,8 +173,6 @@
     </header>
     <div class="post-content">
         <p>最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。</p>
-
-<p></p>
     </div>
     </article>
 <hr>
@@ -204,8 +209,6 @@
     </header>
     <div class="post-content">
         <p>如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？</p>
-
-<p></p>
     </div>
     </article>
 <hr>
@@ -223,8 +226,6 @@
     </header>
     <div class="post-content">
         <p>作为一个刚刚从大学毕业的新人，进公司不久就遇到了一个不大不小的门槛——看不懂Makefile！而Makefile所干的事却关系到程序的编译和链接，一个好的Makefile文件可以极大地提升编译项目文件的效率，免去手动编译的烦恼。</p>
-
-<p></p>
     </div>
     </article>
 <hr>
@@ -236,7 +237,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2018  fatedier blog </p>
+    <p>&copy; 2019  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

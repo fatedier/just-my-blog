@@ -71,7 +71,7 @@
 
             <div class="post-content">
                 <p>mtcp 是一个用户态的 tcp 协议栈，结合 dpdk 可以实现高性能的收发包。mtcp 不支持 udp 协议，想要在 bind 里利用 mtcp 进行加速，需要改动源码以提供支持。</p>
-<h3 id="heading">大致思路</h3>
+<h3 id="大致思路">大致思路</h3>
 <p>mtcp 项目地址：https://github.com/mtcp-stack/mtcp</p>
 <p>我们需要实现和 udp 数据收发相关的函数，提供给其他程序使用的 SDK。各个所需函数的实现方式如下。</p>
 <p><code>mtcp_socket()</code></p>
@@ -79,17 +79,17 @@
 <p><code>mtcp_bind()</code></p>
 <p>将绑定的本地 IP 地址和端口等数据写入 socket 对象，将此 socket 对象的地址放入一个存放正在监听中的 socket 对象的 hashmap。</p>
 <p>需要创建一个 hashmap，存放所有处于监听状态的 socket 对象，key 是本地 IP，Port。</p>
-<h3 id="udp-">UDP 数据包的接收</h3>
+<h3 id="udp-数据包的接收">UDP 数据包的接收</h3>
 <p>解析到 以太网帧 -&gt; ip -&gt; udp</p>
 <p>解析出目的 ip，port，检查 hashmap 中是否有正处于监听状态的 socket 对象，如果没有，丢弃，否则加入到该 socket 对象的读缓冲区（这里需要一个队列）。</p>
 <p>调用 pthread_cond_singal 唤醒处于 recvfrom 的线程，或者是 epoll 队列中有该socket 的可读事件监听，pthread_cond_singal 唤醒 mtcp_epoll_wait 线程。</p>
-<h4 id="mtcp-recvfrom">mtcp_recvfrom()</h4>
+<h4 id="mtcp_recvfrom">mtcp_recvfrom()</h4>
 <ol>
 <li>不使用 epoll，阻塞：使用 pthread_cond_wait 等待主线程轮询网卡数据包，有此socket 的 udp 包的时候会被唤醒，从读缓冲区中取出内容返回。</li>
 <li>不使用 epoll，非阻塞：直接查询监听中socket-hashmap的此socket的读缓冲区，取出内容并返回。</li>
 <li>使用 epoll（非阻塞）：将此 socket 的可读事件加入监听，epoll_wait 被唤醒，检查到可读事件，非阻塞模式读缓冲区内容。</li>
 </ol>
-<h4 id="mtcp-sendto">mtcp_sendto()</h4>
+<h4 id="mtcp_sendto">mtcp_sendto()</h4>
 <ol>
 <li>不使用 epoll，阻塞：如果此 socket 的写缓冲区未满，直接写入并返回，如果已满（需要等到有空间后被唤醒，考虑 socket 对象需要加一个 send_wait_list，统一触发）</li>
 <li>不使用 epoll，非阻塞：已满就返回错误。</li>
@@ -97,10 +97,10 @@
 （如果原来写缓冲区是空的，现在有内容了，加入到一个全局的 send_list 队列中）</li>
 </ol>
 <p>如果此 socket 的 udp_stream 为 NULL，说明是一个客户端的 socket，创建一个新的udp_stream，分配一个随机的 udp 端口，加入到正在监听中的 socket 对象的 hashmap。</p>
-<h3 id="udp--1">udp 数据包发送</h3>
+<h3 id="udp-数据包发送">udp 数据包发送</h3>
 <p>这里需要一开始创建一个全局的 udp_sender 对象，有一个 send_list 队列，存放需要发送数据的所有的 socket 对象。</p>
 <p>轮询这些 socket 对象，构造数据包，udp -&gt; ip -&gt; 以太网帧，调用 dpdk 发送包的接口。</p>
-<h3 id="heading-1">主线程循环</h3>
+<h3 id="主线程循环">主线程循环</h3>
 <ul>
 <li>udp 数据包的接收</li>
 <li>udp 数据包发送</li>
@@ -173,15 +173,15 @@
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">大致思路</a></li>
-    <li><a href="#udp-">UDP 数据包的接收</a>
+    <li><a href="#大致思路">大致思路</a></li>
+    <li><a href="#udp-数据包的接收">UDP 数据包的接收</a>
       <ul>
-        <li><a href="#mtcp-recvfrom">mtcp_recvfrom()</a></li>
-        <li><a href="#mtcp-sendto">mtcp_sendto()</a></li>
+        <li><a href="#mtcp_recvfrom">mtcp_recvfrom()</a></li>
+        <li><a href="#mtcp_sendto">mtcp_sendto()</a></li>
       </ul>
     </li>
-    <li><a href="#udp--1">udp 数据包发送</a></li>
-    <li><a href="#heading-1">主线程循环</a></li>
+    <li><a href="#udp-数据包发送">udp 数据包发送</a></li>
+    <li><a href="#主线程循环">主线程循环</a></li>
   </ul>
 </nav>
         </div>

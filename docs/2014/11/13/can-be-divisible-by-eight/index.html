@@ -71,7 +71,7 @@
 
             <div class="post-content">
                 <p>题目：给定一个非负整数，问能否重排它的全部数字，使得重排后的数能被8整除。 输入格式： 多组数据，每组数据是一个非负整数。非负整数的位数不超过10000位。 输出格式 每组数据输出一行,YES或者NO，表示能否重排它的全部数字得到能被8整除的数。注意：重排可以让0开头。</p>
-<h3 id="heading">思路</h3>
+<h3 id="思路">思路</h3>
 <ul>
 <li>
 <p>考虑到64位整型可以直接取余8求得结果，所以当输入非负整数位数小于20位的时候，可以直接转换成64位整型进行计算。</p>
@@ -83,7 +83,7 @@
 <p>没必要对可能的10000位做全排列，因为0-9每个数最多只能用3次，我们只需要遍历一遍每一位，将0-9出现的次数记录下来，最多允许记录3次。这样最坏的情况下需要对30个数进行全排列即可，效率会非常高。</p>
 </li>
 </ul>
-<h3 id="heading-1">代码</h3>
+<h3 id="代码">代码</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
 </span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;string.h&gt;</span><span style="color:#000080">
 </span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;sys/types.h&gt;</span><span style="color:#000080">
@@ -230,8 +230,8 @@
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">思路</a></li>
-    <li><a href="#heading-1">代码</a></li>
+    <li><a href="#思路">思路</a></li>
+    <li><a href="#代码">代码</a></li>
   </ul>
 </nav>
         </div>

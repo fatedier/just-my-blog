@@ -71,14 +71,14 @@
 
             <div class="post-content">
                 <p>go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。</p>
-<h3 id="smtp-">smtp 协议发送邮件</h3>
-<h4 id="sendmail-">sendmail 函数</h4>
+<h3 id="smtp-协议发送邮件">smtp 协议发送邮件</h3>
+<h4 id="sendmail-函数">sendmail 函数</h4>
 <p>go 标准库的 net/smtp 包提供了一个 SendMail 函数用于发送邮件。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">func</span> SendMail(addr <span style="color:#00cd00">string</span>, a Auth, from <span style="color:#00cd00">string</span>, to []<span style="color:#00cd00">string</span>, msg []<span style="color:#00cd00">byte</span>) <span style="color:#00cd00">error</span>
 </code></pre></div><p><strong>SendMail</strong>： 连接到 <strong>addr</strong> 指定的服务器；如果支持会开启 <strong>TLS</strong>；如果支持会使用 <strong>a(Auth)</strong> 认证身份；然后以 <strong>from</strong> 为邮件源地址发送邮件 <strong>msg</strong> 到目标地址 <strong>to</strong>。（可以是多个目标地址：群发）</p>
 <p><strong>addr</strong>： 邮件服务器的地址。</p>
 <p><strong>a</strong>： 身份认证接口，可以由 <code>func PlainAuth(identity, username, password, host string) Auth</code> 函数创建。</p>
-<h4 id="heading">简单发送邮件示例</h4>
+<h4 id="简单发送邮件示例">简单发送邮件示例</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#cd00cd">package</span> main
 
 <span style="color:#cd00cd">import</span> (
@@ -108,11 +108,11 @@
 <p><strong>content_type</strong>： 可以有两种方式，一种 text/plain，纯字符串，不做转义。一种 text/html，会展示成 html 页面。</p>
 <p><strong>body</strong>： 邮件正文内容。</p>
 <p><strong>msg</strong>： msg 的内容需要遵循 smtp 协议的格式，参考上例。</p>
-<h3 id="heading-1">特定邮件服务器出错</h3>
+<h3 id="特定邮件服务器出错">特定邮件服务器出错</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">certificate signed by unknown authority
 </code></pre></div><p>在通过公司内部自己搭建的邮件服务器发送邮件时报了上述错误，看上去是因为认证不通过的问题，检查了一下用户名和密码没有问题。</p>
 <p>我通过抓包以及手动 telnet 执行了一遍 smtp 的过程，发送问题出现在是否加密和身份验证上。</p>
-<h4 id="smtp--1">SMTP 协议</h4>
+<h4 id="smtp-协议">SMTP 协议</h4>
 <p>smtp 协议开始时客户端主动向邮件服务器发送 <code>EHLO</code>，服务器会返回支持的所有命令，例如</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">250-PIPELINING
 250-SIZE <span style="color:#cd00cd">10240000</span>
@@ -127,7 +127,7 @@
 </code></pre></div><p>如果有 <strong>STARTTLS</strong>，说明支持加密传输，golang 的标准库中会进行判断然后决定是否选择使用 <strong>STARTTLS</strong> 加密传输。</p>
 <p>如果没有 <strong>AUTH=PLAIN LOGIN</strong>，说明不支持 <strong>PLAIN</strong> 方式。</p>
 <p>一共有3种验证方式，可以参考这篇 blog： <a href="http://blog.csdn.net/mhfh611/article/details/9470599">http://blog.csdn.net/mhfh611/article/details/9470599</a></p>
-<h4 id="starttls-">STARTTLS 引起的错误</h4>
+<h4 id="starttls-引起的错误">STARTTLS 引起的错误</h4>
 <p>公司内部的邮件服务器返回了 <strong>STARTTLS</strong>，但是实际上却不支持加密传输的认证方式，所以就导致了身份认证失败。</p>
 <p>大部分国内的邮件服务器都支持 <strong>LOGIN</strong> 和 <strong>PLAIN</strong> 方式，所以我们可以在代码中直接采用 <strong>PLAIN</strong> 的方式，不过安全性就降低了。</p>
 <p>想要强制使用 <strong>PLAIN</strong> 方式也不是这么容易的，因为涉及到修改 <strong>net/smtp</strong> 的 <code>SendMail</code> 函数，当然标准库我们修改不了，所以只能重新实现一个 <code>SendMail</code> 函数。</p>
@@ -297,16 +297,16 @@
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#smtp-">smtp 协议发送邮件</a>
+    <li><a href="#smtp-协议发送邮件">smtp 协议发送邮件</a>
       <ul>
-        <li><a href="#sendmail-">sendmail 函数</a></li>
-        <li><a href="#heading">简单发送邮件示例</a></li>
+        <li><a href="#sendmail-函数">sendmail 函数</a></li>
+        <li><a href="#简单发送邮件示例">简单发送邮件示例</a></li>
       </ul>
     </li>
-    <li><a href="#heading-1">特定邮件服务器出错</a>
+    <li><a href="#特定邮件服务器出错">特定邮件服务器出错</a>
       <ul>
-        <li><a href="#smtp--1">SMTP 协议</a></li>
-        <li><a href="#starttls-">STARTTLS 引起的错误</a></li>
+        <li><a href="#smtp-协议">SMTP 协议</a></li>
+        <li><a href="#starttls-引起的错误">STARTTLS 引起的错误</a></li>
       </ul>
     </li>
   </ul>

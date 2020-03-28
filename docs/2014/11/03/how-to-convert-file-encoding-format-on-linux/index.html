@@ -77,26 +77,26 @@
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">file test.cpp
 </code></pre></div><p>输出</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ISO-8859 Cprogram text
-</code></pre></div><h3 id="iconv">iconv命令的参数说明</h3>
+</code></pre></div><h3 id="iconv命令的参数说明">iconv命令的参数说明</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-l  列出所有已知的字符集
 -f  原始文本编码
 -t  输出文本编码
 -o  输出文件名
 -s  关闭警告
-</code></pre></div><h3 id="heading">例子</h3>
+</code></pre></div><h3 id="例子">例子</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iconv -f GB2312 -t UTF-8 test.cpp &gt; test_utf.cpp
 </code></pre></div><p>因为iconv默认输出到标准输出，所以我们需要重定向到一个其他文件。<strong>（这里不能重定向到自身，否则会清空文件内容）</strong></p>
 <p>如果想要把输出内容直接输出到当前文件，可以这样用：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iconv -f GB2312 -t UTF-8 -o test.cpp test.cpp
-</code></pre></div><h3 id="-iconvfash">附上我自己用的编码转换脚本 iconvfa.sh</h3>
-<h4 id="heading-1">使用说明</h4>
+</code></pre></div><h3 id="附上我自己用的编码转换脚本-iconvfash">附上我自己用的编码转换脚本 iconvfa.sh</h3>
+<h4 id="使用说明">使用说明</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Usage:
     iconvfa.sh <span style="color:#39c">[</span>option<span style="color:#39c">]</span> <span style="color:#39c">[</span>file|dir<span style="color:#39c">]</span>
     from GB2312 to UTF-8, the old file will be replaced by the new converted file
 
 Options:
     -R: convert files recursively, the following parameter should be the directory name
-</code></pre></div><h4 id="heading-2">脚本代码</h4>
+</code></pre></div><h4 id="脚本代码">脚本代码</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/env bash
 </span><span style="color:#000080"></span>
 <span style="color:#cdcd00">function</span> show_help
@@ -229,12 +229,12 @@ Options:
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#iconv">iconv命令的参数说明</a></li>
-    <li><a href="#heading">例子</a></li>
-    <li><a href="#-iconvfash">附上我自己用的编码转换脚本 iconvfa.sh</a>
+    <li><a href="#iconv命令的参数说明">iconv命令的参数说明</a></li>
+    <li><a href="#例子">例子</a></li>
+    <li><a href="#附上我自己用的编码转换脚本-iconvfash">附上我自己用的编码转换脚本 iconvfa.sh</a>
       <ul>
-        <li><a href="#heading-1">使用说明</a></li>
-        <li><a href="#heading-2">脚本代码</a></li>
+        <li><a href="#使用说明">使用说明</a></li>
+        <li><a href="#脚本代码">脚本代码</a></li>
       </ul>
     </li>
   </ul>

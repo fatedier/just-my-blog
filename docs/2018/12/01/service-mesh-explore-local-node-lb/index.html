@@ -72,7 +72,7 @@
             <div class="post-content">
                 <p>在设计 Service Mesh 架构方案时，考虑到有一些基础服务，访问频率高，流量大，如果在 kubernetes 平台上采用 DaemonSet 的部署方式，每一个机器部署一个实例，访问方能够优先访问同一个节点上的该服务，则可以极大地减少网络开销和延迟。</p>
 <p>目前开源的项目中还没有支持这一功能，所以我们需要实现自己的负载均衡策略来达到这一目的。</p>
-<h3 id="discovery-">discovery 组件</h3>
+<h3 id="discovery-组件">discovery 组件</h3>
 <p>和 Istio 的 pilot 类似，一般 Service Mesh 平台中会有一个 discovery 组件，通过 discovery 组件，proxy 才能获得要访问的服务的所有节点信息，discovery 屏蔽了各个服务注册中心的细节。</p>
 <p>我们的 discovery 组件对外提供 GRPC 接口。有以下几个概念:</p>
 <ul>
@@ -94,7 +94,7 @@ message NetworkEndpoint {
 }
 </code></pre><p>其中 Labels 是一个 map 结构，每一个实例都会有一些标签，例如 <code>cluster=c1, zone=z1, node=n1</code>。</p>
 <p>我们需要利用的就是 <code>node</code> 这个标签，表示该实例所在的物理机器节点。这个标签可以为空，表示未知。</p>
-<h3 id="kubernetes--node-">kubernetes 中获取 Node 信息</h3>
+<h3 id="kubernetes-中获取-node-信息">kubernetes 中获取 Node 信息</h3>
 <p>在 kubernetes 中获取 NodeName 的简单代码示例:</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang">out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#39c">*</span>model.Instance, <span style="color:#cd00cd">0</span>)
 <span style="color:#cdcd00">for</span> _, item <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> d.factory.Core().V1().Endpoints().Informer().GetStore().List() {
@@ -125,20 +125,20 @@ message NetworkEndpoint {
     }
 }
 </code></pre></div><p>k8s 的 Endpoint 信息中会附加上 NodeName，需要注意的是这个参数有可能不存在。</p>
-<h3 id="proxy-">proxy 组件</h3>
+<h3 id="proxy-组件">proxy 组件</h3>
 <p>proxy 在启动时，会通过环境变量 <code>NODE_NAME</code> 识别出自己所在的物理节点。</p>
-<h4 id="-k8s">部署在 k8s</h4>
+<h4 id="部署在-k8s">部署在 k8s</h4>
 <p>proxy 组件在 k8s 中是以 sidecar 的方式和服务的容器部署在同一个 pod 中，所以必然是在同一个物理机器上。我们通过修改 proxy 的 yaml 文件配置附加上 <code>NODE_NAME</code> 这一环境变量。</p>
 <p>示例如下:</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">env:
-- name: NODE_NAME
-  valueFrom:
-    fieldRef:
-      fieldPath: spec.nodeName
-</code></pre></div><h4 id="heading">部署在物理机</h4>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">env</span>:
+- <span style="color:#cdcd00">name</span>: NODE_NAME
+  <span style="color:#cdcd00">valueFrom</span>:
+    <span style="color:#cdcd00">fieldRef</span>:
+      <span style="color:#cdcd00">fieldPath</span>: spec.nodeName
+</code></pre></div><h4 id="部署在物理机">部署在物理机</h4>
 <p>通过启动 proxy 时主动指定 <code>NODE_NAME</code>。</p>
 <p><code>env NODE_NAME=`hostname` ./proxy</code></p>
-<h3 id="heading-1">负载均衡算法</h3>
+<h3 id="负载均衡算法">负载均衡算法</h3>
 <p>假设 A 服务希望通过 proxy 访问以 DaemonSet 方式部署的 B 服务。</p>
 <p>具体的步骤:</p>
 <ul>
@@ -221,15 +221,15 @@ message NetworkEndpoint {
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#discovery-">discovery 组件</a></li>
-    <li><a href="#kubernetes--node-">kubernetes 中获取 Node 信息</a></li>
-    <li><a href="#proxy-">proxy 组件</a>
+    <li><a href="#discovery-组件">discovery 组件</a></li>
+    <li><a href="#kubernetes-中获取-node-信息">kubernetes 中获取 Node 信息</a></li>
+    <li><a href="#proxy-组件">proxy 组件</a>
       <ul>
-        <li><a href="#-k8s">部署在 k8s</a></li>
-        <li><a href="#heading">部署在物理机</a></li>
+        <li><a href="#部署在-k8s">部署在 k8s</a></li>
+        <li><a href="#部署在物理机">部署在物理机</a></li>
       </ul>
     </li>
-    <li><a href="#heading-1">负载均衡算法</a></li>
+    <li><a href="#负载均衡算法">负载均衡算法</a></li>
   </ul>
 </nav>
         </div>

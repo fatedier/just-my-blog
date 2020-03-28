@@ -82,7 +82,7 @@
 go build -ldflags &quot;-s -w&quot; -o tmp/frpc2 ./cmd/frpc
 -rwxr-xr-x  1 fate  staff   8353308 Dec 10 15:49 frpc2
 </code></pre><p>减小了接近 4MB 的体积。</p>
-<h3 id="upx-">UPX 压缩</h3>
+<h3 id="upx-压缩">UPX 压缩</h3>
 <p>在某些设备上动辄接近 10MB 的程序大小还是比较大的，这个时候可以采用 UPX 来进一步压缩。好处是占用磁盘空间小了，坏处是程序启动时会先进行一æ­¥解压缩，将代码还原到内存中，也就是说占用的内存大小并不会减少，当然，对于现代设备来说，启动的耗时几乎可以忽略。</p>
 <p>通过各系统的包管理工具一般可以自动安装 UPX。
 例如 Centos 上 epel 库 <code>yum install -y upx</code>。
@@ -157,7 +157,7 @@ macos 上通过 brew 安装 <code>brew install upx</code>。</p>
             <nav id="TableOfContents">
   <ul>
     <li><a href="#-ldflags">-ldflags</a></li>
-    <li><a href="#upx-">UPX 压缩</a></li>
+    <li><a href="#upx-压缩">UPX 压缩</a></li>
   </ul>
 </nav>
         </div>

@@ -71,14 +71,14 @@
 
             <div class="post-content">
                 <p>最近线上服务经常会出现异常，从错误日志来看是因为域名解析失败导致的，我们在 /etc/resolv.conf 中配置了多个域名服务器，第一个是内网的，用于解析内网域名，如果是外网域名，则会通过其他的域名服务器进行解析，按道理来说应该不会有问题，但是最近却频繁发生这样的故障，为了彻底解决问题，特意研究了一下 golang 中进行 dns 查询的源码并最终解决了此问题。</p>
-<h3 id="heading">背景</h3>
-<h4 id="nameserver-">nameserver 配置</h4>
+<h3 id="背景">背景</h3>
+<h4 id="nameserver-配置">nameserver 配置</h4>
 <p><code>/etc/resolv.conf</code> 中配置了多个 nameserver</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">nameserver 10.10.100.3
 nameserver 114.114.114.114
 nameserver 8.8.8.8
 </code></pre></div><p><code>10.10.100.3</code> 用于解析内网域名，外网域名通过 <code>114.114.114.114</code> 或者 <code>8.8.8.8</code> 来解析。</p>
-<h4 id="heading-1">测试代码</h4>
+<h4 id="测试代码">测试代码</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> main
 
 <span style="color:#cd00cd">import</span> (
@@ -95,13 +95,13 @@ nameserver 8.8.8.8
         fmt.Printf(<span style="color:#cd0000">&#34;addrs: %v&#34;</span>, addrs)
     }   
 }
-</code></pre></div><h4 id="heading-2">结果</h4>
+</code></pre></div><h4 id="结果">结果</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">lookup host error: lookup www.baidu.com on 10.10.100.3:53: no such host
 </code></pre></div><p>使用 go1.5 版本进行编译，发现程序并没有按照预想的过程来解析，通过 <code>10.10.100.3</code> 无法解析后就直接返回了错误信息。</p>
 <p>而使用 go1.4 版本编译运行后，确得到了正确的结果。</p>
-<h3 id="heading-3">调试标准库的方法</h3>
+<h3 id="调试标准库的方法">调试标准库的方法</h3>
 <p>调试 golang 的标准库非常简单，先找到标准库源码的存放位置，然后将要修改的文件备份一份，之后直接在其中添加输出语句，大部分可以 <code>import &quot;fmt&quot;</code> 后使用 <code>fmt.Printf</code> 函数进行输出，有的包中需要使用其他方式，避免循环引用，这里不详述，因为我们要改的 <code>net</code> 包并不涉及这个问题，注意调试完之后将标准库的文件恢复。</p>
-<h4 id="heading-4">查找标准库所在的目录</h4>
+<h4 id="查找标准库所在的目录">查找标准库所在的目录</h4>
 <p>执行 <code>go env</code> 查看 go 的环境变量如下：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#00cdcd">GOARCH</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;amd64&#34;</span>
 <span style="color:#00cdcd">GOBIN</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;&#34;</span><span style="color:#00cdcd">GOCHAR</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;6&#34;</span><span style="color:#00cdcd">GOEXE</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;&#34;</span><span style="color:#00cdcd">GOHOSTARCH</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;amd64&#34;</span><span style="color:#00cdcd">GOHOSTOS</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;linux&#34;</span><span style="color:#00cdcd">GOOS</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;linux&#34;</span>
@@ -114,11 +114,11 @@ nameserver 8.8.8.8
 <span style="color:#00cdcd">CXX</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;g++&#34;</span>
 <span style="color:#00cdcd">CGO_ENABLED</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;1&#34;</span>
 </code></pre></div><p><strong>GOROOT</strong> 的值即是标准库所在的目录，<code>net</code> 包的具体路径为 <code>/usr/lib/golang/src/net</code></p>
-<h3 id="go-14--15--dns-">go 1.4 与 1.5 版本中 dns 查询逻辑的不同</h3>
+<h3 id="go-14-与-15-版本中-dns-查询逻辑的不同">go 1.4 与 1.5 版本中 dns 查询逻辑的不同</h3>
 <p>因为最近很多程序都是使用 <strong>go1.5</strong> 版本进行编译的，所以理所当然查看了两个版本这部分源码的区别，还真的有所改变。</p>
 <p>标准库对外暴露的 dns 查询函数是 <code>func LookupHost(host string) (addrs []string, err error)</code> <strong>(net/lookup.go)</strong></p>
 <p>这个函数会调用实际处理函数 <code>lookupHost</code> <strong>(net/lookup_unix.go)</strong></p>
-<h4 id="cgo--go--dns-">cgo 与纯 go 实现的 dns 查询</h4>
+<h4 id="cgo-与纯-go-实现的-dns-查询">cgo 与纯 go 实现的 dns 查询</h4>
 <p><strong>go1.4 版本源码</strong></p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#00cd00">func</span> lookupHost(host <span style="color:#00cd00">string</span>) (addrs []<span style="color:#00cd00">string</span>, err <span style="color:#00cd00">error</span>) {
     addrs, err, ok <span style="color:#39c">:=</span> cgoLookupHost(host)
@@ -142,7 +142,7 @@ nameserver 8.8.8.8
 </code></pre></div><p><strong>可以明显的看到 1.4 的源码中默认使用 cgo 的方式进行 dns 查询</strong>（这个函数最终会创建一个线程调用c的 getaddrinfo 函数来获取 dns 查询结果），如果查询失败则会再使用纯 go 实现的查询方式。</p>
 <p><strong>而在 1.5 的源码中，这一点有所改变，cgo 的方式不再是默认值，而是根据 <code>systemConf().hostLookupOrder(host)</code> 的返回值来判断具体使用哪种方式</strong>。这个函数定义在 <strong>net/conf.go</strong> 中，稍微看了一下， 除非通过编译标志强制使用 cgo 方式或者在某些特定的系统上会使用 cgo 方式，其他时候都使用纯 go 实现的查询方式。</p>
 <p>cgo 的方式没有问题，看起来程序会并发地向 <code>/etc/resolv.conf</code> 中所有配置的域名服务器发送 dns 解析请求，然后将最先成功响应的结果返回。</p>
-<h4 id="-go--dns-">纯 go 实现的 dns 查询分析</h4>
+<h4 id="纯-go-实现的-dns-查询分析">纯 go 实现的 dns 查询分析</h4>
 <p>问题就出在纯 go 实现的查询上，主要看一下 go1.5 的实现。</p>
 <p>函数调用逻辑如下：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LookupHost <span style="color:#39c">(</span>net/lookup.go<span style="color:#39c">)</span>
@@ -188,7 +188,7 @@ nameserver 8.8.8.8
 </code></pre></div><p>第一层 for 循环是尝试的次数，第二层 for 循环是遍历 <code>/etc/resolv.conf</code> 中配置的所有域名服务器，<code>exchange</code> 函数是发送 dns 查询请求并将响应结果解析到 <code>msg</code> 变量中返回，初看到这里，觉得实现是没问题的，顺序向每一个域名服务器发送 dns 查询请求，如果成功就返回，如果失败就尝试下一个。</p>
 <p>问题出现在判断是否成功的那一行代码 <code>if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;&amp; msg.recursion_available</code>，这里的意思是如果 dns 查询成功，或者出错了但是对方支持递归查询的话，就直接返回，不继续请求下一个域名服务器。如果对方支持递归查询但是仍然没有查到的话，说明上级服务器也没有这个域名的记录，没有必要继续往下查。（这个逻辑在 go1.6 版本中被修改了，出错了以后不再判断是否支持递归查询，仍然尝试向下一个域名服务器发送请求）</p>
 <p><code>msg.rcode</code> 这个值很重要，是问题的关键。</p>
-<h3 id="dns-">dns 查询协议格式</h3>
+<h3 id="dns-查询协议格式">dns 查询协议格式</h3>
 <p><img src="http://image.fatedier.com/pic/2016/2016-04-27-go-program-does-not-use-all-nameservers-for-dns-lookups-dns-query-package.png" alt="dns-query-package"></p>
 <p>我们只需要关注首部的12字节。</p>
 <ul>
@@ -207,7 +207,7 @@ nameserver 8.8.8.8
 <li>ARCOUNT:占16位，2字节。一个无符号数指明格外记录的个数。</li>
 </ul>
 <p>其中 <strong>RCODE</strong> 是回复时用于判断查询结果是否成功的，对应前面的 <code>msg.rcode</code>。</p>
-<h3 id="bind--dns-">bind 的 dns 回复问题</h3>
+<h3 id="bind-的-dns-回复问题">bind 的 dns 回复问题</h3>
 <p><code>10.10.100.3</code> 上是使用 <strong>bind</strong> 搭建的本地域名服务器。</p>
 <p>使用 <code>dig @10.10.100.3 www.baidu.com</code> 命令查看解析结果如下：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">; &lt;&lt;&gt;&gt; DiG 9.8.2rc1-RedHat-9.8.2-0.23.rc1.el6_5.1 &lt;&lt;&gt;&gt; @10.10.100.3 www.baidu.com ;
@@ -243,19 +243,19 @@ nameserver 8.8.8.8
 </code></pre></div><p><strong>bind</strong> 并没有返回 <code>www.baidu.com</code> 的 A 记录，而是返回了13个根域名服务器的地址，并且 <strong>status</strong> 的状态是 <strong>NOERROR</strong>（这个值就是前述的 <strong>RCODE</strong>，这里返回0表示没有错误)，问题就在这里，没有查到 A 记录还返回 <code>RCODE=0</code>，回顾一下上面 go 代码中的判断条件</p>
 <p><code>if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;&amp; msg.recursion_available</code></p>
 <p>如果返回的 <strong>RCODE</strong> 值为 0，则直接退出，不继续尝试后面的域名服务器，从而导致了域名解析失败。</p>
-<h3 id="heading-5">解决方案</h3>
-<h4 id="-go14-">仍然使用 go1.4 版本进行编译</h4>
+<h3 id="解决方案">解决方案</h3>
+<h4 id="仍然使用-go14-版本进行编译">仍然使用 go1.4 版本进行编译</h4>
 <p>不推荐这么做，毕竟升级后在 gc 以及很多其他方面都有优化。</p>
-<h4 id="-go15--cgo--dns-">使用 go1.5 及以上版本编译但是通过环境变量强制使用 cgo 的 dns 查询方式</h4>
+<h4 id="使用-go15-及以上版本编译但是通过环境变量强制使用-cgo-的-dns-查询方式">使用 go1.5 及以上版本编译但是通过环境变量强制使用 cgo 的 dns 查询方式</h4>
 <p><code>export GODEBUG=netdns=cgo go build</code></p>
 <p>使用 cgo 的方式会在每一次调用时创建一个线程，在并发量较大时可能会对系统资源造成一定影响。而且需要每一个使用 go 编写的程序编译时都加上此标志，较为繁琐。</p>
-<h4 id="-bind-">修改 bind 的配置文件</h4>
+<h4 id="修改-bind-的配置文件">修改 bind 的配置文件</h4>
 <p>在 <strong>bind</strong> 中彻底关闭对递归查询的支持也可以解决此问题，但是由于对 <strong>bind</strong> 不是很熟悉，具体是什么原因导致没有查到 <strong>A 记录</strong>但仍然返回 <strong>NOERROR</strong> 不是很清楚，猜测可能和递归转发的查询方式有关，有可能 <strong>bind</strong> 认为返回了根域名服务器的地址，<strong>client</strong> 可以去这些地址上查，所以该次请求并不算做出错。</p>
 <p>修改配置文件加上以下内容以后，再次查询时会返回 <strong>RCODE=5</strong>，拒绝递归查询，这样可以达到我们的目的，查询非内网域名时通过其他域名服务器查询</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">recursion no;
 allow-query-cache <span style="color:#39c">{</span> none; <span style="color:#39c">}</span>;
 allow-recursion <span style="color:#39c">{</span> none; <span style="color:#39c">}</span>;
-</code></pre></div><h4 id="heading-6">更新</h4>
+</code></pre></div><h4 id="更新">更新</h4>
 <p>发现在 go1.7 版本中对这个问题做了修复，使用纯 go 实现的 dns 解析方式也已经运行正常。具体信息可以参考 <a href="https://github.com/golang/go/issues/15434">issue 15434</a>。</p>
             </div>
             
@@ -318,32 +318,32 @@ allow-recursion <span style="color:#39c">{</span> none; <span style="color:#39c"
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">背景</a>
+    <li><a href="#背景">背景</a>
       <ul>
-        <li><a href="#nameserver-">nameserver 配置</a></li>
-        <li><a href="#heading-1">测试代码</a></li>
-        <li><a href="#heading-2">结果</a></li>
+        <li><a href="#nameserver-配置">nameserver 配置</a></li>
+        <li><a href="#测试代码">测试代码</a></li>
+        <li><a href="#结果">结果</a></li>
       </ul>
     </li>
-    <li><a href="#heading-3">调试标准库的方法</a>
+    <li><a href="#调试标准库的方法">调试标准库的方法</a>
       <ul>
-        <li><a href="#heading-4">查找标准库所在的目录</a></li>
+        <li><a href="#查找标准库所在的目录">查找标准库所在的目录</a></li>
       </ul>
     </li>
-    <li><a href="#go-14--15--dns-">go 1.4 与 1.5 版本中 dns 查询逻辑的不同</a>
+    <li><a href="#go-14-与-15-版本中-dns-查询逻辑的不同">go 1.4 与 1.5 版本中 dns 查询逻辑的不同</a>
       <ul>
-        <li><a href="#cgo--go--dns-">cgo 与纯 go 实现的 dns 查询</a></li>
-        <li><a href="#-go--dns-">纯 go 实现的 dns 查询分析</a></li>
+        <li><a href="#cgo-与纯-go-实现的-dns-查询">cgo 与纯 go 实现的 dns 查询</a></li>
+        <li><a href="#纯-go-实现的-dns-查询分析">纯 go 实现的 dns 查询分析</a></li>
       </ul>
     </li>
-    <li><a href="#dns-">dns 查询协议格式</a></li>
-    <li><a href="#bind--dns-">bind 的 dns 回复问题</a></li>
-    <li><a href="#heading-5">解决方案</a>
+    <li><a href="#dns-查询协议格式">dns 查询协议格式</a></li>
+    <li><a href="#bind-的-dns-回复问题">bind 的 dns 回复问题</a></li>
+    <li><a href="#解决方案">解决方案</a>
       <ul>
-        <li><a href="#-go14-">仍然使用 go1.4 版本进行编译</a></li>
-        <li><a href="#-go15--cgo--dns-">使用 go1.5 及以上版本编译但是通过环境变量强制使用 cgo 的 dns 查询方式</a></li>
-        <li><a href="#-bind-">修改 bind 的配置文件</a></li>
-        <li><a href="#heading-6">更新</a></li>
+        <li><a href="#仍然使用-go14-版本进行编译">仍然使用 go1.4 版本进行编译</a></li>
+        <li><a href="#使用-go15-及以上版本编译但是通过环境变量强制使用-cgo-的-dns-查询方式">使用 go1.5 及以上版本编译但是通过环境变量强制使用 cgo 的 dns 查询方式</a></li>
+        <li><a href="#修改-bind-的配置文件">修改 bind 的配置文件</a></li>
+        <li><a href="#更新">更新</a></li>
       </ul>
     </li>
   </ul>

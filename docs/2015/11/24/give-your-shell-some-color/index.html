@@ -71,7 +71,7 @@
 
             <div class="post-content">
                 <p>在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。</p>
-<h3 id="heading">前景色(文本颜色)</h3>
+<h3 id="前景色文本颜色">前景色(文本颜色)</h3>
 <p>例如要将 <code>hello</code> 在控制台上输出为红色，执行如下的命令</p>
 <p><code>echo -e &quot;\033[31mhello\033[0m&quot;</code></p>
 <p><code>\033[31m</code> 表示将字符的显示颜色改为红色</p>
@@ -85,7 +85,7 @@
 <span style="color:#cd00cd">35</span>        紫色 
 <span style="color:#cd00cd">36</span>        淡蓝色 
 <span style="color:#cd00cd">37</span>        灰色 
-</code></pre></div><h3 id="heading-1">背景色</h3>
+</code></pre></div><h3 id="背景色">背景色</h3>
 <p>背景色和前景色设置的方法一样，只是使用的数字不同</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">40</span>        黑色 
 <span style="color:#cd00cd">41</span>        红色 
@@ -97,7 +97,7 @@
 <span style="color:#cd00cd">47</span>        灰色 
 </code></pre></div><p>如果需要同时设置前景色和背景色，例如输出文本颜色为红色，背景色为绿色的字符串，需要以分号分隔两个数字，示例如下</p>
 <p><code>echo -e &quot;\033[31;42mhello\033[0m&quot;</code></p>
-<h3 id="heading-2">简化</h3>
+<h3 id="简化">简化</h3>
 <p>从上面的示例可以看到这样写起来很麻烦，可以简单的将重复的内容定义为一个变量</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#00cdcd">lc</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;\033[&#39;</span>
 <span style="color:#00cdcd">rc</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;\033[0m&#39;</span>
@@ -167,9 +167,9 @@
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">前景色(文本颜色)</a></li>
-    <li><a href="#heading-1">背景色</a></li>
-    <li><a href="#heading-2">简化</a></li>
+    <li><a href="#前景色文本颜色">前景色(文本颜色)</a></li>
+    <li><a href="#背景色">背景色</a></li>
+    <li><a href="#简化">简化</a></li>
   </ul>
 </nav>
         </div>

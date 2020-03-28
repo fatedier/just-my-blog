@@ -73,16 +73,16 @@
             <div class="post-content">
                 <p>kubernetes 的 controller-manager 通过 APIServer 实时监控内部资源的变化情况，通过各种操作将系统维持在一个我们预期的状态上。比如当我们将 Deployment 的副本数增加时，controller-manager 会监听到此变化，主动创建新的 Pod。</p>
 <p>对于通过 CRD 创建的资源，也可以创建一个自定义的 controller 来管理。</p>
-<h3 id="heading">目的</h3>
+<h3 id="目的">目的</h3>
 <p>在 <a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a> 一文中我们创建了自己的 Scaling 资源，如果我们想要通过监听该资源的变化来实现实时的弹性伸缩，就需要自己写一个控制器，通过 APIserver watch 该资源的变化。</p>
 <p>当我们创建了一个 Scaling 对象，自定义控制器都能获得其参数，之后执行相关的检查，根据结果决定是否需要扩容或缩容相关的实例。</p>
-<h3 id="heading-1">实现</h3>
+<h3 id="实现">实现</h3>
 <p><a href="https://github.com/kubernetes/client-go">client-go</a> 这个 repo 封装了对 k8s 内置资源的一些常用操作，包括了 clients/listers/informer 等对象和函数，可以 通过 Watch 或者 Get List 获取对应的 Object，并且通过 Cache，可以有效避免对 APIServer 频繁请求的压力。</p>
 <p>但是对于我们自己创建的 CRD，没有办法直接使用这些代码。</p>
 <p>通过 <a href="https://github.com/kubernetes/code-generator">code-generator</a> 这个 repo，我们可以提供自己的 CRD 相关的结构体，轻松的生成 client-go 中类似的代码，方便我们编写自己的控制器。</p>
-<h3 id="-code-generator">在自己的项目中使用 code-generator</h3>
+<h3 id="在自己的项目中使用-code-generator">在自己的项目中使用 code-generator</h3>
 <p>这里主要参考了 <a href="https://github.com/kubernetes/sample-controller">sample-controller</a> 这个项目。</p>
-<h4 id="-crd-">创建自定义 CRD 结构体</h4>
+<h4 id="创建自定义-crd-结构体">创建自定义 CRD 结构体</h4>
 <p>假设我们有一个 <code>test</code> repo，在根目录创建一个 <code>pkg</code> 目录，用于存放我们自定义资源的 Spec 结构体。</p>
 <p>这里我们要知道自己创建的自定义资源的相关内容:</p>
 <ul>
@@ -191,7 +191,7 @@
     <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">nil</span>
 }
 </code></pre></div><p>至此，初期的准备工作已近完成，可以通过代码生成器来自动帮助我们生成相关的 client, informer, lister 的代码。</p>
-<h4 id="heading-2">生成代码</h4>
+<h4 id="生成代码">生成代码</h4>
 <p>通常我们通过创建一个 <code>hack/update-codegen.sh</code> 脚本来固化生成代码的步骤。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#00cdcd">$GOPATH</span>/src/k8s.io/code-generator/generate-groups.sh all <span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>test/pkg/client <span style="color:#cd0000">\
@@ -200,7 +200,7 @@
 </code></pre></div><p>可以看到，执行这个脚本，需要使用 code-generator 中的的脚本，所以需要先通过 go get 将 code-generator 这个 repo 的内容下载到本地，并且编译出相关的二进制文件(client-gen, informer-gen, lister-gen)。</p>
 <p>执行完成后，可以看到 <code>pkg</code> 目录下多了一个 <code>client</code> 目录，其中就包含了 informer 和 lister 相关的代码。</p>
 <p>并且在 <code>pkg/apis/control/v1</code> 目录下，会多一个 <code>zz_generated.deepcopy.go</code> 文件，用于 deepcopy 相关的处理。</p>
-<h4 id="heading-3">创建自定义控制器代码</h4>
+<h4 id="创建自定义控制器代码">创建自定义控制器代码</h4>
 <p>这里只创建一个 <code>main.go</code> 文件用于简单示例，通过我们刚刚自动生成的代码，每隔一段时间，自动通过 lister 获取所有的 Scaling 对象。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> main
 
@@ -320,13 +320,13 @@
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">目的</a></li>
-    <li><a href="#heading-1">实现</a></li>
-    <li><a href="#-code-generator">在自己的项目中使用 code-generator</a>
+    <li><a href="#目的">目的</a></li>
+    <li><a href="#实现">实现</a></li>
+    <li><a href="#在自己的项目中使用-code-generator">在自己的项目中使用 code-generator</a>
       <ul>
-        <li><a href="#-crd-">创建自定义 CRD 结构体</a></li>
-        <li><a href="#heading-2">生成代码</a></li>
-        <li><a href="#heading-3">创建自定义控制器代码</a></li>
+        <li><a href="#创建自定义-crd-结构体">创建自定义 CRD 结构体</a></li>
+        <li><a href="#生成代码">生成代码</a></li>
+        <li><a href="#创建自定义控制器代码">创建自定义控制器代码</a></li>
       </ul>
     </li>
   </ul>

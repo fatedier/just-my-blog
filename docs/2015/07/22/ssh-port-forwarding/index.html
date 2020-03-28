@@ -87,15 +87,15 @@
 <code>localhost:22</code> 需要转发的本地 IP 和端口，localhost 可以为 A 机器可访问到的其他机器的 IP 地址。</p>
 <p>这样在家里的笔记本 C 通过 SSH 登录 11.11.11.11 主机 B，再通过 ssh 连接本地的 40000 端口，这时候就相当于是连接到了内网的机器 A 的 22 端口，就实现了远程 SSH 连接内网的台式机。</p>
 <p><strong>注：需要注意的是如果连接空闲一段时间的话，可能就会断开。</strong></p>
-<h3 id="heading">解决空闲连接断开的问题</h3>
-<h4 id="heading-1">修改客户端配置</h4>
+<h3 id="解决空闲连接断开的问题">解决空闲连接断开的问题</h3>
+<h4 id="修改客户端配置">修改客户端配置</h4>
 <ul>
 <li>找到所在用户的 <code>.ssh</code> 目录，如 root 用户该目录在：<code>/root/.ssh/</code></li>
 <li>在该目录创建 config 文件 <code>touch /root/.ssh/config</code></li>
 <li>加入下面一句：<code>ServerAliveInterval 60</code></li>
 <li>保存退出，重新开启 root 用户的 shell，则再 ssh 远程服务器的时候，不会因为长时间没有操作而断开。应该是加入这句之后，ssh 客户端会每隔一段时间自动与 ssh 服务器通信一次，保持心跳。</li>
 </ul>
-<h4 id="heading-2">修改服务器端配置</h4>
+<h4 id="修改服务器端配置">修改服务器端配置</h4>
 <p>通过修改 <code>/etc/ssh/sshd_config</code> 中的配置解决自动断开的问题。下面是要修改的两个配置项的含义：</p>
 <p><strong>ClientAliveInterval</strong> 指定了服务器端向客户端请求消息的时间间隔, 默认是 0, 不发送。而 <strong>ClientAliveInterval 60</strong> 表示每分钟发送一次，然后客户端响应，这样就保持长连接了。这里比较怪的地方是：不是客户端主动发起保持连接的请求（如FTerm, CTerm等），而是需要服务器先主动。
 至于 <strong>ClientAliveCountMax</strong>，使用默认值 3 即可。<strong>ClientAliveCountMax</strong> 表示服务器发出请求后客户端没有响应的次数达到一定值, 就自动断开。</p>
@@ -160,10 +160,10 @@
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">解决空闲连接断开的问题</a>
+    <li><a href="#解决空闲连接断开的问题">解决空闲连接断开的问题</a>
       <ul>
-        <li><a href="#heading-1">修改客户端配置</a></li>
-        <li><a href="#heading-2">修改服务器端配置</a></li>
+        <li><a href="#修改客户端配置">修改客户端配置</a></li>
+        <li><a href="#修改服务器端配置">修改服务器端配置</a></li>
       </ul>
     </li>
   </ul>

@@ -71,17 +71,17 @@
 
             <div class="post-content">
                 <p>记录一下关于 vim 中一些使用频率也许并不高的小技巧。</p>
-<h3 id="heading">插入与删除</h3>
-<h4 id="heading-1">插入</h4>
+<h3 id="插入与删除">插入与删除</h3>
+<h4 id="插入">插入</h4>
 <p><code>A</code> 在行末插入</p>
 <p><code>I</code> 在行首插入</p>
 <p><code>O</code> 在上一行插入</p>
-<h4 id="heading-2">替换字符</h4>
+<h4 id="替换字符">替换字符</h4>
 <p>普通模式下，先按下 <code>r</code> 再按下其他按键，就是使用新的字符替换旧字符。</p>
-<h4 id="heading-3">删除</h4>
+<h4 id="删除">删除</h4>
 <p>普通模式下，<code>ct;</code> 依次按下三个按键，<code>c</code> 表示删除这部分内容后直接进行插入模式，<code>t;</code> 表示从当前位置到这一行中下一个出现 <code>;</code> 号之前的位置，合在一起就是删除这之间的内容。 <code>c</code> 换成 <code>d</code> 的话就是删除当前位置到这一行中下一个出现 <code>;</code> 之前的内容，但是不进入插入模式。</p>
 <p><code>di&quot;</code> 将当前行第一次出现两个 <code>&quot;</code> 之间的内容全部清空并且进入插入模式。</p>
-<h3 id="heading-4">移动</h3>
+<h3 id="移动">移动</h3>
 <p><code>f;</code> 表示移动到这一行中下一个 <code>;</code> 号的位置。</p>
 <h3 id="vimgrep">vimgrep</h3>
 <p><code>vimgrep /匹配模式/[g][j]</code> 要搜索的文件/范围</p>
@@ -98,7 +98,7 @@ copen                         // 打开quickfix
 cw                            // 打开quickfix
 cclose                        // 关闭qucikfix
 <span style="color:#cd00cd">help</span> vimgrep                  // 查看vimgrep帮助
-</code></pre></div><h3 id="vimvim">从vim正文复制单词到vim命令行</h3>
+</code></pre></div><h3 id="从vim正文复制单词到vim命令行">从vim正文复制单词到vim命令行</h3>
 <p>例如使用 <code>vimgrep</code> 搜索时，光标先移动到要复制的单词的起始位置，之后切到命令模式， 先按 <code>ctrl + r</code> ，之后再按 <code>ctrl + w</code> 即可。</p>
             </div>
             
@@ -161,16 +161,16 @@ cclose                        // 关闭qucikfix
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">插入与删除</a>
+    <li><a href="#插入与删除">插入与删除</a>
       <ul>
-        <li><a href="#heading-1">插入</a></li>
-        <li><a href="#heading-2">替换字符</a></li>
-        <li><a href="#heading-3">删除</a></li>
+        <li><a href="#插入">插入</a></li>
+        <li><a href="#替换字符">替换字符</a></li>
+        <li><a href="#删除">删除</a></li>
       </ul>
     </li>
-    <li><a href="#heading-4">移动</a></li>
+    <li><a href="#移动">移动</a></li>
     <li><a href="#vimgrep">vimgrep</a></li>
-    <li><a href="#vimvim">从vim正文复制单词到vim命令行</a></li>
+    <li><a href="#从vim正文复制单词到vim命令行">从vim正文复制单词到vim命令行</a></li>
   </ul>
 </nav>
         </div>

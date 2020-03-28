@@ -71,8 +71,8 @@
 
             <div class="post-content">
                 <p>如果文件间存在着相互之间的引用关系该怎么办？如果把.h文件和.cpp文件放在了不同的目录下该怎么办？如果我想生成静态库，然后在其他地方引用静态库该怎么办？如果我想将程序迁移到Unix平台下，使用不同的编译器，难道要依次修改所有的Makefile？</p>
-<h3 id="d">.d文件，解决文件间的相互引用</h3>
-<h4 id="heading">自动生成依赖关系</h4>
+<h3 id="d文件解决文件间的相互引用">.d文件，解决文件间的相互引用</h3>
+<h4 id="自动生成依赖关系">自动生成依赖关系</h4>
 <p>在前文的项目基础上，考虑一下这种情况：如果我们在w1.h文件里包含了头文件w2.h以及w3.h并且用到其中定义的函数。</p>
 <p>第一次编译没有遇到问题，但是如果后续的开发过程中修改了w2.h或者w3.h文件中的内容，再执行gmake命令的时候，就遇到问题了——w1.cpp文件不会被重新编译了！</p>
 <p>显然，我们需要将生成目标文件w1.o的规则的依赖项加上w2.h和w3.h。可是如果手动的去检查每一个文件的引用关系，然后修改Makefile文件，这样做的效率就太低了。</p>
@@ -83,7 +83,7 @@
 </code></pre></div><p>这里需要特别注意的是，我们使用“-MM”而不是“-M”，因为我们使用的是GUN的C/C++编译器，使用“-M”参数会将标准库的头文件也一并包含进来，但这并不是我们想要的，而使用“-MM”则不会。</p>
 <p>现在的问题是，如何利用这个命令去写好我们的Makefile呢？</p>
 <p>GUN组织建议把每一个源文件自动生成的依赖关系放到一个.d文件中，让每一个.cpp文件都对应一个.d文件，例如之前的w1.cpp，我们可以生成一个w1.d文件，内容为自动生成的依赖关系 w1.o:w1.cpp w2.h w3.h，然后在Makefile中包含所有的.d文件，我们只需要写出.cpp文件和.d文件的依赖关系，让make自动更新或生成.d文件即可。</p>
-<h4 id="d-1">生成.d文件</h4>
+<h4 id="生成d文件">生成.d文件</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">dep/%.d:%.cpp
     @if <span style="color:#cd00cd">test</span> ! -d <span style="color:#cd0000">&#34;dep&#34;</span>; <span style="color:#cdcd00">then</span><span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>        mkdir -p dep;<span style="color:#cd0000">\
@@ -120,7 +120,7 @@
 <p>这样，我们的.d文件也会自动更新啦。</p>
 <h5 id="rm--f-">rm -f $@.$$$$</h5>
 <p>删除掉这个临时文件。</p>
-<h4 id="include">使用include包含其他文件</h4>
+<h4 id="使用include包含其他文件">使用include包含其他文件</h4>
 <p>在Makefile中我们也可以像在C++文件中那样包含其他文件。</p>
 <p>现在在我们的Makefile中加上这样一句：</p>
 <pre><code>include w1.d
@@ -132,7 +132,7 @@
 <pre><code>DEPS = $(addsuffix .d,$(addprefix dep/,$(BASE)))
 </code></pre>
 <p>然后使用include$(DEPS) 包含所有的.d文件。</p>
-<h3 id="-ih">-I，引用其他目录下的.h文件</h3>
+<h3 id="-i引用其他目录下的h文件">-I，引用其他目录下的.h文件</h3>
 <p>考虑这种情况：现在有两个目录，一个inc目录用来存放.h文件，一个src目录，用来存放.cpp文件。怎么让编译器找到引用的.h文件在哪个目录下呢？</p>
 <p>我们可以使用“-I”选项。  格式为“-I目录名”，这样在编译的时候，编译器就会依次到我们指定的目录中寻找.h文件。</p>
 <p>同样，先定义一个变量，存放所有头文件的目录名：</p>
@@ -145,8 +145,8 @@
 <p>g++ -c -o $@ $(INCLUDEDIR) $&lt;</p>
 <p>OK，再来尝试用gmake命令编译一下吧，已经可以成功编译了。</p>
 <p>如果需要包含多个目录下的.h文件，可以重复使用-I选项，中间需要用空格隔开。</p>
-<h3 id="heading-1">使用静态库</h3>
-<h4 id="makefile">修改生成静态库的Makefile</h4>
+<h3 id="使用静态库">使用静态库</h3>
+<h4 id="修改生成静态库的makefile">修改生成静态库的Makefile</h4>
 <p>有的时候我们不需要生成一个可执行的程序，而是生成一个静态库文件，之后在其他的地方引用这个静态库文件。</p>
 <p>假设我们的项目目录结构是这样的，src是项目根目录，src下面有common和app以及lib两个目录，common和app下面都有inc和src两个目录。common存放公共库的源文件，app存放程序源文件，lib存放生成的静态库。</p>
 <p>修改我们在common目录下的Makefile文件：</p>
@@ -168,14 +168,14 @@
 <li>TARGET是目标文件名称，包含路径。</li>
 <li>在生成静态库文件的规则中，使用ar这个命令。</li>
 </ul>
-<h4 id="makefile-1">修改引用静态库的Makefile</h4>
+<h4 id="修改引用静态库的makefile">修改引用静态库的Makefile</h4>
 <p>在app/src目录下的源文件中，编译的时候需要引用libfa_common.a这个静态库，这就需要我们再修改app目录下的Makefile文件。</p>
 <p>这里使用了两个新的参数，“-l”和“-L”。</p>
 <p>“-l”参数指定要引用的库的名称。例如我们要引用libfa_common.a这个静态库，那么需要在编译命令里加上“-lfa_common”，可以看出，-l后面的库名称需要去除前面的“lib”和后面的“.a”。</p>
 <p>“-L”参数指定了要引用的库的目录，用法和之前的“-I”一样。这里需要注意的是，我们需要修改一下VPATH这个变量，指明要引用的静态库的目录。类似这样：</p>
 <pre><code>VPATH:= -L $(top_srcdir)/lib
 </code></pre>
-<h3 id="makefile-2">完整的Makefile</h3>
+<h3 id="完整的makefile">完整的Makefile</h3>
 <p>其实在每一个目录下的Makefile中有很多部分是重复的，我们可以考虑将重复的部分提取出来，单独放在一个公共的Makefile中，然后在其他Makefile中用include包含这个公共的Makefile即可。</p>
 <p>我写了三套Makefile，分别是Makefile（app）、Makefile（lib）、Make.rules。</p>
 <p>其中，Make.rules是公共部分，Makefile（app）是用来生成可执行程序的，Makefile（lib）是用来生成静态库的，为了以后迁移方便，考虑到Linux和Unix平台的差异，以及各个编译器之间的差异，可以将各种命令也定义成变量，之后使用宏定义进行条件编译。</p>
@@ -381,10 +381,10 @@ LIBS :<span style="color:#39c">=</span> -lfa_common
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#d">.d文件，解决文件间的相互引用</a>
+    <li><a href="#d文件解决文件间的相互引用">.d文件，解决文件间的相互引用</a>
       <ul>
-        <li><a href="#heading">自动生成依赖关系</a></li>
-        <li><a href="#d-1">生成.d文件</a>
+        <li><a href="#自动生成依赖关系">自动生成依赖关系</a></li>
+        <li><a href="#生成d文件">生成.d文件</a>
           <ul>
             <li><a href="#depd-cpp">dep/%.d: %.cpp</a></li>
             <li><a href="#if-test---d-dep-then">@if test ! -d &ldquo;dep&rdquo;; then\</a></li>
@@ -394,17 +394,17 @@ LIBS :<span style="color:#39c">=</span> -lfa_common
             <li><a href="#rm--f-">rm -f $@.$$$$</a></li>
           </ul>
         </li>
-        <li><a href="#include">使用include包含其他文件</a></li>
+        <li><a href="#使用include包含其他文件">使用include包含其他文件</a></li>
       </ul>
     </li>
-    <li><a href="#-ih">-I，引用其他目录下的.h文件</a></li>
-    <li><a href="#heading-1">使用静态库</a>
+    <li><a href="#-i引用其他目录下的h文件">-I，引用其他目录下的.h文件</a></li>
+    <li><a href="#使用静态库">使用静态库</a>
       <ul>
-        <li><a href="#makefile">修改生成静态库的Makefile</a></li>
-        <li><a href="#makefile-1">修改引用静态库的Makefile</a></li>
+        <li><a href="#修改生成静态库的makefile">修改生成静态库的Makefile</a></li>
+        <li><a href="#修改引用静态库的makefile">修改引用静态库的Makefile</a></li>
       </ul>
     </li>
-    <li><a href="#makefile-2">完整的Makefile</a>
+    <li><a href="#完整的makefile">完整的Makefile</a>
       <ul>
         <li><a href="#makerules">Make.rules</a></li>
         <li><a href="#makefilelib">Makefile（lib）</a></li>

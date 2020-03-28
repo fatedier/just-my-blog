@@ -71,14 +71,14 @@
 
             <div class="post-content">
                 <p>在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。</p>
-<h3 id="heading">效果预览</h3>
+<h3 id="效果预览">效果预览</h3>
 <p>要实现的效果就像 nginx 启动后通过 ps 查到的名称一样，这个名称就是自定义的，如下图</p>
 <p><img src="http://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-nginx-process-name.png" alt="nginx-process-name"></p>
-<h3 id="heading-1">方法一</h3>
+<h3 id="方法一">方法一</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">prctl(PR_SET_NAME, name);
 </code></pre></div><p>通过这个函数可以将当前进程的名称修改为 <code>name</code> 的内容。</p>
 <p>我测试了一下，发现只有使用 <code>ps -L</code> 才能看到，达不到想要的效果。</p>
-<h3 id="heading-2">方法二</h3>
+<h3 id="方法二">方法二</h3>
 <p>参考了 <strong>nginx</strong> 中的源码，主要是通过修改 <strong>argv[0]</strong> 的值来实现的，但是需要注意将后面跟着的 <strong>environ</strong> 环境表中的信息移到其他地方，避免被覆盖。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#00cd00">void</span> set_proctitle(<span style="color:#00cd00">char</span><span style="color:#39c">*</span><span style="color:#39c">*</span> argv, <span style="color:#cdcd00">const</span> <span style="color:#00cd00">char</span><span style="color:#39c">*</span> new_name)
 {
@@ -117,7 +117,7 @@
 <p>而进程执行时的环境变量信息的存储地址就是紧接着 <strong>argv</strong> 之后，通过 <code>char **environ</code> 变量来获取，类似于下图</p>
 <p><img src="http://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-argv-info.png" alt="argv-info"></p>
 <p>由于我们需要修改 <strong>argv[0]</strong> 的值，有可能新的字符串的长度超过原来 <strong>argv</strong> 中所有字符串长度的总和，又因为 <strong>environ</strong> 在内存空间上是紧跟着 <strong>argv</strong> 的，我们如果直接修改 <strong>argv[0]</strong> 的值，有可能会覆盖掉 <strong>environ</strong> 的内存空间，所以需要先将 <strong>environ</strong> 的内容 copy 到一块新的内存空间，之后再将 <strong>environ</strong> 指针指向新的空间。</p>
-<h3 id="php-">php 扩展中遇到的困难</h3>
+<h3 id="php-扩展中遇到的困难">php 扩展中遇到的困难</h3>
 <p>在修改 php 扩展中 fork 的子进程名称时遇到了问题，由于 php 扩展是注入的方式，提供的动态库，无法获取到从 <strong>main</strong> 函数传入过来的 <strong>argv</strong> 参数的地址。</p>
 <p>经过测试，发现 <strong>environ</strong> 是一个全局变量，可以获取到它的地址，而 <strong>argv</strong> 中内容可以用另外一种方式取得，通过查看 <code>/proc/10000/cmdline</code> 中的值（10000是该进程的进程号），可以获取命令行启动参数的字符串（也就是 <strong>argv</strong> 中的内容，如果 <strong>argv</strong> 没有被其他代码修改过的话），所以用 <strong>environ</strong> 的地址减去 <strong>cmdline</strong> 中字符串的长度就可以得到 <strong>argv[0]</strong> 的地址。</p>
 <p><strong>注：需要注意的是 cmdline 不是一个普通文件，不能用 stat 或者 ftell 等函数来获取长度，必须用 read 等读取文件的函数去读取。</strong></p>
@@ -233,10 +233,10 @@
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">效果预览</a></li>
-    <li><a href="#heading-1">方法一</a></li>
-    <li><a href="#heading-2">方法二</a></li>
-    <li><a href="#php-">php 扩展中遇到的困难</a></li>
+    <li><a href="#效果预览">效果预览</a></li>
+    <li><a href="#方法一">方法一</a></li>
+    <li><a href="#方法二">方法二</a></li>
+    <li><a href="#php-扩展中遇到的困难">php 扩展中遇到的困难</a></li>
   </ul>
 </nav>
         </div>

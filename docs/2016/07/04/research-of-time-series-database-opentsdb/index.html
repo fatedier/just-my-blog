@@ -71,14 +71,14 @@
 
             <div class="post-content">
                 <p>Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。</p>
-<h3 id="heading">测试版本</h3>
+<h3 id="测试版本">测试版本</h3>
 <p>hbase-1.1.5</p>
 <p>opentsdb-2.2.0</p>
-<h3 id="heading-1">单机部署</h3>
+<h3 id="单机部署">单机部署</h3>
 <p>单机部署可以参考我之前的一篇文章，集群部署比较复杂，这里仅使用单机进行测试。</p>
 <p><a href="/2016/03/12/install-and-use-opentsdb/">OpenTSDB部署与使用</a></p>
-<h3 id="heading-2">概念</h3>
-<h4 id="heading-3">数据格式</h4>
+<h3 id="概念">概念</h3>
+<h4 id="数据格式">数据格式</h4>
 <ul>
 <li>metric: 一个可测量的单位的标称。</li>
 <li>tags: 对 metric 的具体描述。</li>
@@ -102,7 +102,7 @@
 <p>例如图中，将列 1890 和 列 1892 合并到了一起。</p>
 <h3 id="api">API</h3>
 <p>OpenTSDB 同样提供了一套基于 HTTP 的 API 接口。</p>
-<h4 id="heading-4">插入数据</h4>
+<h4 id="插入数据">插入数据</h4>
 <p>http://localhost:4242/api/put, POST</p>
 <p>内容为 JSON 格式，支持同时插入多条数据。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">[
@@ -125,7 +125,7 @@
         }
     }
 ]
-</code></pre></div><h4 id="heading-5">查询数据</h4>
+</code></pre></div><h4 id="查询数据">查询数据</h4>
 <p>http://localhost:4242/api/query, POST</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
     &#34;start&#34;: <span style="color:#cd00cd">1463452826</span>,
@@ -153,7 +153,7 @@
 </code></pre></div><p><strong>start</strong> 和 <strong>end</strong> 指定了查询的时间范围。</p>
 <p><strong>tags</strong> 指定了过滤条件，2.2 版本中将不被推荐，取而代之的是 filters 参数。</p>
 <p><strong>downsample</strong> 聚合计算，例如上面是对每隔60s的数据计算一次平均值。</p>
-<h3 id="heading-6">总结</h3>
+<h3 id="总结">总结</h3>
 <p>OpenTSDB 在存储时间序列数据这一领域拥有很大的优势，被大多数公司所采用，网上的相关文档也比较全面。</p>
 <p>底层存储依托于 HBase，采用特殊设计过的数据存储格式，提供了非常快的查询速度，在此基础之上也更容易横向扩展。</p>
 <p>但是，相对于 InfluxDB 这种即使是新手也可以在两分钟内部署运行完成，OpenTSDB 的部署和运维显然要麻烦很多，由于底层依赖于 HBase，想要大规模运行起来，需要相当专业、细心的运维工作。</p>
@@ -232,11 +232,11 @@
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">测试版本</a></li>
-    <li><a href="#heading-1">单机部署</a></li>
-    <li><a href="#heading-2">概念</a>
+    <li><a href="#测试版本">测试版本</a></li>
+    <li><a href="#单机部署">单机部署</a></li>
+    <li><a href="#概念">概念</a>
       <ul>
-        <li><a href="#heading-3">数据格式</a></li>
+        <li><a href="#数据格式">数据格式</a></li>
         <li><a href="#uid">UID</a></li>
         <li><a href="#tsuid">TSUID</a></li>
         <li><a href="#data-table-schema">Data Table Schema</a></li>
@@ -245,11 +245,11 @@
     </li>
     <li><a href="#api">API</a>
       <ul>
-        <li><a href="#heading-4">插入数据</a></li>
-        <li><a href="#heading-5">查询数据</a></li>
+        <li><a href="#插入数据">插入数据</a></li>
+        <li><a href="#查询数据">查询数据</a></li>
       </ul>
     </li>
-    <li><a href="#heading-6">总结</a></li>
+    <li><a href="#总结">总结</a></li>
   </ul>
 </nav>
         </div>

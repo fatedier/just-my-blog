@@ -71,7 +71,7 @@
 
             <div class="post-content">
                 <p>Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。</p>
-<h3 id="heading">主要概念</h3>
+<h3 id="主要概念">主要概念</h3>
 <h4 id="pod">Pod</h4>
 <p>在 Kubernetes 中是最基本的调度单元，可以包含多个相关的容器，属于同一个 pod 的容器会被运行在同一个机器上，看作一个统一的管理单元。例如我们的一个应用由 nginx、web网站、数据库三部分组成，每一部分都运行在一个单独的容器中，那么我们可以将这三个容器创建成一个 pod。</p>
 <h4 id="service">Service</h4>
@@ -80,7 +80,7 @@
 <p>ReplicationController 的概念比较简单，从名字就可以看出是用于管理 pod 的多副本运行的。它用于确保 kubernetes 集群中指定的 pod 始终会有指定数量的副本在运行。如果检测到有容器异常退出，replicationController 会立即重新启动新的容器，并且通过 replicationController 我们还可以动态地调整 pod 的副本数量。</p>
 <h4 id="label">Label</h4>
 <p>Label 是用于将上述几个概念关联起来的一些 k-v 值。例如我们创建了一个 pod 并且设置了 label 为 <code>app=nginx</code>，同样在创建 service 和 replicationController 时也设置相同的 label，这样通过 label 的 selector 机制就可以将创建好的 service 和 replicationController 作用在之前创建的 pod 上。</p>
-<h3 id="heading-1">主要组件</h3>
+<h3 id="主要组件">主要组件</h3>
 <p><img src="http://image.fatedier.com/pic/2016/2016-06-24-demystifying-kubernetes-and-deployment-k8s-overview.png" alt="k8s-overview"></p>
 <p>Kubernetes 集群中主要存在两种类型的节点，分别是 master 节点，以及 minion 节点。</p>
 <p>Minion 节点是实际运行 Docker 容器的节点，负责和节点上运行的 Docker 进行交互，并且提供了代理功能。</p>
@@ -95,7 +95,7 @@
 <p>运行在 minion 节点，负责和节点上的 Docker 交互，例如启停容器，监控运行状态等。</p>
 <h4 id="proxy">proxy</h4>
 <p>运行在 minion 节点，负责为 pod 提供代理功能，会定期从 etcd 获取 service 信息，并根据 service 信息通过修改 iptables 来实现流量转发（最初的版本是直接通过程序提供转发功能，效率较低。），将流量转发到要访问的 pod 所在的节点上去。</p>
-<h3 id="heading-2">部署实践</h3>
+<h3 id="部署实践">部署实践</h3>
 <p>Kubernetes 的部署十分简单，先从 Github 上下载编译好的二进制文件（我自己尝试编译耗时太久，遂作罢），这里强调简单的原因是因为每个组件并不需要配置文件，而是直接通过启动参数来设置。相比于很多 Java 项目一系列的环境设置，组件搭建，k8s 还是比较友好的。下面主要说一下各个组件常用的启动参数的设置。</p>
 <h4 id="etcd">etcd</h4>
 <p>安装并启动 etcd 集群，这里以一台作为示例，比较简单，不具体说明，假设访问地址为 <code>192.168.2.129:2379</code>。</p>
@@ -103,16 +103,16 @@
 <p>Flannel 是 CoreOS 团队针对 Kubernetes 设计的一个覆盖网络（Overlay Network）工具，需要另外下载部署。我们知道当我们启动 Docker 后会有一个用于和容器进行交互的 IP 地址，如果不去管理的话可能这个 IP 地址在各个机器上是一样的，并且仅限于在本机上进行通信，无法访问到其他机器上的 Docker 容器。</p>
 <p>Flannel 的目的就是为集群中的所有节点重新规划 IP 地址的使用规则，从而使得不同节点上的容器能够获得同属一个内网且不重复的 IP 地址，并让属于不同节点上的容器能够直接通过内网 IP 通信。</p>
 <p>具体实现原理可以参考： <a href="http://www.open-open.com/news/view/1aa473a">http://www.open-open.com/news/view/1aa473a</a></p>
-<h5 id="-flannel">安装 flannel</h5>
+<h5 id="安装-flannel">安装 flannel</h5>
 <p>在 etcd 中创建 flannel 需要用到的键，假设我们 Minion 中 flannel 所使用的子网范围为<code>172.17.1.0~172.17.254.0</code>（每一个Minion节点都有一个独立的flannel子网）。</p>
 <p><code>etcdctl mk /coreos.com/network/config '{&quot;Network&quot;:&quot;172.17.0.0/16&quot;, &quot;SubnetMin&quot;: &quot;172.17.1.0&quot;, &quot;SubnetMax&quot;: &quot;172.17.254.0&quot;}'</code></p>
-<h5 id="heading-3">启动参数</h5>
+<h5 id="启动参数">启动参数</h5>
 <p><code>flanneld -etcd-endpoints=http://192.168.2.129:2379 -etcd-prefix=/coreos.com/network --log_dir=./ --logtostderr=false</code></p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-etcd-endpoints: etcd 集群的地址
 -etcd-prefix: etcd 中存储 flannel 信息的前缀
 --log_dir: 设置日志文件存储目录
 --logtostderr: 设置错误信息是否存储到标准输出中
-</code></pre></div><h5 id="-docker0--ip-">修改 docker0 网卡的 IP 地址</h5>
+</code></pre></div><h5 id="修改-docker0-网卡的-ip-地址">修改 docker0 网卡的 IP 地址</h5>
 <p>默认情况下启动 docker 后会有一个 docker0 的虚拟网卡，每一台机器的 docker0 网卡对应的 ip 地址都是相同的。</p>
 <p>修改启动 docker 的参数，centos7 下可以修改 <code>/usr/lib/systemd/system/docker.service</code> 文件。</p>
 <p>增加 <code>EnvironmentFile=-/run/flannel/subnet.env</code>。</p>
@@ -136,62 +136,62 @@
 <h4 id="kube-proxy">kube-proxy</h4>
 <p>部署在 Minion 节点上。</p>
 <p><code>kube-proxy --logtostderr=false --log-dir=./ --v=0 --master=http://192.168.2.129:8080</code></p>
-<h3 id="heading-4">遇到的问题</h3>
+<h3 id="遇到的问题">遇到的问题</h3>
 <p>通过上面的步骤，k8s 集群就差不多搭建成功了，但是仍然遇到了一些问题，有的甚至目前还没有找到解决方案，直接导致了我丧失了将 k8s 用于实际开发环境的动力。</p>
-<h4 id="pause-">pause 镜像</h4>
+<h4 id="pause-镜像">pause 镜像</h4>
 <p>在每个 Minion 节点上的 Docker 需要安装  gcr.io/google_containers/pause 镜像，这个镜像是在 kubernetes 集群启动用户配置的容器时需要用到。</p>
 <p>本来启动容器后会直接从 google 官方源下载，因为墙的原因，在国内无法下载成功，这里可以先从 dockerhub 上下载，<code>sudo docker pull kubernetes/pause</code>。</p>
 <p>之后再打上 tag，<code>sudo docker tag kubernetes/pause gcr.io/google_containers/pause:2.0</code>。</p>
 <p>我装的 <code>kubernetes 1.2.3</code> 版本对应的 tag 是 <code>pause:2.0</code>，如果不知道版本，可以尝试运行一个 pod ，之后通过查看错误信息得到。</p>
 <p>后来查看文档发现也可以通过在 kubelet 的启动参数中设置这个镜像的地址，不过还没有测试过。</p>
-<h4 id="-docker-">搭建私有 docker 镜像仓库</h4>
+<h4 id="搭建私有-docker-镜像仓库">搭建私有 docker 镜像仓库</h4>
 <p>为了便于使用，最好自己搭建内网环境的私有镜像仓库，因为 k8s 中每一台机器上的 docker 都需要 pull 镜像到本地，如果从外网环境拉镜像的话效率较低，而且以后更新镜像等操作将变的非常不方便。</p>
 <p>具体的步骤可以参考我之前的一篇文章， <a href="/2016/05/16/install-private-docker-registry/">『搭建私有docker仓库』</a>。</p>
-<h4 id="service-">service 访问问题</h4>
+<h4 id="service-访问问题">service 访问问题</h4>
 <p>测试时可以在一台机器上的容器内部通过 service 提供的内网 IP 地址访问到运行在另外一台机器上的容器。但是必须是在容器内部才行，如果直接在这个机器上通过 telnet 或者 curl 访问，则无法正确地根据这个内网 IP 转发到对应节点的容器中。</p>
 <p>因为是通过 iptables 来进行转发，我查看了 iptables 的规则，并没有发现问题，后来通过抓包发现这个包的目的 IP 地址被替换成功了，但是源地址并没有被正确替换，导致对方节点无法正确回复。这个问题我还没有发现具体的原因，目前不能在容器外部通过 service 提供的 IP 地址来访问容器，导致很多应用没有了实际部署的意义，后面有时间还是要研究下。</p>
-<h4 id="heading-5">文件存储</h4>
+<h4 id="文件存储">文件存储</h4>
 <p>由于 pod 可能会被在任意一台机器上重新启动，所以并不能简单的像运行单机 Docker 那样将容器内部的目录映射到宿主机的指定目录上，否则将会丢失文件。所以通常我们需要使用类似 NFS、ceph、glusterFS 这样的分布式存储系统来为 k8s 集群提供后端的统一存储。这样一来，无疑就增加了部署的难度，比如要搭建一个靠谱的 ceph 集群，无疑是需要有比较靠谱的运维团队的。</p>
-<h3 id="-nginx-">测试 nginx 容器</h3>
-<h4 id="-replicationcontroller">创建并启动 replicationController</h4>
+<h3 id="测试-nginx-容器">测试 nginx 容器</h3>
+<h4 id="创建并启动-replicationcontroller">创建并启动 replicationController</h4>
 <p>创建配置文件 <code>nginx-rc.yaml</code>。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: v1 
-kind: ReplicationController 
-metadata: 
-  name: nginx-controller 
-spec: 
-  replicas: <span style="color:#cd00cd">2</span> 
-  selector: 
-    name: nginx 
-  template: 
-    metadata: 
-      labels: 
-        name: nginx 
-    spec: 
-      containers: 
-        - name: nginx
-          image: nginx
-          ports: 
-            - containerPort: <span style="color:#cd00cd">80</span>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: v1 
+<span style="color:#cdcd00">kind</span>: ReplicationController 
+<span style="color:#cdcd00">metadata</span>: 
+  <span style="color:#cdcd00">name</span>: nginx-controller 
+<span style="color:#cdcd00">spec</span>: 
+  <span style="color:#cdcd00">replicas</span>: <span style="color:#cd00cd">2</span> 
+  <span style="color:#cdcd00">selector</span>: 
+    <span style="color:#cdcd00">name</span>: nginx 
+  <span style="color:#cdcd00">template</span>: 
+    <span style="color:#cdcd00">metadata</span>: 
+      <span style="color:#cdcd00">labels</span>: 
+        <span style="color:#cdcd00">name</span>: nginx 
+    <span style="color:#cdcd00">spec</span>: 
+      <span style="color:#cdcd00">containers</span>: 
+        - <span style="color:#cdcd00">name</span>: nginx
+          <span style="color:#cdcd00">image</span>: nginx
+          <span style="color:#cdcd00">ports</span>: 
+            - <span style="color:#cdcd00">containerPort</span>: <span style="color:#cd00cd">80</span>
 </code></pre></div><p>这里定义了一个 nginx pod 的复制器，复制份数为2。</p>
 <p>执行下面的操作创建nginx pod复制器：</p>
 <p><code>kubectl -s http://192.168.2.129:8080 create -f nginx-rc.yaml</code></p>
 <p>查看创建 pod 的状态：</p>
 <p><code>kubectl -s http://192.168.2.129:8080 get pods</code></p>
-<h4 id="-service">创建并启动 service</h4>
+<h4 id="创建并启动-service">创建并启动 service</h4>
 <p>Service 的 type 有 ClusterIP 和 NodePort 之分，缺省是 ClusterIP，这种类型的 Service 只能在集群内部访问，而 NodePort 可以在集群外部访问，但是它的原理就是在所有节点上都绑定这个端口，之后将所有的流量转发到正确的节点上。</p>
 <p>创建配置文件 <code>nginx-service-clusterip.yaml</code></p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: v1 
-kind: Service 
-metadata: 
-  name: nginx-service-clusterip 
-spec: 
-  ports: 
-    - port: <span style="color:#cd00cd">8001</span> 
-      targetPort: <span style="color:#cd00cd">80</span> 
-      protocol: TCP 
-  selector: 
-    name: nginx
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: v1 
+<span style="color:#cdcd00">kind</span>: Service 
+<span style="color:#cdcd00">metadata</span>: 
+  <span style="color:#cdcd00">name</span>: nginx-service-clusterip 
+<span style="color:#cdcd00">spec</span>: 
+  <span style="color:#cdcd00">ports</span>: 
+    - <span style="color:#cdcd00">port</span>: <span style="color:#cd00cd">8001</span> 
+      <span style="color:#cdcd00">targetPort</span>: <span style="color:#cd00cd">80</span> 
+      <span style="color:#cdcd00">protocol</span>: TCP 
+  <span style="color:#cdcd00">selector</span>: 
+    <span style="color:#cdcd00">name</span>: nginx
 </code></pre></div><p>执行下面的命令创建 service：</p>
 <p><code>kubectl -s http://192.168.2.129:8080 create -f ./nginx-service-clusterip.yaml</code></p>
 <p>查看 service 提供的 IP 地址和端口：</p>
@@ -265,7 +265,7 @@ spec:
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">主要概念</a>
+    <li><a href="#主要概念">主要概念</a>
       <ul>
         <li><a href="#pod">Pod</a></li>
         <li><a href="#service">Service</a></li>
@@ -273,7 +273,7 @@ spec:
         <li><a href="#label">Label</a></li>
       </ul>
     </li>
-    <li><a href="#heading-1">主要组件</a>
+    <li><a href="#主要组件">主要组件</a>
       <ul>
         <li><a href="#apiserver">apiserver</a></li>
         <li><a href="#scheduler">scheduler</a></li>
@@ -282,14 +282,14 @@ spec:
         <li><a href="#proxy">proxy</a></li>
       </ul>
     </li>
-    <li><a href="#heading-2">部署实践</a>
+    <li><a href="#部署实践">部署实践</a>
       <ul>
         <li><a href="#etcd">etcd</a></li>
         <li><a href="#flannel">flannel</a>
           <ul>
-            <li><a href="#-flannel">安装 flannel</a></li>
-            <li><a href="#heading-3">启动参数</a></li>
-            <li><a href="#-docker0--ip-">修改 docker0 网卡的 IP 地址</a></li>
+            <li><a href="#安装-flannel">安装 flannel</a></li>
+            <li><a href="#启动参数">启动参数</a></li>
+            <li><a href="#修改-docker0-网卡的-ip-地址">修改 docker0 网卡的 IP 地址</a></li>
           </ul>
         </li>
         <li><a href="#kube-apiserver">kube-apiserver</a></li>
@@ -299,18 +299,18 @@ spec:
         <li><a href="#kube-proxy">kube-proxy</a></li>
       </ul>
     </li>
-    <li><a href="#heading-4">遇到的问题</a>
+    <li><a href="#遇到的问题">遇到的问题</a>
       <ul>
-        <li><a href="#pause-">pause 镜像</a></li>
-        <li><a href="#-docker-">搭建私有 docker 镜像仓库</a></li>
-        <li><a href="#service-">service 访问问题</a></li>
-        <li><a href="#heading-5">文件存储</a></li>
+        <li><a href="#pause-镜像">pause 镜像</a></li>
+        <li><a href="#搭建私有-docker-镜像仓库">搭建私有 docker 镜像仓库</a></li>
+        <li><a href="#service-访问问题">service 访问问题</a></li>
+        <li><a href="#文件存储">文件存储</a></li>
       </ul>
     </li>
-    <li><a href="#-nginx-">测试 nginx 容器</a>
+    <li><a href="#测试-nginx-容器">测试 nginx 容器</a>
       <ul>
-        <li><a href="#-replicationcontroller">创建并启动 replicationController</a></li>
-        <li><a href="#-service">创建并启动 service</a></li>
+        <li><a href="#创建并启动-replicationcontroller">创建并启动 replicationController</a></li>
+        <li><a href="#创建并启动-service">创建并启动 service</a></li>
       </ul>
     </li>
   </ul>

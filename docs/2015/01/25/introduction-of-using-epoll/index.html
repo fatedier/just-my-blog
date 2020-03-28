@@ -83,11 +83,11 @@
 <p><strong>select一般只支持1024个文件描述符，而epoll没有类似的限制。</strong></p>
 </li>
 </ul>
-<h3 id="epoll">epoll相关函数</h3>
+<h3 id="epoll相关函数">epoll相关函数</h3>
 <p>使用epoll只需要记住3个系统调用函数。</p>
-<h4 id="int-epoll-createint-size">int epoll_create(int size)</h4>
+<h4 id="int-epoll_createint-size">int epoll_create(int size)</h4>
 <p>创建一个epoll实例，从2.68的Linux内核开始，size参数不再生效，内核会动态分配所需的数据结构。失败返回-1，成功则该函数会返回一个文件描述符，并占用一个fd值，所以在使用完之后要记得close该文件描述符。</p>
-<h4 id="int-epoll-ctlint-epfd-int-op-int-fd-struct-epoll-event-event">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</h4>
+<h4 id="int-epoll_ctlint-epfd-int-op-int-fd-struct-epoll_event-event">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</h4>
 <p>用于对epoll实例执行不同的操作的函数。</p>
 <p><strong>epfd</strong></p>
 <p>使用epoll_create()返回的文件描述符</p>
@@ -129,14 +129,14 @@ EPOLLERR：表示对应的文件描述符发生错误
 EPOLLHUP：表示对应的文件描述符被挂断
 EPOLLET： 将EPOLL设为边缘触发<span style="color:#39c">(</span>EdgeTriggered<span style="color:#39c">)</span>模式，这是相对于水平触发<span style="color:#39c">(</span>Level Triggered<span style="color:#39c">)</span>来说的
 EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里
-</code></pre></div><h4 id="int-epoll-waitint-epfd-struct-epoll-event--events-int-maxeventsint-timeout">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</h4>
+</code></pre></div><h4 id="int-epoll_waitint-epfd-struct-epoll_event--events-int-maxeventsint-timeout">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</h4>
 <p>该函数等待epoll实例中的fd集合有就绪事件。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">epfd：使用epoll_create<span style="color:#39c">(</span><span style="color:#39c">)</span>返回的文件描述符
 events：指向处于就绪状态的事件集合
 maxevents：最多maxevents数量的事件集合会被返回
 timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指定为0则立即返回并返回0
 </code></pre></div><p>如果成功，返回已就绪的事件的个数；如果达到超时时间仍然没有就绪事件，返回0；如果出现错误，返回-1并置errno值</p>
-<h3 id="ltet">LT和ET两种工作方式</h3>
+<h3 id="lt和et两种工作方式">LT和ET两种工作方式</h3>
 <p>epoll 默认使用LT的工作方式，当指定事件就绪时，内核通知用户进行操作，如果你只处理了部分数据，只要对应的套接字缓冲区中还有剩余数据，下一次内核仍然还会继续通知用户去进行处理，所以使用这种模式来写程序较为简单。</p>
 <p>ET工作方式是一种高速工作方式，只能使用非阻塞socket，它的效率要比LT方式高。当一个新事件就绪时，内核通知用户进行操作，如果这时用户没有处理完缓冲区的数据，缓冲区中剩余的数据就会丢失，用户无法从下一次epoll_wait调用中获取到这个事件。</p>
 <p>举个例子，可以指定事件为 EPOLLIN| EPOLLET 来使用ET工作方式获取指定文件描述符的可读事件。</p>
@@ -209,14 +209,14 @@ timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指�
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#epoll">epoll相关函数</a>
+    <li><a href="#epoll相关函数">epoll相关函数</a>
       <ul>
-        <li><a href="#int-epoll-createint-size">int epoll_create(int size)</a></li>
-        <li><a href="#int-epoll-ctlint-epfd-int-op-int-fd-struct-epoll-event-event">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</a></li>
-        <li><a href="#int-epoll-waitint-epfd-struct-epoll-event--events-int-maxeventsint-timeout">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</a></li>
+        <li><a href="#int-epoll_createint-size">int epoll_create(int size)</a></li>
+        <li><a href="#int-epoll_ctlint-epfd-int-op-int-fd-struct-epoll_event-event">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</a></li>
+        <li><a href="#int-epoll_waitint-epfd-struct-epoll_event--events-int-maxeventsint-timeout">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</a></li>
       </ul>
     </li>
-    <li><a href="#ltet">LT和ET两种工作方式</a></li>
+    <li><a href="#lt和et两种工作方式">LT和ET两种工作方式</a></li>
   </ul>
 </nav>
         </div>

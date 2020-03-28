@@ -71,7 +71,7 @@
 
             <div class="post-content">
                 <p>OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。</p>
-<h3 id="-hbase">安装 HBase</h3>
+<h3 id="安装-hbase">安装 HBase</h3>
 <p>因为 OpenTSDB 的后端存储使用的是 HBase，所以我们需要先安装 HBase。</p>
 <p>参考文档： <a href="https://hbase.apache.org/book.html#quickstart">Quick Start - Standalone HBase</a></p>
 <p>这里简单搭建了一个<strong>单机</strong>的 HBase 环境：</p>
@@ -93,29 +93,29 @@
         &lt;value&gt;/home/testuser/zookeeper&lt;/value&gt;
     &lt;/property&gt;
 &lt;/configuration&gt;
-</code></pre></div><h3 id="-hbase-1">通过命令行操作 HBase</h3>
+</code></pre></div><h3 id="通过命令行操作-hbase">通过命令行操作 HBase</h3>
 <p>这里可以稍微熟悉一下 HBase 的操作，非必须。</p>
-<h5 id="-hbase-2">连接到 HBase</h5>
+<h5 id="连接到-hbase">连接到 HBase</h5>
 <p><code>./bin/hbase shell</code></p>
-<h5 id="heading">创建一张表</h5>
+<h5 id="创建一张表">创建一张表</h5>
 <p><code>create 'test', 'cf'</code></p>
-<h5 id="heading-1">查看表信息</h5>
+<h5 id="查看表信息">查看表信息</h5>
 <p><code>list 'test'</code></p>
-<h5 id="heading-2">向表中插入数据</h5>
+<h5 id="向表中插入数据">向表中插入数据</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row1&#39;</span>, <span style="color:#cd0000">&#39;cf:a&#39;</span>, <span style="color:#cd0000">&#39;value1&#39;</span>
 put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row2&#39;</span>, <span style="color:#cd0000">&#39;cf:b&#39;</span>, <span style="color:#cd0000">&#39;value2&#39;</span>
 put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row3&#39;</span>, <span style="color:#cd0000">&#39;cf:c&#39;</span>, <span style="color:#cd0000">&#39;value3&#39;</span>
-</code></pre></div><h5 id="heading-3">查看表中所有数据</h5>
+</code></pre></div><h5 id="查看表中所有数据">查看表中所有数据</h5>
 <p><code>scan 'test'</code></p>
-<h5 id="heading-4">查看指定行的数据</h5>
+<h5 id="查看指定行的数据">查看指定行的数据</h5>
 <p><code>get 'test', 'row1'</code></p>
-<h5 id="heading-5">禁用指定表（删除表或修改表设置前需要先禁用该表）</h5>
+<h5 id="禁用指定表删除表或修改表设置前需要先禁用该表">禁用指定表（删除表或修改表设置前需要先禁用该表）</h5>
 <p><code>disable 'test'</code></p>
-<h5 id="heading-6">恢复指定表</h5>
+<h5 id="恢复指定表">恢复指定表</h5>
 <p><code>enable 'test'</code></p>
-<h5 id="heading-7">删除表</h5>
+<h5 id="删除表">删除表</h5>
 <p><code>drop 'test'</code></p>
-<h3 id="opentsdb">安装OpenTSDB</h3>
+<h3 id="安装opentsdb">安装OpenTSDB</h3>
 <p><strong>参考文章</strong></p>
 <p><a href="http://debugo.com/opentsdb/">http://debugo.com/opentsdb/</a></p>
 <p><a href="http://opentsdb.net/docs/build/html/installation.html#runtime-requirements">http://opentsdb.net/docs/build/html/installation.html#runtime-requirements</a></p>
@@ -137,7 +137,7 @@ put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd000
 </li>
 </ol>
 <h3 id="http-api">HTTP API</h3>
-<h4 id="heading-8">插入数据</h4>
+<h4 id="插入数据">插入数据</h4>
 <p><strong>/api/put</strong></p>
 <p>根据 url 参数的不同，可以选择是否获取详细的信息。</p>
 <p><strong>/api/put?summary</strong>        // 返回失败和成功的个数</p>
@@ -160,7 +160,7 @@ put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd000
         &#34;host&#34;:<span style="color:#cd0000">&#34;web1&#34;</span>
     }
 }
-</code></pre></div><h3 id="heading-9">查询数据</h3>
+</code></pre></div><h3 id="查询数据">查询数据</h3>
 <p><strong>/api/query</strong></p>
 <p>可以选择 Get 或者 Post 两种方式，推荐使用 Post 方式，JSON 格式。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
@@ -211,9 +211,9 @@ put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd000
         }
     }
 ]
-</code></pre></div><h4 id="heading-10">聚合</h4>
+</code></pre></div><h4 id="聚合">聚合</h4>
 <p><strong>aggregator</strong> 是用于对查询结果进行聚合，将同一 unix 时间戳内的数据进行聚合计算后返回结果，例如如果 tags 不填，1456123705 有两条数据，一条 <code>host=web1</code>，另外一条 <code>host=web2</code>，值都为10，那么返回的该时间点的值为 sum 后的 20。</p>
-<h4 id="heading-11">条件过滤</h4>
+<h4 id="条件过滤">条件过滤</h4>
 <p>可以针对 tag 进行一些条件的过滤，返回 tag 中 host 的值以 web 开头的数据。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#cd0000">&#34;queries&#34;</span><span style="">:</span> [
     {
@@ -309,34 +309,34 @@ put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd000
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#-hbase">安装 HBase</a></li>
-    <li><a href="#-hbase-1">通过命令行操作 HBase</a>
+    <li><a href="#安装-hbase">安装 HBase</a></li>
+    <li><a href="#通过命令行操作-hbase">通过命令行操作 HBase</a>
       <ul>
         <li>
           <ul>
-            <li><a href="#-hbase-2">连接到 HBase</a></li>
-            <li><a href="#heading">创建一张表</a></li>
-            <li><a href="#heading-1">查看表信息</a></li>
-            <li><a href="#heading-2">向表中插入数据</a></li>
-            <li><a href="#heading-3">查看表中所有数据</a></li>
-            <li><a href="#heading-4">查看指定行的数据</a></li>
-            <li><a href="#heading-5">禁用指定表（删除表或修改表设置前需要先禁用该表）</a></li>
-            <li><a href="#heading-6">恢复指定表</a></li>
-            <li><a href="#heading-7">删除表</a></li>
+            <li><a href="#连接到-hbase">连接到 HBase</a></li>
+            <li><a href="#创建一张表">创建一张表</a></li>
+            <li><a href="#查看表信息">查看表信息</a></li>
+            <li><a href="#向表中插入数据">向表中插入数据</a></li>
+            <li><a href="#查看表中所有数据">查看表中所有数据</a></li>
+            <li><a href="#查看指定行的数据">查看指定行的数据</a></li>
+            <li><a href="#禁用指定表删除表或修改表设置前需要先禁用该表">禁用指定表（删除表或修改表设置前需要先禁用该表）</a></li>
+            <li><a href="#恢复指定表">恢复指定表</a></li>
+            <li><a href="#删除表">删除表</a></li>
           </ul>
         </li>
       </ul>
     </li>
-    <li><a href="#opentsdb">安装OpenTSDB</a></li>
+    <li><a href="#安装opentsdb">安装OpenTSDB</a></li>
     <li><a href="#http-api">HTTP API</a>
       <ul>
-        <li><a href="#heading-8">插入数据</a></li>
+        <li><a href="#插入数据">插入数据</a></li>
       </ul>
     </li>
-    <li><a href="#heading-9">查询数据</a>
+    <li><a href="#查询数据">查询数据</a>
       <ul>
-        <li><a href="#heading-10">聚合</a></li>
-        <li><a href="#heading-11">条件过滤</a></li>
+        <li><a href="#聚合">聚合</a></li>
+        <li><a href="#条件过滤">条件过滤</a></li>
         <li><a href="#downsample">downsample</a></li>
       </ul>
     </li>

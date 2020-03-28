@@ -72,7 +72,7 @@
             <div class="post-content">
                 <p>上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。</p>
 <p>上一篇文章传送门： <a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">『InfluxDB详解之TSM存储引擎解析（一）』</a>。</p>
-<h3 id="heading">主要数据结构</h3>
+<h3 id="主要数据结构">主要数据结构</h3>
 <p>InfluxDB 中的数据结构主要分为以下几个层次：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tsdb.Store
     -- map<span style="color:#39c">[</span>string<span style="color:#39c">]</span>*tsdb.DatabaseIndex
@@ -144,9 +144,9 @@
 }
 </code></pre></div><p>Engine 负责维护和管理 <strong>Cache, FileStore, WAL</strong> 等对象。当用户进行插入或查询操作时，Engine 都会对这些对象进行相应的操作，而这些对上层用户和服务来说是透明的。</p>
 <p><strong>从代码中的注释来看，在后续的版本中会把 tsdb.DatabaseIndex 移到 Engine 这一层，由存储引擎自己维护，降低代码的耦合程度。</strong></p>
-<h3 id="heading-1">数据写入</h3>
+<h3 id="数据写入">数据写入</h3>
 <p><code>curl -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary 'cpu_usage,host=server01 value=0.64 1434055562000000000'</code></p>
-<h4 id="-httpd-">通过 httpd 插入数据</h4>
+<h4 id="通过-httpd-插入数据">通过 httpd 插入数据</h4>
 <p>通常我们通过 HTTP 的接口写入一条或同时写入多条数据。在 InfluxDB 启动时会启动一个  httpd 服务，代码在 <code>services/httpd</code> 包中。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">func</span> (h <span style="color:#39c">*</span>Handler) serveWrite(w http.ResponseWriter, r <span style="color:#39c">*</span>http.Request, user <span style="color:#39c">*</span>meta.UserInfo) {
     <span style="color:#39c">...</span>
@@ -195,7 +195,7 @@
     err <span style="color:#39c">:=</span> s.engine.WritePoints(points)
     <span style="color:#39c">...</span>
 }
-</code></pre></div><h4 id="engine-">Engine 实际写入数据</h4>
+</code></pre></div><h4 id="engine-实际写入数据">Engine 实际写入数据</h4>
 <p>从下面的代码中可以看出，写入操作实际上就是将 value 写入 Cache 和 WAL 中，Cache 中主要是一个 Map 的结构，根据 key 缓存不同时间戳的 value，而 WAL 文件中的数据就是内存中数据的一个持久化的存储文件。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">func</span> (e <span style="color:#39c">*</span>Engine) WritePoints(points []models.Point) <span style="color:#00cd00">error</span> {
     values <span style="color:#39c">:=</span> <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>][]Value{}
@@ -220,14 +220,14 @@
 </span><span style="color:#000080"></span>    _, err = e.WAL.WritePoints(values)
     <span style="color:#cdcd00">return</span> err
 }
-</code></pre></div><h3 id="heading-2">数据删除</h3>
+</code></pre></div><h3 id="数据删除">数据删除</h3>
 <p>InfluxDB 支持对数据的删除操作，和其他 LSM Tree 类似的数据库一样，都是采用了标记要删除的键的方式来进行操作，等到需要进行压缩合并时，再真正意义上地删除这些数据。</p>
 <p>在 <code>data</code> 中和 tsm file 同一级的目录下，会存在一些以 <code>.tombstone</code> 文件，其中就记录了哪些 key 在哪一个时间段内的数据需要删除。</p>
 <p>有两种情况需要用到这些文件，一种是在查询时，对于查询结果，需要和 <code>.tombstone</code> 文件中的内容进行比对，把不符合条件的 value 剔除。另外就是在 <code>Compactor</code> 进行压缩合并多个 tsm file 时，这些被删除的数据将不会被转存到新的 tsm file 中，从而达到删除数据，释放磁盘空间的目的。</p>
-<h3 id="heading-3">数据查询与索引结构</h3>
+<h3 id="数据查询与索引结构">数据查询与索引结构</h3>
 <p>由于 LSM Tree 的原理就是通过将大量的随机写转换为顺序写，从而极大地提升了数据写入的性能，与此同时牺牲了部分读的性能。TSM 存储引擎是基于 LSM Tree 开发的，所以情况类似。通常设计数据库时会采用索引文件的方式（例如 LevelDB 中的 Mainfest 文件） 或者 Bloom filter 来对 LSM Tree 这样的数据结构的读取操作进行优化。</p>
 <p><strong>InfluxDB 中采用索引的方式进行优化，主要存在两种类型的索引。</strong></p>
-<h4 id="heading-4">元数据索引</h4>
+<h4 id="元数据索引">元数据索引</h4>
 <p>一个数据库的元数据索引通过 <strong>DatabaseIndex</strong> 这个结构体来存储，在数据库启动时，会进行初始化，从所有 shard 下的 tsm file 中加载 index 数据，获取其中所有 <strong>Measurement</strong> 以及 <strong>Series</strong> 的信息并缓存到内存中。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> DatabaseIndex <span style="color:#00cd00">struct</span> {
     measurements <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>Measurement <span style="color:#000080">// 该数据库下所有 Measurement 对象
@@ -259,7 +259,7 @@
 </span><span style="color:#000080"></span>    <span style="color:#000080">// 在哪些 shard 中存在
 </span><span style="color:#000080"></span>    shardIDs    <span style="color:#00cd00">map</span>[<span style="color:#00cd00">uint64</span>]<span style="color:#00cd00">bool</span> <span style="color:#000080">// shards that have this series defined
 </span><span style="color:#000080"></span>}
-</code></pre></div><h4 id="heading-5">元数据查询</h4>
+</code></pre></div><h4 id="元数据查询">元数据查询</h4>
 <p>InfluxDB 支持一些特殊的查询语句（支持正则表达式匹配），可以查询一些 measurement 以及 tags 相关的数据，例如</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">SHOW MEASUREMENTS
 SHOW TAG KEYS FROM <span style="color:#cd0000">&#34;measurement_name&#34;</span>
@@ -271,7 +271,7 @@ SHOW TAG VALUES FROM <span style="color:#cd0000">&#34;measurement_name&#34;</spa
 <li>通过 <code>Measurement.seriesByTagKeyValue</code> 获取 <code>tagk=host</code> 所对应的以 <code>tagv</code> 为键的 map 对象。</li>
 <li>遍历这个 map 对象，所有的 key 则为我们需要获取的数据。</li>
 </ol>
-<h4 id="heading-6">普通数据查询的定位</h4>
+<h4 id="普通数据查询的定位">普通数据查询的定位</h4>
 <p>对于普通的数据查询语句，则可以通过上述的元数据索引快速定位到要查询的数据所包含的所有 <strong>seriesKey，fieldName 和时间范围</strong>。</p>
 <p>举个例子，假设查询语句为获取 <code>server01</code> 这台机器上 <code>cpu_usage</code> 指标最近一小时的数据：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd0000">`</span>SELECT value FROM <span style="color:#cd0000">&#34;cpu_usage&#34;</span> WHERE <span style="color:#00cdcd">host</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;server01&#39;</span> AND <span style="color:#cd00cd">time</span> &gt; now<span style="color:#39c">(</span><span style="color:#39c">)</span> - 1h<span style="color:#cd0000">`</span>
@@ -280,7 +280,7 @@ SHOW TAG VALUES FROM <span style="color:#cd0000">&#34;measurement_name&#34;</spa
 <p><strong>注意这里虽然只指定了 <code>host=server01</code>，但不代表 <code>cpu_usage</code> 下只有这一个 <code>series</code>，可能还有其他的 tags 例如 <code>user=1</code> 以及 <code>user=2</code>，这样获取到的 <code>series ID</code> 实际上有两个，获取数据时需要获取所有 <code>series</code> 下的数据。</strong></p>
 <p>在 <code>Series</code> 结构体中的 <code>shardIDs</code> 这个 map 变量存放了哪些 shard 中存在这个 series 的数据。而 <code>Measurement.fieldNames</code> 这个 map 可以帮助过滤掉 fieldName 不存在的情况。</p>
 <p>至此，我们在 o(1) 的时间复杂度内，获取到了所有符合要求的 series key、这些 series key 所存在的 shardID，要查询数据的时间范围，之后我们就可以创建数据迭代器从不同的 shard 中获取每一个 series key 在指定时间范围内的数据。后续的查询则和 tsm file 中的 Index 的在内存中的缓存相关。</p>
-<h4 id="tsm-file-">TSM File 索引</h4>
+<h4 id="tsm-file-索引">TSM File 索引</h4>
 <p>上一篇文章中讲过了对于 tsm file 中的 Index 部分会在内存中做间接索引，从而可以实现快速检索的目的。这里看一下具体的数据结构：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> indirectIndex <span style="color:#00cd00">struct</span> {
     b []<span style="color:#00cd00">byte</span>                <span style="color:#000080">// 下层详细索引的字节流
@@ -306,7 +306,7 @@ SHOW TAG VALUES FROM <span style="color:#cd0000">&#34;measurement_name&#34;</spa
 </span><span style="color:#000080"></span>    Size <span style="color:#00cd00">uint32</span>
 }
 </code></pre></div><p>在上一节中说明了通过元数据索引可以获取到所有 <strong>符合要求的 series key，它们对应的 shardID，时间范围</strong>。通过 tsm file 索引，我们就可以根据 series key 和 时间范围快速定位到数据在 tsm file 中的位置。</p>
-<h4 id="-tsm-file-">从 tsm file 中读取数据</h4>
+<h4 id="从-tsm-file-中读取数据">从 tsm file 中读取数据</h4>
 <p>InfluxDB 中的所有数据读取操作都通过 <strong>Iterator</strong> 来完成。</p>
 <p><strong>Iterator</strong> 是一个抽象概念，并且支持嵌套，一个 Iterator 可以从底层的其他 Iterator 中获取数据并进行处理，之后再将结果传递给上层的 Iterator。</p>
 <p>这部分的代码逻辑比较复杂，这里不展开说明。实际上 <strong>Iterator</strong> 底层最主要的就是通过 <code>cursor</code> 来获取数据。</p>
@@ -338,7 +338,7 @@ SHOW TAG VALUES FROM <span style="color:#cd0000">&#34;measurement_name&#34;</spa
 }
 </code></pre></div><p><strong>cursor</strong> 提供了一个 <code>next()</code> 方法用于获取一个 value 值。每一种数据类型都有一个自己的 <code>cursor</code> 实现。</p>
 <p>底层实现都是 <strong>KeyCursor</strong>，<strong>KeyCursor</strong> 会缓存每个 Block 的数据，通过 <code>Next()</code> 函数依次返回，当一个 Block 中的内容读完后再通过 <code>ReadBlock()</code> 函数读取下一个 Block 中的内容。</p>
-<h3 id="heading-7">数据压缩与合并</h3>
+<h3 id="数据压缩与合并">数据压缩与合并</h3>
 <p>主要涉及到两个结构体：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> Compactor <span style="color:#00cd00">struct</span> {
     Dir  <span style="color:#00cd00">string</span>
@@ -415,14 +415,14 @@ SHOW TAG VALUES FROM <span style="color:#cd0000">&#34;measurement_name&#34;</spa
 }
 </code></pre></div><p><code>compactCache()</code> 函数负责定期检测 Cache 中的容量是否达到阀值，如果超过阀值会将 Cache 中的内容做一个快照，之后写入到一个新的 tsm file 中。</p>
 <p><code>compactTSMLevel()</code> 函数则负责对 tsm file 文件进行合并，每一个协程负责不同级别的文件，多个文件合并后，生成的新的文件级别会是旧文件中级别最高的那个文件加1。合并过程中，会在同一目录下创建以 <code>.tmp</code> 结尾的临时文件存储合并后的数据，当合并操作完成后，会进行替换操作，删除已经被合并完成的文件。<code>.tombstone</code> 文件在合并时也会被利用以过滤无效数据。</p>
-<h3 id="heading-8">一些问题</h3>
-<h4 id="go-">Go 不支持泛型</h4>
+<h3 id="一些问题">一些问题</h3>
+<h4 id="go-不支持泛型">Go 不支持泛型</h4>
 <p>由于 go 不支持泛型，所以 InfluxDB 中很多代码需要兼容各种类型，例如 float,int,string 等都是通过模版文件来 generate 源文件的方式来生成的。</p>
 <p>这样导致代码可读性比较差，并且有大段大段的重复内容。如果使用 interface 的话，势必效率会下降很多。</p>
 <p>对比一下 C++ 的 STL 库，go 在这方面的支持还不是很好，标准库里的 list, heap 等容器包还是用的 interface 的方式，自己要开发一个通用的算法或者容器时也不方便，还是希望之后能支持泛型这样的功能。</p>
-<h4 id="-wal-">多个 WAL 文件同时写入</h4>
+<h4 id="多个-wal-文件同时写入">多个 WAL 文件同时写入</h4>
 <p>由于每一个 shard 都有一个独立的 wal 文件，如果使用者创建了多个数据库、存储策略并且数据没有按照时间顺序插入，就会造成写入性能的下降。官方文档中有说之后会采用一个总的 WAL 文件来解决这个问题，不过可能会带来一些其他方面的问题。</p>
-<h4 id="heading-9">索引数据对内存的占用</h4>
+<h4 id="索引数据对内存的占用">索引数据对内存的占用</h4>
 <p>InfluxDB 中对于所有 measument 以及 series 的元数据都是缓存在内存中，特别是 tsm file 的 Index 部分的数据，随着保留的数据越来越多，这部分的内存占用也会逐渐增加。</p>
 <p>官方设计文档里也提到了一些方案缓解这类问题，例如采用 LRU 策略，或是采用和 OpenTSDB 中类似的对 key 进行压缩的方法。还有一个方案是将索引数据放到另外一个数据库例如 BoltDB 中进行存储。</p>
 <p>综合来说，InfluxDB 在性能和资源占用等方面都表现得很优秀，1.0.0 版本的稳定性也很高，我在测试环境中使用的一个月中没有出现过异常状况。可能目前最重要的问题就是不支持集群，对数据量有要求的公司需要自己进行二次开发。</p>
@@ -501,36 +501,36 @@ SHOW TAG VALUES FROM <span style="color:#cd0000">&#34;measurement_name&#34;</spa
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">主要数据结构</a>
+    <li><a href="#主要数据结构">主要数据结构</a>
       <ul>
         <li><a href="#store">Store</a></li>
         <li><a href="#shard">Shard</a></li>
         <li><a href="#engine">Engine</a></li>
       </ul>
     </li>
-    <li><a href="#heading-1">数据写入</a>
+    <li><a href="#数据写入">数据写入</a>
       <ul>
-        <li><a href="#-httpd-">通过 httpd 插入数据</a></li>
+        <li><a href="#通过-httpd-插入数据">通过 httpd 插入数据</a></li>
         <li><a href="#pointswriter">PointsWriter</a></li>
-        <li><a href="#engine-">Engine 实际写入数据</a></li>
+        <li><a href="#engine-实际写入数据">Engine 实际写入数据</a></li>
       </ul>
     </li>
-    <li><a href="#heading-2">数据删除</a></li>
-    <li><a href="#heading-3">数据查询与索引结构</a>
+    <li><a href="#数据删除">数据删除</a></li>
+    <li><a href="#数据查询与索引结构">数据查询与索引结构</a>
       <ul>
-        <li><a href="#heading-4">元数据索引</a></li>
-        <li><a href="#heading-5">元数据查询</a></li>
-        <li><a href="#heading-6">普通数据查询的定位</a></li>
-        <li><a href="#tsm-file-">TSM File 索引</a></li>
-        <li><a href="#-tsm-file-">从 tsm file 中读取数据</a></li>
+        <li><a href="#元数据索引">元数据索引</a></li>
+        <li><a href="#元数据查询">元数据查询</a></li>
+        <li><a href="#普通数据查询的定位">普通数据查询的定位</a></li>
+        <li><a href="#tsm-file-索引">TSM File 索引</a></li>
+        <li><a href="#从-tsm-file-中读取数据">从 tsm file 中读取数据</a></li>
       </ul>
     </li>
-    <li><a href="#heading-7">数据压缩与合并</a></li>
-    <li><a href="#heading-8">一些问题</a>
+    <li><a href="#数据压缩与合并">数据压缩与合并</a></li>
+    <li><a href="#一些问题">一些问题</a>
       <ul>
-        <li><a href="#go-">Go 不支持泛型</a></li>
-        <li><a href="#-wal-">多个 WAL 文件同时写入</a></li>
-        <li><a href="#heading-9">索引数据对内存的占用</a></li>
+        <li><a href="#go-不支持泛型">Go 不支持泛型</a></li>
+        <li><a href="#多个-wal-文件同时写入">多个 WAL 文件同时写入</a></li>
+        <li><a href="#索引数据对内存的占用">索引数据对内存的占用</a></li>
       </ul>
     </li>
   </ul>

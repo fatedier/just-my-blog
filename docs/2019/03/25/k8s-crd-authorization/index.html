@@ -73,88 +73,88 @@
                 <p>对于一个多个用户的集群而言，通常单个用户只有自己 namespace 的相关权限，而 kubernetes CRD 需要配置额外的权限才能使用。</p>
 <p>在 <a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a> 一文中，我们尝试创建了一个 scalings 资源，对于拥有 Admin 权限的用户没有问题，但是对于普通用户，创建时则会提示</p>
 <p><code>customresourcedefinitions.apiextensions.k8s.io &quot;scalings.control.example.io&quot; is forbidden: User &quot;test&quot; cannot get customresourcedefinitions.apiextensions.k8s.io at the cluster scope</code></p>
-<h3 id="kubernetes-">kubernetes 中的权限管理</h3>
+<h3 id="kubernetes-中的权限管理">kubernetes 中的权限管理</h3>
 <p>当前 kubernetes 通常采用 RBAC(Role-Based Access Control) 的授权管理方式，可以很好的实现资源隔离效果。</p>
 <p>这种方法引入了几个概念: Role, ClusterRole, RoleBinding, ClusterRoleBinding</p>
 <p>Role 表示角色，每一个角色都可以定义一些规则表征这个角色对哪些资源有哪些操作的权限。Role 和 ClusterRole 的区别就在于 Role 是区分 Namespace 的，而 ClusterRole 则是整个集群的权限。</p>
 <p>比如如下的配置表示 Role <code>pod-reader</code> 拥有对 <code>default</code> Namespace 的 <code>pods</code> 的只读权限。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">kind: Role
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  namespace: default
-  name: pod-reader
-rules:
-- apiGroups: [<span style="color:#cd0000">&#34;&#34;</span>] <span style="color:#000080"># 空字符串表明使用 core API group</span>
-  resources: [<span style="color:#cd0000">&#34;pods&#34;</span>]
-  verbs: [<span style="color:#cd0000">&#34;get&#34;</span>, <span style="color:#cd0000">&#34;watch&#34;</span>, <span style="color:#cd0000">&#34;list&#34;</span>]
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">kind</span>: Role
+<span style="color:#cdcd00">apiVersion</span>: rbac.authorization.k8s.io/v1
+<span style="color:#cdcd00">metadata</span>:
+  <span style="color:#cdcd00">namespace</span>: default
+  <span style="color:#cdcd00">name</span>: pod-reader
+<span style="color:#cdcd00">rules</span>:
+- <span style="color:#cdcd00">apiGroups</span>: [<span style="color:#cd0000">&#34;&#34;</span>] <span style="color:#000080"># 空字符串表明使用 core API group</span>
+  <span style="color:#cdcd00">resources</span>: [<span style="color:#cd0000">&#34;pods&#34;</span>]
+  <span style="color:#cdcd00">verbs</span>: [<span style="color:#cd0000">&#34;get&#34;</span>, <span style="color:#cd0000">&#34;watch&#34;</span>, <span style="color:#cd0000">&#34;list&#34;</span>]
 </code></pre></div><p>接着我们需要将这个 Role 和具体的用户绑定起来使其生效。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: read-pods
-  namespace: default
-subjects:
-- kind: User
-  name: jane
-  apiGroup: rbac.authorization.k8s.io
-roleRef:
-  kind: Role <span style="color:#000080"># this must be Role or ClusterRole</span>
-  name: pod-reader <span style="color:#000080"># this must match the name of the Role or ClusterRole you wish to bind to</span>
-  apiGroup: rbac.authorization.k8s.io
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">kind</span>: RoleBinding
+<span style="color:#cdcd00">apiVersion</span>: rbac.authorization.k8s.io/v1
+<span style="color:#cdcd00">metadata</span>:
+  <span style="color:#cdcd00">name</span>: read-pods
+  <span style="color:#cdcd00">namespace</span>: default
+<span style="color:#cdcd00">subjects</span>:
+- <span style="color:#cdcd00">kind</span>: User
+  <span style="color:#cdcd00">name</span>: jane
+  <span style="color:#cdcd00">apiGroup</span>: rbac.authorization.k8s.io
+<span style="color:#cdcd00">roleRef</span>:
+  <span style="color:#cdcd00">kind</span>: Role <span style="color:#000080"># this must be Role or ClusterRole</span>
+  <span style="color:#cdcd00">name</span>: pod-reader <span style="color:#000080"># this must match the name of the Role or ClusterRole you wish to bind to</span>
+  <span style="color:#cdcd00">apiGroup</span>: rbac.authorization.k8s.io
 </code></pre></div><p>通过这两个配置，jane 这个用户就具备了 <code>default</code> Namespace 的 <code>pods</code> 资源的只读权限。</p>
 <p>ClusterRole 和 ClusterRoleBinding 的使用姿势没有太大区别，只是作用域是整个集群，不需要指定 Namespace。</p>
-<h3 id="crd-">CRD 资源操作权限</h3>
+<h3 id="crd-资源操作权限">CRD 资源操作权限</h3>
 <p>CustomResourceDefinition 存在于所有 namespace 下，所以需要创建 ClusterRole 和 ClusterRoleBinding 来让普通用户拥有操作 CRD 的 admin 权限。</p>
 <p>参考配置如下:</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: crd-admin
-rules:
-- apiGroups: [<span style="color:#cd0000">&#34;apiextensions.k8s.io&#34;</span>]
-  resources: [<span style="color:#cd0000">&#34;customresourcedefinitions&#34;</span>]
-  verbs: [<span style="color:#cd0000">&#34;create&#34;</span>, <span style="color:#cd0000">&#34;delete&#34;</span>, <span style="color:#cd0000">&#34;deletecollection&#34;</span>, <span style="color:#cd0000">&#34;patch&#34;</span>, <span style="color:#cd0000">&#34;update&#34;</span>, <span style="color:#cd0000">&#34;get&#34;</span>, <span style="color:#cd0000">&#34;list&#34;</span>, <span style="color:#cd0000">&#34;watch&#34;</span>]
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: rbac.authorization.k8s.io/v1
+<span style="color:#cdcd00">kind</span>: ClusterRole
+<span style="color:#cdcd00">metadata</span>:
+  <span style="color:#cdcd00">name</span>: crd-admin
+<span style="color:#cdcd00">rules</span>:
+- <span style="color:#cdcd00">apiGroups</span>: [<span style="color:#cd0000">&#34;apiextensions.k8s.io&#34;</span>]
+  <span style="color:#cdcd00">resources</span>: [<span style="color:#cd0000">&#34;customresourcedefinitions&#34;</span>]
+  <span style="color:#cdcd00">verbs</span>: [<span style="color:#cd0000">&#34;create&#34;</span>, <span style="color:#cd0000">&#34;delete&#34;</span>, <span style="color:#cd0000">&#34;deletecollection&#34;</span>, <span style="color:#cd0000">&#34;patch&#34;</span>, <span style="color:#cd0000">&#34;update&#34;</span>, <span style="color:#cd0000">&#34;get&#34;</span>, <span style="color:#cd0000">&#34;list&#34;</span>, <span style="color:#cd0000">&#34;watch&#34;</span>]
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: test-crd-admin
-subjects:
-- kind: User
-  name: test
-  apiGroup: rbac.authorization.k8s.io
-roleRef:
-  kind: ClusterRole
-  name: crd-admin
-  apiGroup: rbac.authorization.k8s.io
+<span style="color:#cdcd00">apiVersion</span>: rbac.authorization.k8s.io/v1
+<span style="color:#cdcd00">kind</span>: ClusterRoleBinding
+<span style="color:#cdcd00">metadata</span>:
+  <span style="color:#cdcd00">name</span>: test-crd-admin
+<span style="color:#cdcd00">subjects</span>:
+- <span style="color:#cdcd00">kind</span>: User
+  <span style="color:#cdcd00">name</span>: test
+  <span style="color:#cdcd00">apiGroup</span>: rbac.authorization.k8s.io
+<span style="color:#cdcd00">roleRef</span>:
+  <span style="color:#cdcd00">kind</span>: ClusterRole
+  <span style="color:#cdcd00">name</span>: crd-admin
+  <span style="color:#cdcd00">apiGroup</span>: rbac.authorization.k8s.io
 </code></pre></div><p>kubectl apply 该配置，则 test 用户具备了对 <code>customresourcedefinitions.apiextensions.k8s.io</code> 的所有操作权限，可以正常创建，删除，更新 CRD 资源。</p>
 <p>但是对于我们通过 CRD 创建出来的自定义资源，例如 <code>scalings.control.example.com</code>，还没有任何权限，不能创建和查看对象。</p>
-<h3 id="crd--1">CRD 对象操作权限</h3>
+<h3 id="crd-对象操作权限">CRD 对象操作权限</h3>
 <p>对于 <code>scalings.control.example.com</code> 这样的我们自己创建出来的资源，也需要对普通用户授予权限，但是不需要是集群范围内的，只需要授予用户关联的 namespace 下的权限即可。所以可以通过创建新的 Role 和 RoleBinding 来实现这一能力。</p>
 <p>参考配置如下:</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: default-crd-object
-  namespace: default
-rules:
-- apiGroups: [<span style="color:#cd0000">&#34;control.example.com&#34;</span>]
-  resources: [<span style="color:#cd0000">&#34;scalings&#34;</span>]
-  verbs: [<span style="color:#cd0000">&#34;create&#34;</span>, <span style="color:#cd0000">&#34;delete&#34;</span>, <span style="color:#cd0000">&#34;deletecollection&#34;</span>, <span style="color:#cd0000">&#34;patch&#34;</span>, <span style="color:#cd0000">&#34;update&#34;</span>, <span style="color:#cd0000">&#34;get&#34;</span>, <span style="color:#cd0000">&#34;list&#34;</span>, <span style="color:#cd0000">&#34;watch&#34;</span>]
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: rbac.authorization.k8s.io/v1
+<span style="color:#cdcd00">kind</span>: Role
+<span style="color:#cdcd00">metadata</span>:
+  <span style="color:#cdcd00">name</span>: default-crd-object
+  <span style="color:#cdcd00">namespace</span>: default
+<span style="color:#cdcd00">rules</span>:
+- <span style="color:#cdcd00">apiGroups</span>: [<span style="color:#cd0000">&#34;control.example.com&#34;</span>]
+  <span style="color:#cdcd00">resources</span>: [<span style="color:#cd0000">&#34;scalings&#34;</span>]
+  <span style="color:#cdcd00">verbs</span>: [<span style="color:#cd0000">&#34;create&#34;</span>, <span style="color:#cd0000">&#34;delete&#34;</span>, <span style="color:#cd0000">&#34;deletecollection&#34;</span>, <span style="color:#cd0000">&#34;patch&#34;</span>, <span style="color:#cd0000">&#34;update&#34;</span>, <span style="color:#cd0000">&#34;get&#34;</span>, <span style="color:#cd0000">&#34;list&#34;</span>, <span style="color:#cd0000">&#34;watch&#34;</span>]
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: default-crd-object
-  namespace: default
-subjects:
-- kind: User
-  name: test
-  apiGroup: rbac.authorization.k8s.io
-roleRef:
-  kind: Role
-  name: default-crd-object
-  apiGroup: rbac.authorization.k8s.io
+<span style="color:#cdcd00">apiVersion</span>: rbac.authorization.k8s.io/v1
+<span style="color:#cdcd00">kind</span>: RoleBinding
+<span style="color:#cdcd00">metadata</span>:
+  <span style="color:#cdcd00">name</span>: default-crd-object
+  <span style="color:#cdcd00">namespace</span>: default
+<span style="color:#cdcd00">subjects</span>:
+- <span style="color:#cdcd00">kind</span>: User
+  <span style="color:#cdcd00">name</span>: test
+  <span style="color:#cdcd00">apiGroup</span>: rbac.authorization.k8s.io
+<span style="color:#cdcd00">roleRef</span>:
+  <span style="color:#cdcd00">kind</span>: Role
+  <span style="color:#cdcd00">name</span>: default-crd-object
+  <span style="color:#cdcd00">apiGroup</span>: rbac.authorization.k8s.io
 </code></pre></div><p>kubectl apply 该配置，则 test 用户可以正常创建和查看 scalings 资源对象。</p>
             </div>
             
@@ -217,9 +217,9 @@ roleRef:
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#kubernetes-">kubernetes 中的权限管理</a></li>
-    <li><a href="#crd-">CRD 资源操作权限</a></li>
-    <li><a href="#crd--1">CRD 对象操作权限</a></li>
+    <li><a href="#kubernetes-中的权限管理">kubernetes 中的权限管理</a></li>
+    <li><a href="#crd-资源操作权限">CRD 资源操作权限</a></li>
+    <li><a href="#crd-对象操作权限">CRD 对象操作权限</a></li>
   </ul>
 </nav>
         </div>

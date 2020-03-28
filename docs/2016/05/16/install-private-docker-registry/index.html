@@ -71,11 +71,11 @@
 
             <div class="post-content">
                 <p>docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的 docker 镜像仓库，方便在集群上快速部署 docker 服务。</p>
-<h3 id="registry-">registry 镜像下载</h3>
+<h3 id="registry-镜像下载">registry 镜像下载</h3>
 <p>直接下载官方提供的 docker 镜像</p>
 <p><code>docker pull registry:2.4</code></p>
 <p>这里有一点需要注意的比较坑的是官方的 <code>latest</code> 的镜像指向的是 <code>0.9.1</code> 版本，使用 python 开发的，已经被废弃了，新版本采用 go 开发，效率和安全方面都提升很多，所以需要手动指定最新的版本。</p>
-<h3 id="-registry-">启动 registry 容器</h3>
+<h3 id="启动-registry-容器">启动 registry 容器</h3>
 <p><code>docker run -d --name registry -p 5000:5000 -v /opt/registry:/var/lib/registry registry:2.4</code></p>
 <p>由于需要做目录映射，如果你的机器上开启了 <strong>SELINUX</strong>，则使用如下命令：</p>
 <p><code>docker run -d --name registry -p 5000:5000 -v /opt/registry:/var/lib/registry:Z registry:2.4</code></p>
@@ -83,17 +83,17 @@
 <p><strong>-p 5000:5000</strong>： 对外暴露 5000 端口用于提供服务</p>
 <p><strong>-v  /opt/registry:/var/lib/registry</strong>： 将宿主机的 <code>/opt/registry</code> 目录映射到容器内的 <code>/var/lib/registry</code>，这个目录用来存储 docker 的镜像文件，为了持久化存储，不然容器关闭后这些镜像文件会丢失。</p>
 <p>这里根据 registry 镜像的不同版本，存储镜像文件的目录可能并不是 <code>/var/lib/registry</code>，<code>2.4</code> 版本是 <code>/var/lib/registry</code>，如果是其他版本可以查看具体的 Dockerfile 来确认。</p>
-<h3 id="heading">上传下载镜像</h3>
+<h3 id="上传下载镜像">上传下载镜像</h3>
 <p>由于 docker 的安全策略限制，如果要从私有的仓库上传下载镜像需要修改 docker 的启动参数，把我们自己搭建的 registry 的 ip 地址或者域名添加进来。</p>
 <p>centos7 上的配置文件位置为 <code>/etc/sysconfig/docker</code>。</p>
 <p>设置 <code>INSECURE_REGISTRY='--insecure-registry 192.168.2.129:5000'</code>，重启 docker 服务，以后要和这个 registry 交互的机器都需要执行上述步骤。</p>
 <p>另外一个方法就是自己签一组证书，把 <code>ca.crt</code> 拷贝到 <code>/etc/docker/certs.d/192.168.2.199:5000/ca.crt</code> 就可以了，这样就不需要重启 docker 服务，这个方法目前还没试过，之后可以尝试一下。</p>
-<h4 id="heading-1">上传镜像</h4>
+<h4 id="上传镜像">上传镜像</h4>
 <p>给要上传的镜像打上 tag，修改前缀为我们的 registry 的 ip 和 port</p>
 <p><code>docker tag centos 192.168.2.129:5000/centos</code></p>
 <p><code>docker push 192.168.2.129:5000/centos</code></p>
 <p>可以看到上传的镜像已经被存储在 /opt/registry 上了</p>
-<h4 id="heading-2">下载镜像</h4>
+<h4 id="下载镜像">下载镜像</h4>
 <p><code>docker pull 192.168.2.129:5000/centos</code></p>
 <p>直接从内网环境下载镜像的速度相当快。</p>
 <h3 id="api">API</h3>
@@ -159,12 +159,12 @@
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#registry-">registry 镜像下载</a></li>
-    <li><a href="#-registry-">启动 registry 容器</a></li>
-    <li><a href="#heading">上传下载镜像</a>
+    <li><a href="#registry-镜像下载">registry 镜像下载</a></li>
+    <li><a href="#启动-registry-容器">启动 registry 容器</a></li>
+    <li><a href="#上传下载镜像">上传下载镜像</a>
       <ul>
-        <li><a href="#heading-1">上传镜像</a></li>
-        <li><a href="#heading-2">下载镜像</a></li>
+        <li><a href="#上传镜像">上传镜像</a></li>
+        <li><a href="#下载镜像">下载镜像</a></li>
       </ul>
     </li>
     <li><a href="#api">API</a></li>

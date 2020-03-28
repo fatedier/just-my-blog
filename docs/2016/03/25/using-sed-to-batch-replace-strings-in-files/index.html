@@ -89,7 +89,7 @@
 <p><code>](.*|pic|</code> 是一个正则匹配， <code>.</code> 表示匹配任意一个字符，<code>*</code> 表示匹配0个或多个前面的字符，这里两个合起来就是匹配任意字符串。完整的意思就是匹配以 <code>](</code> 开头，以 <code>|pic|</code> 结尾的任意字符串。</p>
 <p><code>](http://xxx.clouddn.com|pic|</code> 是替换后的字符串。</p>
 <p><code>-i</code> 表示将替换后的结果写入文件中，而不是直接输出。</p>
-<h4 id="heading">查看修改结果</h4>
+<h4 id="查看修改结果">查看修改结果</h4>
 <p>一开始不确定修改是否正确最好不要给予使用 <code>-i</code> 参数将修改后的结果写入文件，可以将上面的命令换成如下的内容来检查是否替换正确：</p>
 <p><code>sed -n &quot;s?](.*|pic|?](http://xxx.clouddn.com|pic|?gp&quot; `grep &quot;|pic|&quot; -rl ./` </code></p>
 <p><code>-n</code> 表示静默模式，如果有输出内容的话，不会输出整个文件的内容，而仅仅是匹配的内容。</p>
@@ -166,7 +166,7 @@
       <ul>
         <li><a href="#grep">grep</a></li>
         <li><a href="#sed">sed</a></li>
-        <li><a href="#heading">查看修改结果</a></li>
+        <li><a href="#查看修改结果">查看修改结果</a></li>
       </ul>
     </li>
   </ul>

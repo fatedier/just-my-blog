@@ -6,16 +6,16 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="{{- if .Description -}}{{- .Description -}}{{- else if .IsPage -}}{{- .Summary -}}{{- else -}}{{- .Title -}}{{- end -}}">
 <meta property="og:url" content="{{ .Site.BaseURL }}">
-{{- if eq .URL "/" -}}
+{{- if eq .RelPermalink "/" -}}
 <meta property="og:type" content="website">
 {{- range first 1 .Pages -}}
 <meta property="og:title" content="{{ .Site.Title }}">
 {{- end -}}
-{{- else if eq .URL "/post/" -}}
+{{- else if eq .RelPermalink "/post/" -}}
 <meta property="og:title" content="归档 - {{ .Site.Title }}">
-{{- else if eq .URL "/tags/" -}}
+{{- else if eq .RelPermalink "/tags/" -}}
 <meta property="og:title" content="分类 - {{ .Site.Title }}">
-{{- else if in .URL "/tags/" -}}
+{{- else if in .RelPermalink "/tags/" -}}
 <meta property="og:title" content="{{ .Title }} - {{ .Site.Title }}">
 {{- else -}}
 <meta property="og:type" content="article">
@@ -24,13 +24,13 @@
 <meta property="og:site_name" content="{{ .Site.Title }}">
 
 <title>
-    {{ if eq .URL "/" }}
+    {{ if eq .RelPermalink "/" }}
     {{ .Site.Title }}
-    {{ else if eq .URL "/post/" }}
+    {{ else if eq .RelPermalink "/post/" }}
     归档 - {{ .Site.Title }}
-    {{ else if eq .URL "/tags/" }}
+    {{ else if eq .RelPermalink "/tags/" }}
     分类 - {{ .Site.Title }}
-    {{ else if in .URL "/tags/" }}
+    {{ else if in .RelPermalink "/tags/" }}
     {{ .Title }} - {{ .Site.Title }}
     {{ else }}
     {{ .Title }}

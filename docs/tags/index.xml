@@ -7,58 +7,13 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2018. All rights reserved.</copyright>
-    <lastBuildDate>Fri, 03 Mar 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 28 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://blog.fatedier.com/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>C/Cpp</title>
-      <link>http://blog.fatedier.com/tags/c/cpp/</link>
-      <pubDate>Fri, 03 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/c/cpp/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Codis</title>
-      <link>http://blog.fatedier.com/tags/codis/</link>
-      <pubDate>Wed, 07 Oct 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/codis/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Docker</title>
-      <link>http://blog.fatedier.com/tags/docker/</link>
-      <pubDate>Sun, 16 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/docker/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gem</title>
-      <link>http://blog.fatedier.com/tags/gem/</link>
-      <pubDate>Sun, 06 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/gem/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Git</title>
-      <link>http://blog.fatedier.com/tags/git/</link>
-      <pubDate>Tue, 05 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/git/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Golang</title>
+      <title>golang</title>
       <link>http://blog.fatedier.com/tags/golang/</link>
       <pubDate>Sat, 28 Mar 2020 00:00:00 +0000</pubDate>
       
@@ -67,16 +22,7 @@
     </item>
     
     <item>
-      <title>Influxdb</title>
-      <link>http://blog.fatedier.com/tags/influxdb/</link>
-      <pubDate>Mon, 15 Aug 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/influxdb/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Kubernetes</title>
+      <title>kubernetes</title>
       <link>http://blog.fatedier.com/tags/kubernetes/</link>
       <pubDate>Wed, 17 Apr 2019 00:00:00 +0000</pubDate>
       
@@ -85,164 +31,11 @@
     </item>
     
     <item>
-      <title>Linux</title>
-      <link>http://blog.fatedier.com/tags/linux/</link>
-      <pubDate>Fri, 03 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/linux/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mac</title>
-      <link>http://blog.fatedier.com/tags/mac/</link>
-      <pubDate>Sun, 20 Sep 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/mac/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mesos</title>
-      <link>http://blog.fatedier.com/tags/mesos/</link>
-      <pubDate>Sun, 16 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/mesos/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mongodb</title>
-      <link>http://blog.fatedier.com/tags/mongodb/</link>
-      <pubDate>Fri, 05 Jun 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/mongodb/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Openstack</title>
-      <link>http://blog.fatedier.com/tags/openstack/</link>
-      <pubDate>Wed, 25 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/openstack/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Opentsdb</title>
-      <link>http://blog.fatedier.com/tags/opentsdb/</link>
-      <pubDate>Mon, 04 Jul 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/opentsdb/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Python</title>
-      <link>http://blog.fatedier.com/tags/python/</link>
-      <pubDate>Fri, 08 May 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/python/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Redis</title>
-      <link>http://blog.fatedier.com/tags/redis/</link>
-      <pubDate>Wed, 07 Oct 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/redis/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ruby</title>
-      <link>http://blog.fatedier.com/tags/ruby/</link>
-      <pubDate>Sun, 06 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/ruby/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Sed</title>
-      <link>http://blog.fatedier.com/tags/sed/</link>
-      <pubDate>Fri, 25 Mar 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/sed/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Service Mesh</title>
+      <title>service mesh</title>
       <link>http://blog.fatedier.com/tags/service-mesh/</link>
       <pubDate>Sat, 12 Jan 2019 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/tags/service-mesh/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Shell</title>
-      <link>http://blog.fatedier.com/tags/shell/</link>
-      <pubDate>Tue, 24 Nov 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/shell/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Smtp</title>
-      <link>http://blog.fatedier.com/tags/smtp/</link>
-      <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/smtp/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Stl</title>
-      <link>http://blog.fatedier.com/tags/stl/</link>
-      <pubDate>Fri, 26 Sep 2014 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/stl/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Swift</title>
-      <link>http://blog.fatedier.com/tags/swift/</link>
-      <pubDate>Wed, 25 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/swift/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Vim</title>
-      <link>http://blog.fatedier.com/tags/vim/</link>
-      <pubDate>Thu, 30 Jul 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/vim/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>分布式存储</title>
-      <link>http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8/</link>
-      <pubDate>Wed, 06 Jul 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>创业</title>
-      <link>http://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A/</link>
-      <pubDate>Sun, 10 Jul 2016 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A/</guid>
       <description></description>
     </item>
     
@@ -256,11 +49,38 @@
     </item>
     
     <item>
-      <title>开发工具</title>
-      <link>http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/</link>
-      <pubDate>Mon, 25 Jul 2016 00:00:00 +0000</pubDate>
+      <title>docker</title>
+      <link>http://blog.fatedier.com/tags/docker/</link>
+      <pubDate>Sun, 16 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/</guid>
+      <guid>http://blog.fatedier.com/tags/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mesos</title>
+      <link>http://blog.fatedier.com/tags/mesos/</link>
+      <pubDate>Sun, 16 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/mesos/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linux</title>
+      <link>http://blog.fatedier.com/tags/linux/</link>
+      <pubDate>Fri, 03 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>c/cpp</title>
+      <link>http://blog.fatedier.com/tags/c/cpp/</link>
+      <pubDate>Fri, 03 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/c/cpp/</guid>
       <description></description>
     </item>
     
@@ -274,11 +94,56 @@
     </item>
     
     <item>
+      <title>InfluxDB</title>
+      <link>http://blog.fatedier.com/tags/influxdb/</link>
+      <pubDate>Mon, 15 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/influxdb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>数据库</title>
       <link>http://blog.fatedier.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
       <pubDate>Mon, 15 Aug 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>开发工具</title>
+      <link>http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/</link>
+      <pubDate>Mon, 25 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>创业</title>
+      <link>http://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A/</link>
+      <pubDate>Sun, 10 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>分布式存储</title>
+      <link>http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8/</link>
+      <pubDate>Wed, 06 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>opentsdb</title>
+      <link>http://blog.fatedier.com/tags/opentsdb/</link>
+      <pubDate>Mon, 04 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/opentsdb/</guid>
       <description></description>
     </item>
     
@@ -292,11 +157,146 @@
     </item>
     
     <item>
+      <title>openstack</title>
+      <link>http://blog.fatedier.com/tags/openstack/</link>
+      <pubDate>Wed, 25 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/openstack/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>swift</title>
+      <link>http://blog.fatedier.com/tags/swift/</link>
+      <pubDate>Wed, 25 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/swift/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>git</title>
+      <link>http://blog.fatedier.com/tags/git/</link>
+      <pubDate>Tue, 05 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/git/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sed</title>
+      <link>http://blog.fatedier.com/tags/sed/</link>
+      <pubDate>Fri, 25 Mar 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/sed/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gem</title>
+      <link>http://blog.fatedier.com/tags/gem/</link>
+      <pubDate>Sun, 06 Dec 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/gem/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ruby</title>
+      <link>http://blog.fatedier.com/tags/ruby/</link>
+      <pubDate>Sun, 06 Dec 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/ruby/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>shell</title>
+      <link>http://blog.fatedier.com/tags/shell/</link>
+      <pubDate>Tue, 24 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/shell/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>codis</title>
+      <link>http://blog.fatedier.com/tags/codis/</link>
+      <pubDate>Wed, 07 Oct 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/codis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>redis</title>
+      <link>http://blog.fatedier.com/tags/redis/</link>
+      <pubDate>Wed, 07 Oct 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/redis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mac</title>
+      <link>http://blog.fatedier.com/tags/mac/</link>
+      <pubDate>Sun, 20 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/mac/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>smtp</title>
+      <link>http://blog.fatedier.com/tags/smtp/</link>
+      <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/smtp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>vim</title>
+      <link>http://blog.fatedier.com/tags/vim/</link>
+      <pubDate>Thu, 30 Jul 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/vim/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mongodb</title>
+      <link>http://blog.fatedier.com/tags/mongodb/</link>
+      <pubDate>Fri, 05 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/mongodb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>python</title>
+      <link>http://blog.fatedier.com/tags/python/</link>
+      <pubDate>Fri, 08 May 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>设计模式</title>
       <link>http://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</link>
       <pubDate>Wed, 04 Mar 2015 00:00:00 +0000</pubDate>
       
       <guid>http://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>STL</title>
+      <link>http://blog.fatedier.com/tags/stl/</link>
+      <pubDate>Fri, 26 Sep 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.fatedier.com/tags/stl/</guid>
       <description></description>
     </item>
     

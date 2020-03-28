@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Ruby on fatedier blog</title>
+    <title>ruby on fatedier blog</title>
     <link>http://blog.fatedier.com/tags/ruby/</link>
-    <description>Recent content in Ruby on fatedier blog</description>
+    <description>Recent content in ruby on fatedier blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2018. All rights reserved.</copyright>

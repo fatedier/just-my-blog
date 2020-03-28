@@ -76,7 +76,7 @@
 <p>而当子进程在父进程之前终止时，<strong>内核为每个终止子进程保存了一定量的信息，所以当终止进程的父进程调用wait或waitpid时</strong>，可以得到这些信息。这些信息至少包括进程ID、该进程的终止状态、以及该进程使用的CPU时间总量。其他的进程所使用的存储区，打开的文件都会被内核释放。</p>
 <p><strong>一个已经终止、但是其父进程尚未对其进行善后处理（获取终止子进程的有关信息，释放它仍占用的资源）的进程被称为僵尸进程。</strong> ps命令将僵尸进程的状态打印为Z。</p>
 <p>可以设想一下，比如一个web服务器端，假如每次接收到一个连接都创建一个子进程去处理，处理完毕后结束子进程。假如在父进程中没有使用wait或waitpid函数进行善后，这些子进程将全部变为僵尸进程，Linux系统的进程数一般有一个固定限制值，僵尸进程将会逐渐耗尽系统资源。</p>
-<h3 id="heading1">查看僵尸进程的例子</h3>
+<h3 id="heading-1">查看僵尸进程的例子</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
 </span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;string.h&gt;</span><span style="color:#000080">
 </span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;unistd.h&gt;</span><span style="color:#000080">
@@ -161,7 +161,7 @@
 <span style="color:#cd00cd">6628</span>  <span style="color:#cd00cd">6622</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
 </code></pre></div><p>发现创建的5个进程，有3个已经被彻底销毁，但是还有2个仍然处于僵尸进程的状态。</p>
 <p><strong>这是因为当5个进程同时终止的时候，内核都会向父进程发送SIGCHLD信号，而父进程此时有可能仍然处于信号处理的deal_child函数中，那么在处理完之前，中间接收到的SIGCHLD信号就会丢失，内核并没有使用队列等方式来存储同一种信号。</strong></p>
-<h3 id="heading2">正确地处理僵尸进程的方法</h3>
+<h3 id="heading-2">正确地处理僵尸进程的方法</h3>
 <p>为了解决上面出现的这种问题，我们需要使用waitpid函数。</p>
 <p>函数原型</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">pid_t waitpid(pid_t pid, <span style="color:#00cd00">int</span> <span style="color:#39c">*</span>statloc, <span style="color:#00cd00">int</span> options);
@@ -245,9 +245,9 @@
             <nav id="TableOfContents">
   <ul>
     <li><a href="#heading">什么是僵尸进程</a></li>
-    <li><a href="#heading1">查看僵尸进程的例子</a></li>
+    <li><a href="#heading-1">查看僵尸进程的例子</a></li>
     <li><a href="#sigchld">SIGCHLD信号和处理僵尸进程</a></li>
-    <li><a href="#heading2">正确地处理僵尸进程的方法</a></li>
+    <li><a href="#heading-2">正确地处理僵尸进程的方法</a></li>
   </ul>
 </nav>
         </div>

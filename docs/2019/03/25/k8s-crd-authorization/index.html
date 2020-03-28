@@ -129,7 +129,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 </code></pre></div><p>kubectl apply 该配置，则 test 用户具备了对 <code>customresourcedefinitions.apiextensions.k8s.io</code> 的所有操作权限，可以正常创建，删除，更新 CRD 资源。</p>
 <p>但是对于我们通过 CRD 创建出来的自定义资源，例如 <code>scalings.control.example.com</code>，还没有任何权限，不能创建和查看对象。</p>
-<h3 id="crd-1">CRD 对象操作权限</h3>
+<h3 id="crd--1">CRD 对象操作权限</h3>
 <p>对于 <code>scalings.control.example.com</code> 这样的我们自己创建出来的资源，也需要对普通用户授予权限，但是不需要是集群范围内的，只需要授予用户关联的 namespace 下的权限即可。所以可以通过创建新的 Role 和 RoleBinding 来实现这一能力。</p>
 <p>参考配置如下:</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: rbac.authorization.k8s.io/v1
@@ -219,7 +219,7 @@ roleRef:
   <ul>
     <li><a href="#kubernetes-">kubernetes 中的权限管理</a></li>
     <li><a href="#crd-">CRD 资源操作权限</a></li>
-    <li><a href="#crd-1">CRD 对象操作权限</a></li>
+    <li><a href="#crd--1">CRD 对象操作权限</a></li>
   </ul>
 </nav>
         </div>

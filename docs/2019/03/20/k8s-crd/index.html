@@ -147,7 +147,7 @@ spec:
   step: <span style="color:#cd00cd">1</span>
   targetDeployment: test
 </code></pre></div><p>我们可以像操作 k8s 内置的 Deployment 资源一样操作我们创建的 Scaling 资源，同样可以对它进行更新和删除的操作。</p>
-<h3 id="heading1">参数校验</h3>
+<h3 id="heading-1">参数校验</h3>
 <p>上面的 CRD 配置中我们并没有指定这个资源的 Spec，也就是说用户可以使用任意的 Spec 创建这个 Scaling 资源，这并不符合我们的要求。我们希望在用户创建 Scaling 对象时，可以像 k8s 的原生资源一样进行参数校验，如果出错的情况下，就不会去创建或更新这个对象，而是给用户错误提示。</p>
 <p>k8s 目前提供了两种方式来实现参数校验，<code>OpenAPI v3 schema</code> 和 <code>validatingadmissionwebhook</code>。</p>
 <p>这里主要使用比较简单的 <code>OpenAPI v3 schema</code> 来实现。<code>validatingadmissionwebhook</code> 需要用户自己提供一个检查服务，通过创建 <code>ValidatingWebhookConfiguration</code> 让 APIServer 将指定的操作请求转发给这个检查服务，检查服务返回 true 或者 false，决定参数校验是否成功。</p>
@@ -282,7 +282,7 @@ spec.targetDeployment in body is required
   <ul>
     <li><a href="#-crdcustomresourcedefinition">创建 CRD(CustomResourceDefinition)</a></li>
     <li><a href="#heading">创建自定义资源的对象</a></li>
-    <li><a href="#heading1">参数校验</a></li>
+    <li><a href="#heading-1">参数校验</a></li>
   </ul>
 </nav>
         </div>

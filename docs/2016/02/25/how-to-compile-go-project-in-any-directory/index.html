@@ -75,7 +75,7 @@
 <p><a href="https://github.com/fatedier/frp">frp</a> 是我业余时间写的一个用于穿透内网的反向代理工具，可以将防火墙内或内网环境的机器对外暴露指定的服务，例如22端口提供ssh服务或者80端口提供一个临时的web测试环境。</p>
 <p>一开始项目是直接放在 <code>$GOPATH/src</code> 目录下的，第三方包的引用是 <code>import github.com/xxx/xxx</code>，内部包的引用 <code>import frp/xxx</code>，这样编译时内部包的查找路径实际上就是 <code>$GOPATH/src/frp/xxx</code>。</p>
 <p>后来由于使用了 <a href="https://travis-ci.org/">travis-ci</a> 做持续集成，travis-ci 中是直接使用 <code>go get github.com/fatedier/frp</code> 下载代码，然后编译运行。这样问题就来了，通过 go get 下载的源码在本地的路径是 <code>$GOPATH/src/github.com/fatedier/frp</code>，内部包就找不到了，导致编译失败。</p>
-<h3 id="heading1">使用类似第三方包的引用方式</h3>
+<h3 id="heading-1">使用类似第三方包的引用方式</h3>
 <p>解决这个问题最直接的方法就是将内部包的引用方式修改成 <code>import github.com/fatedier/frp/xxx</code>，在 travis-ci 中编译的时候就可以通过了，同时需要注意把自己本地的项目路径也更换成<code>$GOPATH/src/github.com/fatedier/frp</code>，很多开源项目都是用的这种方式引用内部包。</p>
 <p><strong>注：不推荐使用 ./ ../ 等相对路径来引用内部包，这样管理和定位问题其实都不是很方便。</strong></p>
 <p>之后由于需要其他人共同开发，fork了我的项目之后，他们也使用 go get 下载他们fork后的项目源码，这样 <code>fatedier</code> 就替换成了他们自己的用户名，但是代码中 import 的包名并没有改变，会导致他们无法编译通过。当然，他们可以将项目再放到正确的目录，但是多了一部操作总归不方便。</p>
@@ -145,7 +145,7 @@
             <nav id="TableOfContents">
   <ul>
     <li><a href="#heading">背景</a></li>
-    <li><a href="#heading1">使用类似第三方包的引用方式</a></li>
+    <li><a href="#heading-1">使用类似第三方包的引用方式</a></li>
     <li><a href="#trickygopath">比较tricky的做法，修改GOPATH</a></li>
   </ul>
 </nav>

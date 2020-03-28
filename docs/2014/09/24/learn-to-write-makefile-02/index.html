@@ -83,7 +83,7 @@
 </code></pre></div><p>这里需要特别注意的是，我们使用“-MM”而不是“-M”，因为我们使用的是GUN的C/C++编译器，使用“-M”参数会将标准库的头文件也一并包含进来，但这并不是我们想要的，而使用“-MM”则不会。</p>
 <p>现在的问题是，如何利用这个命令去写好我们的Makefile呢？</p>
 <p>GUN组织建议把每一个源文件自动生成的依赖关系放到一个.d文件中，让每一个.cpp文件都对应一个.d文件，例如之前的w1.cpp，我们可以生成一个w1.d文件，内容为自动生成的依赖关系 w1.o:w1.cpp w2.h w3.h，然后在Makefile中包含所有的.d文件，我们只需要写出.cpp文件和.d文件的依赖关系，让make自动更新或生成.d文件即可。</p>
-<h4 id="d1">生成.d文件</h4>
+<h4 id="d-1">生成.d文件</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">dep/%.d:%.cpp
     @if <span style="color:#cd00cd">test</span> ! -d <span style="color:#cd0000">&#34;dep&#34;</span>; <span style="color:#cdcd00">then</span><span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>        mkdir -p dep;<span style="color:#cd0000">\
@@ -96,14 +96,14 @@
 <p>又是一堆莫名其妙的符号，我们还是来逐句进行分析。</p>
 <h5 id="depd-cpp">dep/%.d: %.cpp</h5>
 <p>使所有的.d文件依赖于对应的.cpp文件，也就是说只要.cpp更新了，我们就重新生成对应的.d文件。这里和.o文件类似的，我们也创建一个dep目录用来存放所有的.d文件，既能保持项目文件的整洁和统一，也方便管理。</p>
-<h5 id="if-test--d-dep-then">@if test ! -d &ldquo;dep&rdquo;; then\</h5>
+<h5 id="if-test---d-dep-then">@if test ! -d &ldquo;dep&rdquo;; then\</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">@if <span style="color:#cd00cd">test</span> ! -d <span style="color:#cd0000">&#34;dep&#34;</span>; <span style="color:#cdcd00">then</span><span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>    mkdir -p dep;<span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span><span style="color:#cdcd00">fi</span>; <span style="color:#cd0000">\
 </span></code></pre></div><p>检查当前目录下是否存在dep目录，如果不存在，就使用mkdir命令创建dep目录。</p>
-<h5 id="set-e-rm-f-">set -e; rm -f $@;</h5>
+<h5 id="set--e-rm--f-">set -e; rm -f $@;</h5>
 <p>set–e 的作用是如果命令执行出错就直接退出。$@的含义之前已经说过，这里rm –f $@的意思就是删除所有的目标文件。</p>
-<h5 id="g-mm----">g++ -MM $&lt; &gt; $@.$$$$; \</h5>
+<h5 id="g--mm----">g++ -MM $&lt; &gt; $@.$$$$; \</h5>
 <p>$&lt; 的含义是第一个依赖项的名称，&gt; 是重定向符号，将输出结果重定向到指定文件中。$@.$$$$ 就是这个文件的文件名，其中“$$$$”表示一个随机的编号，例如如果有目标文件是w1.d，那么“$@.$$$$”一个可能的结果就是w1.d.12345。那么，这句话的含义就是将g++ -MM w1.cpp的输出结果重定向到w1.d.12345这个文件中。</p>
 <h5 id="sed-so-objo-depd--g----">sed &lsquo;s/$*.o[ :]*/obj/$*.o dep/$*.d : /g&rsquo; &lt; $@.$$$$ &gt; $@;\</h5>
 <p>这里使用了sed这个工具对文本进行替换处理，单引号中的规则是’s/old/new/g’，s表示替换，末尾的g代表全局的意思，对文本中所有符合要求的字符串进行替换，sed会将符合old模式的字符串替换为new，具体的使用方法可以查阅一下sed这个工具的帮助文档。</p>
@@ -118,7 +118,7 @@
 <pre><code>w1.o w1.d:w1.cpp w2.h w3.h
 </code></pre>
 <p>这样，我们的.d文件也会自动更新啦。</p>
-<h5 id="rm-f-">rm -f $@.$$$$</h5>
+<h5 id="rm--f-">rm -f $@.$$$$</h5>
 <p>删除掉这个临时文件。</p>
 <h4 id="include">使用include包含其他文件</h4>
 <p>在Makefile中我们也可以像在C++文件中那样包含其他文件。</p>
@@ -132,7 +132,7 @@
 <pre><code>DEPS = $(addsuffix .d,$(addprefix dep/,$(BASE)))
 </code></pre>
 <p>然后使用include$(DEPS) 包含所有的.d文件。</p>
-<h3 id="ih">-I，引用其他目录下的.h文件</h3>
+<h3 id="-ih">-I，引用其他目录下的.h文件</h3>
 <p>考虑这种情况：现在有两个目录，一个inc目录用来存放.h文件，一个src目录，用来存放.cpp文件。怎么让编译器找到引用的.h文件在哪个目录下呢？</p>
 <p>我们可以使用“-I”选项。  格式为“-I目录名”，这样在编译的时候，编译器就会依次到我们指定的目录中寻找.h文件。</p>
 <p>同样，先定义一个变量，存放所有头文件的目录名：</p>
@@ -145,7 +145,7 @@
 <p>g++ -c -o $@ $(INCLUDEDIR) $&lt;</p>
 <p>OK，再来尝试用gmake命令编译一下吧，已经可以成功编译了。</p>
 <p>如果需要包含多个目录下的.h文件，可以重复使用-I选项，中间需要用空格隔开。</p>
-<h3 id="heading1">使用静态库</h3>
+<h3 id="heading-1">使用静态库</h3>
 <h4 id="makefile">修改生成静态库的Makefile</h4>
 <p>有的时候我们不需要生成一个可执行的程序，而是生成一个静态库文件，之后在其他的地方引用这个静态库文件。</p>
 <p>假设我们的项目目录结构是这样的，src是项目根目录，src下面有common和app以及lib两个目录，common和app下面都有inc和src两个目录。common存放公共库的源文件，app存放程序源文件，lib存放生成的静态库。</p>
@@ -168,14 +168,14 @@
 <li>TARGET是目标文件名称，包含路径。</li>
 <li>在生成静态库文件的规则中，使用ar这个命令。</li>
 </ul>
-<h4 id="makefile1">修改引用静态库的Makefile</h4>
+<h4 id="makefile-1">修改引用静态库的Makefile</h4>
 <p>在app/src目录下的源文件中，编译的时候需要引用libfa_common.a这个静态库，这就需要我们再修改app目录下的Makefile文件。</p>
 <p>这里使用了两个新的参数，“-l”和“-L”。</p>
 <p>“-l”参数指定要引用的库的名称。例如我们要引用libfa_common.a这个静态库，那么需要在编译命令里加上“-lfa_common”，可以看出，-l后面的库名称需要去除前面的“lib”和后面的“.a”。</p>
 <p>“-L”参数指定了要引用的库的目录，用法和之前的“-I”一样。这里需要注意的是，我们需要修改一下VPATH这个变量，指明要引用的静态库的目录。类似这样：</p>
 <pre><code>VPATH:= -L $(top_srcdir)/lib
 </code></pre>
-<h3 id="makefile2">完整的Makefile</h3>
+<h3 id="makefile-2">完整的Makefile</h3>
 <p>其实在每一个目录下的Makefile中有很多部分是重复的，我们可以考虑将重复的部分提取出来，单独放在一个公共的Makefile中，然后在其他Makefile中用include包含这个公共的Makefile即可。</p>
 <p>我写了三套Makefile，分别是Makefile（app）、Makefile（lib）、Make.rules。</p>
 <p>其中，Make.rules是公共部分，Makefile（app）是用来生成可执行程序的，Makefile（lib）是用来生成静态库的，为了以后迁移方便，考虑到Linux和Unix平台的差异，以及各个编译器之间的差异，可以将各种命令也定义成变量，之后使用宏定义进行条件编译。</p>
@@ -384,27 +384,27 @@ LIBS :<span style="color:#39c">=</span> -lfa_common
     <li><a href="#d">.d文件，解决文件间的相互引用</a>
       <ul>
         <li><a href="#heading">自动生成依赖关系</a></li>
-        <li><a href="#d1">生成.d文件</a>
+        <li><a href="#d-1">生成.d文件</a>
           <ul>
             <li><a href="#depd-cpp">dep/%.d: %.cpp</a></li>
-            <li><a href="#if-test--d-dep-then">@if test ! -d dep; then\</a></li>
-            <li><a href="#set-e-rm-f-">set -e; rm -f $@;</a></li>
-            <li><a href="#g-mm----">g++ -MM $< > $@.$$$$; \</a></li>
-            <li><a href="#sed-so-objo-depd--g----">sed s/$*\.o[ :]*/obj\/$*\.o dep\/$*\.d : /g < $@.$$$$ > $@;\</a></li>
-            <li><a href="#rm-f-">rm -f $@.$$$$</a></li>
+            <li><a href="#if-test---d-dep-then">@if test ! -d &ldquo;dep&rdquo;; then\</a></li>
+            <li><a href="#set--e-rm--f-">set -e; rm -f $@;</a></li>
+            <li><a href="#g--mm----">g++ -MM $< > $@.$$$$; \</a></li>
+            <li><a href="#sed-so-objo-depd--g----">sed &lsquo;s/$*\.o[ :]*/obj\/$*\.o dep\/$*\.d : /g&rsquo; < $@.$$$$ > $@;\</a></li>
+            <li><a href="#rm--f-">rm -f $@.$$$$</a></li>
           </ul>
         </li>
         <li><a href="#include">使用include包含其他文件</a></li>
       </ul>
     </li>
-    <li><a href="#ih">-I，引用其他目录下的.h文件</a></li>
-    <li><a href="#heading1">使用静态库</a>
+    <li><a href="#-ih">-I，引用其他目录下的.h文件</a></li>
+    <li><a href="#heading-1">使用静态库</a>
       <ul>
         <li><a href="#makefile">修改生成静态库的Makefile</a></li>
-        <li><a href="#makefile1">修改引用静态库的Makefile</a></li>
+        <li><a href="#makefile-1">修改引用静态库的Makefile</a></li>
       </ul>
     </li>
-    <li><a href="#makefile2">完整的Makefile</a>
+    <li><a href="#makefile-2">完整的Makefile</a>
       <ul>
         <li><a href="#makerules">Make.rules</a></li>
         <li><a href="#makefilelib">Makefile（lib）</a></li>

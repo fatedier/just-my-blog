@@ -74,11 +74,11 @@
 <h3 id="heading">效果预览</h3>
 <p>要实现的效果就像 nginx 启动后通过 ps 查到的名称一样，这个名称就是自定义的，如下图</p>
 <p><img src="http://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-nginx-process-name.png" alt="nginx-process-name"></p>
-<h3 id="heading1">方法一</h3>
+<h3 id="heading-1">方法一</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">prctl(PR_SET_NAME, name);
 </code></pre></div><p>通过这个函数可以将当前进程的名称修改为 <code>name</code> 的内容。</p>
 <p>我测试了一下，发现只有使用 <code>ps -L</code> 才能看到，达不到想要的效果。</p>
-<h3 id="heading2">方法二</h3>
+<h3 id="heading-2">方法二</h3>
 <p>参考了 <strong>nginx</strong> 中的源码，主要是通过修改 <strong>argv[0]</strong> 的值来实现的，但是需要注意将后面跟着的 <strong>environ</strong> 环境表中的信息移到其他地方，避免被覆盖。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#00cd00">void</span> set_proctitle(<span style="color:#00cd00">char</span><span style="color:#39c">*</span><span style="color:#39c">*</span> argv, <span style="color:#cdcd00">const</span> <span style="color:#00cd00">char</span><span style="color:#39c">*</span> new_name)
 {
@@ -234,8 +234,8 @@
             <nav id="TableOfContents">
   <ul>
     <li><a href="#heading">效果预览</a></li>
-    <li><a href="#heading1">方法一</a></li>
-    <li><a href="#heading2">方法二</a></li>
+    <li><a href="#heading-1">方法一</a></li>
+    <li><a href="#heading-2">方法二</a></li>
     <li><a href="#php-">php 扩展中遇到的困难</a></li>
   </ul>
 </nav>

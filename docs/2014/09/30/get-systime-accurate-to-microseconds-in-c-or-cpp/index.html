@@ -105,7 +105,7 @@
 </span></code></pre></div><p>使用localtime函数的时候需要注意计算年份的时候需要加上1900，计算月份的时候需要加1。</p>
 <h3 id="heading">使用说明</h3>
 <p>我们先调用gettimeofday函数获取到从公元 1970年1 月1 日的UTC 时间从0 时0 分0 秒算起到现在所经过的秒数加上微秒数，然后将秒数作为参数再调用localtime函数，转换为本地时区的当前时间即可，之后可以使用localtime函数返回的tm结构体对象来获取具体的年月日时分秒等数据。</p>
-<h3 id="heading1">示例代码</h3>
+<h3 id="heading-1">示例代码</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;iostream&gt;</span><span style="color:#000080">
 </span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;string&gt;</span><span style="color:#000080">
 </span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
@@ -133,7 +133,7 @@ string fa_getSysTime()
     cout<span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">当前时间：</span><span style="color:#cd0000">&#34;</span> <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> fa_getSysTime() <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> endl;
     <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
 }
-</code></pre></div><h3 id="heading2">输出为</h3>
+</code></pre></div><h3 id="heading-2">输出为</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">当前时间：20140930110457794678
 </code></pre></div>
             </div>
@@ -204,8 +204,8 @@ string fa_getSysTime()
       </ul>
     </li>
     <li><a href="#heading">使用说明</a></li>
-    <li><a href="#heading1">示例代码</a></li>
-    <li><a href="#heading2">输出为</a></li>
+    <li><a href="#heading-1">示例代码</a></li>
+    <li><a href="#heading-2">输出为</a></li>
   </ul>
 </nav>
         </div>

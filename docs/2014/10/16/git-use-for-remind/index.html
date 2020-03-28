@@ -87,28 +87,28 @@ Git的命令较多，虽然大多数都不是很常用，但是还是需要记�
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git config --globaluser.name  <span style="color:#cd0000">&#34;your-uasername&#34;</span>
 $ git config --global user.email example@example.com
 $ git config --global core.editor vim
-</code></pre></div><h4 id="heading1">设置差异分析工具</h4>
+</code></pre></div><h4 id="heading-1">设置差异分析工具</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git config --global merge.tool vimdiff
-</code></pre></div><h4 id="heading2">如何获取帮助文档</h4>
+</code></pre></div><h4 id="heading-2">如何获取帮助文档</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git <span style="color:#cd00cd">help</span> &lt;verb&gt;
 $ git &lt;verb&gt; --help
 $ man git-&lt;verb&gt;
 </code></pre></div><p>例如 <code>man git-config</code></p>
-<h3 id="git1">Git基础操作</h3>
-<h4 id="git2">取得Git仓库（从现有仓库克隆）</h4>
+<h3 id="git-1">Git基础操作</h3>
+<h4 id="git-2">取得Git仓库（从现有仓库克隆）</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/schacon/fatest.git
 </code></pre></div><p>这个命令会在当前目录下创建一个fatest的目录，其中的.git目录保存所有的版本记录。fatest下是项目的所有文件。</p>
 <p>如果要自定义目录名称，可以在末尾指定，例如：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/schacon/fatest.git fatestnew
 </code></pre></div><p>现在创建的目录就是fatestnew而不是fatest了，其他的都一样。</p>
-<h4 id="heading3">检查当前项目文件状态</h4>
+<h4 id="heading-3">检查当前项目文件状态</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git status
 </code></pre></div><p>可以看到有哪些文件是没有加入到版本中的，哪些是修改了还没提交的等等。</p>
-<h4 id="heading4">将新文件加入到版本中</h4>
+<h4 id="heading-4">将新文件加入到版本中</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git add test.cpp
 </code></pre></div><p>注：<code>git add</code>命令对于不同状态的文件有不同的效果，可以用它开始跟踪新文件，或者把已跟踪的文件放到暂存区，还能用于合并时把有冲突的文件标记为已解决状态等。</p>
 <p><em>注意</em>修改过后的文件处于未暂存状态，提交的时候处于未暂存状态的文件将不会提交，需要使用git add命令更改为暂存状态，之后再提交就会提交到仓库中了。</p>
-<h4 id="heading5">忽略某些文件</h4>
+<h4 id="heading-5">忽略某些文件</h4>
 <p>对于不需要加入到版本中，并且使用git status时不再提示的文件。</p>
 <p>在 .gitignore 文件中进行配置，例如*.exe</p>
 <p>那么所有的以.exe结尾的文件都会被忽略，而不再提醒。</p>
@@ -126,50 +126,50 @@ build/
 doc/*.txt
 <span style="color:#000080"># ignore all .txt files in the doc/ directory</span>
 doc/**/*.txt
-</code></pre></div><h4 id="heading6">查看已暂存和未暂存的更新文件差异</h4>
+</code></pre></div><h4 id="heading-6">查看已暂存和未暂存的更新文件差异</h4>
 <p>未暂存：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git diff
 </code></pre></div><p>已暂存：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git diff --staged
-</code></pre></div><h4 id="heading7">提交更新</h4>
+</code></pre></div><h4 id="heading-7">提交更新</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git commit
 </code></pre></div><p>之后进入vim编辑提交说明，保存即可。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git commit --m <span style="color:#cd0000">&#34;comment&#34;</span>
 </code></pre></div><p>使用 <em>-m</em> 命令可以直接在一行命令中写说明。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git commit -a
 </code></pre></div><p>使用 <em>-a</em> 命令，会把未暂存和已暂存的文件一起提交，不然只会提交已暂存的文件。</p>
-<h4 id="heading8">删除文件和取消跟踪</h4>
+<h4 id="heading-8">删除文件和取消跟踪</h4>
 <p>可以先本地使用rm命令删掉，这时候放在未暂存区域，之后用“git rm文件名”删掉。</p>
 <p>也可以直接使用 <code>git rm 文件名</code> 删掉。</p>
 <p>另外一种情况是，我们想把文件从 Git 仓库中删除（亦即从暂存区域移除），但仍然希望保留在当前工作目录中。换句话说，仅是从跟踪清单中删除。比如一些大型日志文件或者一堆 .a 编译文件，不小心纳入仓库后，要移除跟踪但不删除文件，以便稍后在 .gitignore 文件中补上，用 &ndash;cached 选项即可：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git rm --cached readme.txt
-</code></pre></div><h4 id="heading9">移动文件</h4>
+</code></pre></div><h4 id="heading-9">移动文件</h4>
 <p>例如要把 test.cpp 改为 tt.cpp</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git mv test.cpp tt.cpp
 </code></pre></div><p>就相当于是</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mv README.txt README
 $ git rm README.txt
 $ git add README
-</code></pre></div><h4 id="heading10">查看提交历史</h4>
+</code></pre></div><h4 id="heading-10">查看提交历史</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git log
-</code></pre></div><h4 id="heading11">撤销操作</h4>
-<h5 id="heading12">覆盖上一次的提交</h5>
+</code></pre></div><h4 id="heading-11">撤销操作</h4>
+<h5 id="heading-12">覆盖上一次的提交</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git commit --amend
 </code></pre></div><p>会将上次提交和这次提交合并起来，算作一次提交。</p>
-<h5 id="heading13">取消已暂存文件</h5>
+<h5 id="heading-13">取消已暂存文件</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git reset HEAD &lt;file&gt;
 </code></pre></div><p>这个时候文件状态就从已暂存变为未暂存</p>
-<h5 id="heading14">取消对文件的修改（还没有放到暂存区）</h5>
+<h5 id="heading-14">取消对文件的修改（还没有放到暂存区）</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git checkout -- &lt;file&gt;
-</code></pre></div><h4 id="heading15">运程仓库的使用</h4>
-<h5 id="heading16">查看当前的远程库</h5>
+</code></pre></div><h4 id="heading-15">运程仓库的使用</h4>
+<h5 id="heading-16">查看当前的远程库</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git remote
 </code></pre></div><p>会列出每个远程库的简短的名字，默认使用origin表示原始仓库</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git remote -v
 </code></pre></div><p>会额外列出远程库对应的克隆地址</p>
-<h5 id="heading17">添加远程仓库</h5>
+<h5 id="heading-17">添加远程仓库</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git remote add <span style="color:#39c">[</span>shortname<span style="color:#39c">]</span> <span style="color:#39c">[</span>url<span style="color:#39c">]</span>
-</code></pre></div><h5 id="heading18">从远程仓库抓取数据</h5>
+</code></pre></div><h5 id="heading-18">从远程仓库抓取数据</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git fetch <span style="color:#39c">[</span>remote-name<span style="color:#39c">]</span>
 </code></pre></div><p>抓取数据，但并不合并到当前分支</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git pull
@@ -178,73 +178,73 @@ $ git add README
 </code></pre></div><p>查看所有远程分支</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git checkout -b <span style="color:#cd00cd">test</span> origin/test
 </code></pre></div><p>获取远程分支到本地新的分支上，并切换到新分支</p>
-<h5 id="heading19">推送数据到远程仓库</h5>
+<h5 id="heading-19">推送数据到远程仓库</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git push <span style="color:#39c">[</span>remote-name<span style="color:#39c">]</span> <span style="color:#39c">[</span>branch-name<span style="color:#39c">]</span>
 </code></pre></div><p>推送操作会默认使用origin和master名字</p>
-<h5 id="heading20">查看远程仓库信息</h5>
+<h5 id="heading-20">查看远程仓库信息</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git remote show <span style="color:#39c">[</span>remote-name<span style="color:#39c">]</span>
 </code></pre></div><p>除了对应的克隆地址外，它还给出了许多额外的信息。它友善地告诉你如果是在 master 分支，就可以用 git pull 命令抓取数据合并到本地。另外还列出了所有处于跟踪状态中的远端分支。</p>
-<h5 id="heading21">远程仓库的删除</h5>
+<h5 id="heading-21">远程仓库的删除</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git remote rm <span style="color:#39c">[</span>remote-name<span style="color:#39c">]</span>
-</code></pre></div><h4 id="heading22">标签的使用</h4>
-<h5 id="heading23">显示已有的标签</h5>
+</code></pre></div><h4 id="heading-22">标签的使用</h4>
+<h5 id="heading-23">显示已有的标签</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git tag
-</code></pre></div><h5 id="heading24">新建标签</h5>
+</code></pre></div><h5 id="heading-24">新建标签</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git tag v1.0
 </code></pre></div><p>新建一个简单的标签</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git tag -a v1.0 -m <span style="color:#cd0000">&#39;my version 1.0&#39;</span>
 </code></pre></div><p>-m 指定了对应标签的说明</p>
-<h5 id="heading25">后期加注标签</h5>
+<h5 id="heading-25">后期加注标签</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git log --pretty<span style="color:#39c">=</span>oneline --abbrev-commit
 </code></pre></div><p>先显示提交历史</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git tag -a v1.1 9fceb02
 </code></pre></div><p>补加标签</p>
-<h5 id="heading26">推送标签</h5>
+<h5 id="heading-26">推送标签</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git push origin <span style="color:#39c">[</span>tagname<span style="color:#39c">]</span>
-</code></pre></div><h4 id="heading27">设置命令别名</h4>
+</code></pre></div><h4 id="heading-27">设置命令别名</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git config --global alias.co checkout
-</code></pre></div><h3 id="git3">Git分支</h3>
-<h4 id="heading28">新建分支</h4>
+</code></pre></div><h3 id="git-3">Git分支</h3>
+<h4 id="heading-28">新建分支</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git branch testing
 </code></pre></div><p>会在当前commit对象上新建一个分支指针</p>
 <p><em>注：HEAD这个特别的指针是指向正在工作中的本地分支的指针</em></p>
-<h4 id="heading29">切换分支</h4>
+<h4 id="heading-29">切换分支</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git checkout testing
 </code></pre></div><p>切换到testing分支上</p>
-<h4 id="heading30">分支的合并</h4>
+<h4 id="heading-30">分支的合并</h4>
 <p>在master分支上，执行：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git merge testing
 </code></pre></div><p>将tesing分支合并回master</p>
 <h4 id="vimdiff">使用合并工具（可以自己设置，例如设置成vimdiff）</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git mergetool
-</code></pre></div><h4 id="heading31">分支的管理</h4>
+</code></pre></div><h4 id="heading-31">分支的管理</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git branch --merged
 </code></pre></div><p>查看哪些分支已经被并入当前分支，通常这些都可以删除了。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git branch -d testing
 </code></pre></div><p>删除一个分支</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git branch -D testing
 </code></pre></div><p>如果该分支尚没有合并，可以使用-D选项强制删除。</p>
-<h4 id="heading32">推送本地分支</h4>
+<h4 id="heading-32">推送本地分支</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git push origin testing
-</code></pre></div><h4 id="heading33">分支的衍合</h4>
+</code></pre></div><h4 id="heading-33">分支的衍合</h4>
 <p>例如现在有两个分支，一个master，一个testing</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git checkout testing
 $ git rebase master
 $ git checkout master
 $ git merge testing
 </code></pre></div><p>通常在贡献自己的代码之前先衍合，再提交，会让历史提交记录更清晰。</p>
-<h3 id="git4">Git调试</h3>
-<h4 id="heading34">文件标注</h4>
+<h3 id="git-4">Git调试</h3>
+<h4 id="heading-34">文件标注</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git blame -L 12,22 test.cpp
 </code></pre></div><p>查看test.cpp文件对每一行进行修改的最近一次提交。</p>
-<h4 id="heading35">查看文件的历史提交</h4>
+<h4 id="heading-35">查看文件的历史提交</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git log --pretty<span style="color:#39c">=</span>oneline test.cpp
 </code></pre></div><p>查看test.cpp文件的历史提交记录</p>
-<h4 id="heading36">查看文件的历史版本</h4>
+<h4 id="heading-36">查看文件的历史版本</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git show <span style="color:#39c">[</span>commit<span style="color:#39c">]</span> <span style="color:#39c">[</span>file<span style="color:#39c">]</span>
 </code></pre></div><p>例如：<code>$ git show 7da7c23 test.cpp</code></p>
 <p>查看7da7c23这次提交的test.cpp文件。</p>
-<h4 id="heading37">查看历史提交的详细文件变化</h4>
+<h4 id="heading-37">查看历史提交的详细文件变化</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git log -p -2
 </code></pre></div><p>通过这条命令可以看到最近两次提交的文件变化情况，删除的部分会以 &ldquo;-&rdquo; 开头，新增的部分会以 &ldquo;+&rdquo; 开头，方便查看。</p>
             </div>
@@ -318,66 +318,66 @@ $ git merge testing
     <li><a href="#git">Git的配置</a>
       <ul>
         <li><a href="#heading">设置用户信息</a></li>
-        <li><a href="#heading1">设置差异分析工具</a></li>
-        <li><a href="#heading2">如何获取帮助文档</a></li>
+        <li><a href="#heading-1">设置差异分析工具</a></li>
+        <li><a href="#heading-2">如何获取帮助文档</a></li>
       </ul>
     </li>
-    <li><a href="#git1">Git基础操作</a>
+    <li><a href="#git-1">Git基础操作</a>
       <ul>
-        <li><a href="#git2">取得Git仓库（从现有仓库克隆）</a></li>
-        <li><a href="#heading3">检查当前项目文件状态</a></li>
-        <li><a href="#heading4">将新文件加入到版本中</a></li>
-        <li><a href="#heading5">忽略某些文件</a></li>
-        <li><a href="#heading6">查看已暂存和未暂存的更新文件差异</a></li>
-        <li><a href="#heading7">提交更新</a></li>
-        <li><a href="#heading8">删除文件和取消跟踪</a></li>
-        <li><a href="#heading9">移动文件</a></li>
-        <li><a href="#heading10">查看提交历史</a></li>
-        <li><a href="#heading11">撤销操作</a>
+        <li><a href="#git-2">取得Git仓库（从现有仓库克隆）</a></li>
+        <li><a href="#heading-3">检查当前项目文件状态</a></li>
+        <li><a href="#heading-4">将新文件加入到版本中</a></li>
+        <li><a href="#heading-5">忽略某些文件</a></li>
+        <li><a href="#heading-6">查看已暂存和未暂存的更新文件差异</a></li>
+        <li><a href="#heading-7">提交更新</a></li>
+        <li><a href="#heading-8">删除文件和取消跟踪</a></li>
+        <li><a href="#heading-9">移动文件</a></li>
+        <li><a href="#heading-10">查看提交历史</a></li>
+        <li><a href="#heading-11">撤销操作</a>
           <ul>
-            <li><a href="#heading12">覆盖上一次的提交</a></li>
-            <li><a href="#heading13">取消已暂存文件</a></li>
-            <li><a href="#heading14">取消对文件的修改（还没有放到暂存区）</a></li>
+            <li><a href="#heading-12">覆盖上一次的提交</a></li>
+            <li><a href="#heading-13">取消已暂存文件</a></li>
+            <li><a href="#heading-14">取消对文件的修改（还没有放到暂存区）</a></li>
           </ul>
         </li>
-        <li><a href="#heading15">运程仓库的使用</a>
+        <li><a href="#heading-15">运程仓库的使用</a>
           <ul>
-            <li><a href="#heading16">查看当前的远程库</a></li>
-            <li><a href="#heading17">添加远程仓库</a></li>
-            <li><a href="#heading18">从远程仓库抓取数据</a></li>
-            <li><a href="#heading19">推送数据到远程仓库</a></li>
-            <li><a href="#heading20">查看远程仓库信息</a></li>
-            <li><a href="#heading21">远程仓库的删除</a></li>
+            <li><a href="#heading-16">查看当前的远程库</a></li>
+            <li><a href="#heading-17">添加远程仓库</a></li>
+            <li><a href="#heading-18">从远程仓库抓取数据</a></li>
+            <li><a href="#heading-19">推送数据到远程仓库</a></li>
+            <li><a href="#heading-20">查看远程仓库信息</a></li>
+            <li><a href="#heading-21">远程仓库的删除</a></li>
           </ul>
         </li>
-        <li><a href="#heading22">标签的使用</a>
+        <li><a href="#heading-22">标签的使用</a>
           <ul>
-            <li><a href="#heading23">显示已有的标签</a></li>
-            <li><a href="#heading24">新建标签</a></li>
-            <li><a href="#heading25">后期加注标签</a></li>
-            <li><a href="#heading26">推送标签</a></li>
+            <li><a href="#heading-23">显示已有的标签</a></li>
+            <li><a href="#heading-24">新建标签</a></li>
+            <li><a href="#heading-25">后期加注标签</a></li>
+            <li><a href="#heading-26">推送标签</a></li>
           </ul>
         </li>
-        <li><a href="#heading27">设置命令别名</a></li>
+        <li><a href="#heading-27">设置命令别名</a></li>
       </ul>
     </li>
-    <li><a href="#git3">Git分支</a>
+    <li><a href="#git-3">Git分支</a>
       <ul>
-        <li><a href="#heading28">新建分支</a></li>
-        <li><a href="#heading29">切换分支</a></li>
-        <li><a href="#heading30">分支的合并</a></li>
+        <li><a href="#heading-28">新建分支</a></li>
+        <li><a href="#heading-29">切换分支</a></li>
+        <li><a href="#heading-30">分支的合并</a></li>
         <li><a href="#vimdiff">使用合并工具（可以自己设置，例如设置成vimdiff）</a></li>
-        <li><a href="#heading31">分支的管理</a></li>
-        <li><a href="#heading32">推送本地分支</a></li>
-        <li><a href="#heading33">分支的衍合</a></li>
+        <li><a href="#heading-31">分支的管理</a></li>
+        <li><a href="#heading-32">推送本地分支</a></li>
+        <li><a href="#heading-33">分支的衍合</a></li>
       </ul>
     </li>
-    <li><a href="#git4">Git调试</a>
+    <li><a href="#git-4">Git调试</a>
       <ul>
-        <li><a href="#heading34">文件标注</a></li>
-        <li><a href="#heading35">查看文件的历史提交</a></li>
-        <li><a href="#heading36">查看文件的历史版本</a></li>
-        <li><a href="#heading37">查看历史提交的详细文件变化</a></li>
+        <li><a href="#heading-34">文件标注</a></li>
+        <li><a href="#heading-35">查看文件的历史提交</a></li>
+        <li><a href="#heading-36">查看文件的历史版本</a></li>
+        <li><a href="#heading-37">查看历史提交的详细文件变化</a></li>
       </ul>
     </li>
   </ul>

@@ -108,11 +108,11 @@
 <p><strong>content_type</strong>： 可以有两种方式，一种 text/plain，纯字符串，不做转义。一种 text/html，会展示成 html 页面。</p>
 <p><strong>body</strong>： 邮件正文内容。</p>
 <p><strong>msg</strong>： msg 的内容需要遵循 smtp 协议的格式，参考上例。</p>
-<h3 id="heading1">特定邮件服务器出错</h3>
+<h3 id="heading-1">特定邮件服务器出错</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">certificate signed by unknown authority
 </code></pre></div><p>在通过公司内部自己搭建的邮件服务器发送邮件时报了上述错误，看上去是因为认证不通过的问题，检查了一下用户名和密码没有问题。</p>
 <p>我通过抓包以及手动 telnet 执行了一遍 smtp 的过程，发送问题出现在是否加密和身份验证上。</p>
-<h4 id="smtp-1">SMTP 协议</h4>
+<h4 id="smtp--1">SMTP 协议</h4>
 <p>smtp 协议开始时客户端主动向邮件服务器发送 <code>EHLO</code>，服务器会返回支持的所有命令，例如</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">250-PIPELINING
 250-SIZE <span style="color:#cd00cd">10240000</span>
@@ -303,9 +303,9 @@
         <li><a href="#heading">简单发送邮件示例</a></li>
       </ul>
     </li>
-    <li><a href="#heading1">特定邮件服务器出错</a>
+    <li><a href="#heading-1">特定邮件服务器出错</a>
       <ul>
-        <li><a href="#smtp-1">SMTP 协议</a></li>
+        <li><a href="#smtp--1">SMTP 协议</a></li>
         <li><a href="#starttls-">STARTTLS 引起的错误</a></li>
       </ul>
     </li>

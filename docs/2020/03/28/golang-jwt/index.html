@@ -149,7 +149,7 @@
     }
     httputil.Reply(rw, <span style="color:#39c">&amp;</span>res)
 }
-</code></pre></div><h3 id="-token1">校验 Token</h3>
+</code></pre></div><h3 id="-token-1">校验 Token</h3>
 <p>这里要求客户端每次将通过登录接口获取到的 token 设置在发送请求的 <code>Authorization</code> header 中。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#00cd00">func</span> (a <span style="color:#39c">*</span>AuthFilter) Filter(next http.Handler) http.Handler {
     <span style="color:#cdcd00">return</span> http.HandlerFunc(<span style="color:#00cd00">func</span>(rw http.ResponseWriter, req <span style="color:#39c">*</span>http.Request) {
@@ -171,7 +171,7 @@
         next.ServeHTTP(rw, req)
     }   
 }
-</code></pre></div><h3 id="heading1">注意点</h3>
+</code></pre></div><h3 id="heading-1">注意点</h3>
 <ul>
 <li>由于 jwt 返回的 Token 中的数据仅做了 Base64 处理，没有加密，所以不应放入重要的信息。</li>
 <li>jwt Token 由于是无状态的，任何获取到此 Token 的人都可以访问，所以为了减少盗用，可以将 Token 有效期设置短一些。对一些重要的操作，尽量再次进行认证。</li>
@@ -245,8 +245,8 @@
       </ul>
     </li>
     <li><a href="#-token">生成 Token</a></li>
-    <li><a href="#-token1">校验 Token</a></li>
-    <li><a href="#heading1">注意点</a></li>
+    <li><a href="#-token-1">校验 Token</a></li>
+    <li><a href="#heading-1">注意点</a></li>
   </ul>
 </nav>
         </div>

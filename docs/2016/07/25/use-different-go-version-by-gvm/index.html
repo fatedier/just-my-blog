@@ -97,19 +97,19 @@
 <p>另外还需要将 <code>~/.zshrc</code> 或者 <code>~/.bashrc</code> 中的</p>
 <p><code>[[ -s &quot;~/.gvm/scripts/gvm&quot; ]] &amp;&amp; source &quot;~/.gvm/scripts/gvm&quot;</code></p>
 <p>移到设置 <code>GOPATH</code> 变量之前，避免登录 shell 之后被修改 <code>GOPATH</code> 变量。</p>
-<h3 id="heading1">使用</h3>
-<h4 id="-go-1">切换到安装好的指定 go 版本</h4>
+<h3 id="heading-1">使用</h3>
+<h4 id="-go--1">切换到安装好的指定 go 版本</h4>
 <p><code>gvm use go1.6.3</code></p>
 <p>通过 <code>go version</code> 可以看到已经是新版本的二进制文件，通过 <code>go env</code> 可以查看 <code>GOROOT</code> 信息，例如我的就是 <code>~/.gvm/gos/go1.6.3</code>，这样编译项目时就会在这个目录下找标准库中的文件。</p>
-<h4 id="heading2">切换到原来的系统版本</h4>
+<h4 id="heading-2">切换到原来的系统版本</h4>
 <p><code>gvm use system</code></p>
-<h4 id="heading3">查看当前已经安装的所有版本</h4>
+<h4 id="heading-3">查看当前已经安装的所有版本</h4>
 <p><code>gvm list</code></p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gvm gos <span style="color:#39c">(</span>installed<span style="color:#39c">)</span>
 
 <span style="color:#39c">=</span>&gt; go1.6.3
    system
-</code></pre></div><h4 id="heading4">设置某个版本为默认</h4>
+</code></pre></div><h4 id="heading-4">设置某个版本为默认</h4>
 <p><code>gvm use go1.6.3 --default</code></p>
 <p>这样设置后，再登录 shell 就默认使用 <code>go1.6.3</code> 的版本，而不是系统原来的版本了。</p>
             </div>
@@ -184,12 +184,12 @@
     <li><a href="#-gvm">安装 gvm</a></li>
     <li><a href="#-go-">安装指定 go 版本</a></li>
     <li><a href="#heading">修改配置信息方便使用</a></li>
-    <li><a href="#heading1">使用</a>
+    <li><a href="#heading-1">使用</a>
       <ul>
-        <li><a href="#-go-1">切换到安装好的指定 go 版本</a></li>
-        <li><a href="#heading2">切换到原来的系统版本</a></li>
-        <li><a href="#heading3">查看当前已经安装的所有版本</a></li>
-        <li><a href="#heading4">设置某个版本为默认</a></li>
+        <li><a href="#-go--1">切换到安装好的指定 go 版本</a></li>
+        <li><a href="#heading-2">切换到原来的系统版本</a></li>
+        <li><a href="#heading-3">查看当前已经安装的所有版本</a></li>
+        <li><a href="#heading-4">设置某个版本为默认</a></li>
       </ul>
     </li>
   </ul>

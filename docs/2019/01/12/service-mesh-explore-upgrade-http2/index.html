@@ -148,7 +148,7 @@ You tell HTTP/2.0
     s.Handler.ServeHTTP(w, r)
     <span style="color:#cdcd00">return</span>
 }
-</code></pre></div><h4 id="heading1">客户端</h4>
+</code></pre></div><h4 id="heading-1">客户端</h4>
 <p>由于我们的服务端同时支持 HTTP/1.1 和 HTTP/2，所以客户端可以通过任意的协议来通信，最好通过配置或环境变量的方式来决定是否启用升级 HTTP/2 的功能，后面会讲一下这个里面存在的坑。</p>
 <p>客户端的示例代码:</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> main
@@ -181,7 +181,7 @@ You tell HTTP/2.0
     fmt.Println(resp.Proto)
 }
 </code></pre></div><p>http2.Transport 本身没有提供 <code>Dial</code> 方法来不启用 TLS，但是由于 HTTP/2 和 TLS 无关，只需要将 <code>DialTLS</code> 替换成我们自己方法，不建立 TLS 连接，对上层的 HTTP/2 的协议处理完全没有影响。</p>
-<h3 id="heading2">遇到的问题</h3>
+<h3 id="heading-2">遇到的问题</h3>
 <p>实际上线此功能后，运行了两天，出现了服务超时的问题，排查后看起来和 <a href="https://github.com/golang/go/issues/28204">https://github.com/golang/go/issues/28204</a> 这个 issue 比较相似。</p>
 <p>目前 Golang 标准库(Go1.11)中对于 HTTP/2 的流量控制在某些特殊场景下存在 Bug，会导致 Flow Control 的写窗口一直为 0，且无法恢复。这就导致了请求超时，并且复用的 Stream 没有被正常关闭，如果持续请求，默认单个 TCP 连接中存在 100 个 Stream 时，会新建一个 TCP 连接，此时后续的请求会恢复正常，但是如果又出现了有问题的请求，会重复之前的错误。</p>
 <p>由于时间原因，并没有继续跟踪源码查看问题到底在哪，因为本地环境经过大量并发测试也并没有出现问题，说明应该是一个比较极端的 case 导致了这个错误。后续有精力时，可以考虑在线上开启流量复制的功能，将流量额外复制一份到单独版本的实例上，这个版本可以开启更多的 Debug 日志来辅助调试。</p>
@@ -258,10 +258,10 @@ You tell HTTP/2.0
     <li><a href="#-http11--http2">在同一个端口上同时支持 HTTP/1.1 和 HTTP/2</a>
       <ul>
         <li><a href="#heading">服务端</a></li>
-        <li><a href="#heading1">客户端</a></li>
+        <li><a href="#heading-1">客户端</a></li>
       </ul>
     </li>
-    <li><a href="#heading2">遇到的问题</a></li>
+    <li><a href="#heading-2">遇到的问题</a></li>
   </ul>
 </nav>
         </div>

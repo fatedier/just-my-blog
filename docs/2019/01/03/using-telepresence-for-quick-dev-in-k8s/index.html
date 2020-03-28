@@ -77,12 +77,12 @@
 <pre><code>brew cask install osxfuse
 brew install datawire/blackbird/telepresence
 </code></pre><p>其他的系统环境安装参考 <a href="https://www.telepresence.io/reference/install">https://www.telepresence.io/reference/install</a></p>
-<h3 id="heading1">简介</h3>
+<h3 id="heading-1">简介</h3>
 <p>Telepresence 是用 python 编写的用于帮助我们在本地运行一个服务，同时能够访问到远端的 kubernetes 集群的服务。</p>
 <p>这样的话，我们不再需要每次修改代码后，重新编译，推送镜像，部署到 k8s 集群，然后调试，如果出现错误，再重复这样的步骤。并且由于服务是在本地运行，可以更方便地利用本地环境的一些调试工具来帮助我们排查分析问题。</p>
-<h3 id="heading2">原理</h3>
+<h3 id="heading-2">原理</h3>
 <p>Telepresence 在远端 k8s 集群部署了一个和本地环境网络互通的 pod，可以选择 VPN 的方式。这个 pod 会将指定的网络流量，环境变量，磁盘等数据转发到本地的服务。且本地服务的 DNS 查询，网络流量，都可以被路由到远端的 k8s 集群。</p>
-<h3 id="heading3">常用的功能</h3>
+<h3 id="heading-3">常用的功能</h3>
 <h4 id="-deployment-">新建一个 Deployment 用于测试本地服务访问远端服务</h4>
 <pre><code>telepresence --new-deployment myserver --run-shell --also-proxy 192.168.0.0/16
 </code></pre><p>telepresence 默认会使用当前的 kubectl 的 current context 来进行请求。</p>
@@ -93,7 +93,7 @@ brew install datawire/blackbird/telepresence
 </ul>
 <p>启动成功后，会进入到一个 shell 终端。在这个终端里运行的命令都能够访问到 k8s 集群里的服务。</p>
 <p>因为只打开了一个 shell 终端，如果需要同时调试多个服务就比较麻烦。最好能够借助于 <strong>tmux</strong> 这样的工具来打开多个终端窗口。</p>
-<h4 id="-deployment-1">替换一个远端的 Deployment 服务</h4>
+<h4 id="-deployment--1">替换一个远端的 Deployment 服务</h4>
 <p>有时在远端 k8s 集群我们已经部署了一套完整的服务，但是其中某个服务可能有问题。我们希望能够将集群内的流量劫持到本地的进程，来进行调试，这样就可以快速修改代码，加日志，方便排查问题。</p>
 <pre><code>telepresence --swap-deployment proxy:proxy --expose 9100:9100 --also-proxy 192.168.0.0/16
 </code></pre><ul>
@@ -164,12 +164,12 @@ brew install datawire/blackbird/telepresence
             <nav id="TableOfContents">
   <ul>
     <li><a href="#heading">安装</a></li>
-    <li><a href="#heading1">简介</a></li>
-    <li><a href="#heading2">原理</a></li>
-    <li><a href="#heading3">常用的功能</a>
+    <li><a href="#heading-1">简介</a></li>
+    <li><a href="#heading-2">原理</a></li>
+    <li><a href="#heading-3">常用的功能</a>
       <ul>
         <li><a href="#-deployment-">新建一个 Deployment 用于测试本地服务访问远端服务</a></li>
-        <li><a href="#-deployment-1">替换一个远端的 Deployment 服务</a></li>
+        <li><a href="#-deployment--1">替换一个远端的 Deployment 服务</a></li>
       </ul>
     </li>
   </ul>

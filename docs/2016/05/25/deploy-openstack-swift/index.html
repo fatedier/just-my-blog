@@ -77,7 +77,7 @@
 <p>之前安装过一次，当时是 2.4.0 版本，目前最新的是 2.7.0 版本，最新的版本由于我的机器上缺少某些动态库，所以还是选择了比较熟悉的 2.4.0 版本，基本上的步骤是一样的。</p>
 <p>后续的安装步骤需要在三台机器上全部执行一遍，下文中的 <code>user:user</code> 根据需要修改为自己机器上的用户。</p>
 <p>整个步骤参考了官方的文档： <a href="http://docs.openstack.org/developer/swift/development_saio.html">http://docs.openstack.org/developer/swift/development_saio.html</a></p>
-<h3 id="heading1">安装各种依赖</h3>
+<h3 id="heading-1">安装各种依赖</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo yum install curl gcc memcached rsync sqlite xfsprogs git-core <span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>    libffi-devel xinetd liberasurecode-devel <span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>    python-setuptools <span style="color:#cd0000">\
@@ -86,7 +86,7 @@
 </span><span style="color:#cd0000"></span>    python-greenlet python-paste-deploy <span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>    python-netifaces python-pip python-dns <span style="color:#cd0000">\
 </span><span style="color:#cd0000"></span>    python-mock
-</code></pre></div><h3 id="heading2">创建磁盘设备</h3>
+</code></pre></div><h3 id="heading-2">创建磁盘设备</h3>
 <p>由于 swift 需要使用 xfs 格式的磁盘，这里我们使用回环设备。</p>
 <h4 id="2gb">创建一个用于回环设备的2GB大小的文件</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mkdir /srv
@@ -94,14 +94,14 @@ sudo truncate -s 1GB /srv/swift-disk
 sudo mkfs.xfs /srv/swift-disk
 </code></pre></div><h4 id="etcfstab">修改 /etc/fstab</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/srv/swift-disk /srv/node/sdb1 xfs loop,noatime,nodiratime,nobarrier,logbufs<span style="color:#39c">=</span><span style="color:#cd00cd">8</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
-</code></pre></div><h4 id="heading3">创建挂载点并进行挂载</h4>
+</code></pre></div><h4 id="heading-3">创建挂载点并进行挂载</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mkdir -p /srv/node/sdb1
 sudo mount /srv/node/sdb1
 sudo chown -R user:user /srv/node
-</code></pre></div><h4 id="-swift--swiftclient">下载安装 swift 和 swift-client</h4>
+</code></pre></div><h4 id="-swift--swift-client">下载安装 swift 和 swift-client</h4>
 <p>从 git 下载这两个项目之后切换到 2.4.0 版本，安装 python 依赖以后使用 <code>python setup.py</code> 安装。</p>
 <p>直接通过 yum 安装的 pip 可能版本不是最新的，需要升级，使用 <code>pip install --upgrade pip</code> 升级。</p>
-<h5 id="swiftclient">swift-client</h5>
+<h5 id="swift-client">swift-client</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/openstack/python-swiftclient.git
 git checkout 2.4.0
 <span style="color:#cd00cd">cd</span> ./python-swiftclient; sudo python setup.py develop; <span style="color:#cd00cd">cd</span> -
@@ -146,7 +146,7 @@ lock <span style="color:#00cdcd">file</span> <span style="color:#39c">=</span> /
 sudo service rsyncd start
 </code></pre></div><h3 id="rsyslog">配置rsyslog让每个程序输出独立的日志（可选）</h3>
 <p>swift 默认将日志信息输出到文件 /var/log/syslog 中。如果要按照个人需求设置 rsyslog，生成另外单独的 swift日志文件，就需要另外配置。</p>
-<h4 id="-etcrsyslogd10swiftconf">创建日志配置文件 /etc/rsyslog.d/10-swift.conf</h4>
+<h4 id="-etcrsyslogd10-swiftconf">创建日志配置文件 /etc/rsyslog.d/10-swift.conf</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080"># Uncomment the following to have a log containing all logs together</span>
 <span style="color:#000080">#local1,local2,local3,local4,local5.*   /var/log/swift/all.log</span>
 
@@ -181,8 +181,8 @@ local4.*                ~
 </code></pre></div><h3 id="-memcached-">启动 memcached 并设置开机启动</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo service memcached start
 sudo chkconfig memcached on
-</code></pre></div><h3 id="swift1">配置swift相关的配置文件</h3>
-<h4 id="-swift-1">创建存储 swift 配置文件的目录</h4>
+</code></pre></div><h3 id="swift-1">配置swift相关的配置文件</h3>
+<h4 id="-swift--1">创建存储 swift 配置文件的目录</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mkdir /etc/swift
 sudo chown -R user:user /etc/swift
 </code></pre></div><h4 id="-swift--etcswiftswiftconf">创建 swift 配置文件 /etc/swift/swift.conf</h4>
@@ -190,7 +190,7 @@ sudo chown -R user:user /etc/swift
 
 <span style="color:#000080"># random unique string that can never change (DO NOT LOSE)</span>
 <span style="color:#00cdcd">swift_hash_path_suffix</span> <span style="color:#39c">=</span> jtangfs
-</code></pre></div><h4 id="-account-etcswiftaccountserverconf">配置 account 服务 /etc/swift/account-server.conf</h4>
+</code></pre></div><h4 id="-account-etcswiftaccount-serverconf">配置 account 服务 /etc/swift/account-server.conf</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
 <span style="color:#00cdcd">devices</span> <span style="color:#39c">=</span> /srv/node
 <span style="color:#00cdcd">mount_check</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
@@ -209,7 +209,7 @@ sudo chown -R user:user /etc/swift
 <span style="color:#39c">[</span>account-replicator<span style="color:#39c">]</span>
 <span style="color:#39c">[</span>account-auditor<span style="color:#39c">]</span>
 <span style="color:#39c">[</span>account-reaper<span style="color:#39c">]</span>
-</code></pre></div><h4 id="-container-etcswiftcontainerserverconf">配置 container 服务 /etc/swift/container-server.conf</h4>
+</code></pre></div><h4 id="-container-etcswiftcontainer-serverconf">配置 container 服务 /etc/swift/container-server.conf</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
 <span style="color:#00cdcd">devices</span> <span style="color:#39c">=</span> /srv/node
 <span style="color:#00cdcd">mount_check</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
@@ -232,7 +232,7 @@ sudo chown -R user:user /etc/swift
 <span style="color:#39c">[</span>container-auditor<span style="color:#39c">]</span>
 
 <span style="color:#39c">[</span>container-sync<span style="color:#39c">]</span>
-</code></pre></div><h4 id="-object-etcswiftobjectserverconf">配置 object 服务 /etc/swift/object-server.conf</h4>
+</code></pre></div><h4 id="-object-etcswiftobject-serverconf">配置 object 服务 /etc/swift/object-server.conf</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
 <span style="color:#00cdcd">devices</span> <span style="color:#39c">=</span> /srv/node
 <span style="color:#00cdcd">mount_check</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
@@ -253,7 +253,7 @@ sudo chown -R user:user /etc/swift
 <span style="color:#39c">[</span>object-updater<span style="color:#39c">]</span>
 
 <span style="color:#39c">[</span>object-auditor<span style="color:#39c">]</span>
-</code></pre></div><h4 id="-proxy-etcswiftproxyserverconf">配置 proxy 服务 /etc/swift/proxy-server.conf</h4>
+</code></pre></div><h4 id="-proxy-etcswiftproxy-serverconf">配置 proxy 服务 /etc/swift/proxy-server.conf</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
 <span style="color:#00cdcd">bind_port</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">8080</span>
 <span style="color:#00cdcd">user</span> <span style="color:#39c">=</span> wcl
@@ -298,7 +298,7 @@ sudo chown -R user:user /etc/swift
 swift-ring-builder container.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
 swift-ring-builder object.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
 </code></pre></div><p>需要事先创建好3个 ring，18 表示 partition 数为2的18次方，3表示 replication 数为3，1 表示分区数据的最短迁移间隔时间为1小时。（官网说明里如果移除设备的话不在这个限制内）</p>
-<h3 id="-ring-1">向 ring 中加入设备</h3>
+<h3 id="-ring--1">向 ring 中加入设备</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift-ring-builder account.builder add z1-192.168.2.129:6002/sdb1 <span style="color:#cd00cd">100</span>
 swift-ring-builder container.builder add z1-192.168.2.129:6001/sdb1 <span style="color:#cd00cd">100</span>
 swift-ring-builder object.builder add z1-192.168.2.129:6000/sdb1 <span style="color:#cd00cd">100</span>
@@ -319,9 +319,9 @@ swift-ring-builder container.builder rebalance
 swift-ring-builder object.builder rebalance
 </code></pre></div><h4 id="-ring--etcswift-">将 ring 文件传输到其他机器的 /etc/swift 目录下</h4>
 <p>最终生成的 ring 文件以 <code>.gz</code> 结尾。</p>
-<h3 id="heading4">创建初始化、起停等脚本</h3>
+<h3 id="heading-4">创建初始化、起停等脚本</h3>
 <p>由于 swift 涉及的组件较多，起停都比较麻烦，所以最好先写好起停脚本。</p>
-<h4 id="remakeringssh--ring-">remake_rings.sh 脚本文件，用于完成 ring 的重新创建</h4>
+<h4 id="remake-ringssh--ring-">remake_rings.sh 脚本文件，用于完成 ring 的重新创建</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
 </span><span style="color:#000080"></span><span style="color:#cd00cd">cd</span> /etc/swift
 
@@ -346,7 +346,7 @@ swift-ring-builder object.builder add z1-192.168.2.131:6000/sdb1 <span style="co
 swift-ring-builder account.builder rebalance
 swift-ring-builder container.builder rebalance
 swift-ring-builder object.builder rebalance
-</code></pre></div><h4 id="resetswiftsh--swift-">reset_swift.sh 脚本文件，用于一键清空 swift 的对象数据和日志，完全重置</h4>
+</code></pre></div><h4 id="reset-swiftsh--swift-">reset_swift.sh 脚本文件，用于一键清空 swift 的对象数据和日志，完全重置</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
 </span><span style="color:#000080"></span>swift-init all stop
 
@@ -362,13 +362,13 @@ sudo rm -f /var/log/debug /var/log/messages /var/log/rsyncd.log /var/log/syslog
 sudo service rsyslog restart
 sudo service rsyncd restart
 sudo service memcached restart
-</code></pre></div><h4 id="startmainsh--swift-">start_main.sh 脚本文件，用于启动 swift 所有基础服务</h4>
+</code></pre></div><h4 id="start-mainsh--swift-">start_main.sh 脚本文件，用于启动 swift 所有基础服务</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
 </span><span style="color:#000080"></span>swift-init main start
-</code></pre></div><h4 id="stopmainsh--swift-">stop_main.sh 脚本文件，用于关闭 swift 所有基础服务</h4>
+</code></pre></div><h4 id="stop-mainsh--swift-">stop_main.sh 脚本文件，用于关闭 swift 所有基础服务</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
 </span><span style="color:#000080"></span>swift-init main stop
-</code></pre></div><h4 id="startallsh-">start_all.sh 脚本文件</h4>
+</code></pre></div><h4 id="start-allsh-">start_all.sh 脚本文件</h4>
 <p>一键启动 swift 的所有服务。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
 </span><span style="color:#000080"></span>swift-init proxy start
@@ -383,7 +383,7 @@ swift-init object-server start
 swift-init object-replicator start
 swift-init object-updater start
 swift-init object-auditor start
-</code></pre></div><h4 id="stopallsh-">stop_all.sh 脚本文件</h4>
+</code></pre></div><h4 id="stop-allsh-">stop_all.sh 脚本文件</h4>
 <p>一键关闭 swift的所有服务。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
 </span><span style="color:#000080"></span>swift-init proxy stop
@@ -398,13 +398,13 @@ swift-init object-server stop
 swift-init object-replicator stop
 swift-init object-updater stop
 swift-init object-auditor stop
-</code></pre></div><h4 id="-swift-2">启动 swift 服务</h4>
+</code></pre></div><h4 id="-swift--2">启动 swift 服务</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./start_all.sh
-</code></pre></div><h3 id="heading5">动态扩容</h3>
+</code></pre></div><h3 id="heading-5">动态扩容</h3>
 <p>重新编写 <strong>remake_rings.sh</strong> 脚本中的内容，加上需要添加的机器信息，重新生成 ring 文件。</p>
 <p>将新生成的 ring 文件放到每一个服务器的 <code>/etc/swift</code> 目录下。</p>
 <p>swift 的各个组件程序会定期重新读取 rings 文件。</p>
-<h3 id="heading6">一些需要注意的地方</h3>
+<h3 id="heading-6">一些需要注意的地方</h3>
 <ul>
 <li>服务器时间必须一致，不一致的话会出现问题。测试中有一台服务器比其他的慢了2小时，结果向这台 proxy  上传文件，返回成功，但是其实并没有上传成功，可能是由于时间原因，在其他机器看来这个文件已经被删除掉了。</li>
 </ul>
@@ -412,7 +412,7 @@ swift-init object-auditor stop
 <p>swift 可以通过 swift-proxy 提供的 RESTful API 来进行操作。</p>
 <p>另外一种方法就是使用 <code>swift</code> 程序来进行增删查改的操作，可以实现和 RESTful API 相同的功能。</p>
 <p><strong>所有的操作都需要先获取一个 auth-token，之后的所有操作都需要在 header 中附加上 X-Auth-Token 字段的信息进行权限认证。有一定时效性，过期后需要再次获取。</strong></p>
-<h4 id="-xstorageurl--xauthtoken">获取 X-Storage-Url 和 X-Auth-Token</h4>
+<h4 id="-x-storage-url--x-auth-token">获取 X-Storage-Url 和 X-Auth-Token</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://127.0.0.1:8080/auth/v1.0 -v -H <span style="color:#cd0000">&#39;X-Storage-User: test:tester&#39;</span> -H <span style="color:#cd0000">&#39;X-Storage-Pass: testing&#39;</span>
 </code></pre></div><p>这里的用户和密码是在 <code>proxy-server.conf</code> 中配置的。</p>
 <p>返回结果</p>
@@ -424,7 +424,7 @@ swift-init object-auditor stop
 &lt; X-Trans-Id: tx7bcd450378d84b56b1482-005745b5c8
 &lt; Content-Length: <span style="color:#cd00cd">0</span>
 &lt; Date: Wed, <span style="color:#cd00cd">25</span> May <span style="color:#cd00cd">2016</span> 14:25:12 GMT
-</code></pre></div><h4 id="heading7">查看账户信息</h4>
+</code></pre></div><h4 id="heading-7">查看账户信息</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://127.0.0.1:8080/v1/AUTH_test -v -H <span style="color:#cd0000">&#39;X-Auth-Token: AUTH_tk039a65cb62594b319faea9dc492039a2&#39;</span>
 </code></pre></div><p>返回结果</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&lt; HTTP/1.1 <span style="color:#cd00cd">200</span> OK
@@ -443,7 +443,7 @@ swift-init object-auditor stop
 </code></pre></div><h4 id="-container">创建 container</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://127.0.0.1:8080/v1/AUTH_test/default -X PUT -H <span style="color:#cd0000">&#34;X-Auth_Token: AUTH_tk039a65cb62594b319faea9dc492039a2&#34;</span>
 </code></pre></div><p>在 test 用户下创建了一个名为 default 的 container。</p>
-<h4 id="restful-api-1">RESTful API 总结</h4>
+<h4 id="restful-api--1">RESTful API 总结</h4>
 <table>
 <thead>
 <tr>
@@ -486,17 +486,17 @@ swift-init object-auditor stop
 </tr>
 </tbody>
 </table>
-<h4 id="-swift-3">直接使用 swift 客户端程序进行操作</h4>
+<h4 id="-swift--3">直接使用 swift 客户端程序进行操作</h4>
 <p><strong>-A</strong> 参数指定 url，<strong>-U</strong> 参数指定用户，<strong>-K</strong> 参数指定密码。</p>
-<h5 id="-swift-4">查看指定账户的 swift 存储信息</h5>
+<h5 id="-swift--4">查看指定账户的 swift 存储信息</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing stat
-</code></pre></div><h5 id="-container1">创建 container</h5>
+</code></pre></div><h5 id="-container-1">创建 container</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing post default
 </code></pre></div><h5 id="-test--container-">查看 test 用户的 container 列表</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing list
 </code></pre></div><h5 id="object-testcpp--default-">上传Object（文件），上传 test.cpp 文件到 default 容器中</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing upload default ./dd.cpp
-</code></pre></div><h5 id="heading8">查看容器中的内容</h5>
+</code></pre></div><h5 id="heading-8">查看容器中的内容</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing list default
 </code></pre></div><h5 id="object">下载Object（文件）</h5>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing download default dd.cpp
@@ -577,15 +577,15 @@ swift-init object-auditor stop
             <nav id="TableOfContents">
   <ul>
     <li><a href="#heading">环境</a></li>
-    <li><a href="#heading1">安装各种依赖</a></li>
-    <li><a href="#heading2">创建磁盘设备</a>
+    <li><a href="#heading-1">安装各种依赖</a></li>
+    <li><a href="#heading-2">创建磁盘设备</a>
       <ul>
         <li><a href="#2gb">创建一个用于回环设备的2GB大小的文件</a></li>
         <li><a href="#etcfstab">修改 /etc/fstab</a></li>
-        <li><a href="#heading3">创建挂载点并进行挂载</a></li>
-        <li><a href="#-swift--swiftclient">下载安装 swift 和 swift-client</a>
+        <li><a href="#heading-3">创建挂载点并进行挂载</a></li>
+        <li><a href="#-swift--swift-client">下载安装 swift 和 swift-client</a>
           <ul>
-            <li><a href="#swiftclient">swift-client</a></li>
+            <li><a href="#swift-client">swift-client</a></li>
             <li><a href="#swift">swift</a></li>
             <li><a href="#-etcrclocal">配置 /etc/rc.local</a></li>
           </ul>
@@ -600,7 +600,7 @@ swift-init object-auditor stop
     </li>
     <li><a href="#rsyslog">配置rsyslog让每个程序输出独立的日志（可选）</a>
       <ul>
-        <li><a href="#-etcrsyslogd10swiftconf">创建日志配置文件 /etc/rsyslog.d/10-swift.conf</a></li>
+        <li><a href="#-etcrsyslogd10-swiftconf">创建日志配置文件 /etc/rsyslog.d/10-swift.conf</a></li>
         <li><a href="#-etcrsyslogconf-privdroptogroup--adm">编辑文件 /etc/rsyslog.conf，更改参数 $PrivDropToGroup 为 adm</a></li>
         <li><a href="#-varlogswift-">创建 /var/log/swift 目录，用于存放独立日志</a></li>
         <li><a href="#-swift-">更改 swift 独立日志目录的权限</a></li>
@@ -608,14 +608,14 @@ swift-init object-auditor stop
       </ul>
     </li>
     <li><a href="#-memcached-">启动 memcached 并设置开机启动</a></li>
-    <li><a href="#swift1">配置swift相关的配置文件</a>
+    <li><a href="#swift-1">配置swift相关的配置文件</a>
       <ul>
-        <li><a href="#-swift-1">创建存储 swift 配置文件的目录</a></li>
+        <li><a href="#-swift--1">创建存储 swift 配置文件的目录</a></li>
         <li><a href="#-swift--etcswiftswiftconf">创建 swift 配置文件 /etc/swift/swift.conf</a></li>
-        <li><a href="#-account-etcswiftaccountserverconf">配置 account 服务 /etc/swift/account-server.conf</a></li>
-        <li><a href="#-container-etcswiftcontainerserverconf">配置 container 服务 /etc/swift/container-server.conf</a></li>
-        <li><a href="#-object-etcswiftobjectserverconf">配置 object 服务 /etc/swift/object-server.conf</a></li>
-        <li><a href="#-proxy-etcswiftproxyserverconf">配置 proxy 服务 /etc/swift/proxy-server.conf</a></li>
+        <li><a href="#-account-etcswiftaccount-serverconf">配置 account 服务 /etc/swift/account-server.conf</a></li>
+        <li><a href="#-container-etcswiftcontainer-serverconf">配置 container 服务 /etc/swift/container-server.conf</a></li>
+        <li><a href="#-object-etcswiftobject-serverconf">配置 object 服务 /etc/swift/object-server.conf</a></li>
+        <li><a href="#-proxy-etcswiftproxy-serverconf">配置 proxy 服务 /etc/swift/proxy-server.conf</a></li>
       </ul>
     </li>
     <li><a href="#-ring-">创建 ring 文件</a>
@@ -623,38 +623,38 @@ swift-init object-auditor stop
         <li><a href="#-ring">生成 ring</a></li>
       </ul>
     </li>
-    <li><a href="#-ring-1">向 ring 中加入设备</a>
+    <li><a href="#-ring--1">向 ring 中加入设备</a>
       <ul>
         <li><a href="#rebalance">rebalance</a></li>
         <li><a href="#-ring--etcswift-">将 ring 文件传输到其他机器的 /etc/swift 目录下</a></li>
       </ul>
     </li>
-    <li><a href="#heading4">创建初始化、起停等脚本</a>
+    <li><a href="#heading-4">创建初始化、起停等脚本</a>
       <ul>
-        <li><a href="#remakeringssh--ring-">remake_rings.sh 脚本文件，用于完成 ring 的重新创建</a></li>
-        <li><a href="#resetswiftsh--swift-">reset_swift.sh 脚本文件，用于一键清空 swift 的对象数据和日志，完全重置</a></li>
-        <li><a href="#startmainsh--swift-">start_main.sh 脚本文件，用于启动 swift 所有基础服务</a></li>
-        <li><a href="#stopmainsh--swift-">stop_main.sh 脚本文件，用于关闭 swift 所有基础服务</a></li>
-        <li><a href="#startallsh-">start_all.sh 脚本文件</a></li>
-        <li><a href="#stopallsh-">stop_all.sh 脚本文件</a></li>
-        <li><a href="#-swift-2">启动 swift 服务</a></li>
+        <li><a href="#remake-ringssh--ring-">remake_rings.sh 脚本文件，用于完成 ring 的重新创建</a></li>
+        <li><a href="#reset-swiftsh--swift-">reset_swift.sh 脚本文件，用于一键清空 swift 的对象数据和日志，完全重置</a></li>
+        <li><a href="#start-mainsh--swift-">start_main.sh 脚本文件，用于启动 swift 所有基础服务</a></li>
+        <li><a href="#stop-mainsh--swift-">stop_main.sh 脚本文件，用于关闭 swift 所有基础服务</a></li>
+        <li><a href="#start-allsh-">start_all.sh 脚本文件</a></li>
+        <li><a href="#stop-allsh-">stop_all.sh 脚本文件</a></li>
+        <li><a href="#-swift--2">启动 swift 服务</a></li>
       </ul>
     </li>
-    <li><a href="#heading5">动态扩容</a></li>
-    <li><a href="#heading6">一些需要注意的地方</a></li>
+    <li><a href="#heading-5">动态扩容</a></li>
+    <li><a href="#heading-6">一些需要注意的地方</a></li>
     <li><a href="#restful-api-">RESTful API 及测试</a>
       <ul>
-        <li><a href="#-xstorageurl--xauthtoken">获取 X-Storage-Url 和 X-Auth-Token</a></li>
-        <li><a href="#heading7">查看账户信息</a></li>
+        <li><a href="#-x-storage-url--x-auth-token">获取 X-Storage-Url 和 X-Auth-Token</a></li>
+        <li><a href="#heading-7">查看账户信息</a></li>
         <li><a href="#-container">创建 container</a></li>
-        <li><a href="#restful-api-1">RESTful API 总结</a></li>
-        <li><a href="#-swift-3">直接使用 swift 客户端程序进行操作</a>
+        <li><a href="#restful-api--1">RESTful API 总结</a></li>
+        <li><a href="#-swift--3">直接使用 swift 客户端程序进行操作</a>
           <ul>
-            <li><a href="#-swift-4">查看指定账户的 swift 存储信息</a></li>
-            <li><a href="#-container1">创建 container</a></li>
+            <li><a href="#-swift--4">查看指定账户的 swift 存储信息</a></li>
+            <li><a href="#-container-1">创建 container</a></li>
             <li><a href="#-test--container-">查看 test 用户的 container 列表</a></li>
             <li><a href="#object-testcpp--default-">上传Object（文件），上传 test.cpp 文件到 default 容器中</a></li>
-            <li><a href="#heading8">查看容器中的内容</a></li>
+            <li><a href="#heading-8">查看容器中的内容</a></li>
             <li><a href="#object">下载Object（文件）</a></li>
           </ul>
         </li>

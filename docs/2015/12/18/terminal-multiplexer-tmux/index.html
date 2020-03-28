@@ -79,10 +79,10 @@
 <li>window： 对应于其他 IDE 的 Tab 标签页，一个 window 占据一个显示屏幕，一个 session 可以有多个 window。</li>
 <li>pane： 在一个 window 中可以有多个 pane，便于大屏幕显示屏将屏幕切分成多块。</li>
 </ul>
-<h3 id="heading1">安装</h3>
+<h3 id="heading-1">安装</h3>
 <p>Centos下直接通过 <code>yum install -y tmux</code> 来安装，其他系统也一样可以使用相应的包管理工具安装。</p>
-<h3 id="heading2">常用命令</h3>
-<h4 id="heading3">快捷键前缀</h4>
+<h3 id="heading-2">常用命令</h3>
+<h4 id="heading-3">快捷键前缀</h4>
 <p>为了避免按键冲突，使用 tmux 的快捷键都需要加上一个<strong>前缀按键</strong>，默认是 <strong>Ctrl-b</strong> 的组合，可以通过配置修改为自定义的按键。</p>
 <p>例如要退出 tmux 的快捷键是前缀键 + d，那么就需要按 Ctrl-b + d：</p>
 <ul>
@@ -91,7 +91,7 @@
 <li>按下 s 键</li>
 </ul>
 <p>我自己将 Ctrl-b 改成了 Ctrl-x ，感觉这样操作顺手一些。</p>
-<h4 id="heading4">基本操作</h4>
+<h4 id="heading-4">基本操作</h4>
 <p><strong>创建一个叫做 &ldquo;test&rdquo; 的 session，并且进入 tmux 界面</strong></p>
 <p><code>tmux new -s test</code></p>
 <p><strong>查看开启了哪些 session</strong></p>
@@ -123,8 +123,8 @@ Ctrl-b + |  // 水平分割
 </code></pre><p><strong>重新加载配置文件</strong></p>
 <pre><code>这个被我映射到了 r 键，修改完配置文件后不用关闭所有 session 重新打开，直接重新加载即可
 Ctrl-b + r
-</code></pre><h3 id="heading5">小技巧</h3>
-<h4 id="heading6">复制模式</h4>
+</code></pre><h3 id="heading-5">小技巧</h3>
+<h4 id="heading-6">复制模式</h4>
 <p>如果要在不同 <strong>window</strong> 或者 <strong>pane</strong> 之间复制内容，又想实现全键盘的操作，就需要借助于 tmux 的复制功能。</p>
 <ol>
 <li><strong>Ctrl-b + [</strong> 进入复制模式</li>
@@ -137,7 +137,7 @@ Ctrl-b + r
 <p>有时候同时登录了多台机器，需要执行一样的命令来进行批量操作，借助于 tmux 同样可以实现。</p>
 <p><code>:setw synchronize-panes</code></p>
 <p>这个是设置批量操作的开关，如果原来功能是关闭的，则打开，反之亦然，可以将其映射到一个快捷键方便操作。开启这个功能后，在当前 window 任意一个 pane 输入的命令，都会同时作用于该 window 中的其他 pane。</p>
-<h3 id="heading7">配置文件</h3>
+<h3 id="heading-7">配置文件</h3>
 <p>配置文件需要自己在 $HOME 目录下创建，命名为 .tmux.conf，具体内容如下</p>
 <pre><code># Use something easier to type as the prefix.
 set -g prefix C-x
@@ -202,20 +202,20 @@ set-window-option -g window-status-current-format '#[fg=cyan,bold]#I#[fg=blue]:#
 # 右下角
 set -g status-right '#[fg=green][#[fg=cyan]%H:%M#[fg=green]]'
 
-</code></pre><h3 id="heading8">配套工具</h3>
+</code></pre><h3 id="heading-8">配套工具</h3>
 <h4 id="tmuxinator">tmuxinator</h4>
 <p>使用 tmux 可以让我们不管在什么时候，什么地点登录服务器都能得到同样的工作界面，不用因为担心网络暂时中断而需要重新打开一大堆的 tab 页。</p>
 <p>但是如果有的时候服务器重启了，那么所有的 session 就都没了，必须重新打开，可以想象一下我开发时有4-5个 session，每个 session 中有多个 window，然后每个 winodw 中通常又有2-3个 pane，要重新一个个建立开发环境是一件多么痛苦的事。</p>
 <p><a href="https://github.com/tmuxinator/tmuxinator">tmuxinator</a> 可以稍微缓解一下这个问题，但是不彻底。tmuxinator 可以用于管理 tmux 的 session 和 window 布局等，便于在机器重启后能够快速恢复自己的工作环境。</p>
-<h5 id="heading9">安装</h5>
+<h5 id="heading-9">安装</h5>
 <p>先安装 gem， <code>yum install -y rubygems</code></p>
 <p><strong>由于天朝特殊的网络环境，gem的第三方包可能安装不了，可以替换成阿里提供的镜像源。</strong></p>
 <pre><code>gem sources --add [https://ruby.taobao.org/](https://ruby.taobao.org/) --remove [https://rubygems.org/](https://rubygems.org/)
-</code></pre><h5 id="heading10">使用</h5>
+</code></pre><h5 id="heading-10">使用</h5>
 <p>创建一个 tmuxinator 的 project： <code>tmuxinator new [project]</code></p>
 <p>之后编写项目的配置文件，以后重新打开这个项目所显示的界面就是根据这个配置文件来生成。具体用法可以参考项目文档： <a href="https://github.com/tmuxinator/tmuxinator">https://github.com/tmuxinator/tmuxinator</a>。</p>
 <p>当服务器重启了以后，执行 <code>tmuxinator start [project]</code>，tmuxinator 就会自动根据配置文件创建一个指定布局的 tmux session。</p>
-<h5 id="heading11">缺点</h5>
+<h5 id="heading-11">缺点</h5>
 <p>布局是预先在配置文件中指定好的，你在使用 tmux 过程中修改了的布局是不会记录下来的。</p>
 <h4 id="tmux-resurrect">Tmux Resurrect</h4>
 <p>Tmux Resurrect 用于保存当前的session环境到磁盘上，用于以后恢复。</p>
@@ -290,27 +290,27 @@ set -g status-right '#[fg=green][#[fg=cyan]%H:%M#[fg=green]]'
             <nav id="TableOfContents">
   <ul>
     <li><a href="#heading">界面</a></li>
-    <li><a href="#heading1">安装</a></li>
-    <li><a href="#heading2">常用命令</a>
+    <li><a href="#heading-1">安装</a></li>
+    <li><a href="#heading-2">常用命令</a>
       <ul>
-        <li><a href="#heading3">快捷键前缀</a></li>
-        <li><a href="#heading4">基本操作</a></li>
+        <li><a href="#heading-3">快捷键前缀</a></li>
+        <li><a href="#heading-4">基本操作</a></li>
       </ul>
     </li>
-    <li><a href="#heading5">小技巧</a>
+    <li><a href="#heading-5">小技巧</a>
       <ul>
-        <li><a href="#heading6">复制模式</a></li>
+        <li><a href="#heading-6">复制模式</a></li>
         <li><a href="#-pane-">多 pane 批量操作</a></li>
       </ul>
     </li>
-    <li><a href="#heading7">配置文件</a></li>
-    <li><a href="#heading8">配套工具</a>
+    <li><a href="#heading-7">配置文件</a></li>
+    <li><a href="#heading-8">配套工具</a>
       <ul>
         <li><a href="#tmuxinator">tmuxinator</a>
           <ul>
-            <li><a href="#heading9">安装</a></li>
-            <li><a href="#heading10">使用</a></li>
-            <li><a href="#heading11">缺点</a></li>
+            <li><a href="#heading-9">安装</a></li>
+            <li><a href="#heading-10">使用</a></li>
+            <li><a href="#heading-11">缺点</a></li>
           </ul>
         </li>
         <li><a href="#tmux-resurrect">Tmux Resurrect</a></li>

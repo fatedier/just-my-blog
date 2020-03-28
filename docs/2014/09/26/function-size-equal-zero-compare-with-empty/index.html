@@ -160,7 +160,7 @@ vector:
 size() msec: 283
 empty() msec:1530
 </code></pre><h3 id="list">list</h3>
-<h4 id="aix1">Aix</h4>
+<h4 id="aix-1">Aix</h4>
 <pre><code class="language-code" data-lang="code">第1次输出：
 vector:
 size() msec: 13
@@ -170,7 +170,7 @@ empty() msec: 22
 vector:
 size() msec: 13
 empty() msec: 22
-</code></pre><h4 id="centos1">Centos</h4>
+</code></pre><h4 id="centos-1">Centos</h4>
 <pre><code class="language-code" data-lang="code">第1次输出：
 vector:
 size() msec: 241696
@@ -181,7 +181,7 @@ vector:
 size() msec: 242109
 empty() msec: 1
 </code></pre><h3 id="map">map</h3>
-<h4 id="aix2">Aix</h4>
+<h4 id="aix-2">Aix</h4>
 <pre><code class="language-code" data-lang="code">第1次输出：
 vector:
 size() msec: 1337
@@ -191,7 +191,7 @@ empty() msec: 1733
 vector:
 size() msec: 1339
 empty() msec: 1733
-</code></pre><h4 id="centos2">Centos</h4>
+</code></pre><h4 id="centos-2">Centos</h4>
 <pre><code class="language-code" data-lang="code">第1次输出：
 vector:
 size() msec: 291
@@ -203,45 +203,45 @@ size() msec: 290
 empty() msec: 304
 </code></pre><p>可以看出，并非在所有情况下empty()的效率都是优于size()的。具体的效率还和所使用的平台相关，准确的说是和STL源码的实现方式有关。</p>
 <p>下面我们就一起来看一下两个系统中STL源码部分是如何实现size()和empty()的。</p>
-<h3 id="vector1">vector源码</h3>
-<h4 id="aix3">Aix</h4>
+<h3 id="vector-1">vector源码</h3>
+<h4 id="aix-3">Aix</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">size_type size() <span style="color:#cdcd00">const</span>
     {<span style="color:#cdcd00">return</span> (_Size); }
  
 <span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
     {<span style="color:#cdcd00">return</span> (size() <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>); }
 </code></pre></div><p>可以看出Aix上vector的empty()函数实际上是调用了size()函数进行判断，size()函数返回的是表示当前容器数量的一个变量，所以，显然，size() == 0的效率是要高于empty()的，因为少了函数调用部分的耗时。</p>
-<h4 id="centos3">Centos</h4>
+<h4 id="centos-3">Centos</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">size_type size() <span style="color:#cdcd00">const</span>
     { <span style="color:#cdcd00">return</span> size_type(<span style="color:#cdcd00">this</span><span style="color:#39c">-</span><span style="color:#39c">&gt;</span>_M_impl._M_finish <span style="color:#39c">-</span><span style="color:#cdcd00">this</span><span style="color:#39c">-</span><span style="color:#39c">&gt;</span>_M_impl._M_start); }
  
 <span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
     { <span style="color:#cdcd00">return</span> begin() <span style="color:#39c">=</span><span style="color:#39c">=</span> end(); }
 </code></pre></div><p>这里size()是尾指针减去头指针得到的，而empty()是比较头指针和尾指针是否相等。在empty()里多了函数调用以及临时变量赋值等操作。</p>
-<h3 id="list1">list源码</h3>
-<h4 id="aix4">Aix</h4>
+<h3 id="list-1">list源码</h3>
+<h4 id="aix-4">Aix</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">size_type size() <span style="color:#cdcd00">const</span>
     {<span style="color:#cdcd00">return</span> (_Size); }
  
 <span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
     {<span style="color:#cdcd00">return</span> (size() <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>); }
 </code></pre></div><p>Aix上对于在list中的处理方式依然和vector一样，维护了一个_Size变量，empty()多了一层函数调用，效率较低。</p>
-<h4 id="centos4">Centos</h4>
+<h4 id="centos-4">Centos</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">size_type size() <span style="color:#cdcd00">const</span>
     { <span style="color:#cdcd00">return</span> std<span style="color:#39c">:</span><span style="color:#39c">:</span>distance(begin(), end()); }
  
 <span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
     { <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">this</span><span style="color:#39c">-</span><span style="color:#39c">&gt;</span>_M_impl._M_node._M_next <span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">&amp;</span><span style="color:#cdcd00">this</span><span style="color:#39c">-</span><span style="color:#39c">&gt;</span>_M_impl._M_node; }
 </code></pre></div><p>size()函数调用了distance函数用遍历的方法取得两个指针间的元素个数，然后返回。而empty()函数则是判断头指针的下一个节点是否是自己本身，只需要进行一次判断。所以，当list容器元素个数较多的时候，这里的empty()效率远大于size() == 0。</p>
-<h3 id="map1">map源码</h3>
-<h4 id="aix5">Aix</h4>
+<h3 id="map-1">map源码</h3>
+<h4 id="aix-5">Aix</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">size_type size() <span style="color:#cdcd00">const</span>
     {<span style="color:#cdcd00">return</span> (_Size); }
  
 <span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
     {<span style="color:#cdcd00">return</span> (size() <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>); }
 </code></pre></div><p>不出意外，可以看出Aix上依然维护了一个_Size变量，在判断的时候都是用这个变量来判断，但是empty()多了一层函数调用，所以效率上会稍微低一些。</p>
-<h4 id="centos5">Centos</h4>
+<h4 id="centos-5">Centos</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">bool</span> empty() <span style="color:#cdcd00">const</span>
     { <span style="color:#cdcd00">return</span> _M_impl._M_node_count <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; }
  
@@ -336,32 +336,32 @@ size_type size() <span style="color:#cdcd00">const</span>
     </li>
     <li><a href="#list">list</a>
       <ul>
-        <li><a href="#aix1">Aix</a></li>
-        <li><a href="#centos1">Centos</a></li>
+        <li><a href="#aix-1">Aix</a></li>
+        <li><a href="#centos-1">Centos</a></li>
       </ul>
     </li>
     <li><a href="#map">map</a>
       <ul>
-        <li><a href="#aix2">Aix</a></li>
-        <li><a href="#centos2">Centos</a></li>
+        <li><a href="#aix-2">Aix</a></li>
+        <li><a href="#centos-2">Centos</a></li>
       </ul>
     </li>
-    <li><a href="#vector1">vector源码</a>
+    <li><a href="#vector-1">vector源码</a>
       <ul>
-        <li><a href="#aix3">Aix</a></li>
-        <li><a href="#centos3">Centos</a></li>
+        <li><a href="#aix-3">Aix</a></li>
+        <li><a href="#centos-3">Centos</a></li>
       </ul>
     </li>
-    <li><a href="#list1">list源码</a>
+    <li><a href="#list-1">list源码</a>
       <ul>
-        <li><a href="#aix4">Aix</a></li>
-        <li><a href="#centos4">Centos</a></li>
+        <li><a href="#aix-4">Aix</a></li>
+        <li><a href="#centos-4">Centos</a></li>
       </ul>
     </li>
-    <li><a href="#map1">map源码</a>
+    <li><a href="#map-1">map源码</a>
       <ul>
-        <li><a href="#aix5">Aix</a></li>
-        <li><a href="#centos5">Centos</a></li>
+        <li><a href="#aix-5">Aix</a></li>
+        <li><a href="#centos-5">Centos</a></li>
       </ul>
     </li>
     <li><a href="#heading">总结</a></li>

@@ -85,7 +85,7 @@
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git rebase --continue
 </code></pre></div><p>执行这条命令后，后续的提交说明将不会改变。</p>
 <p><strong>注：不要修改已经 push 到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！</strong></p>
-<h3 id="heading1">查看、删除、重命名远程分支</h3>
+<h3 id="heading-1">查看、删除、重命名远程分支</h3>
 <p>查看所有的分支（包括远程分支）</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git branch -a
 </code></pre></div><p>当一个分支已经被合并到主分支后，我们通常会删除这个分支，如果仅仅 git branch -d 是删除本地分支</p>
@@ -97,12 +97,12 @@
 $ git branch -m &lt;branchName&gt; &lt;newBranchName&gt;
 
 $ git push origin &lt;newBranchName&gt;
-</code></pre></div><h3 id="heading2">合并多个提交</h3>
+</code></pre></div><h3 id="heading-2">合并多个提交</h3>
 <p>比如要合并最后两次的提交，其实和修改某一次提交的说明信息有点类似。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git rebase -i HEAD~2
 </code></pre></div><p>之后同样会进入到文本编辑界面，将第二行开头的 <strong>pick</strong> 改为 <strong>squash</strong> 或 <strong>s</strong>，保存后退出。</p>
 <p>这时git会把两次提交合并，并且提示让你输入新的提交信息，保存后退出就成功完成两次提交的合并了。</p>
-<h3 id="heading3">强制回退远程仓库到指定提交</h3>
+<h3 id="heading-3">强制回退远程仓库到指定提交</h3>
 <p>当我们在开发的时候出现一些关键性的错误，并且确认现在已经做的开发工作是无意义的时候，可能需要回退到之前的版本。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git reset --hard &lt;commit_id&gt;
 
@@ -119,15 +119,15 @@ $ git push origin HEAD --force
 <p><strong>git reset &ndash;hard</strong>：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。</p>
 </li>
 </ul>
-<h3 id="reset-hard">reset &ndash;hard之后的恢复</h3>
+<h3 id="reset---hard">reset &ndash;hard之后的恢复</h3>
 <p>使用 <code>git reset --hard</code> 之后，也许才发现这是一次错误的操作，那么我们就想要恢复到之前的版本。</p>
 <p>这个时候用git log是看不到之前的提交历史记录的。</p>
 <p>需要使用 <code>$ git reflog</code> 找到我们需要恢复的HEAD的ID，然后使用reset命令恢复回去。</p>
-<h3 id="heading4">查看指定版本的某个文件的内容</h3>
+<h3 id="heading-4">查看指定版本的某个文件的内容</h3>
 <p>例如要查看 f4869b0 这次提交的 test.cpp 文件的内容，test.cpp的路径需要使用相对于git目录的路径名，使用如下命令：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git show f4869b0:test.cpp
 </code></pre></div><p>文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。</p>
-<h3 id="heading5">将远程分支已经删除的残留的本地分支追踪信息删除</h3>
+<h3 id="heading-5">将远程分支已经删除的残留的本地分支追踪信息删除</h3>
 <p>经过一段时间的开发后，远端的一些被 merge 后删除的分支，在本地使用 <code>git branch -a</code> 还是能看到，需要取消追踪并删除。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git fetch --prune
 </code></pre></div>
@@ -200,12 +200,12 @@ $ git push origin HEAD --force
             <nav id="TableOfContents">
   <ul>
     <li><a href="#heading">修改某一次提交的说明信息</a></li>
-    <li><a href="#heading1">查看、删除、重命名远程分支</a></li>
-    <li><a href="#heading2">合并多个提交</a></li>
-    <li><a href="#heading3">强制回退远程仓库到指定提交</a></li>
-    <li><a href="#reset-hard">reset hard之后的恢复</a></li>
-    <li><a href="#heading4">查看指定版本的某个文件的内容</a></li>
-    <li><a href="#heading5">将远程分支已经删除的残留的本地分支追踪信息删除</a></li>
+    <li><a href="#heading-1">查看、删除、重命名远程分支</a></li>
+    <li><a href="#heading-2">合并多个提交</a></li>
+    <li><a href="#heading-3">强制回退远程仓库到指定提交</a></li>
+    <li><a href="#reset---hard">reset &ndash;hard之后的恢复</a></li>
+    <li><a href="#heading-4">查看指定版本的某个文件的内容</a></li>
+    <li><a href="#heading-5">将远程分支已经删除的残留的本地分支追踪信息删除</a></li>
   </ul>
 </nav>
         </div>

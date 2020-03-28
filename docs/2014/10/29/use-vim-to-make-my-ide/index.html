@@ -73,9 +73,9 @@
                 <p>之前一直使用UE的FTP功能编辑Linux虚拟机上的代码文件，之后再切换到Linux上去编译，调试程序，感觉这样比较麻烦，而且UE的功能也不像VS以及Eclipse的IDE那样强大，所以就查阅了一些资料，想要把Linux下最常用的文本编辑工具Vim打造成一个适合自己的IDE，可以直接ssh登陆到远程机器上直接进行开发。</p>
 <p>配置自己的Vim过程中参考了以下的blog和文档：</p>
 <ul>
-<li><a href="http://blog.csdn.net/fbfsber008/article/details/7055842"><a href="http://blog.csdn.net/fbfsber008/article/details/7055842">http://blog.csdn.net/fbfsber008/article/details/7055842</a></a></li>
-<li><a href="http://www.douban.com/note/257815917/"><a href="http://www.douban.com/note/257815917/">http://www.douban.com/note/257815917/</a></a></li>
-<li><a href="https://github.com/vim-scripts/vundle"><a href="https://github.com/vim-scripts/vundle">https://github.com/vim-scripts/vundle</a></a></li>
+<li><a href="http://blog.csdn.net/fbfsber008/article/details/7055842">http://blog.csdn.net/fbfsber008/article/details/7055842</a></li>
+<li><a href="http://www.douban.com/note/257815917/">http://www.douban.com/note/257815917/</a></li>
+<li><a href="https://github.com/vim-scripts/vundle">https://github.com/vim-scripts/vundle</a></li>
 </ul>
 <p>最终的效果：</p>
 <p><img src="http://image.fatedier.com/pic/2014/2014-10-29-use-vim-to-make-my-ide-overview.jpg" alt="overview"></p>
@@ -87,7 +87,7 @@
 </ol>
 <p>github是一个好地方，不仅可以浏览很多的开源程序，而且可以把自己正在开发的项目或者有用的文档托管在上面，不管在其他任何的计算机上都可以很容易的获取到。</p>
 <p>比如我的 .vimrc 的配置文件就放在了Github上，有一个版本库是专门用来存放配置文件的。</p>
-<p>地址为：<a href="https://github.com/fatedier/dot_file"><a href="https://github.com/fatedier/dot_file">https://github.com/fatedier/dot_file</a></a></p>
+<p>地址为：<a href="https://github.com/fatedier/dot_file">https://github.com/fatedier/dot_file</a></p>
 <h3 id="vim">vim常用配置</h3>
 <p>个人的vim配置文件一般是放在用户主目录下的.vimrc文件。</p>
 <p>配置文件中 <code>&quot;</code> 之后的部分都被当作注释。</p>
@@ -158,7 +158,7 @@
 <h4 id="vundle">先安装vundle这个插件</h4>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 </code></pre></div><p>之后其他的插件也都会被放在~/.vim/bundle这个目录下。</p>
-<h4 id="heading1">安装其他需要的插件</h4>
+<h4 id="heading-1">安装其他需要的插件</h4>
 <p>以后当你需要安装其他的vim插件的时候，直接在.vimrc中加上如下部分：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-vim" data-lang="vim">filetype off<span style="">
 </span><span style=""></span> <span style="">
@@ -180,7 +180,7 @@
 <p>如果你需要的插件在这个里面没有找到，那么在.vimrc配置文件中可以直接用git远程仓库的地址，例如要安装command-t这个插件，可以在配置文件中加上：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-vim" data-lang="vim">Bundle <span style="color:#cd0000">&#34;git://git.wincent.com/command-t.git&#34;</span><span style="">
 </span></code></pre></div><p>这样就会直接从这个地址上下载所需插件。</p>
-<h3 id="heading2">其他插件的配置与使用</h3>
+<h3 id="heading-2">其他插件的配置与使用</h3>
 <h4 id="taglist">快速浏览源码：TagList</h4>
 <p>在Windows平台我经常用来浏览项目源码的工具就是SourceInsight，会在窗口左边列出当前文件中的变量、宏、函数名等等，点击以后就会快速跳转到页面相应的地方，使用taglist就可以在vim中实现相同的效果。</p>
 <p>通过vundle安装完成后，在vim中使用 <code>:Tlist</code> 命令就可以打开TagList窗口。</p>
@@ -276,10 +276,10 @@
       <ul>
         <li><a href="#ctags">安装ctags</a></li>
         <li><a href="#vundle">先安装vundle这个插件</a></li>
-        <li><a href="#heading1">安装其他需要的插件</a></li>
+        <li><a href="#heading-1">安装其他需要的插件</a></li>
       </ul>
     </li>
-    <li><a href="#heading2">其他插件的配置与使用</a>
+    <li><a href="#heading-2">其他插件的配置与使用</a>
       <ul>
         <li><a href="#taglist">快速浏览源码：TagList</a></li>
         <li><a href="#winmanager">窗口管理器：WinManager</a></li>

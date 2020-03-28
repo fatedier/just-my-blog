@@ -115,8 +115,8 @@
 <p>这时候，如果修改了test.cpp命令，再次执行gmake命令。</p>
 <p>由于依赖项比目标文件更新，g++ -o test test.cpp这条命令就又会被再一次执行。</p>
 <p>现在，我们已经学会如何写一个简单的Makefile文件了，每次修改过源文件以后，只要执行gmake命令就可以得到我们想要生成的程序，而不需要一遍遍地重复敲g++ -o test test.cpp这个命令。</p>
-<h3 id="heading1">多个文件的编译</h3>
-<h4 id="11">1、使用命令行编译多个文件</h4>
+<h3 id="heading-1">多个文件的编译</h3>
+<h4 id="1-1">1、使用命令行编译多个文件</h4>
 <p>一个项目不可能只有一个文件，学会了单个文件的编译，自然而然就要考虑如何去编译多个文件呢？</p>
 <p>同样，假设当前目录下有如下7个文件，test.cpp、w1.h、w1.cpp、w2.h、w2.cpp、w3.h、w3.cpp。其中test.cpp包含main函数，并且引用了w1.h、w2.h以及w3.h。我们需要生成的程序名为test。</p>
 <p>在shell界面下，为了正确编译我们的项目，我们需要敲下如下的命令：</p>
@@ -126,7 +126,7 @@ g++ -c -o w3.o w3.cpp
 </code></pre></div><p>这时当前目录下会生成w1.o、w2.o、w3.o三个.o文件。这里需要注意的是，“-c”命令是只编译，不链接，通常生成.o文件的时候使用。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">g++ -o testtest.cpp w1.o w2.o w3.o
 </code></pre></div><p>执行完这条命令后，编译成功，得到了我们想要的test文件。</p>
-<h4 id="2makefile1">2、使用Makefile编译多个文件</h4>
+<h4 id="2makefile-1">2、使用Makefile编译多个文件</h4>
 <p>既然单个文件的Makefile会写了，相信多个文件举一反三也不是问题了。</p>
 <p>Makefile具体内容如下：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">test:test.cppw1.o w2.o w3.o
@@ -149,7 +149,7 @@ w3.o:w3.cpp
 </code></pre></div><p>OK，轻松搞定，然后在shell界面下执行gmakeclean。仔细看看，是不是所有的.o文件和最后生成的程序文件已经被清除了？</p>
 <p>这里说明一下，rm是Linux下删除文件或目录的命令，前面加上“-”符号意思是忽略执行rm产生的错误。“-f”参数是指强制删除，忽略不存在的文件。</p>
 <p>这样的目标叫做“伪目标”，通过“gmake 目标名”来指定这个目标，然后执行这个目标规则下的命令。</p>
-<h3 id="makefile1">使用变量简化Makefile</h3>
+<h3 id="makefile-1">使用变量简化Makefile</h3>
 <p>作为一个“懒惰”的程序员，现在问题又来了。如果按照上面的写法，在文件数量和名称不变的情况的下确实是没有问题，但是如果我们新增一个文件的话，岂不是又要去修改Makefile了，一个项目多的可能有成百上千的文件，这样管理起来得有多麻烦呀！</p>
 <p>还记得我们在Linux下如果要查看当前目录下所有的cpp文件的时候，使用的命令吗？</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ls *.cpp
@@ -177,10 +177,10 @@ clean:
 </code></pre></div><p>是不是瞬间有种摸不着头脑的感觉？别急，这是因为我们用到了一些新的语法和命令，其实，本质上和我们之前所写的Makefile文件是一个意思，下面我们就逐条来进行分析。</p>
 <h5 id="target--test">TARGET = test</h5>
 <p>定义一个变量，保存目标文件名，这里我们需要生成的程序名就叫test。</p>
-<h5 id="cppfiles--shell-ls-cpp">CPP_FILES = $(shell ls *.cpp)</h5>
+<h5 id="cpp-files--shell-ls-cpp">CPP_FILES = $(shell ls *.cpp)</h5>
 <p>定义一个变量，内容为所有的以.cpp为后缀的文件的文件名，以空格隔开。</p>
 <p>这里&amp;(shell 命令)的格式，说明这里将会用shell命令执行后输出的内容进行替换，就和在命令行下输入ls *.cpp得到的结果一样。</p>
-<h5 id="base--basename-cppfiles">BASE = $(basename $(CPP_FILES))</h5>
+<h5 id="base--basename-cpp-files">BASE = $(basename $(CPP_FILES))</h5>
 <p>定义一个变量，内容为所有的以.cpp为后缀的文件的文件名去除掉后缀部分。</p>
 <p>$(CPP_FILES)是引用CPP_FIFES这个变量的内容，相信学过如何写shell命令的同学肯定不会陌生。basename 是一个函数，其作用就是去除掉文件名的后缀部分，例如“test.cpp”，经过这一步后就变成了“test”。</p>
 <h5 id="objs--addsuffix-o-addprefix-objbase">OBJS = $(addsuffix .o, $(addprefix obj/,$(BASE)))</h5>
@@ -297,20 +297,20 @@ clean:
         <li><a href="#2makefile">2、Makefile的描述规则</a></li>
       </ul>
     </li>
-    <li><a href="#heading1">多个文件的编译</a>
+    <li><a href="#heading-1">多个文件的编译</a>
       <ul>
-        <li><a href="#11">1、使用命令行编译多个文件</a></li>
-        <li><a href="#2makefile1">2、使用Makefile编译多个文件</a></li>
+        <li><a href="#1-1">1、使用命令行编译多个文件</a></li>
+        <li><a href="#2makefile-1">2、使用Makefile编译多个文件</a></li>
         <li><a href="#3">3、使用伪目标来清除过程文件</a></li>
       </ul>
     </li>
-    <li><a href="#makefile1">使用变量简化Makefile</a>
+    <li><a href="#makefile-1">使用变量简化Makefile</a>
       <ul>
         <li>
           <ul>
             <li><a href="#target--test">TARGET = test</a></li>
-            <li><a href="#cppfiles--shell-ls-cpp">CPP_FILES = $(shell ls *.cpp)</a></li>
-            <li><a href="#base--basename-cppfiles">BASE = $(basename $(CPP_FILES))</a></li>
+            <li><a href="#cpp-files--shell-ls-cpp">CPP_FILES = $(shell ls *.cpp)</a></li>
+            <li><a href="#base--basename-cpp-files">BASE = $(basename $(CPP_FILES))</a></li>
             <li><a href="#objs--addsuffix-o-addprefix-objbase">OBJS = $(addsuffix .o, $(addprefix obj/,$(BASE)))</a></li>
             <li><a href="#targetobjs">$(TARGET):$(OBJS)</a></li>
             <li><a href="#objocpp">obj/%.o:%.cpp</a></li>

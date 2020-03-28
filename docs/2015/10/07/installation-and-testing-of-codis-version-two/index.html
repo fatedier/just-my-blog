@@ -81,7 +81,7 @@
 <p>执行安装脚本 <code>./bootstrap.sh</code></p>
 <p><strong>注：这里第一步和第三步（会下载第三方库到本地）需要从 github copy 数据，鉴于网络环境的问题，时间会比较长。</strong></p>
 <p>之后生成的可执行文件都在 <code>codis/bin</code> 文件夹下。</p>
-<h3 id="-codisserver">部署 codis-server</h3>
+<h3 id="-codis-server">部署 codis-server</h3>
 <p><strong>codis-server</strong> 基于 <strong>redis 2.8.21</strong> 稍微进行了一些修改以支持原子性的迁移数据，具体用法和 redis 一致。</p>
 <p>将 <code>bin</code> 文件夹下的 codis-server 拷贝到集群中每个节点，和 redis-server 的启动命令一样，指定配置文件，启动。</p>
 <p><strong>这里要注意 redis.conf 配置中需要设置 maxmemory，不然无法自动按照负载均衡的方式分配 slot（可以手动分配），推荐单台机器部署多个 redis 实例。</strong></p>
@@ -102,33 +102,33 @@
 <p><code>./bin/codis-config -c ./config.ini server add 2 localhost:6381 master</code></p>
 <p><code>./bin/codis-config -c ./config.ini server add 2 localhost:6382 slave</code></p>
 <p><strong>1 代表 group_id，必须为数字，且从 1 开始</strong></p>
-<h3 id="-slot1">分配 slot</h3>
+<h3 id="-slot-1">分配 slot</h3>
 <h4 id="heading">手动分配</h4>
 <p><code>codis-config -c ./config.ini slot range-set &lt;slot_from&gt; &lt;slot_to&gt; &lt;group_id&gt; &lt;status&gt;</code></p>
 <p><strong>slot</strong> 默认为 <strong>1024</strong> 个，范围是 <strong>0 - 1023</strong>，需要将这 1024 个 slot 分配到集群中不同的 group 中。</p>
 <p>例如将 1024 个 slot 平均分配到</p>
 <p><code>./bin/codis-config -c ./config.ini slot range-set 0 511 1 online</code></p>
 <p><code>./bin/codis-config -c ./config.ini slot range-set 512 1023 2 online</code></p>
-<h4 id="heading1">自动分配</h4>
+<h4 id="heading-1">自动分配</h4>
 <p>在 dashboard 上可以自动分配 slot，会按照负载均衡的方式进行分配，不推荐使用，因为可能会造成大量数据的迁移。</p>
 <p>或者使用命令进行自动分配</p>
 <p><code>./bin/codis-config -c ./config.ini slot rebalance</code></p>
-<h3 id="-codisproxy">启动 codis-proxy</h3>
+<h3 id="-codis-proxy">启动 codis-proxy</h3>
 <p><code>./bin/codis-proxy -c ./config.ini -L ./log/proxy.log --cpu=8 --addr=10.10.100.1:19000 --http-addr=10.10.100.1:11000</code></p>
 <p><strong>注意：这里 &ndash;addr 和 &ndash;http-addr 不要填 0.0.0.0，要绑定一个具体的 ip，不然 zookeeper 中存的将是hostname，会导致 dashboard 无法连接。</strong></p>
 <p>codis-proxy 是无状态的，可以部署多个，且用 go 编写，可以利用多核，建议 cpu 设置核心数的一半到2/3，19000 即为访问 redis 集群的端口，11000 为获取 proxy 相关状态的端口。</p>
 <p>之后使用 codis-config 将 codis-proxy 加入进来，也就是设置online（后来更新了一个版本，默认启动后即自动注册为online）</p>
 <p><code>bin/codis-config -c ./config.ini proxy online &lt;proxy_name&gt;</code></p>
 <p><strong>需要注意的是，启动 codis-proxy，会在 zookeeper 中注册一个 node，地址为 /zk/codis/db_test/fence，如果使用 kill -9 强行杀掉进程的话，这个会一直存在，需要手工删除。且 node 名称为 [hostname:port]，所以需要注意这个组合不能重复。</strong></p>
-<h3 id="heading2">主从切换</h3>
+<h3 id="heading-2">主从切换</h3>
 <p>官方建议是手工操作，避免数据不一致的问题，但是没有自动容灾的话可用性太差。</p>
 <p>官方另外提供了一个工具，<strong>codis-ha</strong>，这是一个通过 codis 开放的 api 实现自动切换主从的工具。该工具会在检测到 master 挂掉的时候将其下线并选择其中一个 slave 提升为 master 继续提供服务。</p>
 <p>这个工具不是很好用，如果 codis-ha 连接 dashboard 失败之后进程就会自动退出，需要手动重启或者使用 supervisor 拉起来。另外，当有机器被提升为 master 之后，其他 slave 的状态不会改变，还是从原 master 同步数据。原来的 master 重启之后处于 offline 状态，也需要手动加入 group 指定为 slave。也就是说有master 挂掉后，其余机器的状态需要手动修改。</p>
 <p><code>./bin/codis-ha --codis-config=10.10.100.3:18087 --productName=common</code></p>
 <p><code>10.10.100.14:18088</code> 为 dashboard 所在机器的 ip 和端口。</p>
-<h3 id="heading3">旧数据的迁移</h3>
+<h3 id="heading-3">旧数据的迁移</h3>
 <p>官方提供了一个 <strong>redis-port</strong> 工具可以将旧 redis 中的数据实时迁移到 codis 集群中，之后需要修改各服务配置文件，重启服务，指向 codis 集群即可。</p>
-<h3 id="heading4">性能测试</h3>
+<h3 id="heading-4">性能测试</h3>
 <p>测试环境： 24核 2.1GHz，4个redis实例</p>
 <h4 id="-pipeline">不启用 pipeline</h4>
 <table>
@@ -306,20 +306,20 @@
   <ul>
     <li><a href="#-zookeeper">安装并启动 zookeeper</a></li>
     <li><a href="#-codis">下载安装 codis</a></li>
-    <li><a href="#-codisserver">部署 codis-server</a></li>
+    <li><a href="#-codis-server">部署 codis-server</a></li>
     <li><a href="#-dashboard">启动 dashboard</a></li>
     <li><a href="#-slot">初始化 slot</a></li>
     <li><a href="#-group">添加 group</a></li>
-    <li><a href="#-slot1">分配 slot</a>
+    <li><a href="#-slot-1">分配 slot</a>
       <ul>
         <li><a href="#heading">手动分配</a></li>
-        <li><a href="#heading1">自动分配</a></li>
+        <li><a href="#heading-1">自动分配</a></li>
       </ul>
     </li>
-    <li><a href="#-codisproxy">启动 codis-proxy</a></li>
-    <li><a href="#heading2">主从切换</a></li>
-    <li><a href="#heading3">旧数据的迁移</a></li>
-    <li><a href="#heading4">性能测试</a>
+    <li><a href="#-codis-proxy">启动 codis-proxy</a></li>
+    <li><a href="#heading-2">主从切换</a></li>
+    <li><a href="#heading-3">旧数据的迁移</a></li>
+    <li><a href="#heading-4">性能测试</a>
       <ul>
         <li><a href="#-pipeline">不启用 pipeline</a></li>
         <li><a href="#pipeline--100">pipeline = 100</a></li>

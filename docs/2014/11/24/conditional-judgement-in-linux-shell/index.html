@@ -92,13 +92,13 @@
 <blockquote>
 <p>128 （命令被系统强行结束）</p>
 </blockquote>
-<h3 id="heading1">测试命令</h3>
+<h3 id="heading-1">测试命令</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">test</span> expression
 </code></pre></div><p>用test命令进行测试，expression是一个表达式</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">[</span> expression <span style="color:#39c">]</span>
 </code></pre></div><p>为了提高可读性，可以使用简化的这种格式</p>
 <p><strong>需要注意的是大括号和表达式之间需要有一个空格，不能省略。这种方式和if、case、while等语句结合，可以作为shell脚本中的判断条件。</strong></p>
-<h3 id="heading2">整数比较运算符</h3>
+<h3 id="heading-2">整数比较运算符</h3>
 <p>在shell中对两个数进行比较，不像在C/C++中可以使用 &ldquo;&gt;&rdquo; 之类的运算符，而是使用类似参数选项的格式。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-eq  <span style="color:#000080"># 如果等于则为真</span>
 -ge  <span style="color:#000080"># 如果大于或等于则为真</span>
@@ -107,14 +107,14 @@
 -lt  <span style="color:#000080"># 如果小于则为真</span>
 -ne  <span style="color:#000080"># 如果不等于则为真</span>
 </code></pre></div><p><strong>其中的参数可以这样理解e(equal)，g(greater)，t(than)，l(less)，n(not)，这样方便记忆。</strong></p>
-<h3 id="heading3">字符串相关运算符</h3>
+<h3 id="heading-3">字符串相关运算符</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-n string            <span style="color:#000080"># 字符串不为空则为真</span>
 -z string            <span style="color:#000080"># 字符串为空则为真</span>
 <span style="color:#00cdcd">string1</span> <span style="color:#39c">=</span> string2    <span style="color:#000080"># 字符串相等则为真 （或者 == 也可以）</span>
 string1 !<span style="color:#39c">=</span> string2   <span style="color:#000080"># 字符串不等则为真</span>
 </code></pre></div><p><strong>这里有一个需要注意的地方，就是使用 -n 这个运算符进行判断的时候需要注意在变量两边加上双引号。</strong></p>
 <p><strong>例如 if [ -n $string ] 应该写成 if [ -n “$string” ] ，不然该表达式总是会返回真，因为当string变量为空的时候就相当于是 if [ -n ]。</strong></p>
-<h3 id="heading4">文件操作符</h3>
+<h3 id="heading-4">文件操作符</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-d file <span style="color:#000080"># 测试file是否为目录</span>
 -e file <span style="color:#000080"># 测试file是否存在</span>
 -f file <span style="color:#000080"># 测试file是否为普通文件</span>
@@ -123,7 +123,7 @@ string1 !<span style="color:#39c">=</span> string2   <span style="color:#000080"
 -w file <span style="color:#000080"># 测试file是否是进程可写文件</span>
 -x file <span style="color:#000080"># 测试file是否是进程可执行文件</span>
 -L file <span style="color:#000080"># 测试file是否符号化链接</span>
-</code></pre></div><h3 id="heading5">逻辑运算符</h3>
+</code></pre></div><h3 id="heading-5">逻辑运算符</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">! expression                <span style="color:#000080"># 非</span>
 expression1 -a expression2  <span style="color:#000080"># 与</span>
 expression1 -o expression2  <span style="color:#000080"># 或</span>
@@ -199,11 +199,11 @@ expression1 -o expression2  <span style="color:#000080"># 或</span>
             <nav id="TableOfContents">
   <ul>
     <li><a href="#heading">退出状态</a></li>
-    <li><a href="#heading1">测试命令</a></li>
-    <li><a href="#heading2">整数比较运算符</a></li>
-    <li><a href="#heading3">字符串相关运算符</a></li>
-    <li><a href="#heading4">文件操作符</a></li>
-    <li><a href="#heading5">逻辑运算符</a></li>
+    <li><a href="#heading-1">测试命令</a></li>
+    <li><a href="#heading-2">整数比较运算符</a></li>
+    <li><a href="#heading-3">字符串相关运算符</a></li>
+    <li><a href="#heading-4">文件操作符</a></li>
+    <li><a href="#heading-5">逻辑运算符</a></li>
   </ul>
 </nav>
         </div>

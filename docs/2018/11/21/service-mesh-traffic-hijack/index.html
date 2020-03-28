@@ -79,7 +79,7 @@
 <li>通过 iptables 将我们想要劫持的流量劫持到 proxy 中。proxy 自身的流量要排除在外。</li>
 <li>要实现零侵入，最好不修改服务的镜像，在 k8s 中可以采用 Init 容器的方式在应用容器启动之前做 iptables 的修改。</li>
 </ul>
-<h4 id="heading1">透明代理</h4>
+<h4 id="heading-1">透明代理</h4>
 <p>proxy 作为一个透明代理，对于自身能处理的流量，会经过一系列的处理逻辑，包括重试，超时，负载均衡等，再转发给对端服务。对于自身不能处理的流量，会直接透传，不作处理。</p>
 <p>通过 iptables 将流量转发给 proxy 后，proxy 需要能够获取到原来建立连接时的目的地址。在 Go 中的实现稍微麻烦一些，需要通过 <code>syscall</code> 调用来获取，</p>
 <p>示例代码:</p>
@@ -228,8 +228,8 @@ spec:
           - containerPort: <span style="color:#cd00cd">30000</span>    
 </code></pre></div><p>这个 Init 容器需要安装 iptables，在启动时会执行我们配置的 iptables 命令。</p>
 <p>需要额外注意的是 <code>securityContext</code> 这个配置项，我们加了 <code>NET_ADMIN</code> 的权限。它用于定义 Pod 或 Container 的权限，如果不配置，则 iptables 执行命令时会提示错误。</p>
-<h3 id="heading2">问题</h3>
-<h4 id="heading3">如何判断目标服务的类型</h4>
+<h3 id="heading-2">问题</h3>
+<h4 id="heading-3">如何判断目标服务的类型</h4>
 <p>我们将 <code>172.17.0.0/16</code> 的流量都劫持到了 proxy 内部，那么如何判断目标服务的协议类型？如果不知道协议类型，就不能确定如何去解析后续的请求。</p>
 <p>在 kubernetes 的 service 中，我们可以为每一个 service 的端口指定一个名字，这个名字的格式可以固定为 <code>{name}-{protocol}</code>，例如 <code>{test-http}</code>，表示这个 service 的某个端口是 http 协议。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">kind: Service
@@ -320,15 +320,15 @@ spec:
   <ul>
     <li><a href="#heading">如何实现？</a>
       <ul>
-        <li><a href="#heading1">透明代理</a></li>
+        <li><a href="#heading-1">透明代理</a></li>
         <li><a href="#sidecar">Sidecar</a></li>
         <li><a href="#iptables">iptables</a></li>
         <li><a href="#init-">Init 容器</a></li>
       </ul>
     </li>
-    <li><a href="#heading2">问题</a>
+    <li><a href="#heading-2">问题</a>
       <ul>
-        <li><a href="#heading3">如何判断目标服务的类型</a></li>
+        <li><a href="#heading-3">如何判断目标服务的类型</a></li>
         <li><a href="#cluster-ip">Cluster IP</a></li>
       </ul>
     </li>

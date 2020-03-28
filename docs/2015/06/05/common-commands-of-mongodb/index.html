@@ -73,12 +73,12 @@
                 <p>MongoDB 是一个基于分布式文件存储的数据库，由C++编写，介于关系数据库和非关系数据库之间的产品，所以在很多业务上可以取代 mysql，提供更高的性能以及更好的扩展性。虽然 MongoDB 不支持 sql 语法，但是从常用的操作命令上来说和 sql 的用法相类似。</p>
 <h4 id="heading">查询有哪些数据库</h4>
 <p><code>show dbs</code></p>
-<h4 id="heading1">切换数据库</h4>
+<h4 id="heading-1">切换数据库</h4>
 <p><code>use &lt;db_name&gt;</code></p>
 <p>如果数据库不存在，则创建数据库，否则切换到指定数据库。但是只有在数据库中插入数据，才会在查询数据库列表时显示。</p>
-<h4 id="heading2">查询当前数据库的所有集合</h4>
+<h4 id="heading-2">查询当前数据库的所有集合</h4>
 <p><code>db.getCollectionNames()</code></p>
-<h4 id="heading3">查看指定集合的状态信息</h4>
+<h4 id="heading-3">查看指定集合的状态信息</h4>
 <p><code>db.&lt;collection_name&gt;.stats()</code></p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
     &#34;ns&#34; : <span style="color:#cd0000">&#34;&lt;db_name&gt;.&lt;collection_name&gt;&#34;</span>,
@@ -99,21 +99,21 @@
     },
     &#34;ok&#34; : <span style="color:#cd00cd">1</span>
 }
-</code></pre></div><h4 id="heading4">查看当前数据库中的所有的索引</h4>
+</code></pre></div><h4 id="heading-4">查看当前数据库中的所有的索引</h4>
 <p><code>db.system.indexes.find()</code></p>
-<h4 id="heading5">查看指定集合中的索引</h4>
+<h4 id="heading-5">查看指定集合中的索引</h4>
 <p><code>db.col.getIndexes()</code></p>
-<h4 id="heading6">创建指定集合中的索引</h4>
+<h4 id="heading-6">创建指定集合中的索引</h4>
 <p><code>db.col.ensureIndex({&quot;name&quot;: 1, &quot;age&quot;: -1})</code></p>
 <p>根据 name 和 age 进行索引，1表示升序，-1表示降序。</p>
-<h4 id="heading7">查看集合中的文档</h4>
-<h5 id="heading8">查询所有文档</h5>
+<h4 id="heading-7">查看集合中的文档</h4>
+<h5 id="heading-8">查询所有文档</h5>
 <p><code>db.col.find()</code></p>
-<h5 id="heading9">以易读的方式显示文档内容</h5>
+<h5 id="heading-9">以易读的方式显示文档内容</h5>
 <p><code>db.col.find().pretty()</code></p>
 <h5 id="10">查询前10个文档</h5>
 <p><code>db.col.find().limit(10)</code></p>
-<h5 id="heading10">查询结果排序展示</h5>
+<h5 id="heading-10">查询结果排序展示</h5>
 <p><code>db.col.find().sort({'clock':-1})</code></p>
 <p>查询结果按照 clock 排序展示，1 为升序，-1 为降序。</p>
 <h5 id="where-">where 条件</h5>
@@ -170,7 +170,7 @@
     <span style="">}</span>
 <span style="">)</span><span style="">.</span><span style="">p</span><span style="">r</span><span style="">e</span><span style="">t</span><span style="">t</span><span style="">y</span><span style="">(</span><span style="">)</span>
 </code></pre></div><p>例如 <code>db.col.find({$or:[{&quot;key1&quot;:&quot;value1&quot;}, {&quot;key2&quot;: &quot;value2&quot;}]}).pretty()</code></p>
-<h5 id="heading11">更新操作</h5>
+<h5 id="heading-11">更新操作</h5>
 <p><code>db.collection.update( query, update, upsert, multi )</code></p>
 <p><strong>query</strong>： update 的查询条件，类似 sql update 操作的 where 子句。</p>
 <p><strong>update</strong>： update 的对象和一些更新的操作符（如$set, $inc&hellip;）等，也可以理解为 sql update 操作的 set 子句。</p>
@@ -178,7 +178,7 @@
 <p><strong>multi</strong>： 可选，默认为 false，只更新找到的第一条记录，如果这个参数为 true，就把按条件查出来多条记录全部更新。</p>
 <p><code>db.agent_conf.update({hostid:137}, {$set: {upload:{interval:10}}}, true)</code></p>
 <p>将 agent_conf 集合中 hostid = 137 的记录将 upload.interval 的值修改为 3，如果不存在就插入，只修改匹配的第一条。</p>
-<h4 id="heading12">删除操作</h4>
+<h4 id="heading-12">删除操作</h4>
 <p><code>db.col.remove({id:1})</code></p>
 <p>remove 的过滤条件同 find。</p>
             </div>
@@ -245,25 +245,25 @@
     <li>
       <ul>
         <li><a href="#heading">查询有哪些数据库</a></li>
-        <li><a href="#heading1">切换数据库</a></li>
-        <li><a href="#heading2">查询当前数据库的所有集合</a></li>
-        <li><a href="#heading3">查看指定集合的状态信息</a></li>
-        <li><a href="#heading4">查看当前数据库中的所有的索引</a></li>
-        <li><a href="#heading5">查看指定集合中的索引</a></li>
-        <li><a href="#heading6">创建指定集合中的索引</a></li>
-        <li><a href="#heading7">查看集合中的文档</a>
+        <li><a href="#heading-1">切换数据库</a></li>
+        <li><a href="#heading-2">查询当前数据库的所有集合</a></li>
+        <li><a href="#heading-3">查看指定集合的状态信息</a></li>
+        <li><a href="#heading-4">查看当前数据库中的所有的索引</a></li>
+        <li><a href="#heading-5">查看指定集合中的索引</a></li>
+        <li><a href="#heading-6">创建指定集合中的索引</a></li>
+        <li><a href="#heading-7">查看集合中的文档</a>
           <ul>
-            <li><a href="#heading8">查询所有文档</a></li>
-            <li><a href="#heading9">以易读的方式显示文档内容</a></li>
+            <li><a href="#heading-8">查询所有文档</a></li>
+            <li><a href="#heading-9">以易读的方式显示文档内容</a></li>
             <li><a href="#10">查询前10个文档</a></li>
-            <li><a href="#heading10">查询结果排序展示</a></li>
+            <li><a href="#heading-10">查询结果排序展示</a></li>
             <li><a href="#where-">where 条件</a></li>
             <li><a href="#and-">and 条件</a></li>
             <li><a href="#or-">or 条件</a></li>
-            <li><a href="#heading11">更新操作</a></li>
+            <li><a href="#heading-11">更新操作</a></li>
           </ul>
         </li>
-        <li><a href="#heading12">删除操作</a></li>
+        <li><a href="#heading-12">删除操作</a></li>
       </ul>
     </li>
   </ul>

@@ -101,7 +101,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
    <span style="color:#cd00cd">9</span>    <span style="color:#cd00cd">0</span> md0 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
 </code></pre></div><p>第一列和第二列是设备号，第三列是设备名称，第六列是读取的 sectors 数，第十列是写入的 sectors 数。</p>
 <p>和计算 cpu 使用率类似，我们需要读取两次该文件，将两次读取到的值相减以后除以间隔时间来计算读写速度。</p>
-<h3 id="heading1">虚拟块设备的区别</h3>
+<h3 id="heading-1">虚拟块设备的区别</h3>
 <p>通过 <code>df -h</code> 可以看到其中 <code>/dev/mapper/VolGroup00-LogVol00</code> 就是一个虚拟块设备：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Filesystem            Size  Used Avail Use% Mounted on
 /dev/mapper/VolGroup00-LogVol00
@@ -110,7 +110,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
 tmpfs                 499M     <span style="color:#cd00cd">0</span>  499M   0% /dev/shm
 </code></pre></div><p>但是获取读写信息时拿到的对应设备名并不是这个，实际上应该是 <code>dm-0</code>。</p>
 <p>所以我们需要通过设备号来获取他们的对应关系。</p>
-<h4 id="heading2">获取设备号</h4>
+<h4 id="heading-2">获取设备号</h4>
 <p>在 centos5 上比较特殊，没法使用 <code>lsblk</code> 获取设备号，所以需要用其他的方法。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ls -lh /dev/mapper/
 
@@ -236,9 +236,9 @@ fmt.Printf(<span style="color:#cd0000">&#34;get dev mapper [%s] [%s]&#34;</span>
             <nav id="TableOfContents">
   <ul>
     <li><a href="#heading">获取磁盘读写速度</a></li>
-    <li><a href="#heading1">虚拟块设备的区别</a>
+    <li><a href="#heading-1">虚拟块设备的区别</a>
       <ul>
-        <li><a href="#heading2">获取设备号</a></li>
+        <li><a href="#heading-2">获取设备号</a></li>
         <li><a href="#go-">go 中获取文件信息</a></li>
       </ul>
     </li>

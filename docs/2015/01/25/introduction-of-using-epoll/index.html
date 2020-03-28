@@ -85,9 +85,9 @@
 </ul>
 <h3 id="epoll">epoll相关函数</h3>
 <p>使用epoll只需要记住3个系统调用函数。</p>
-<h4 id="int-epollcreateint-size">int epoll_create(int size)</h4>
+<h4 id="int-epoll-createint-size">int epoll_create(int size)</h4>
 <p>创建一个epoll实例，从2.68的Linux内核开始，size参数不再生效，内核会动态分配所需的数据结构。失败返回-1，成功则该函数会返回一个文件描述符，并占用一个fd值，所以在使用完之后要记得close该文件描述符。</p>
-<h4 id="int-epollctlint-epfd-int-op-int-fd-struct-epollevent-event">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</h4>
+<h4 id="int-epoll-ctlint-epfd-int-op-int-fd-struct-epoll-event-event">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</h4>
 <p>用于对epoll实例执行不同的操作的函数。</p>
 <p><strong>epfd</strong></p>
 <p>使用epoll_create()返回的文件描述符</p>
@@ -129,7 +129,7 @@ EPOLLERR：表示对应的文件描述符发生错误
 EPOLLHUP：表示对应的文件描述符被挂断
 EPOLLET： 将EPOLL设为边缘触发<span style="color:#39c">(</span>EdgeTriggered<span style="color:#39c">)</span>模式，这是相对于水平触发<span style="color:#39c">(</span>Level Triggered<span style="color:#39c">)</span>来说的
 EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里
-</code></pre></div><h4 id="int-epollwaitint-epfd-struct-epollevent--events-int-maxeventsint-timeout">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</h4>
+</code></pre></div><h4 id="int-epoll-waitint-epfd-struct-epoll-event--events-int-maxeventsint-timeout">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</h4>
 <p>该函数等待epoll实例中的fd集合有就绪事件。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">epfd：使用epoll_create<span style="color:#39c">(</span><span style="color:#39c">)</span>返回的文件描述符
 events：指向处于就绪状态的事件集合
@@ -211,9 +211,9 @@ timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指�
   <ul>
     <li><a href="#epoll">epoll相关函数</a>
       <ul>
-        <li><a href="#int-epollcreateint-size">int epoll_create(int size)</a></li>
-        <li><a href="#int-epollctlint-epfd-int-op-int-fd-struct-epollevent-event">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</a></li>
-        <li><a href="#int-epollwaitint-epfd-struct-epollevent--events-int-maxeventsint-timeout">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</a></li>
+        <li><a href="#int-epoll-createint-size">int epoll_create(int size)</a></li>
+        <li><a href="#int-epoll-ctlint-epfd-int-op-int-fd-struct-epoll-event-event">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)</a></li>
+        <li><a href="#int-epoll-waitint-epfd-struct-epoll-event--events-int-maxeventsint-timeout">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</a></li>
       </ul>
     </li>
     <li><a href="#ltet">LT和ET两种工作方式</a></li>

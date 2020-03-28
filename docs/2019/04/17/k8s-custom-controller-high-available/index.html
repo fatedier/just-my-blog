@@ -162,7 +162,7 @@
     <span style="color:#cdcd00">return</span> cli, <span style="color:#cdcd00">nil</span>
 }
 </code></pre></div><p>注意我们这里如果失去 leader 后，会直接调用 <code>log.Fatalf</code> 退出进程。在 kubernetes 环境中通常采用 Deployment 等方式来部署，程序退出后，会重新启动一个 Pod 替代。</p>
-<h3 id="heading1">原理分析</h3>
+<h3 id="heading-1">原理分析</h3>
 <p>leaderelection 的代码实现并不复杂。</p>
 <p>主要的工作原理是，通过 kubernetes 的 endpoints 或 configmaps 实现一个分布式锁，抢到锁的节点成为 leader，并定期更新，而抢不到的节点会一直等待。当 leader 因为某些异常原因挂掉后，租约到期，其他节点会尝试抢锁，成为新的 leader。</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang">rl, err <span style="color:#39c">:=</span> resourcelock.New(<span style="color:#cd0000">&#34;endpoints&#34;</span>, <span style="color:#000080">// 实现锁的资源类型，支持 endpoints 或 configmaps
@@ -326,7 +326,7 @@
             <nav id="TableOfContents">
   <ul>
     <li><a href="#heading">代码实现</a></li>
-    <li><a href="#heading1">原理分析</a></li>
+    <li><a href="#heading-1">原理分析</a></li>
   </ul>
 </nav>
         </div>

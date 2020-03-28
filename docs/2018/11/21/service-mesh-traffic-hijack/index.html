@@ -7,7 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="Istio 的项目中有一个亮点就是可以将旧的应用无缝接入到 Service Mesh 的平台上来，不用修改一行代码。实现这个功能，目前主要是通过 iptables 来截获流量转发给 proxy。">
-<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="Service Mesh 探索之流量劫持 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
 <title>
@@ -255,7 +255,7 @@ iptables -t nat -A OUTPUT -p tcp -d 172.17.0.0/16 -j REDIRECT --to-port 30000
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/">http://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/">https://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>

@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>mesos on fatedier blog</title>
-    <link>http://blog.fatedier.com/tags/mesos/</link>
+    <link>https://blog.fatedier.com/tags/mesos/</link>
     <description>Recent content in mesos on fatedier blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
     <lastBuildDate>Sun, 16 Jul 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://blog.fatedier.com/tags/mesos/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://blog.fatedier.com/tags/mesos/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>记一次mesos集群停容器时间过长的问题排查</title>
-      <link>http://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</link>
+      <link>https://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</link>
       <pubDate>Sun, 16 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</guid>
+      <guid>https://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</guid>
       <description>&lt;p&gt;公司 mesos 集群某个 app 已经有数千的实例数，每次做滚动升级时，由于总资源不足，需要分批操作，每次起一批新版本实例，再停一批旧版本实例。目前停容器的策略是，先从服务发现中摘除需要停掉的节点，等待 60 秒后再停止容器，释放资源，但是实际上每次从发送停止容器的请求到容器资源被实际释放需要长达 6 分钟，导致滚动升级耗时过长。经过排查，最终确认问题出在我们使用 docker 的方式上，这里记录下分析和解决问题的过程。&lt;/p&gt;</description>
     </item>
     

@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>swift on fatedier blog</title>
-    <link>http://blog.fatedier.com/tags/swift/</link>
+    <link>https://blog.fatedier.com/tags/swift/</link>
     <description>Recent content in swift on fatedier blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
     <lastBuildDate>Wed, 25 May 2016 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://blog.fatedier.com/tags/swift/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://blog.fatedier.com/tags/swift/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>部署openstack的对象存储服务swift</title>
-      <link>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</link>
+      <link>https://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</link>
       <pubDate>Wed, 25 May 2016 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</guid>
+      <guid>https://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</guid>
       <description>&lt;p&gt;OpenStack Swift 是一个开源项目，提供了弹性可伸缩、高可用的分布式对象存储服务，适合存储大规模非结构化数据。由于要开发自己的分布式存储应用，需要借鉴 swift 的一些架构，所以在自己的机器上搭建了一个集群环境用于测试。&lt;/p&gt;</description>
     </item>
     

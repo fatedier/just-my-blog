@@ -3,537 +3,537 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://blog.fatedier.com/categories/</loc>
+    <loc>https://blog.fatedier.com/categories/</loc>
     <lastmod>2020-03-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/</loc>
+    <loc>https://blog.fatedier.com/</loc>
     <lastmod>2020-03-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/golang/</loc>
+    <loc>https://blog.fatedier.com/tags/golang/</loc>
     <lastmod>2020-03-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2020/03/28/golang-jwt/</loc>
+    <loc>https://blog.fatedier.com/2020/03/28/golang-jwt/</loc>
     <lastmod>2020-03-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/post/</loc>
+    <loc>https://blog.fatedier.com/post/</loc>
     <lastmod>2020-03-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/</loc>
+    <loc>https://blog.fatedier.com/tags/</loc>
     <lastmod>2020-03-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/</loc>
+    <loc>https://blog.fatedier.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/</loc>
     <lastmod>2020-03-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/kubernetes/</loc>
+    <loc>https://blog.fatedier.com/tags/kubernetes/</loc>
     <lastmod>2019-04-17T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2019/04/17/k8s-custom-controller-high-available/</loc>
+    <loc>https://blog.fatedier.com/2019/04/17/k8s-custom-controller-high-available/</loc>
     <lastmod>2019-04-17T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2019/04/02/k8s-custom-controller/</loc>
+    <loc>https://blog.fatedier.com/2019/04/02/k8s-custom-controller/</loc>
     <lastmod>2019-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2019/03/25/k8s-crd-authorization/</loc>
+    <loc>https://blog.fatedier.com/2019/03/25/k8s-crd-authorization/</loc>
     <lastmod>2019-03-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2019/03/20/k8s-crd/</loc>
+    <loc>https://blog.fatedier.com/2019/03/20/k8s-crd/</loc>
     <lastmod>2019-03-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/service-mesh/</loc>
+    <loc>https://blog.fatedier.com/tags/service-mesh/</loc>
     <lastmod>2019-01-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2019/01/12/service-mesh-explore-upgrade-http2/</loc>
+    <loc>https://blog.fatedier.com/2019/01/12/service-mesh-explore-upgrade-http2/</loc>
     <lastmod>2019-01-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2019/01/03/using-telepresence-for-quick-dev-in-k8s/</loc>
+    <loc>https://blog.fatedier.com/2019/01/03/using-telepresence-for-quick-dev-in-k8s/</loc>
     <lastmod>2019-01-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/</loc>
+    <loc>https://blog.fatedier.com/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/</loc>
     <lastmod>2018-12-10T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2018/12/01/service-mesh-explore-local-node-lb/</loc>
+    <loc>https://blog.fatedier.com/2018/12/01/service-mesh-explore-local-node-lb/</loc>
     <lastmod>2018-12-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/</loc>
+    <loc>https://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/</loc>
     <lastmod>2018-11-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2018/10/15/self-designed-service-mesh/</loc>
+    <loc>https://blog.fatedier.com/2018/10/15/self-designed-service-mesh/</loc>
     <lastmod>2018-10-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/%E5%B0%8F%E8%AF%B4/</loc>
+    <loc>https://blog.fatedier.com/tags/%E5%B0%8F%E8%AF%B4/</loc>
     <lastmod>2018-09-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2018/09/01/yan-ran/</loc>
+    <loc>https://blog.fatedier.com/2018/09/01/yan-ran/</loc>
     <lastmod>2018-09-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/categories/%E8%AF%97%E4%B8%8E%E8%BF%9C%E6%96%B9/</loc>
+    <loc>https://blog.fatedier.com/categories/%E8%AF%97%E4%B8%8E%E8%BF%9C%E6%96%B9/</loc>
     <lastmod>2018-09-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/docker/</loc>
+    <loc>https://blog.fatedier.com/tags/docker/</loc>
     <lastmod>2017-07-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/mesos/</loc>
+    <loc>https://blog.fatedier.com/tags/mesos/</loc>
     <lastmod>2017-07-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</loc>
+    <loc>https://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</loc>
     <lastmod>2017-07-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/c/cpp/</loc>
+    <loc>https://blog.fatedier.com/tags/c/cpp/</loc>
     <lastmod>2017-03-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/linux/</loc>
+    <loc>https://blog.fatedier.com/tags/linux/</loc>
     <lastmod>2017-03-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2017/03/03/support-udp-in-mtcp/</loc>
+    <loc>https://blog.fatedier.com/2017/03/03/support-udp-in-mtcp/</loc>
     <lastmod>2017-03-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2017/02/04/reduce-golang-program-size/</loc>
+    <loc>https://blog.fatedier.com/2017/02/04/reduce-golang-program-size/</loc>
     <lastmod>2017-02-04T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2017/01/01/golang-cross-compile/</loc>
+    <loc>https://blog.fatedier.com/2017/01/01/golang-cross-compile/</loc>
     <lastmod>2017-01-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/%E6%84%9F%E6%82%9F/</loc>
+    <loc>https://blog.fatedier.com/tags/%E6%84%9F%E6%82%9F/</loc>
     <lastmod>2016-10-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/10/22/travel-coding-and-writing/</loc>
+    <loc>https://blog.fatedier.com/2016/10/22/travel-coding-and-writing/</loc>
     <lastmod>2016-10-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/influxdb/</loc>
+    <loc>https://blog.fatedier.com/tags/influxdb/</loc>
     <lastmod>2016-08-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</loc>
+    <loc>https://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</loc>
     <lastmod>2016-08-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
+    <loc>https://blog.fatedier.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
     <lastmod>2016-08-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/</loc>
+    <loc>https://blog.fatedier.com/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/</loc>
     <lastmod>2016-08-08T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</loc>
+    <loc>https://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</loc>
     <lastmod>2016-08-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/</loc>
+    <loc>https://blog.fatedier.com/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/</loc>
     <lastmod>2016-08-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/</loc>
+    <loc>https://blog.fatedier.com/2016/07/25/use-different-go-version-by-gvm/</loc>
     <lastmod>2016-07-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/</loc>
+    <loc>https://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/</loc>
     <lastmod>2016-07-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux/</loc>
+    <loc>https://blog.fatedier.com/2016/07/18/stat-all-connection-info-of-special-process-in-linux/</loc>
     <lastmod>2016-07-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/07/10/from-zero-to-one-just-a-dream/</loc>
+    <loc>https://blog.fatedier.com/2016/07/10/from-zero-to-one-just-a-dream/</loc>
     <lastmod>2016-07-10T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A/</loc>
+    <loc>https://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A/</loc>
     <lastmod>2016-07-10T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb/</loc>
+    <loc>https://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb/</loc>
     <lastmod>2016-07-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8/</loc>
+    <loc>https://blog.fatedier.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8/</loc>
     <lastmod>2016-07-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</loc>
+    <loc>https://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</loc>
     <lastmod>2016-07-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/opentsdb/</loc>
+    <loc>https://blog.fatedier.com/tags/opentsdb/</loc>
     <lastmod>2016-07-04T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</loc>
+    <loc>https://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</loc>
     <lastmod>2016-07-04T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment/</loc>
+    <loc>https://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment/</loc>
     <lastmod>2016-06-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/06/15/learn-lsm-tree/</loc>
+    <loc>https://blog.fatedier.com/2016/06/15/learn-lsm-tree/</loc>
     <lastmod>2016-06-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/%E7%AE%97%E6%B3%95/</loc>
+    <loc>https://blog.fatedier.com/tags/%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2016-06-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/openstack/</loc>
+    <loc>https://blog.fatedier.com/tags/openstack/</loc>
     <lastmod>2016-05-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/swift/</loc>
+    <loc>https://blog.fatedier.com/tags/swift/</loc>
     <lastmod>2016-05-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</loc>
+    <loc>https://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</loc>
     <lastmod>2016-05-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/05/16/install-private-docker-registry/</loc>
+    <loc>https://blog.fatedier.com/2016/05/16/install-private-docker-registry/</loc>
     <lastmod>2016-05-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/</loc>
+    <loc>https://blog.fatedier.com/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/git/</loc>
+    <loc>https://blog.fatedier.com/tags/git/</loc>
     <lastmod>2016-04-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</loc>
+    <loc>https://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</loc>
     <lastmod>2016-04-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/sed/</loc>
+    <loc>https://blog.fatedier.com/tags/sed/</loc>
     <lastmod>2016-03-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</loc>
+    <loc>https://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</loc>
     <lastmod>2016-03-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</loc>
+    <loc>https://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</loc>
     <lastmod>2016-03-12T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory/</loc>
+    <loc>https://blog.fatedier.com/2016/02/25/how-to-compile-go-project-in-any-directory/</loc>
     <lastmod>2016-02-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/</loc>
+    <loc>https://blog.fatedier.com/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/</loc>
     <lastmod>2016-02-19T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/</loc>
+    <loc>https://blog.fatedier.com/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/</loc>
     <lastmod>2016-01-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux/</loc>
+    <loc>https://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux/</loc>
     <lastmod>2015-12-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/gem/</loc>
+    <loc>https://blog.fatedier.com/tags/gem/</loc>
     <lastmod>2015-12-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</loc>
+    <loc>https://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</loc>
     <lastmod>2015-12-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/ruby/</loc>
+    <loc>https://blog.fatedier.com/tags/ruby/</loc>
     <lastmod>2015-12-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/shell/</loc>
+    <loc>https://blog.fatedier.com/tags/shell/</loc>
     <lastmod>2015-11-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/11/24/give-your-shell-some-color/</loc>
+    <loc>https://blog.fatedier.com/2015/11/24/give-your-shell-some-color/</loc>
     <lastmod>2015-11-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/codis/</loc>
+    <loc>https://blog.fatedier.com/tags/codis/</loc>
     <lastmod>2015-10-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</loc>
+    <loc>https://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</loc>
     <lastmod>2015-10-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/redis/</loc>
+    <loc>https://blog.fatedier.com/tags/redis/</loc>
     <lastmod>2015-10-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/mac/</loc>
+    <loc>https://blog.fatedier.com/tags/mac/</loc>
     <lastmod>2015-09-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/</loc>
+    <loc>https://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/</loc>
     <lastmod>2015-09-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/09/15/redis-cluster-survey/</loc>
+    <loc>https://blog.fatedier.com/2015/09/15/redis-cluster-survey/</loc>
     <lastmod>2015-09-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/about/</loc>
+    <loc>https://blog.fatedier.com/about/</loc>
     <lastmod>2015-09-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/08/24/how-to-modify-process-name/</loc>
+    <loc>https://blog.fatedier.com/2015/08/24/how-to-modify-process-name/</loc>
     <lastmod>2015-08-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</loc>
+    <loc>https://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</loc>
     <lastmod>2015-08-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/smtp/</loc>
+    <loc>https://blog.fatedier.com/tags/smtp/</loc>
     <lastmod>2015-08-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/vim/</loc>
+    <loc>https://blog.fatedier.com/tags/vim/</loc>
     <lastmod>2015-07-30T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/07/30/some-skills-about-vim/</loc>
+    <loc>https://blog.fatedier.com/2015/07/30/some-skills-about-vim/</loc>
     <lastmod>2015-07-30T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/07/22/ssh-port-forwarding/</loc>
+    <loc>https://blog.fatedier.com/2015/07/22/ssh-port-forwarding/</loc>
     <lastmod>2015-07-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/mongodb/</loc>
+    <loc>https://blog.fatedier.com/tags/mongodb/</loc>
     <lastmod>2015-06-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/06/05/common-commands-of-mongodb/</loc>
+    <loc>https://blog.fatedier.com/2015/06/05/common-commands-of-mongodb/</loc>
     <lastmod>2015-06-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/python/</loc>
+    <loc>https://blog.fatedier.com/tags/python/</loc>
     <lastmod>2015-05-08T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</loc>
+    <loc>https://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</loc>
     <lastmod>2015-05-08T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</loc>
+    <loc>https://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</loc>
     <lastmod>2015-03-04T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
+    <loc>https://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</loc>
     <lastmod>2015-03-04T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2015/01/25/introduction-of-using-epoll/</loc>
+    <loc>https://blog.fatedier.com/2015/01/25/introduction-of-using-epoll/</loc>
     <lastmod>2015-01-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process/</loc>
+    <loc>https://blog.fatedier.com/2014/12/16/how-to-deal-with-zombie-process/</loc>
     <lastmod>2014-12-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/12/07/debug-with-linux-core-file/</loc>
+    <loc>https://blog.fatedier.com/2014/12/07/debug-with-linux-core-file/</loc>
     <lastmod>2014-12-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/</loc>
+    <loc>https://blog.fatedier.com/2014/11/24/conditional-judgement-in-linux-shell/</loc>
     <lastmod>2014-11-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight/</loc>
+    <loc>https://blog.fatedier.com/2014/11/13/can-be-divisible-by-eight/</loc>
     <lastmod>2014-11-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/11/10/use-astyle-to-format-code/</loc>
+    <loc>https://blog.fatedier.com/2014/11/10/use-astyle-to-format-code/</loc>
     <lastmod>2014-11-10T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux/</loc>
+    <loc>https://blog.fatedier.com/2014/11/03/how-to-convert-file-encoding-format-on-linux/</loc>
     <lastmod>2014-11-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide/</loc>
+    <loc>https://blog.fatedier.com/2014/10/29/use-vim-to-make-my-ide/</loc>
     <lastmod>2014-10-29T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/10/24/vimdiff-common-commands/</loc>
+    <loc>https://blog.fatedier.com/2014/10/24/vimdiff-common-commands/</loc>
     <lastmod>2014-10-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/10/17/git-usually-command/</loc>
+    <loc>https://blog.fatedier.com/2014/10/17/git-usually-command/</loc>
     <lastmod>2014-10-17T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/10/16/git-use-for-remind/</loc>
+    <loc>https://blog.fatedier.com/2014/10/16/git-use-for-remind/</loc>
     <lastmod>2014-10-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/10/16/learn-git-website/</loc>
+    <loc>https://blog.fatedier.com/2014/10/16/learn-git-website/</loc>
     <lastmod>2014-10-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/</loc>
+    <loc>https://blog.fatedier.com/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/</loc>
     <lastmod>2014-10-14T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/</loc>
+    <loc>https://blog.fatedier.com/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/</loc>
     <lastmod>2014-09-30T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</loc>
+    <loc>https://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</loc>
     <lastmod>2014-09-26T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/tags/stl/</loc>
+    <loc>https://blog.fatedier.com/tags/stl/</loc>
     <lastmod>2014-09-26T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02/</loc>
+    <loc>https://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02/</loc>
     <lastmod>2014-09-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01/</loc>
+    <loc>https://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01/</loc>
     <lastmod>2014-09-08T00:00:00+00:00</lastmod>
   </url>
   

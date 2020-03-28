@@ -7,7 +7,7 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="公司 mesos 集群某个 app 已经有数千的实例数，每次做滚动升级时，由于总资源不足，需要分批操作，每次起一批新版本实例，再停一批旧版本实例。目前停容器的策略是，先从服务发现中摘除需要停掉的节点，等待 60 秒后再停止容器，释放资源，但是实际上每次从发送停止容器的请求到容器资源被实际释放需要长达 6 分钟，导致滚动升级耗时过长。经过排查，最终确认问题出在我们使用 docker 的方式上，这里记录下分析和解决问题的过程。">
-<meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="记一次mesos集群停容器时间过长的问题排查 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
 <title>
@@ -187,7 +187,7 @@ root      <span style="color:#cd00cd">1216</span>  <span style="color:#cd00cd">1
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
                 <div>
                     <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
-                    <br />本文出处：<a target="_blank" href="http://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/">http://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/">https://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</a>
                     <br />
                     文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
                 </div>

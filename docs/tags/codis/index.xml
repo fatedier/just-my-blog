@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>codis on fatedier blog</title>
-    <link>http://blog.fatedier.com/tags/codis/</link>
+    <link>https://blog.fatedier.com/tags/codis/</link>
     <description>Recent content in codis on fatedier blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
     <lastBuildDate>Wed, 07 Oct 2015 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://blog.fatedier.com/tags/codis/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://blog.fatedier.com/tags/codis/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>codis 2.x版本环境搭建与测试</title>
-      <link>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</link>
+      <link>https://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</link>
       <pubDate>Wed, 07 Oct 2015 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</guid>
+      <guid>https://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</guid>
       <description>&lt;p&gt;Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。&lt;/p&gt;</description>
     </item>
     

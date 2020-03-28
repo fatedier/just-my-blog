@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>感悟 on fatedier blog</title>
-    <link>http://blog.fatedier.com/tags/%E6%84%9F%E6%82%9F/</link>
+    <link>https://blog.fatedier.com/tags/%E6%84%9F%E6%82%9F/</link>
     <description>Recent content in 感悟 on fatedier blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
     <lastBuildDate>Sat, 22 Oct 2016 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://blog.fatedier.com/tags/%E6%84%9F%E6%82%9F/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://blog.fatedier.com/tags/%E6%84%9F%E6%82%9F/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>旅行、编程与写作</title>
-      <link>http://blog.fatedier.com/2016/10/22/travel-coding-and-writing/</link>
+      <link>https://blog.fatedier.com/2016/10/22/travel-coding-and-writing/</link>
       <pubDate>Sat, 22 Oct 2016 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.fatedier.com/2016/10/22/travel-coding-and-writing/</guid>
+      <guid>https://blog.fatedier.com/2016/10/22/travel-coding-and-writing/</guid>
       <description>&lt;p&gt;前段时间的精力主要放在了找工作上，压力也比较大，阅读和写博客的计划都有所耽误。后来难得利用换工作的间歇期去了云南的大理、丽江、香格里拉旅行，还看了《黑客与画家》这本书，对于工作、生活、理想的一些看法与感悟有了些许改变。&lt;/p&gt;</description>
     </item>
     

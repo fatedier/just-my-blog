@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>python on fatedier blog</title>
-    <link>http://blog.fatedier.com/tags/python/</link>
+    <link>https://blog.fatedier.com/tags/python/</link>
     <description>Recent content in python on fatedier blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
     <lastBuildDate>Fri, 08 May 2015 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://blog.fatedier.com/tags/python/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://blog.fatedier.com/tags/python/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>python中使用pycurl库上传文件</title>
-      <link>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</link>
+      <link>https://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</link>
       <pubDate>Fri, 08 May 2015 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</guid>
+      <guid>https://blog.fatedier.com/2015/05/08/upload-file-in-python-using-pycurl/</guid>
       <description>&lt;p&gt;在对外提供各种语言SDK的时候经常会遇到需要上传文件的问题，例如在python中我们可以借助pycurl库实现这个功能。&lt;/p&gt;</description>
     </item>
     

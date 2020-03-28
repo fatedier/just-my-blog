@@ -1,7 +1,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>fatedier blog </title>
-    <link>http://blog.fatedier.com/</link>
+    <link>https://blog.fatedier.com/</link>
     <language>en-us</language>
     <author></author>
     <rights>(C) 2020</rights>
@@ -11,10 +11,10 @@
       
         <item>
           <title>Posts</title>
-          <link>http://blog.fatedier.com/post/</link>
+          <link>https://blog.fatedier.com/post/</link>
           <pubDate>Sat, 28 Mar 2020 00:00:00 UTC</pubDate>
           <author></author>
-          <guid>http://blog.fatedier.com/post/</guid>
+          <guid>https://blog.fatedier.com/post/</guid>
           <description></description>
         </item>
       

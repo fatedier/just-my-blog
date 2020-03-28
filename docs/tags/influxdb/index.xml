@@ -2,40 +2,40 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>InfluxDB on fatedier blog</title>
-    <link>http://blog.fatedier.com/tags/influxdb/</link>
+    <link>https://blog.fatedier.com/tags/influxdb/</link>
     <description>Recent content in InfluxDB on fatedier blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
     <lastBuildDate>Mon, 15 Aug 2016 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://blog.fatedier.com/tags/influxdb/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://blog.fatedier.com/tags/influxdb/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>InfluxDB详解之TSM存储引擎解析（二）</title>
-      <link>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</link>
+      <link>https://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</link>
       <pubDate>Mon, 15 Aug 2016 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</guid>
+      <guid>https://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</guid>
       <description>&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>InfluxDB详解之TSM存储引擎解析（一）</title>
-      <link>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</link>
+      <link>https://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</link>
       <pubDate>Fri, 05 Aug 2016 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</guid>
+      <guid>https://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</guid>
       <description>&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>时间序列数据库调研之InfluxDB</title>
-      <link>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</link>
+      <link>https://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</link>
       <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</guid>
+      <guid>https://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</guid>
       <description>&lt;p&gt;基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。&lt;/p&gt;</description>
     </item>
     

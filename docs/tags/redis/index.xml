@@ -6,7 +6,7 @@
     <description>Recent content in redis on fatedier blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <copyright>Copyright (c) 2018. All rights reserved.</copyright>
+    <copyright>Copyright (c) 2020. All rights reserved.</copyright>
     <lastBuildDate>Wed, 07 Oct 2015 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://blog.fatedier.com/tags/redis/index.xml" rel="self" type="application/rss+xml" />
@@ -28,7 +28,6 @@
       
       <guid>http://blog.fatedier.com/2015/09/15/redis-cluster-survey/</guid>
       <description>&lt;p&gt;Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。&lt;/p&gt;
-
 &lt;p&gt;单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。&lt;/p&gt;</description>
     </item>
     

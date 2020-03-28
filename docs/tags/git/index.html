@@ -105,7 +105,6 @@
     </header>
     <div class="post-content">
         <p>Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。</p>
-
 <p>Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。</p>
     </div>
     </article>
@@ -138,19 +137,6 @@
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

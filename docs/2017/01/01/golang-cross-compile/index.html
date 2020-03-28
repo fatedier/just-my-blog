@@ -71,43 +71,26 @@
 
             <div class="post-content">
                 <p>golang 相比 c/c++ 的优势之一是更容易编写出跨平台的应用，而不需要为各个平台编写适配代码。和 JAVA 相比，对系统环境要求较低，不需要预先安装 JDK 等适配环境。</p>
-
 <h3 id="go-build">go build</h3>
-
 <p>这里以 <a href="https://github.com/fatedier/frp">frp</a> 项目的跨平台编译脚本作为示例</p>
-
 <p>编译 linux/amd64 版本的应用：</p>
-
 <p><code>CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags &quot;-s -w&quot; -o frpc_linux_amd64 ./cmd/frpc</code></p>
-
 <p>编译 windows/amd64 版本的应用：</p>
-
 <p><code>CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags &quot;-s -w&quot; -o ./frpc_windows_amd64.exe ./cmd/frpc</code></p>
-
 <p>在 linux 上编译出 windows 的 exe 文件后，可以直接拷贝到 windows 机器上运行。</p>
-
 <p><strong>GOOS</strong> 表明目标平台的操作系统。
 <strong>GOARCH</strong> 表明目标平台的架构，通常 386 表示 32位系统，amd64 表示 64位系统。
 可以通过 <code>go tool dist list</code> 查看支持的操作系统和对应的平台。</p>
-
 <p><strong>-s -w</strong> 是为了去掉编译时的符号信息和调试信息，缩小编译出的程序文件大小，非必需。
 <strong>CGO_ENABLED=0</strong> 可以禁用 cgo 编译，跨平台兼容性会更好。</p>
-
-<h3 id="限定代码只在某个特定平台上编译">限定代码只在某个特定平台上编译</h3>
-
+<h3 id="heading">限定代码只在某个特定平台上编译</h3>
 <p>有时候我们仍然希望为不同平台的应用编写特殊的代码，通过给 Go 文件加上 <code>// +build</code> 注释可以实现。</p>
-
 <p>例如 Go 文件开头存在如下注释</p>
-
 <p><code>// +build linux,386 darwin,!cgo</code></p>
-
 <p>说明该文件仅在 linux/386 或者 darwin(No cgo) 的环境下被编译。
 在其他环境下该文件不会被编译。</p>
-
 <p>通过这个方法，我们可以为不同平台编写同一份代码的不同实现。</p>
-
-<h3 id="额外注意事项">额外注意事项</h3>
-
+<h3 id="heading1">额外注意事项</h3>
 <ul>
 <li>推荐在 linux/amd64 上进行交叉编译，其他平台可能会出现一些意外情况，具体不明确。</li>
 <li>使用 cgo 时交叉编译可能失败，编写跨平台应用最好禁用 cgo。</li>
@@ -139,8 +122,7 @@
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/">go语言中使用smtp发送邮件及smtp协议的相关问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月20日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li></ul>
             </aside>
                 
             
@@ -173,17 +155,11 @@
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#go-build">go build</a></li>
-<li><a href="#限定代码只在某个特定平台上编译">限定代码只在某个特定平台上编译</a></li>
-<li><a href="#额外注意事项">额外注意事项</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#go-build">go build</a></li>
+    <li><a href="#heading">限定代码只在某个特定平台上编译</a></li>
+    <li><a href="#heading1">额外注意事项</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -198,19 +174,6 @@
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

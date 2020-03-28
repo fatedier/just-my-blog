@@ -71,58 +71,36 @@
 
             <div class="post-content">
                 <p>mtcp 是一个用户态的 tcp 协议栈，结合 dpdk 可以实现高性能的收发包。mtcp 不支持 udp 协议，想要在 bind 里利用 mtcp 进行加速，需要改动源码以提供支持。</p>
-
-<h3 id="大致思路">大致思路</h3>
-
-<p>mtcp 项目地址：<a href="https://github.com/mtcp-stack/mtcp">https://github.com/mtcp-stack/mtcp</a></p>
-
+<h3 id="heading">大致思路</h3>
+<p>mtcp 项目地址：https://github.com/mtcp-stack/mtcp</p>
 <p>我们需要实现和 udp 数据收发相关的函数，提供给其他程序使用的 SDK。各个所需函数的实现方式如下。</p>
-
 <p><code>mtcp_socket()</code></p>
-
 <p>创建 socket 对象，对象池数组，分配一个与其他 socket 对象不冲突的 id(fd)。</p>
-
 <p><code>mtcp_bind()</code></p>
-
 <p>将绑定的本地 IP 地址和端口等数据写入 socket 对象，将此 socket 对象的地址放入一个存放正在监听中的 socket 对象的 hashmap。</p>
-
 <p>需要创建一个 hashmap，存放所有处于监听状态的 socket 对象，key 是本地 IP，Port。</p>
-
-<h3 id="udp-数据包的接收">UDP 数据包的接收</h3>
-
+<h3 id="udp-">UDP 数据包的接收</h3>
 <p>解析到 以太网帧 -&gt; ip -&gt; udp</p>
-
 <p>解析出目的 ip，port，检查 hashmap 中是否有正处于监听状态的 socket 对象，如果没有，丢弃，否则加入到该 socket 对象的读缓冲区（这里需要一个队列）。</p>
-
 <p>调用 pthread_cond_singal 唤醒处于 recvfrom 的线程，或者是 epoll 队列中有该socket 的可读事件监听，pthread_cond_singal 唤醒 mtcp_epoll_wait 线程。</p>
-
-<h4 id="mtcp-recvfrom">mtcp_recvfrom()</h4>
-
+<h4 id="mtcprecvfrom">mtcp_recvfrom()</h4>
 <ol>
 <li>不使用 epoll，阻塞：使用 pthread_cond_wait 等待主线程轮询网卡数据包，有此socket 的 udp 包的时候会被唤醒，从读缓冲区中取出内容返回。</li>
 <li>不使用 epoll，非阻塞：直接查询监听中socket-hashmap的此socket的读缓冲区，取出内容并返回。</li>
 <li>使用 epoll（非阻塞）：将此 socket 的可读事件加入监听，epoll_wait 被唤醒，检查到可读事件，非阻塞模式读缓冲区内容。</li>
 </ol>
-
-<h4 id="mtcp-sendto">mtcp_sendto()</h4>
-
+<h4 id="mtcpsendto">mtcp_sendto()</h4>
 <ol>
 <li>不使用 epoll，阻塞：如果此 socket 的写缓冲区未满，直接写入并返回，如果已满（需要等到有空间后被唤醒，考虑 socket 对象需要加一个 send_wait_list，统一触发）</li>
 <li>不使用 epoll，非阻塞：已满就返回错误。</li>
 <li>使用 epoll（非阻塞）：将可写事件加入 epoll 事件队列，当 socket 可写时写入缓冲区。
 （如果原来写缓冲区是空的，现在有内容了，加入到一个全局的 send_list 队列中）</li>
 </ol>
-
 <p>如果此 socket 的 udp_stream 为 NULL，说明是一个客户端的 socket，创建一个新的udp_stream，分配一个随机的 udp 端口，加入到正在监听中的 socket 对象的 hashmap。</p>
-
-<h3 id="udp-数据包发送">udp 数据包发送</h3>
-
+<h3 id="udp-1">udp 数据包发送</h3>
 <p>这里需要一开始创建一个全局的 udp_sender 对象，有一个 send_list 队列，存放需要发送数据的所有的 socket 对象。</p>
-
 <p>轮询这些 socket 对象，构造数据包，udp -&gt; ip -&gt; 以太网帧，调用 dpdk 发送包的接口。</p>
-
-<h3 id="主线程循环">主线程循环</h3>
-
+<h3 id="heading1">主线程循环</h3>
 <ul>
 <li>udp 数据包的接收</li>
 <li>udp 数据包发送</li>
@@ -161,8 +139,7 @@
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name/">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight/">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li><li id="li-rels"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/">C/C&#43;&#43;获取精确到微秒级的系统时间</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月30日)</span></li><li id="li-rels"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty/">size() == 0和empty()的比较</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月26日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02/">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01/">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name/">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li></ul>
             </aside>
                 
             
@@ -195,22 +172,17 @@
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#大致思路">大致思路</a></li>
-<li><a href="#udp-数据包的接收">UDP 数据包的接收</a>
-<ul>
-<li><a href="#mtcp-recvfrom">mtcp_recvfrom()</a></li>
-<li><a href="#mtcp-sendto">mtcp_sendto()</a></li>
-</ul></li>
-<li><a href="#udp-数据包发送">udp 数据包发送</a></li>
-<li><a href="#主线程循环">主线程循环</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">大致思路</a></li>
+    <li><a href="#udp-">UDP 数据包的接收</a>
+      <ul>
+        <li><a href="#mtcprecvfrom">mtcp_recvfrom()</a></li>
+        <li><a href="#mtcpsendto">mtcp_sendto()</a></li>
+      </ul>
+    </li>
+    <li><a href="#udp-1">udp 数据包发送</a></li>
+    <li><a href="#heading1">主线程循环</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -225,19 +197,6 @@
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

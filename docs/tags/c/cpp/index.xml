@@ -6,7 +6,7 @@
     <description>Recent content in c/cpp on fatedier blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <copyright>Copyright (c) 2018. All rights reserved.</copyright>
+    <copyright>Copyright (c) 2020. All rights reserved.</copyright>
     <lastBuildDate>Fri, 03 Mar 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://blog.fatedier.com/tags/c/cpp/index.xml" rel="self" type="application/rss+xml" />
@@ -82,7 +82,6 @@
       
       <guid>http://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</guid>
       <description>&lt;p&gt;最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。&lt;/p&gt;
-
 &lt;p&gt;我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：&lt;/p&gt;</description>
     </item>
     

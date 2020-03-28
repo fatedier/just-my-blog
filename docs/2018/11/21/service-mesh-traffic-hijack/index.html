@@ -71,108 +71,92 @@
 
             <div class="post-content">
                 <p>Istio 的项目中有一个亮点就是可以将旧的应用无缝接入到 Service Mesh 的平台上来，不用修改一行代码。实现这个功能，目前主要是通过 iptables 来截获流量转发给 proxy。</p>
-
-<h3 id="如何实现">如何实现？</h3>
-
+<h3 id="heading">如何实现？</h3>
 <p>参考 Istio 的实现方式，我们可以自己设计一个简单的流量劫持的方案。</p>
-
 <p>要做哪些事？</p>
-
 <ul>
 <li>首先要有一个支持透明代理的 proxy，处理被劫持的流量，能够获取到连接建立时的原来的目的地址。在 k8s 中这个 proxy 采用 sidecar 的方式和要劫持流量的服务部署在一个 Pod 中。</li>
 <li>通过 iptables 将我们想要劫持的流量劫持到 proxy 中。proxy 自身的流量要排除在外。</li>
 <li>要实现零侵入，最好不修改服务的镜像，在 k8s 中可以采用 Init 容器的方式在应用容器启动之前做 iptables 的修改。</li>
 </ul>
-
-<h4 id="透明代理">透明代理</h4>
-
+<h4 id="heading1">透明代理</h4>
 <p>proxy 作为一个透明代理，对于自身能处理的流量，会经过一系列的处理逻辑，包括重试，超时，负载均衡等，再转发给对端服务。对于自身不能处理的流量，会直接透传，不作处理。</p>
-
 <p>通过 iptables 将流量转发给 proxy 后，proxy 需要能够获取到原来建立连接时的目的地址。在 Go 中的实现稍微麻烦一些，需要通过 <code>syscall</code> 调用来获取，</p>
-
 <p>示例代码:</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> redirect
 
-<pre><code class="language-golang">package redirect
-
-import (
-    &quot;errors&quot;
-    &quot;fmt&quot;
-    &quot;net&quot;
-    &quot;os&quot;
-    &quot;syscall&quot;
+<span style="color:#cd00cd">import</span> (
+    <span style="color:#cd0000">&#34;errors&#34;</span>
+    <span style="color:#cd0000">&#34;fmt&#34;</span>
+    <span style="color:#cd0000">&#34;net&#34;</span>
+    <span style="color:#cd0000">&#34;os&#34;</span>
+    <span style="color:#cd0000">&#34;syscall&#34;</span>
 )
 
-const SO_ORIGINAL_DST = 80
+<span style="color:#00cd00">const</span> SO_ORIGINAL_DST = <span style="color:#cd00cd">80</span>
 
-var (
-    ErrGetSocketoptIPv6 = errors.New(&quot;get socketopt ipv6 error&quot;)
-    ErrResolveTCPAddr   = errors.New(&quot;resolve tcp address error&quot;)
-    ErrTCPConn          = errors.New(&quot;not a valid TCPConn&quot;)
+<span style="color:#00cd00">var</span> (
+    ErrGetSocketoptIPv6 = errors.New(<span style="color:#cd0000">&#34;get socketopt ipv6 error&#34;</span>)
+    ErrResolveTCPAddr   = errors.New(<span style="color:#cd0000">&#34;resolve tcp address error&#34;</span>)
+    ErrTCPConn          = errors.New(<span style="color:#cd0000">&#34;not a valid TCPConn&#34;</span>)
 )
 
-// For transparent proxy.
-// Get REDIRECT package's originial dst address.
-// Note: it may be only support linux.
-func GetOriginalDstAddr(conn *net.TCPConn) (addr net.Addr, c *net.TCPConn, err error) {
-    fc, errRet := conn.File()
-    if errRet != nil {
+<span style="color:#000080">// For transparent proxy.
+</span><span style="color:#000080"></span><span style="color:#000080">// Get REDIRECT package&#39;s originial dst address.
+</span><span style="color:#000080"></span><span style="color:#000080">// Note: it may be only support linux.
+</span><span style="color:#000080"></span><span style="color:#00cd00">func</span> GetOriginalDstAddr(conn <span style="color:#39c">*</span>net.TCPConn) (addr net.Addr, c <span style="color:#39c">*</span>net.TCPConn, err <span style="color:#00cd00">error</span>) {
+    fc, errRet <span style="color:#39c">:=</span> conn.File()
+    <span style="color:#cdcd00">if</span> errRet <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
         conn.Close()
         err = ErrTCPConn
-        return
-    } else {
+        <span style="color:#cdcd00">return</span>
+    } <span style="color:#cdcd00">else</span> {
         conn.Close()
     }
-    defer fc.Close()
+    <span style="color:#cdcd00">defer</span> fc.Close()
 
-    mreq, errRet := syscall.GetsockoptIPv6Mreq(int(fc.Fd()), syscall.IPPROTO_IP, SO_ORIGINAL_DST)
-    if errRet != nil {
+    mreq, errRet <span style="color:#39c">:=</span> syscall.GetsockoptIPv6Mreq(<span style="color:#cd00cd">int</span>(fc.Fd()), syscall.IPPROTO_IP, SO_ORIGINAL_DST)
+    <span style="color:#cdcd00">if</span> errRet <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
         err = ErrGetSocketoptIPv6
         c, _ = getTCPConnFromFile(fc)
-        return
+        <span style="color:#cdcd00">return</span>
     }
 
-    // only support ipv4
-    ip := net.IPv4(mreq.Multiaddr[4], mreq.Multiaddr[5], mreq.Multiaddr[6], mreq.Multiaddr[7])
-    port := uint16(mreq.Multiaddr[2])&lt;&lt;8 + uint16(mreq.Multiaddr[3])
-    addr, err = net.ResolveTCPAddr(&quot;tcp4&quot;, fmt.Sprintf(&quot;%s:%d&quot;, ip.String(), port))
-    if err != nil {
+    <span style="color:#000080">// only support ipv4
+</span><span style="color:#000080"></span>    ip <span style="color:#39c">:=</span> net.IPv4(mreq.Multiaddr[<span style="color:#cd00cd">4</span>], mreq.Multiaddr[<span style="color:#cd00cd">5</span>], mreq.Multiaddr[<span style="color:#cd00cd">6</span>], mreq.Multiaddr[<span style="color:#cd00cd">7</span>])
+    port <span style="color:#39c">:=</span> <span style="color:#cd00cd">uint16</span>(mreq.Multiaddr[<span style="color:#cd00cd">2</span>])<span style="color:#39c">&lt;&lt;</span><span style="color:#cd00cd">8</span> <span style="color:#39c">+</span> <span style="color:#cd00cd">uint16</span>(mreq.Multiaddr[<span style="color:#cd00cd">3</span>])
+    addr, err = net.ResolveTCPAddr(<span style="color:#cd0000">&#34;tcp4&#34;</span>, fmt.Sprintf(<span style="color:#cd0000">&#34;%s:%d&#34;</span>, ip.String(), port))
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
         err = ErrResolveTCPAddr
-        return
+        <span style="color:#cdcd00">return</span>
     }
 
     c, errRet = getTCPConnFromFile(fc)
-    if errRet != nil {
+    <span style="color:#cdcd00">if</span> errRet <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
         err = ErrTCPConn
-        return
+        <span style="color:#cdcd00">return</span>
     }
-    return
+    <span style="color:#cdcd00">return</span>
 }
 
-func getTCPConnFromFile(f *os.File) (*net.TCPConn, error) {
-    newConn, err := net.FileConn(f)
-    if err != nil {
-        return nil, ErrTCPConn
+<span style="color:#00cd00">func</span> getTCPConnFromFile(f <span style="color:#39c">*</span>os.File) (<span style="color:#39c">*</span>net.TCPConn, <span style="color:#00cd00">error</span>) {
+    newConn, err <span style="color:#39c">:=</span> net.FileConn(f)
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">nil</span>, ErrTCPConn
     }
 
-    c, ok := newConn.(*net.TCPConn)
-    if !ok {
-        return nil, ErrTCPConn
+    c, ok <span style="color:#39c">:=</span> newConn.(<span style="color:#39c">*</span>net.TCPConn)
+    <span style="color:#cdcd00">if</span> !ok {
+        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">nil</span>, ErrTCPConn
     }
-    return c, nil
+    <span style="color:#cdcd00">return</span> c, <span style="color:#cdcd00">nil</span>
 }
-</code></pre>
-
-<p>通过 <code>GetOriginalDstAddr</code> 函数可以获取到连接原来的目的地址。</p>
-
+</code></pre></div><p>通过 <code>GetOriginalDstAddr</code> 函数可以获取到连接原来的目的地址。</p>
 <p>这里需要格外注意的是，当启用 iptables 转发后，proxy 如果接收到直接访问自己的连接时，会识别到自身不能处理，会再去连接此目的地址(就是自己绑定的地址)，这样就会导致死循环。所以在服务启动时，需要将目的地址为自身 IP 的连接直接断开。</p>
-
 <h4 id="sidecar">Sidecar</h4>
-
 <p>使用 Sidecar 模式部署服务网格时，会在每一个服务身边额外启一个 proxy 去接管容器的部分流量。在 kubernetes 中一个 Pod 可以有多个容器，这多个容器可以共享网络，存储等资源，从概念上将服务容器和 proxy 容器部署成一个 Pod，proxy 容器就相当于是 sidecar 容器。</p>
-
 <p>我们通过一个 Deployment 来演示，这个 Deployment 的 yaml 配置中包括了 test 和 proxy 两个 container，它们共享网络，所以登录 test 容器后，通过 <code>127.0.0.1:30000</code> 可以访问到 proxy 容器。</p>
-
-<pre><code class="language-yaml">apiVersion: apps/v1
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: test
@@ -180,7 +164,7 @@ metadata:
   labels:
     app: test
 spec:
-  replicas: 1
+  replicas: <span style="color:#cd00cd">1</span>
   template:
     metadata:
       labels:
@@ -190,41 +174,26 @@ spec:
       - name: test
         image: {test-image}
         ports:
-          - containerPort: 9100
+          - containerPort: <span style="color:#cd00cd">9100</span>
       - name: proxy
         image: {proxy-image}
         ports:
-          - containerPort: 30000    
-</code></pre>
-
-<p>为每一个服务都编写 sidecar 容器的配置是一件比较繁琐的事情，当架构成熟后，我们就可以利用 kubernetes 的 <code>MutatingAdmissionWebhook</code> 功能，在用户创建 Deployment 时，主动注入 sidecar 相关的配置。</p>
-
+          - containerPort: <span style="color:#cd00cd">30000</span>    
+</code></pre></div><p>为每一个服务都编写 sidecar 容器的配置是一件比较繁琐的事情，当架构成熟后，我们就可以利用 kubernetes 的 <code>MutatingAdmissionWebhook</code> 功能，在用户创建 Deployment 时，主动注入 sidecar 相关的配置。</p>
 <p>例如，我们在 Deployment 的 annotations 中加入如下的字段:</p>
-
-<pre><code class="language-yaml">annotations:
-  xxx.com/sidecar.enable: &quot;true&quot;
-  xxx.com/sidecar.version: &quot;v1&quot;
-</code></pre>
-
-<p>表示在此 Deployment 中需要注入 v1 版本的 sidecar。当我们的服务收到这个 webhook 后，就可以检查相关的 annotations 字段，根据字段配置来决定是否注入 sidecar 配置以及注入什么版本的配置，如果其中有一些需要根据服务改变的参数，也可以通过这种方式传递，极大地提高了灵活性。</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">annotations:
+  xxx.com/sidecar.enable: <span style="color:#cd0000">&#34;true&#34;</span>
+  xxx.com/sidecar.version: <span style="color:#cd0000">&#34;v1&#34;</span>
+</code></pre></div><p>表示在此 Deployment 中需要注入 v1 版本的 sidecar。当我们的服务收到这个 webhook 后，就可以检查相关的 annotations 字段，根据字段配置来决定是否注入 sidecar 配置以及注入什么版本的配置，如果其中有一些需要根据服务改变的参数，也可以通过这种方式传递，极大地提高了灵活性。</p>
 <h4 id="iptables">iptables</h4>
-
 <p>通过 iptables 我们可以将指定的流量劫持到 proxy，并将部分流量排除在外。</p>
-
 <pre><code>iptables -t nat -A OUTPUT -p tcp -m owner --uid-owner 9527 -j RETURN
 iptables -t nat -A OUTPUT -p tcp -d 172.17.0.0/16 -j REDIRECT --to-port 30000
-</code></pre>
-
-<p>上面的命令，表示将目标地址是 <code>172.17.0.0/16</code> 的流量 <code>REDIRECT</code> 到 30000 端口(proxy 所监听的端口)。但是 UID 为 9527 启动的进程除外。<code>172.17.0.0/16</code> 这个地址是 k8s 集群内部的 IP 段，我们只需要劫持这部分流量，对于访问集群外部的流量，暂时不劫持，如果劫持全部流量，对于 proxy 不能处理的请求，就需要通过 iptables 的规则去排除。</p>
-
-<h4 id="init-容器">Init 容器</h4>
-
+</code></pre><p>上面的命令，表示将目标地址是 <code>172.17.0.0/16</code> 的流量 <code>REDIRECT</code> 到 30000 端口(proxy 所监听的端口)。但是 UID 为 9527 启动的进程除外。<code>172.17.0.0/16</code> 这个地址是 k8s 集群内部的 IP 段，我们只需要劫持这部分流量，对于访问集群外部的流量，暂时不劫持，如果劫持全部流量，对于 proxy 不能处理的请求，就需要通过 iptables 的规则去排除。</p>
+<h4 id="init-">Init 容器</h4>
 <p>前文说过为了实现零侵入，我们需要通过 Init 容器的方式，在启动用户服务容器之前，就修改 iptables。这部分配置也可以通过 kubernetes 的 <code>MutatingAdmissionWebhook</code> 功能注入到用户的 Deployment 配置中。</p>
-
 <p>将前面 sidecar 的配置中加上 Init 容器的配置:</p>
-
-<pre><code class="language-yaml">apiVersion: apps/v1
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: test
@@ -232,7 +201,7 @@ metadata:
   labels:
     app: test
 spec:
-  replicas: 1
+  replicas: <span style="color:#cd00cd">1</span>
   template:
     metadata:
       labels:
@@ -242,36 +211,28 @@ spec:
       - name: iptables-init
         image: {iptables-image}
         imagePullPolicy: IfNotPresent
-        command: ['sh', '-c', 'iptables -t nat -A OUTPUT -p tcp -m owner --uid-owner 9527 -j RETURN &amp;&amp; iptables -t nat -A OUTPUT -p tcp -d 172.17.0.0/16 -j REDIRECT --to-port 30000']
+        command: [<span style="color:#cd0000">&#39;sh&#39;</span>, <span style="color:#cd0000">&#39;-c&#39;</span>, <span style="color:#cd0000">&#39;iptables -t nat -A OUTPUT -p tcp -m owner --uid-owner 9527 -j RETURN &amp;&amp; iptables -t nat -A OUTPUT -p tcp -d 172.17.0.0/16 -j REDIRECT --to-port 30000&#39;</span>]
         securityContext:
           capabilities:
             add:
             - NET_ADMIN
-          privileged: true
+          privileged: <span style="color:#cdcd00">true</span>
       containers:
       - name: test
         image: {test-image}
         ports:
-          - containerPort: 9100
+          - containerPort: <span style="color:#cd00cd">9100</span>
       - name: proxy
         image: {proxy-image}
         ports:
-          - containerPort: 30000    
-</code></pre>
-
-<p>这个 Init 容器需要安装 iptables，在启动时会执行我们配置的 iptables 命令。</p>
-
+          - containerPort: <span style="color:#cd00cd">30000</span>    
+</code></pre></div><p>这个 Init 容器需要安装 iptables，在启动时会执行我们配置的 iptables 命令。</p>
 <p>需要额外注意的是 <code>securityContext</code> 这个配置项，我们加了 <code>NET_ADMIN</code> 的权限。它用于定义 Pod 或 Container 的权限，如果不配置，则 iptables 执行命令时会提示错误。</p>
-
-<h3 id="问题">问题</h3>
-
-<h4 id="如何判断目标服务的类型">如何判断目标服务的类型</h4>
-
+<h3 id="heading2">问题</h3>
+<h4 id="heading3">如何判断目标服务的类型</h4>
 <p>我们将 <code>172.17.0.0/16</code> 的流量都劫持到了 proxy 内部，那么如何判断目标服务的协议类型？如果不知道协议类型，就不能确定如何去解析后续的请求。</p>
-
 <p>在 kubernetes 的 service 中，我们可以为每一个 service 的端口指定一个名字，这个名字的格式可以固定为 <code>{name}-{protocol}</code>，例如 <code>{test-http}</code>，表示这个 service 的某个端口是 http 协议。</p>
-
-<pre><code class="language-yaml">kind: Service
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">kind: Service
 apiVersion: v1
 metadata:
   name: test
@@ -281,19 +242,13 @@ spec:
     app: test
   ports:
     - name: test-http
-      port: 9100
-      targetPort: 9100
+      port: <span style="color:#cd00cd">9100</span>
+      targetPort: <span style="color:#cd00cd">9100</span>
       protocol: TCP
-</code></pre>
-
-<p>proxy 通过 discovery 服务获取到 service 对应的 Cluster IP 和端口名称，这样通过目标服务的 IP 和 port 就可以知道这个连接的通信协议类型，后面就可以交给对应的 Handler 去处理。</p>
-
+</code></pre></div><p>proxy 通过 discovery 服务获取到 service 对应的 Cluster IP 和端口名称，这样通过目标服务的 IP 和 port 就可以知道这个连接的通信协议类型，后面就可以交给对应的 Handler 去处理。</p>
 <h4 id="cluster-ip">Cluster IP</h4>
-
 <p>在 kubernetes 中创建 Service，如果没有指定，默认采用 Cluster IP 的方式来访问，kube-proxy 会为此创建 iptables 规则，将 Cluster IP 转换为以负载均衡的方式转发到 Pod IP。</p>
-
 <p>当存在 Cluster IP 时，service 的 DNS 解析会指向 Cluster IP，负载均衡由 iptables 来做。如果不存在，DNS 解析的结果会直接指向 Pod IP。</p>
-
 <p>proxy 依赖于 service 的 Cluster IP 来判断用户访问的是哪一个服务，所以不能设置为 <code>clusterIP: None</code>。因为 Pod IP 是有可能会经常变动的，当增减实例时，Pod IP 的集合都会改变，proxy 并不能实时的获取到这些变化。</p>
             </div>
             
@@ -330,7 +285,6 @@ spec:
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2019/04/17/k8s-custom-controller-high-available/">kubernetes 自定义控制器的高可用</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月17日)</span></li><li id="li-rels"><a href="/2019/04/02/k8s-custom-controller/">kubernetes 自定义控制器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月02日)</span></li><li id="li-rels"><a href="/2019/03/25/k8s-crd-authorization/">kubernetes CRD 权限管理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月25日)</span></li><li id="li-rels"><a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月20日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">使用 telepresence 在 k8s 环境中实现快速开发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月03日)</span></li><li id="li-rels"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月10日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
-                
             </aside>
                 
             
@@ -363,26 +317,22 @@ spec:
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#如何实现">如何实现？</a>
-<ul>
-<li><a href="#透明代理">透明代理</a></li>
-<li><a href="#sidecar">Sidecar</a></li>
-<li><a href="#iptables">iptables</a></li>
-<li><a href="#init-容器">Init 容器</a></li>
-</ul></li>
-<li><a href="#问题">问题</a>
-<ul>
-<li><a href="#如何判断目标服务的类型">如何判断目标服务的类型</a></li>
-<li><a href="#cluster-ip">Cluster IP</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">如何实现？</a>
+      <ul>
+        <li><a href="#heading1">透明代理</a></li>
+        <li><a href="#sidecar">Sidecar</a></li>
+        <li><a href="#iptables">iptables</a></li>
+        <li><a href="#init-">Init 容器</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading2">问题</a>
+      <ul>
+        <li><a href="#heading3">如何判断目标服务的类型</a></li>
+        <li><a href="#cluster-ip">Cluster IP</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -397,19 +347,6 @@ spec:
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

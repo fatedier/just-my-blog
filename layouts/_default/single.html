@@ -43,15 +43,18 @@
                 <ul class="post-rels" id="real-rels">
                     {{- $page_link := .Permalink -}}
                     {{- $tags := .Params.tags -}}
+                    {{- $count := 0 -}}
                     {{- range .Site.Pages -}}
                         {{- $page := . -}}
                         {{- $has_common_tags := intersect $tags .Params.tags | len | lt 0 -}}
                         {{- if and $has_common_tags (ne $page_link $page.Permalink) -}}
+                            {{- if lt $count .Site.Params.ReleatedArticlessLimit -}}
+                            {{- $count = add $count 1 -}}
                             <li id="li-rels"><a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;({{ .Date.Format .Site.Params.DateForm }})</span></li>
+                            {{- end -}}
                         {{- end -}}
                     {{- end -}}
                 </ul>
-                {{/* 通过 js 操作只显示最前面的几篇相关文章 */}}
             </aside>
                 {{ end }}
             <!-- Pagination. -->

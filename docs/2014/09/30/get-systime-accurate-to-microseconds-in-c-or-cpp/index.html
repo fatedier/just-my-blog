@@ -71,97 +71,71 @@
 
             <div class="post-content">
                 <p>最近要为自己的项目开发一个日志模块，需要获取精确到微秒级的系统时间，查阅了一些资料，发现在C/C++里面可以通过 gettimeofday(struct timeval * tv,struct timezone * tz) 和 localtime(const time_t * timep) 这两个函数的配合使用来得到我想要的结果。</p>
-
 <p>先贴一下这两个函数的说明</p>
-
 <h4 id="gettimeofday">gettimeofday</h4>
-
-<p>头文件：<strong>#include <sys/time.h>   #include <unistd.h></strong></p>
-
+<p>头文件：<strong>#include &lt;sys/time.h&gt;   #include &lt;unistd.h&gt;</strong></p>
 <p>函数定义：<strong>int gettimeofday (struct timeval * tv, struct timezone * tz);</strong></p>
-
 <p>函数说明：gettimeofday()会把目前的时间有tv 所指的结构返回，当地时区的信息则放到tz 所指的结构中。时间是从公元 1970 年1 月1 日的UTC 时间从0 时0 分0 秒算起到现在所经过的时间。</p>
-
 <p>timeval 结构定义为：</p>
-
-<pre><code class="language-cpp">struct timeval
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#cdcd00">struct</span> <span style="color:#00cdcd">timeval</span>
 {
-    long tv_sec;     // 秒
-    long tv_usec;    // 微秒
-};
-</code></pre>
-
-<p>timezone 结构定义为：</p>
-
-<pre><code class="language-cpp">struct timezone
+    <span style="color:#00cd00">long</span> tv_sec;     <span style="color:#000080">// 秒
+</span><span style="color:#000080"></span>    <span style="color:#00cd00">long</span> tv_usec;    <span style="color:#000080">// 微秒
+</span><span style="color:#000080"></span>};
+</code></pre></div><p>timezone 结构定义为：</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#cdcd00">struct</span> <span style="color:#00cdcd">timezone</span>
 {
-    int tz_minuteswest;  // 和格林威治时间差了多少分钟
-    int tz_dsttime;      // 日光节约时间的状态
-};
-</code></pre>
-
-<h4 id="localtime">localtime</h4>
-
-<p>头文件：<strong>#include <time.h></strong></p>
-
-<p>函数定义：<strong>struct tm *localtime (const time_t *timep);</strong></p>
-
+    <span style="color:#00cd00">int</span> tz_minuteswest;  <span style="color:#000080">// 和格林威治时间差了多少分钟
+</span><span style="color:#000080"></span>    <span style="color:#00cd00">int</span> tz_dsttime;      <span style="color:#000080">// 日光节约时间的状态
+</span><span style="color:#000080"></span>};
+</code></pre></div><h4 id="localtime">localtime</h4>
+<p>头文件：<strong>#include &lt;time.h&gt;</strong></p>
+<p>函数定义：**struct tm <em>localtime (const time_t <em>timep);</em></em></p>
 <p>函数说明：localtime()将参数timep 所指的time_t 结构中的信息转换成真实世界所使用的时间日期表示方法，然后将结果由结构tm 返回。</p>
-
 <p>结构tm 的定义为：</p>
-
-<pre><code class="language-cpp">int tm_sec;   // 代表目前秒数, 正常范围为0-59, 但允许至61 秒
-int tm_min;   // 代表目前分数, 范围0-59
-int tm_hour;  // 从午夜算起的时数, 范围为0-23
-int tm_mday;  // 目前月份的日数, 范围1-31
-int tm_mon;   // 代表目前月份, 从一月算起, 范围从0-11
-int tm_year;  // 从1900 年算起至今的年数
-int tm_wday;  // 一星期的日数, 从星期一算起, 范围为0-6
-int tm_yday;  // 从今年1 月1 日算起至今的天数, 范围为0-365
-int tm_isdst; // 日光节约时间的旗标
-</code></pre>
-
-<p>使用localtime函数的时候需要注意计算年份的时候需要加上1900，计算月份的时候需要加1。</p>
-
-<h3 id="使用说明">使用说明</h3>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">int</span> tm_sec;   <span style="color:#000080">// 代表目前秒数, 正常范围为0-59, 但允许至61 秒
+</span><span style="color:#000080"></span><span style="color:#00cd00">int</span> tm_min;   <span style="color:#000080">// 代表目前分数, 范围0-59
+</span><span style="color:#000080"></span><span style="color:#00cd00">int</span> tm_hour;  <span style="color:#000080">// 从午夜算起的时数, 范围为0-23
+</span><span style="color:#000080"></span><span style="color:#00cd00">int</span> tm_mday;  <span style="color:#000080">// 目前月份的日数, 范围1-31
+</span><span style="color:#000080"></span><span style="color:#00cd00">int</span> tm_mon;   <span style="color:#000080">// 代表目前月份, 从一月算起, 范围从0-11
+</span><span style="color:#000080"></span><span style="color:#00cd00">int</span> tm_year;  <span style="color:#000080">// 从1900 年算起至今的年数
+</span><span style="color:#000080"></span><span style="color:#00cd00">int</span> tm_wday;  <span style="color:#000080">// 一星期的日数, 从星期一算起, 范围为0-6
+</span><span style="color:#000080"></span><span style="color:#00cd00">int</span> tm_yday;  <span style="color:#000080">// 从今年1 月1 日算起至今的天数, 范围为0-365
+</span><span style="color:#000080"></span><span style="color:#00cd00">int</span> tm_isdst; <span style="color:#000080">// 日光节约时间的旗标
+</span></code></pre></div><p>使用localtime函数的时候需要注意计算年份的时候需要加上1900，计算月份的时候需要加1。</p>
+<h3 id="heading">使用说明</h3>
 <p>我们先调用gettimeofday函数获取到从公元 1970年1 月1 日的UTC 时间从0 时0 分0 秒算起到现在所经过的秒数加上微秒数，然后将秒数作为参数再调用localtime函数，转换为本地时区的当前时间即可，之后可以使用localtime函数返回的tm结构体对象来获取具体的年月日时分秒等数据。</p>
-
-<h3 id="示例代码">示例代码</h3>
-
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-#include &lt;string&gt;
-#include &lt;stdio.h&gt;
-#include &lt;sys/time.h&gt;
-#include &lt;time.h&gt;
-#include &lt;unistd.h&gt;
-using namespace std;
+<h3 id="heading1">示例代码</h3>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;iostream&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;string&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;sys/time.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;time.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;unistd.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#cdcd00">using</span> <span style="color:#cdcd00">namespace</span> std;
  
 string fa_getSysTime()
 {
-    struct timeval tv;
-    gettimeofday(&amp;tv,NULL);
-    struct tm* pTime;
-    pTime = localtime(&amp;tv.tv_sec);
+    <span style="color:#cdcd00">struct</span> <span style="color:#00cdcd">timeval</span> tv;
+    gettimeofday(<span style="color:#39c">&amp;</span>tv,<span style="color:#cd00cd">NULL</span>);
+    <span style="color:#cdcd00">struct</span> <span style="color:#00cdcd">tm</span><span style="color:#39c">*</span> pTime;
+    pTime <span style="color:#39c">=</span> localtime(<span style="color:#39c">&amp;</span>tv.tv_sec);
     
-    charsTemp[30] = {0};
-    snprintf(sTemp, sizeof(sTemp), &quot;%04d%02d%02d%02d%02d%02d%03d%03d&quot;, pTime-&gt;tm_year+1900, \
-    pTime-&gt;tm_mon+1, pTime-&gt;tm_mday, pTime-&gt;tm_hour, pTime-&gt;tm_min, pTime-&gt;tm_sec, \
-    tv.tv_usec/1000,tv.tv_usec%1000);
-    return (string)sTemp;
+    charsTemp[<span style="color:#cd00cd">30</span>] <span style="color:#39c">=</span> {<span style="color:#cd00cd">0</span>};
+    snprintf(sTemp, <span style="color:#cdcd00">sizeof</span>(sTemp), <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">%04d%02d%02d%02d%02d%02d%03d%03d</span><span style="color:#cd0000">&#34;</span>, pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_year<span style="color:#39c">+</span><span style="color:#cd00cd">1900</span>, \
+    pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_mon<span style="color:#39c">+</span><span style="color:#cd00cd">1</span>, pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_mday, pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_hour, pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_min, pTime<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>tm_sec, \
+    tv.tv_usec<span style="color:#39c">/</span><span style="color:#cd00cd">1000</span>,tv.tv_usec<span style="color:#39c">%</span><span style="color:#cd00cd">1000</span>);
+    <span style="color:#cdcd00">return</span> (string)sTemp;
 }
  
-int main()
+<span style="color:#00cd00">int</span> main()
 {
-    cout&lt;&lt; &quot;当前时间：&quot; &lt;&lt; fa_getSysTime() &lt;&lt; endl;
-    return 0;
+    cout<span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> <span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">当前时间：</span><span style="color:#cd0000">&#34;</span> <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> fa_getSysTime() <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> endl;
+    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
 }
-</code></pre>
-
-<h3 id="输出为">输出为</h3>
-
-<pre><code class="language-bash">当前时间：20140930110457794678
-</code></pre>
+</code></pre></div><h3 id="heading2">输出为</h3>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">当前时间：20140930110457794678
+</code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -190,7 +164,6 @@ int main()
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name/">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight/">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li><li id="li-rels"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty/">size() == 0和empty()的比较</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月26日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02/">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01/">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
-                
             </aside>
                 
             
@@ -223,22 +196,17 @@ int main()
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#gettimeofday">gettimeofday</a></li>
-<li><a href="#localtime">localtime</a></li>
-</ul></li>
-<li><a href="#使用说明">使用说明</a></li>
-<li><a href="#示例代码">示例代码</a></li>
-<li><a href="#输出为">输出为</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#gettimeofday">gettimeofday</a></li>
+        <li><a href="#localtime">localtime</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading">使用说明</a></li>
+    <li><a href="#heading1">示例代码</a></li>
+    <li><a href="#heading2">输出为</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -253,19 +221,6 @@ int main()
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

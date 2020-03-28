@@ -71,149 +71,111 @@
 
             <div class="post-content">
                 <p>在使用c/c++开发过程中经常会用到多进程，需要fork一些子进程，但是如果不注意的话，就有可能导致子进程结束后变成了僵尸进程。从而逐渐耗尽系统资源。</p>
-
-<h3 id="什么是僵尸进程">什么是僵尸进程</h3>
-
+<h3 id="heading">什么是僵尸进程</h3>
 <p>如果父进程在子进程之前终止，则所有的子进程的父进程都会改变为init进程，我们称这些进程由init进程领养。这时使用ps命令查看后可以看到子进程的父进程ppid已经变为了1。</p>
-
 <p>而当子进程在父进程之前终止时，<strong>内核为每个终止子进程保存了一定量的信息，所以当终止进程的父进程调用wait或waitpid时</strong>，可以得到这些信息。这些信息至少包括进程ID、该进程的终止状态、以及该进程使用的CPU时间总量。其他的进程所使用的存储区，打开的文件都会被内核释放。</p>
-
 <p><strong>一个已经终止、但是其父进程尚未对其进行善后处理（获取终止子进程的有关信息，释放它仍占用的资源）的进程被称为僵尸进程。</strong> ps命令将僵尸进程的状态打印为Z。</p>
-
 <p>可以设想一下，比如一个web服务器端，假如每次接收到一个连接都创建一个子进程去处理，处理完毕后结束子进程。假如在父进程中没有使用wait或waitpid函数进行善后，这些子进程将全部变为僵尸进程，Linux系统的进程数一般有一个固定限制值，僵尸进程将会逐渐耗尽系统资源。</p>
-
-<h3 id="查看僵尸进程的例子">查看僵尸进程的例子</h3>
-
-<pre><code class="language-cpp">#include &lt;stdio.h&gt;
-#include &lt;string.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;errno.h&gt;
- 
-int main(int argc, char **argv)
+<h3 id="heading1">查看僵尸进程的例子</h3>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;string.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;unistd.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;stdlib.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;errno.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span> 
+<span style="color:#00cd00">int</span> main(<span style="color:#00cd00">int</span> argc, <span style="color:#00cd00">char</span> <span style="color:#39c">*</span><span style="color:#39c">*</span>argv)
 {
     pid_t pid;
-    for (int i=0; i&lt;5; i++) {
-        if ((pid = fork()) &lt; 0) {
-            printf(&quot;fork error,%s\n&quot;, strerror(errno));
-            return -1;
+    <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">5</span>; i<span style="color:#39c">+</span><span style="color:#39c">+</span>) {
+        <span style="color:#cdcd00">if</span> ((pid <span style="color:#39c">=</span> fork()) <span style="color:#39c">&lt;</span> <span style="color:#cd00cd">0</span>) {
+            printf(<span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">fork error,%s</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>, strerror(errno));
+            <span style="color:#cdcd00">return</span> <span style="color:#39c">-</span><span style="color:#cd00cd">1</span>;
         }
         
-        /* child */
-        if (pid == 0) {
-            sleep(1);
-            exit(0);
+        <span style="color:#000080">/* child */</span>
+        <span style="color:#cdcd00">if</span> (pid <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>) {
+            sleep(<span style="color:#cd00cd">1</span>);
+            exit(<span style="color:#cd00cd">0</span>);
         }
     }  
-    /* parent */
-    sleep(20);
-    return 0;
+    <span style="color:#000080">/* parent */</span>
+    sleep(<span style="color:#cd00cd">20</span>);
+    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
 }
-</code></pre>
-
-<p>编译完成后，在执行程序的命令后加上 &ldquo;&amp;&rdquo; 符号，表示让当前程序在后台运行。</p>
-
+</code></pre></div><p>编译完成后，在执行程序的命令后加上 &ldquo;&amp;&rdquo; 符号，表示让当前程序在后台运行。</p>
 <p>之后输入</p>
-
-<pre><code class="language-bash">ps –e –o pid,ppid,stat,command|grep [程序名]
-</code></pre>
-
-<p>可以看到如下的结果</p>
-
-<pre><code class="language-bash">2915  1961 S    ./dd
-2917  2915 Z    [dd] &lt;defunct&gt;
-2918  2915 Z    [dd] &lt;defunct&gt;
-2919  2915 Z    [dd] &lt;defunct&gt;
-2920  2915 Z    [dd] &lt;defunct&gt;
-2921  2915 Z    [dd] &lt;defunct&gt;
-</code></pre>
-
-<p>可以看到5个子进程都已经是僵尸进程了。</p>
-
-<h3 id="sigchld信号和处理僵尸进程">SIGCHLD信号和处理僵尸进程</h3>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ps –e –o pid,ppid,stat,command|grep <span style="color:#39c">[</span>程序名<span style="color:#39c">]</span>
+</code></pre></div><p>可以看到如下的结果</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">2915</span>  <span style="color:#cd00cd">1961</span> S    ./dd
+<span style="color:#cd00cd">2917</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+<span style="color:#cd00cd">2918</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+<span style="color:#cd00cd">2919</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+<span style="color:#cd00cd">2920</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+<span style="color:#cd00cd">2921</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+</code></pre></div><p>可以看到5个子进程都已经是僵尸进程了。</p>
+<h3 id="sigchld">SIGCHLD信号和处理僵尸进程</h3>
 <p>当子进程终止时，内核就会向它的父进程发送一个SIGCHLD信号，父进程可以选择忽略该信号，<strong>也可以提供一个接收到信号以后的处理函数</strong>。对于这种信号的系统默认动作是忽略它。</p>
-
 <p>我们不希望有过多的僵尸进程产生，所以当父进程接收到SIGCHLD信号后就应该调用 wait 或 waitpid 函数对子进程进行善后处理，释放子进程占用的资源。</p>
-
 <p>下面是一个捕获SIGCHLD信号以后使用wait函数进行处理的简单例子：</p>
-
-<pre><code class="language-cpp">#include &lt;stdio.h&gt;
-#include &lt;string.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;errno.h&gt;
-#include &lt;signal.h&gt;
-#include &lt;sys/wait.h&gt;
- 
-void deal_child(int sig_no)
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;string.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;unistd.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;stdlib.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;errno.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;signal.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;sys/wait.h&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span> 
+<span style="color:#00cd00">void</span> deal_child(<span style="color:#00cd00">int</span> sig_no)
 {
-    wait(NULL);
+    wait(<span style="color:#cd00cd">NULL</span>);
 }
  
-int main(int argc, char **argv)
+<span style="color:#00cd00">int</span> main(<span style="color:#00cd00">int</span> argc, <span style="color:#00cd00">char</span> <span style="color:#39c">*</span><span style="color:#39c">*</span>argv)
 {
     signal(SIGCHLD, deal_child);
  
     pid_t pid;
-    for (int i=0; i&lt;5; i++) {
-        if ((pid = fork()) &lt; 0) {
-            printf(&quot;fork error,%s\n&quot;,strerror(errno));
-            return -1;
+    <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">5</span>; i<span style="color:#39c">+</span><span style="color:#39c">+</span>) {
+        <span style="color:#cdcd00">if</span> ((pid <span style="color:#39c">=</span> fork()) <span style="color:#39c">&lt;</span> <span style="color:#cd00cd">0</span>) {
+            printf(<span style="color:#cd0000"></span><span style="color:#cd0000">&#34;</span><span style="color:#cd0000">fork error,%s</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>,strerror(errno));
+            <span style="color:#cdcd00">return</span> <span style="color:#39c">-</span><span style="color:#cd00cd">1</span>;
         }  
  
-        /* child */
-        if (pid == 0) {
-            sleep(1);
-            exit(0);
+        <span style="color:#000080">/* child */</span>
+        <span style="color:#cdcd00">if</span> (pid <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>) {
+            sleep(<span style="color:#cd00cd">1</span>);
+            exit(<span style="color:#cd00cd">0</span>);
         }  
     }  
-    /* parent */
-    for(int i=0; i&lt;100000; i++) {
-        for (int j=0; j&lt;100000; j++) {
-            int temp = 0;
+    <span style="color:#000080">/* parent */</span>
+    <span style="color:#cdcd00">for</span>(<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">100000</span>; i<span style="color:#39c">+</span><span style="color:#39c">+</span>) {
+        <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> j<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; j<span style="color:#39c">&lt;</span><span style="color:#cd00cd">100000</span>; j<span style="color:#39c">+</span><span style="color:#39c">+</span>) {
+            <span style="color:#00cd00">int</span> temp <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
         }  
     }  
-    return 0;
+    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
 }
-</code></pre>
-
-<p>同样在后台运行后使用ps命令查看进程状态，结果如下：</p>
-
-<pre><code class="language-bash">6622  1961 R    ./dd
-6627  6622 Z    [dd] &lt;defunct&gt;
-6628  6622 Z    [dd] &lt;defunct&gt;
-</code></pre>
-
-<p>发现创建的5个进程，有3个已经被彻底销毁，但是还有2个仍然处于僵尸进程的状态。</p>
-
+</code></pre></div><p>同样在后台运行后使用ps命令查看进程状态，结果如下：</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">6622</span>  <span style="color:#cd00cd">1961</span> R    ./dd
+<span style="color:#cd00cd">6627</span>  <span style="color:#cd00cd">6622</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+<span style="color:#cd00cd">6628</span>  <span style="color:#cd00cd">6622</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+</code></pre></div><p>发现创建的5个进程，有3个已经被彻底销毁，但是还有2个仍然处于僵尸进程的状态。</p>
 <p><strong>这是因为当5个进程同时终止的时候，内核都会向父进程发送SIGCHLD信号，而父进程此时有可能仍然处于信号处理的deal_child函数中，那么在处理完之前，中间接收到的SIGCHLD信号就会丢失，内核并没有使用队列等方式来存储同一种信号。</strong></p>
-
-<h3 id="正确地处理僵尸进程的方法">正确地处理僵尸进程的方法</h3>
-
+<h3 id="heading2">正确地处理僵尸进程的方法</h3>
 <p>为了解决上面出现的这种问题，我们需要使用waitpid函数。</p>
-
 <p>函数原型</p>
-
-<pre><code class="language-cpp">pid_t waitpid(pid_t pid, int *statloc, int options);
-</code></pre>
-
-<p>若成功则返回进程ID，如果设置为非阻塞方式，返回0表示子进程状态未改变，出错时返回-1。</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">pid_t waitpid(pid_t pid, <span style="color:#00cd00">int</span> <span style="color:#39c">*</span>statloc, <span style="color:#00cd00">int</span> options);
+</code></pre></div><p>若成功则返回进程ID，如果设置为非阻塞方式，返回0表示子进程状态未改变，出错时返回-1。</p>
 <p><strong>options参数可以设置为WNOHANG常量，表示waitpid不阻塞，如果由pid指定的子进程不是立即可用的，则立即返回0。</strong></p>
-
 <p>只需要修改一下SIGCHLD信号的处理函数即可:</p>
-
-<pre><code class="language-cpp">void deal_child(int sig_no)
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">void</span> deal_child(<span style="color:#00cd00">int</span> sig_no)
 {
-    for (;;) {
-        if (waitpid(-1, NULL, WNOHANG) == 0)
-            break;
+    <span style="color:#cdcd00">for</span> (;;) {
+        <span style="color:#cdcd00">if</span> (waitpid(<span style="color:#39c">-</span><span style="color:#cd00cd">1</span>, <span style="color:#cd00cd">NULL</span>, WNOHANG) <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>)
+            <span style="color:#cdcd00">break</span>;
     }  
 }
-</code></pre>
-
-<p>再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。</p>
+</code></pre></div><p>再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -248,8 +210,7 @@ int main(int argc, char **argv)
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name/">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/13/can-be-divisible-by-eight/">能否被8整除</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月13日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li><li id="li-rels"><a href="/2014/09/30/get-systime-accurate-to-microseconds-in-c-or-cpp/">C/C&#43;&#43;获取精确到微秒级的系统时间</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月30日)</span></li><li id="li-rels"><a href="/2014/09/26/function-size-equal-zero-compare-with-empty/">size() == 0和empty()的比较</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月26日)</span></li><li id="li-rels"><a href="/2014/09/24/learn-to-write-makefile-02/">从简单实例开始，学会写Makefile（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月24日)</span></li><li id="li-rels"><a href="/2014/09/08/learn-to-write-makefile-01/">从简单实例开始，学会写Makefile（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年09月08日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/08/24/how-to-modify-process-name/">如何修改进程的名称</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月24日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/">在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年03月04日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li></ul>
             </aside>
                 
             
@@ -282,18 +243,12 @@ int main(int argc, char **argv)
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#什么是僵尸进程">什么是僵尸进程</a></li>
-<li><a href="#查看僵尸进程的例子">查看僵尸进程的例子</a></li>
-<li><a href="#sigchld信号和处理僵尸进程">SIGCHLD信号和处理僵尸进程</a></li>
-<li><a href="#正确地处理僵尸进程的方法">正确地处理僵尸进程的方法</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">什么是僵尸进程</a></li>
+    <li><a href="#heading1">查看僵尸进程的例子</a></li>
+    <li><a href="#sigchld">SIGCHLD信号和处理僵尸进程</a></li>
+    <li><a href="#heading2">正确地处理僵尸进程的方法</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -308,19 +263,6 @@ int main(int argc, char **argv)
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

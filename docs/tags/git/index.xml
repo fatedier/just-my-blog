@@ -6,7 +6,7 @@
     <description>Recent content in git on fatedier blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <copyright>Copyright (c) 2018. All rights reserved.</copyright>
+    <copyright>Copyright (c) 2020. All rights reserved.</copyright>
     <lastBuildDate>Tue, 05 Apr 2016 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="http://blog.fatedier.com/tags/git/index.xml" rel="self" type="application/rss+xml" />
@@ -37,7 +37,6 @@
       
       <guid>http://blog.fatedier.com/2014/10/16/git-use-for-remind/</guid>
       <description>&lt;p&gt;Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。&lt;/p&gt;
-
 &lt;p&gt;Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。&lt;/p&gt;</description>
     </item>
     

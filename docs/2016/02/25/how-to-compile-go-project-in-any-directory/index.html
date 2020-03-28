@@ -71,29 +71,17 @@
 
             <div class="post-content">
                 <p>通常我们将golang项目直接放在 $GOPATH/src 目录下，所有 import 的包的路径也是相对于 GOPATH 的。我在开发 frp（一个可以用于穿透内网的反向代理工具）的时候就遇到一个比较小但是挺棘手的问题，需要使这个项目可以在任意目录里被编译，方便其他成员不需要做额外的操作就可以一同开发，这里分享一下解决的方法。</p>
-
-<h3 id="背景">背景</h3>
-
+<h3 id="heading">背景</h3>
 <p><a href="https://github.com/fatedier/frp">frp</a> 是我业余时间写的一个用于穿透内网的反向代理工具，可以将防火墙内或内网环境的机器对外暴露指定的服务，例如22端口提供ssh服务或者80端口提供一个临时的web测试环境。</p>
-
 <p>一开始项目是直接放在 <code>$GOPATH/src</code> 目录下的，第三方包的引用是 <code>import github.com/xxx/xxx</code>，内部包的引用 <code>import frp/xxx</code>，这样编译时内部包的查找路径实际上就是 <code>$GOPATH/src/frp/xxx</code>。</p>
-
 <p>后来由于使用了 <a href="https://travis-ci.org/">travis-ci</a> 做持续集成，travis-ci 中是直接使用 <code>go get github.com/fatedier/frp</code> 下载代码，然后编译运行。这样问题就来了，通过 go get 下载的源码在本地的路径是 <code>$GOPATH/src/github.com/fatedier/frp</code>，内部包就找不到了，导致编译失败。</p>
-
-<h3 id="使用类似第三方包的引用方式">使用类似第三方包的引用方式</h3>
-
+<h3 id="heading1">使用类似第三方包的引用方式</h3>
 <p>解决这个问题最直接的方法就是将内部包的引用方式修改成 <code>import github.com/fatedier/frp/xxx</code>，在 travis-ci 中编译的时候就可以通过了，同时需要注意把自己本地的项目路径也更换成<code>$GOPATH/src/github.com/fatedier/frp</code>，很多开源项目都是用的这种方式引用内部包。</p>
-
 <p><strong>注：不推荐使用 ./ ../ 等相对路径来引用内部包，这样管理和定位问题其实都不是很方便。</strong></p>
-
 <p>之后由于需要其他人共同开发，fork了我的项目之后，他们也使用 go get 下载他们fork后的项目源码，这样 <code>fatedier</code> 就替换成了他们自己的用户名，但是代码中 import 的包名并没有改变，会导致他们无法编译通过。当然，他们可以将项目再放到正确的目录，但是多了一部操作总归不方便。</p>
-
-<h3 id="比较tricky的做法-修改gopath">比较tricky的做法，修改GOPATH</h3>
-
+<h3 id="trickygopath">比较tricky的做法，修改GOPATH</h3>
 <p>其实问题的关键就在于 <code>GOPATH</code> 这个环境变量，这个变量决定了查找包的绝对路径。我们在项目根目录下建立 <code>src/frp</code> 这样的目录结构，之后将原来的源代码放到这个目录下，然后内部包的应用方式还是改成 <code>import frp/xxx</code> 这种简洁的格式。</p>
-
 <p>编译的时候，把项目根目录加到 <code>GOPATH</code> 中去，例如 <code>GOPATH=`pwd`:${GOPATH}</code>，这样就会在自己的目录里查找内部包。</p>
-
 <p>可以看到，通过这样的方式不管把你把项目放到哪一个目录下，都可以编译成功，当然，为了便于管理，推荐还是放在 <code>$GOPATH/src</code> 目录下，同时使用 <a href="https://github.com/tools/godep">godep</a> 来管理第三方包。</p>
             </div>
             
@@ -122,8 +110,7 @@
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2017/01/01/golang-cross-compile/">golang 交叉编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年01月01日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/">go语言中使用smtp发送邮件及smtp协议的相关问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月20日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2017/01/01/golang-cross-compile/">golang 交叉编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年01月01日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li></ul>
             </aside>
                 
             
@@ -156,17 +143,11 @@
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#背景">背景</a></li>
-<li><a href="#使用类似第三方包的引用方式">使用类似第三方包的引用方式</a></li>
-<li><a href="#比较tricky的做法-修改gopath">比较tricky的做法，修改GOPATH</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">背景</a></li>
+    <li><a href="#heading1">使用类似第三方包的引用方式</a></li>
+    <li><a href="#trickygopath">比较tricky的做法，修改GOPATH</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -181,19 +162,6 @@
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

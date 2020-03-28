@@ -71,127 +71,103 @@
 
             <div class="post-content">
                 <p>最近把项目放到github上，但是发现代码中注释的中文部分有些是乱码，检查后发现是因为我的Centos装在虚拟机上，而我是在Windows环境下通过UE来写代码的，而UE默认是使用ASCII编码。为了避免在UE里对一个个文件进行手动修改，希望在Linux上使用命令来批量转换编码格式。</p>
-
 <p>查了资料后发现可以使用 <strong>iconv</strong> 命令。</p>
-
 <p>首先使用 <strong>file</strong> 命令来检测文件的类型</p>
-
 <p>例如</p>
-
-<pre><code class="language-bash">file test.cpp
-</code></pre>
-
-<p>输出</p>
-
-<pre><code class="language-bash">ISO-8859 Cprogram text
-</code></pre>
-
-<h3 id="iconv命令的参数说明">iconv命令的参数说明</h3>
-
-<pre><code class="language-bash">-l  列出所有已知的字符集
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">file test.cpp
+</code></pre></div><p>输出</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ISO-8859 Cprogram text
+</code></pre></div><h3 id="iconv">iconv命令的参数说明</h3>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-l  列出所有已知的字符集
 -f  原始文本编码
 -t  输出文本编码
 -o  输出文件名
 -s  关闭警告
-</code></pre>
-
-<h3 id="例子">例子</h3>
-
-<pre><code class="language-bash">iconv -f GB2312 -t UTF-8 test.cpp &gt; test_utf.cpp
-</code></pre>
-
-<p>因为iconv默认输出到标准输出，所以我们需要重定向到一个其他文件。<strong>（这里不能重定向到自身，否则会清空文件内容）</strong></p>
-
+</code></pre></div><h3 id="heading">例子</h3>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iconv -f GB2312 -t UTF-8 test.cpp &gt; test_utf.cpp
+</code></pre></div><p>因为iconv默认输出到标准输出，所以我们需要重定向到一个其他文件。<strong>（这里不能重定向到自身，否则会清空文件内容）</strong></p>
 <p>如果想要把输出内容直接输出到当前文件，可以这样用：</p>
-
-<pre><code class="language-bash">iconv -f GB2312 -t UTF-8 -o test.cpp test.cpp
-</code></pre>
-
-<h3 id="附上我自己用的编码转换脚本-iconvfa-sh">附上我自己用的编码转换脚本 iconvfa.sh</h3>
-
-<h4 id="使用说明">使用说明</h4>
-
-<pre><code class="language-bash">Usage:
-    iconvfa.sh [option] [file|dir]
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iconv -f GB2312 -t UTF-8 -o test.cpp test.cpp
+</code></pre></div><h3 id="-iconvfash">附上我自己用的编码转换脚本 iconvfa.sh</h3>
+<h4 id="heading1">使用说明</h4>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Usage:
+    iconvfa.sh <span style="color:#39c">[</span>option<span style="color:#39c">]</span> <span style="color:#39c">[</span>file|dir<span style="color:#39c">]</span>
     from GB2312 to UTF-8, the old file will be replaced by the new converted file
 
 Options:
     -R: convert files recursively, the following parameter should be the directory name
-</code></pre>
+</code></pre></div><h4 id="heading2">脚本代码</h4>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/env bash
+</span><span style="color:#000080"></span>
+<span style="color:#cdcd00">function</span> show_help
+<span style="color:#39c">{</span>
+    <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;Usage:&#34;</span>
+    <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;  iconvfa.sh [option] [file|dir]&#34;</span>
+    <span style="color:#cd00cd">echo</span> -e <span style="color:#cd0000">&#34;  from GB2312 to UTF-8, the old file will be replaced by the new converted file\n&#34;</span>
+    <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;Options:&#34;</span>
+    <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;  -R: convert files recursively, the following parameter should be the directory name&#34;</span>
+<span style="color:#39c">}</span>
 
-<h4 id="脚本代码">脚本代码</h4>
-
-<pre><code class="language-bash">#!/bin/env bash
-
-function show_help
-{
-    echo &quot;Usage:&quot;
-    echo &quot;  iconvfa.sh [option] [file|dir]&quot;
-    echo -e &quot;  from GB2312 to UTF-8, the old file will be replaced by the new converted file\n&quot;
-    echo &quot;Options:&quot;
-    echo &quot;  -R: convert files recursively, the following parameter should be the directory name&quot;
-}
-
-# param 1: directory name
-function convert_rescursive()
-{
-   local dir_path=`echo $1 | sed 's/\(.*\)\/$/\1/g'`
-   local dir_names=`ls ${dir_path} -l | awk '/^d/{print $NF}'`
+<span style="color:#000080"># param 1: directory name</span>
+<span style="color:#cdcd00">function</span> convert_rescursive<span style="color:#39c">(</span><span style="color:#39c">)</span>
+<span style="color:#39c">{</span>
+   <span style="color:#cd00cd">local</span> <span style="color:#00cdcd">dir_path</span><span style="color:#39c">=</span><span style="color:#cd0000">`</span><span style="color:#cd00cd">echo</span> <span style="color:#00cdcd">$1</span> | sed <span style="color:#cd0000">&#39;s/\(.*\)\/$/\1/g&#39;</span><span style="color:#cd0000">`</span>
+   <span style="color:#cd00cd">local</span> <span style="color:#00cdcd">dir_names</span><span style="color:#39c">=</span><span style="color:#cd0000">`</span>ls <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span> -l | awk <span style="color:#cd0000">&#39;/^d/{print $NF}&#39;</span><span style="color:#cd0000">`</span>
    
-   # convert files in this directory
-   local file_names=`ls ${dir_path} -l | awk '/^-/{print $NF}'`
-   for file in ${file_names}
-   do
-       iconv -f ${from_code} -t ${to_code} ${dir_path}/${file} &amp;&gt; /dev/null
-       if [ $? == 0 ]; then
-           iconv -f ${from_code} -t ${to_code} &lt; ${dir_path}/${file} &gt; $@.$$$$
-           cp $@.$$$$ ${dir_path}/${file}
-           rm -f $@.$$$$
-           echo &quot;File ${dir_path}/${file} is formatted.&quot;
-       fi
-   done
+   <span style="color:#000080"># convert files in this directory</span>
+   <span style="color:#cd00cd">local</span> <span style="color:#00cdcd">file_names</span><span style="color:#39c">=</span><span style="color:#cd0000">`</span>ls <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span> -l | awk <span style="color:#cd0000">&#39;/^-/{print $NF}&#39;</span><span style="color:#cd0000">`</span>
+   <span style="color:#cdcd00">for</span> file in <span style="color:#cd0000">${</span><span style="color:#00cdcd">file_names</span><span style="color:#cd0000">}</span>
+   <span style="color:#cdcd00">do</span>
+       iconv -f <span style="color:#cd0000">${</span><span style="color:#00cdcd">from_code</span><span style="color:#cd0000">}</span> -t <span style="color:#cd0000">${</span><span style="color:#00cdcd">to_code</span><span style="color:#cd0000">}</span> <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span>/<span style="color:#cd0000">${</span><span style="color:#00cdcd">file</span><span style="color:#cd0000">}</span> &amp;&gt; /dev/null
+       <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#00cdcd">$?</span> <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
+           iconv -f <span style="color:#cd0000">${</span><span style="color:#00cdcd">from_code</span><span style="color:#cd0000">}</span> -t <span style="color:#cd0000">${</span><span style="color:#00cdcd">to_code</span><span style="color:#cd0000">}</span> &lt; <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span>/<span style="color:#cd0000">${</span><span style="color:#00cdcd">file</span><span style="color:#cd0000">}</span> &gt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
+           cp <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span> <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span>/<span style="color:#cd0000">${</span><span style="color:#00cdcd">file</span><span style="color:#cd0000">}</span>
+           rm -f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
+           <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;</span><span style="color:#cd0000">File </span><span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span><span style="color:#cd0000">/</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">file</span><span style="color:#cd0000">}</span><span style="color:#cd0000"> is formatted.</span><span style="color:#cd0000">&#34;</span>
+       <span style="color:#cdcd00">fi</span>
+   <span style="color:#cdcd00">done</span>
 
-   # if the directory has no other directory, return 0
-   if [ &quot;${dir_names}X&quot; == &quot;X&quot; ]; then
-       return 0
-   fi
+   <span style="color:#000080"># if the directory has no other directory, return 0</span>
+   <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#cd0000">&#34;</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_names</span><span style="color:#cd0000">}</span><span style="color:#cd0000">X</span><span style="color:#cd0000">&#34;</span> <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd0000">&#34;X&#34;</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
+       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cdcd00">fi</span>
 
-   # continue convert files in directories recursively
-   for dir in ${dir_names}
-   do
-       convert_rescursive &quot;${dir_path}/${dir}&quot;
-   done 
-}
+   <span style="color:#000080"># continue convert files in directories recursively</span>
+   <span style="color:#cdcd00">for</span> dir in <span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_names</span><span style="color:#cd0000">}</span>
+   <span style="color:#cdcd00">do</span>
+       convert_rescursive <span style="color:#cd0000">&#34;</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">dir_path</span><span style="color:#cd0000">}</span><span style="color:#cd0000">/</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">dir</span><span style="color:#cd0000">}</span><span style="color:#cd0000">&#34;</span>
+   <span style="color:#cdcd00">done</span> 
+<span style="color:#39c">}</span>
 
-# defines
-from_code=&quot;GB2312&quot;
-to_code=&quot;UTF-8&quot;
+<span style="color:#000080"># defines</span>
+<span style="color:#00cdcd">from_code</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;GB2312&#34;</span>
+<span style="color:#00cdcd">to_code</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;UTF-8&#34;</span>
 
-case &quot;$1&quot; in
-&quot;-R&quot;)
-    ls $2 &amp;&gt; /dev/null
-    if [ $? != 0 -o &quot;$2X&quot; == &quot;X&quot; ]; then
-        echo &quot;#### error: please check the directory name following the '-R' option!&quot;
-        exit 1
-    fi
-    convert_rescursive $2
+<span style="color:#cdcd00">case</span> <span style="color:#cd0000">&#34;</span><span style="color:#00cdcd">$1</span><span style="color:#cd0000">&#34;</span> in
+<span style="color:#cd0000">&#34;-R&#34;</span><span style="color:#39c">)</span>
+    ls <span style="color:#00cdcd">$2</span> &amp;&gt; /dev/null
+    <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#00cdcd">$?</span> !<span style="color:#39c">=</span> <span style="color:#cd00cd">0</span> -o <span style="color:#cd0000">&#34;</span><span style="color:#00cdcd">$2</span><span style="color:#cd0000">X</span><span style="color:#cd0000">&#34;</span> <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd0000">&#34;X&#34;</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
+        <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;#### error: please check the directory name following the &#39;-R&#39; option!&#34;</span>
+        <span style="color:#cd00cd">exit</span> <span style="color:#cd00cd">1</span>
+    <span style="color:#cdcd00">fi</span>
+    convert_rescursive <span style="color:#00cdcd">$2</span>
     ;;
-&quot;&quot;)
+<span style="color:#cd0000">&#34;&#34;</span><span style="color:#39c">)</span>
     show_help
     ;;
-*)
-    iconv -f ${from_code} -t ${to_code} $1 &amp;&gt; /dev/null
-    if [ $? == 0 ]; then
-        iconv -f ${from_code} -t ${to_code} &lt; $1 &gt; $@.$$$$
-        cp $@.$$$$ $1
-        rm -f $@.$$$$
-        echo &quot;File $1 is formatted.&quot;
-    else
-        echo &quot;Convert wrong!&quot;
-    fi
+*<span style="color:#39c">)</span>
+    iconv -f <span style="color:#cd0000">${</span><span style="color:#00cdcd">from_code</span><span style="color:#cd0000">}</span> -t <span style="color:#cd0000">${</span><span style="color:#00cdcd">to_code</span><span style="color:#cd0000">}</span> <span style="color:#00cdcd">$1</span> &amp;&gt; /dev/null
+    <span style="color:#cdcd00">if</span> <span style="color:#39c">[</span> <span style="color:#00cdcd">$?</span> <span style="color:#39c">=</span><span style="color:#39c">=</span> <span style="color:#cd00cd">0</span> <span style="color:#39c">]</span>; <span style="color:#cdcd00">then</span>
+        iconv -f <span style="color:#cd0000">${</span><span style="color:#00cdcd">from_code</span><span style="color:#cd0000">}</span> -t <span style="color:#cd0000">${</span><span style="color:#00cdcd">to_code</span><span style="color:#cd0000">}</span> &lt; <span style="color:#00cdcd">$1</span> &gt; <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
+        cp <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span> <span style="color:#00cdcd">$1</span>
+        rm -f <span style="color:#00cdcd">$@</span>.<span style="color:#00cdcd">$$</span><span style="color:#00cdcd">$$</span>
+        <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;</span><span style="color:#cd0000">File </span><span style="color:#00cdcd">$1</span><span style="color:#cd0000"> is formatted.</span><span style="color:#cd0000">&#34;</span>
+    <span style="color:#cdcd00">else</span>
+        <span style="color:#cd00cd">echo</span> <span style="color:#cd0000">&#34;Convert wrong!&#34;</span>
+    <span style="color:#cdcd00">fi</span>
     ;;
-esac
-</code></pre>
+<span style="color:#cdcd00">esac</span>
+</code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -219,8 +195,7 @@ esac
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li></ul>
             </aside>
                 
             
@@ -253,21 +228,16 @@ esac
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#iconv命令的参数说明">iconv命令的参数说明</a></li>
-<li><a href="#例子">例子</a></li>
-<li><a href="#附上我自己用的编码转换脚本-iconvfa-sh">附上我自己用的编码转换脚本 iconvfa.sh</a>
-<ul>
-<li><a href="#使用说明">使用说明</a></li>
-<li><a href="#脚本代码">脚本代码</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#iconv">iconv命令的参数说明</a></li>
+    <li><a href="#heading">例子</a></li>
+    <li><a href="#-iconvfash">附上我自己用的编码转换脚本 iconvfa.sh</a>
+      <ul>
+        <li><a href="#heading1">使用说明</a></li>
+        <li><a href="#heading2">脚本代码</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -282,19 +252,6 @@ esac
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

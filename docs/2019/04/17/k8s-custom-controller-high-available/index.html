@@ -71,224 +71,198 @@
 
             <div class="post-content">
                 <p>自定义 controller 通常要求只能有一个实例在工作，但是为了保证高可用，就需要有一个选主的机制，保证在 leader 因为某个异常挂掉后，其他节点可以提升为 leader，然后正常工作。</p>
-
 <p>我们可以像 kube-controller-manager 一样，借助 client-go 的 leaderelection package 来实现高可用。</p>
-
-<h3 id="代码实现">代码实现</h3>
-
+<h3 id="heading">代码实现</h3>
 <p>client-go 中对选主的操作已经进行了封装，所以使用起来比较简单。</p>
-
 <p>下面是一段简单的使用示例，编译完成后同时启动多个进程，只有一个进程会处于工作状态，当把处于工作状态的进程 kill 掉后，剩余的进程中的一个会变为 leader，开始工作。</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> main
 
-<pre><code class="language-golang">package main
+<span style="color:#cd00cd">import</span> (
+    <span style="color:#cd0000">&#34;context&#34;</span>
+    <span style="color:#cd0000">&#34;fmt&#34;</span>
+    <span style="color:#cd0000">&#34;log&#34;</span>
+    <span style="color:#cd0000">&#34;os&#34;</span>
+    <span style="color:#cd0000">&#34;time&#34;</span>
 
-import (
-    &quot;context&quot;
-    &quot;fmt&quot;
-    &quot;log&quot;
-    &quot;os&quot;
-    &quot;time&quot;
-
-    &quot;github.com/google/uuid&quot;
-    &quot;k8s.io/client-go/kubernetes&quot;
-    &quot;k8s.io/client-go/rest&quot;
-    &quot;k8s.io/client-go/tools/leaderelection&quot;
-    &quot;k8s.io/client-go/tools/leaderelection/resourcelock&quot;
+    <span style="color:#cd0000">&#34;github.com/google/uuid&#34;</span>
+    <span style="color:#cd0000">&#34;k8s.io/client-go/kubernetes&#34;</span>
+    <span style="color:#cd0000">&#34;k8s.io/client-go/rest&#34;</span>
+    <span style="color:#cd0000">&#34;k8s.io/client-go/tools/leaderelection&#34;</span>
+    <span style="color:#cd0000">&#34;k8s.io/client-go/tools/leaderelection/resourcelock&#34;</span>
 )
 
-var enableLeaderElect bool
+<span style="color:#00cd00">var</span> enableLeaderElect <span style="color:#00cd00">bool</span>
 
-func main() {
-    run := func(ctx context.Context) {
-        // controller handler here
-        for {
-            log.Println(&quot;I'm working...&quot;)
-            time.Sleep(5*time.Second)
+<span style="color:#00cd00">func</span> main() {
+    run <span style="color:#39c">:=</span> <span style="color:#00cd00">func</span>(ctx context.Context) {
+        <span style="color:#000080">// controller handler here
+</span><span style="color:#000080"></span>        <span style="color:#cdcd00">for</span> {
+            log.Println(<span style="color:#cd0000">&#34;I&#39;m working...&#34;</span>)
+            time.Sleep(<span style="color:#cd00cd">5</span><span style="color:#39c">*</span>time.Second)
         }
     }
 
-    kubecli, err := newKubeClient()
-    if err != nil {
-        log.Fatalf(&quot;new kube client error: %v&quot;, err)
+    kubecli, err <span style="color:#39c">:=</span> newKubeClient()
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        log.Fatalf(<span style="color:#cd0000">&#34;new kube client error: %v&#34;</span>, err)
     }
 
-    if enableLeaderElect {
-        log.Println(&quot;run with leader-elect&quot;)
+    <span style="color:#cdcd00">if</span> enableLeaderElect {
+        log.Println(<span style="color:#cd0000">&#34;run with leader-elect&#34;</span>)
 
-        id, err := os.Hostname()
-        if err != nil {
-            log.Fatalf(&quot;get hostname error: %v&quot;, err)
+        id, err <span style="color:#39c">:=</span> os.Hostname()
+        <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+            log.Fatalf(<span style="color:#cd0000">&#34;get hostname error: %v&#34;</span>, err)
         }
 
-        id = id + &quot;_&quot; + uuid.New().String()
-        rl, err := resourcelock.New(&quot;endpoints&quot;, // support endpoints and configmaps
-            &quot;default&quot;,
-            &quot;test-controller&quot;,
+        id = id <span style="color:#39c">+</span> <span style="color:#cd0000">&#34;_&#34;</span> <span style="color:#39c">+</span> uuid.New().String()
+        rl, err <span style="color:#39c">:=</span> resourcelock.New(<span style="color:#cd0000">&#34;endpoints&#34;</span>, <span style="color:#000080">// support endpoints and configmaps
+</span><span style="color:#000080"></span>            <span style="color:#cd0000">&#34;default&#34;</span>,
+            <span style="color:#cd0000">&#34;test-controller&#34;</span>,
             kubecli.CoreV1(),
             kubecli.CoordinationV1(),
             resourcelock.ResourceLockConfig{
                 Identity: id,
             })
-        if err != nil {
-            log.Fatalf(&quot;create ResourceLock error: %v&quot;, err)
+        <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+            log.Fatalf(<span style="color:#cd0000">&#34;create ResourceLock error: %v&#34;</span>, err)
         }
         leaderelection.RunOrDie(context.TODO(), leaderelection.LeaderElectionConfig{
             Lock:          rl,
-            LeaseDuration: 15 * time.Second,
-            RenewDeadline: 10 * time.Second,
-            RetryPeriod:   2 * time.Second,
+            LeaseDuration: <span style="color:#cd00cd">15</span> <span style="color:#39c">*</span> time.Second,
+            RenewDeadline: <span style="color:#cd00cd">10</span> <span style="color:#39c">*</span> time.Second,
+            RetryPeriod:   <span style="color:#cd00cd">2</span> <span style="color:#39c">*</span> time.Second,
             Callbacks: leaderelection.LeaderCallbacks{
-                OnStartedLeading: func(ctx context.Context) {
-                    log.Println(&quot;you are the leader&quot;)
+                OnStartedLeading: <span style="color:#00cd00">func</span>(ctx context.Context) {
+                    log.Println(<span style="color:#cd0000">&#34;you are the leader&#34;</span>)
                     run(ctx)
                 },
-                OnStoppedLeading: func() {
-                    log.Fatalf(&quot;leaderelection lost&quot;)
+                OnStoppedLeading: <span style="color:#00cd00">func</span>() {
+                    log.Fatalf(<span style="color:#cd0000">&#34;leaderelection lost&#34;</span>)
                 },
             },
-            Name: &quot;test-controller&quot;,
+            Name: <span style="color:#cd0000">&#34;test-controller&#34;</span>,
         })
-    } else {
-        log.Println(&quot;run without leader-elect&quot;)
+    } <span style="color:#cdcd00">else</span> {
+        log.Println(<span style="color:#cd0000">&#34;run without leader-elect&#34;</span>)
         run(context.TODO())
     }
 }
 
-func newKubeClient() (kubernetes.Interface, error) {
-    config, err := rest.InClusterConfig()
-    if err != nil {
-        return nil, fmt.Errorf(&quot;failed to create in-cluster kube cli configuration: %v&quot;, err)
+<span style="color:#00cd00">func</span> newKubeClient() (kubernetes.Interface, <span style="color:#00cd00">error</span>) {
+    config, err <span style="color:#39c">:=</span> rest.InClusterConfig()
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">nil</span>, fmt.Errorf(<span style="color:#cd0000">&#34;failed to create in-cluster kube cli configuration: %v&#34;</span>, err)
     }
 
-    cli, err := kubernetes.NewForConfig(config)
-    if err != nil {
-        return nil, fmt.Errorf(&quot;failed to create kube client: %v&quot;, err)
+    cli, err <span style="color:#39c">:=</span> kubernetes.NewForConfig(config)
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">nil</span>, fmt.Errorf(<span style="color:#cd0000">&#34;failed to create kube client: %v&#34;</span>, err)
     }
-    return cli, nil
+    <span style="color:#cdcd00">return</span> cli, <span style="color:#cdcd00">nil</span>
 }
-</code></pre>
-
-<p>注意我们这里如果失去 leader 后，会直接调用 <code>log.Fatalf</code> 退出进程。在 kubernetes 环境中通常采用 Deployment 等方式来部署，程序退出后，会重新启动一个 Pod 替代。</p>
-
-<h3 id="原理分析">原理分析</h3>
-
+</code></pre></div><p>注意我们这里如果失去 leader 后，会直接调用 <code>log.Fatalf</code> 退出进程。在 kubernetes 环境中通常采用 Deployment 等方式来部署，程序退出后，会重新启动一个 Pod 替代。</p>
+<h3 id="heading1">原理分析</h3>
 <p>leaderelection 的代码实现并不复杂。</p>
-
 <p>主要的工作原理是，通过 kubernetes 的 endpoints 或 configmaps 实现一个分布式锁，抢到锁的节点成为 leader，并定期更新，而抢不到的节点会一直等待。当 leader 因为某些异常原因挂掉后，租约到期，其他节点会尝试抢锁，成为新的 leader。</p>
-
-<pre><code class="language-golang">rl, err := resourcelock.New(&quot;endpoints&quot;, // 实现锁的资源类型，支持 endpoints 或 configmaps
-    &quot;default&quot;, // 创建资源的 namespace
-    &quot;test-controller&quot;, // 锁的资源名称，这里会在 default namespace 下创建一个名为 test-controller 的 endpoint
-    kubecli.CoreV1(),
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang">rl, err <span style="color:#39c">:=</span> resourcelock.New(<span style="color:#cd0000">&#34;endpoints&#34;</span>, <span style="color:#000080">// 实现锁的资源类型，支持 endpoints 或 configmaps
+</span><span style="color:#000080"></span>    <span style="color:#cd0000">&#34;default&#34;</span>, <span style="color:#000080">// 创建资源的 namespace
+</span><span style="color:#000080"></span>    <span style="color:#cd0000">&#34;test-controller&#34;</span>, <span style="color:#000080">// 锁的资源名称，这里会在 default namespace 下创建一个名为 test-controller 的 endpoint
+</span><span style="color:#000080"></span>    kubecli.CoreV1(),
     kubecli.CoordinationV1(),
     resourcelock.ResourceLockConfig{
-        Identity: id, // 锁持有者的标志
-    })
-</code></pre>
-
-<p>上面的代码可以看出 leaderelection 其实是利用 kubernetes 的 resource 来实现分布式锁。在对应 resource 的 annotations 中会更新 <code>control-plane.alpha.kubernetes.io/leader</code> 这个字段的值，更新成功的就是 leader。其中的内容是下面这个结构体的序列化结果:</p>
-
-<pre><code class="language-golang">type LeaderElectionRecord struct {
-    // Holder 的 ID，如果为空，表示没有 Holder
-    HolderIdentity       string      `json:&quot;holderIdentity&quot;`
-    // 租约期限
-    LeaseDurationSeconds int         `json:&quot;leaseDurationSeconds&quot;`
-    // 获取租约的时间
-    AcquireTime          metav1.Time `json:&quot;acquireTime&quot;`
-    // 更新租约的时间
-    RenewTime            metav1.Time `json:&quot;renewTime&quot;`
-    LeaderTransitions    int         `json:&quot;leaderTransitions&quot;`
+        Identity: id, <span style="color:#000080">// 锁持有者的标志
+</span><span style="color:#000080"></span>    })
+</code></pre></div><p>上面的代码可以看出 leaderelection 其实是利用 kubernetes 的 resource 来实现分布式锁。在对应 resource 的 annotations 中会更新 <code>control-plane.alpha.kubernetes.io/leader</code> 这个字段的值，更新成功的就是 leader。其中的内容是下面这个结构体的序列化结果:</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#00cd00">type</span> LeaderElectionRecord <span style="color:#00cd00">struct</span> {
+    <span style="color:#000080">// Holder 的 ID，如果为空，表示没有 Holder
+</span><span style="color:#000080"></span>    HolderIdentity       <span style="color:#00cd00">string</span>      <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;holderIdentity&#34;</span><span style="color:#cd0000">`</span>
+    <span style="color:#000080">// 租约期限
+</span><span style="color:#000080"></span>    LeaseDurationSeconds <span style="color:#00cd00">int</span>         <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;leaseDurationSeconds&#34;</span><span style="color:#cd0000">`</span>
+    <span style="color:#000080">// 获取租约的时间
+</span><span style="color:#000080"></span>    AcquireTime          metav1.Time <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;acquireTime&#34;</span><span style="color:#cd0000">`</span>
+    <span style="color:#000080">// 更新租约的时间
+</span><span style="color:#000080"></span>    RenewTime            metav1.Time <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;renewTime&#34;</span><span style="color:#cd0000">`</span>
+    LeaderTransitions    <span style="color:#00cd00">int</span>         <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;leaderTransitions&#34;</span><span style="color:#cd0000">`</span>
 }
-</code></pre>
-
-<p><code>leaderelection.RunOrDie</code> 函数会调用创建好的 LeaderElector 的 Run 函数。</p>
-
-<pre><code class="language-golang">func (le *LeaderElector) Run(ctx context.Context) {
-    defer func() {
+</code></pre></div><p><code>leaderelection.RunOrDie</code> 函数会调用创建好的 LeaderElector 的 Run 函数。</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#00cd00">func</span> (le <span style="color:#39c">*</span>LeaderElector) Run(ctx context.Context) {
+    <span style="color:#cdcd00">defer</span> <span style="color:#00cd00">func</span>() {
         runtime.HandleCrash()
         le.config.Callbacks.OnStoppedLeading()
     }()
-    if !le.acquire(ctx) {
-        return // ctx signalled done
-    }
-    ctx, cancel := context.WithCancel(ctx)
-    defer cancel()
-    go le.config.Callbacks.OnStartedLeading(ctx)
+    <span style="color:#cdcd00">if</span> !le.acquire(ctx) {
+        <span style="color:#cdcd00">return</span> <span style="color:#000080">// ctx signalled done
+</span><span style="color:#000080"></span>    }
+    ctx, cancel <span style="color:#39c">:=</span> context.WithCancel(ctx)
+    <span style="color:#cdcd00">defer</span> cancel()
+    <span style="color:#cdcd00">go</span> le.config.Callbacks.OnStartedLeading(ctx)
     le.renew(ctx)
 }
-</code></pre>
-
-<p>通过 Run 函数看到在 <code>acquire</code> 成功后，会调用用户提供的 <code>le.config.Callbacks.OnStartedLeading</code> 函数。之后持续 <code>renew</code>。<code>acquire</code> 会阻塞，除非成功，或 context 被 cancel。</p>
-
+</code></pre></div><p>通过 Run 函数看到在 <code>acquire</code> 成功后，会调用用户提供的 <code>le.config.Callbacks.OnStartedLeading</code> 函数。之后持续 <code>renew</code>。<code>acquire</code> 会阻塞，除非成功，或 context 被 cancel。</p>
 <p><code>le.acquire</code> 和 <code>le.renew</code> 内部都是调用了 <code>le.tryAcquireOrRenew</code> 函数，只是对于返回结果的处理不一样。</p>
-
 <p><code>le.acquire</code> 对于 <code>le.tryAcquireOrRenew</code> 返回成功则退出，失败则继续。</p>
-
 <p><code>le.renew</code> 则相反，成功则继续，失败则退出。</p>
-
-<pre><code class="language-golang">func (le *LeaderElector) tryAcquireOrRenew() bool {
-    now := metav1.Now()
-    // 这个结构体就是 endpoint 或 configmap 中 annotations `control-plane.alpha.kubernetes.io/leader` 的值
-    leaderElectionRecord := rl.LeaderElectionRecord{
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#00cd00">func</span> (le <span style="color:#39c">*</span>LeaderElector) tryAcquireOrRenew() <span style="color:#00cd00">bool</span> {
+    now <span style="color:#39c">:=</span> metav1.Now()
+    <span style="color:#000080">// 这个结构体就是 endpoint 或 configmap 中 annotations `control-plane.alpha.kubernetes.io/leader` 的值
+</span><span style="color:#000080"></span>    leaderElectionRecord <span style="color:#39c">:=</span> rl.LeaderElectionRecord{
         HolderIdentity:       le.config.Lock.Identity(),
-        LeaseDurationSeconds: int(le.config.LeaseDuration / time.Second),
+        LeaseDurationSeconds: <span style="color:#cd00cd">int</span>(le.config.LeaseDuration <span style="color:#39c">/</span> time.Second),
         RenewTime:            now,
         AcquireTime:          now,
     }
 
-    // 1. 获取或创建对应的 endpoint 或 configmap
-    oldLeaderElectionRecord, err := le.config.Lock.Get()
-    if err != nil {
-        // 其他错误，返回 false，如果是不存在的错误，创建一个新的
-        if !errors.IsNotFound(err) {
-            klog.Errorf(&quot;error retrieving resource lock %v: %v&quot;, le.config.Lock.Describe(), err)
-            return false
+    <span style="color:#000080">// 1. 获取或创建对应的 endpoint 或 configmap
+</span><span style="color:#000080"></span>    oldLeaderElectionRecord, err <span style="color:#39c">:=</span> le.config.Lock.Get()
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#000080">// 其他错误，返回 false，如果是不存在的错误，创建一个新的
+</span><span style="color:#000080"></span>        <span style="color:#cdcd00">if</span> !errors.IsNotFound(err) {
+            klog.Errorf(<span style="color:#cd0000">&#34;error retrieving resource lock %v: %v&#34;</span>, le.config.Lock.Describe(), err)
+            <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">false</span>
         }
-        if err = le.config.Lock.Create(leaderElectionRecord); err != nil {
-            klog.Errorf(&quot;error initially creating leader election record: %v&quot;, err)
-            return false
+        <span style="color:#cdcd00">if</span> err = le.config.Lock.Create(leaderElectionRecord); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+            klog.Errorf(<span style="color:#cd0000">&#34;error initially creating leader election record: %v&#34;</span>, err)
+            <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">false</span>
         }
         le.observedRecord = leaderElectionRecord
         le.observedTime = le.clock.Now()
-        return true
+        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">true</span>
     }
 
-    // 2. 获取到了锁的信息，检查锁的持有者和更新时间
-    if !reflect.DeepEqual(le.observedRecord, *oldLeaderElectionRecord) {
-        le.observedRecord = *oldLeaderElectionRecord
+    <span style="color:#000080">// 2. 获取到了锁的信息，检查锁的持有者和更新时间
+</span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> !reflect.DeepEqual(le.observedRecord, <span style="color:#39c">*</span>oldLeaderElectionRecord) {
+        le.observedRecord = <span style="color:#39c">*</span>oldLeaderElectionRecord
         le.observedTime = le.clock.Now()
     }
-    // 当前持有锁的人不是自己且距上一次观察时间还没有超过租约的时间则认为当前锁被他人正常持有，直接返回 false
-    if len(oldLeaderElectionRecord.HolderIdentity) &gt; 0 &amp;&amp;
-        le.observedTime.Add(le.config.LeaseDuration).After(now.Time) &amp;&amp;
+    <span style="color:#000080">// 当前持有锁的人不是自己且距上一次观察时间还没有超过租约的时间则认为当前锁被他人正常持有，直接返回 false
+</span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> <span style="color:#cd00cd">len</span>(oldLeaderElectionRecord.HolderIdentity) &gt; <span style="color:#cd00cd">0</span> <span style="color:#39c">&amp;&amp;</span>
+        le.observedTime.Add(le.config.LeaseDuration).After(now.Time) <span style="color:#39c">&amp;&amp;</span>
         !le.IsLeader() {
-        klog.V(4).Infof(&quot;lock is held by %v and has not yet expired&quot;, oldLeaderElectionRecord.HolderIdentity)
-        return false
+        klog.V(<span style="color:#cd00cd">4</span>).Infof(<span style="color:#cd0000">&#34;lock is held by %v and has not yet expired&#34;</span>, oldLeaderElectionRecord.HolderIdentity)
+        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">false</span>
     }
 
-    // 3. leaderElectionRecord 在函数开始的地方设置了默认值，这里根据自己是否是 leader 来更新相关的设置
-    if le.IsLeader() {
-        // Renew 操作，AcquireTime 使用旧的值，LeaderTransitions 保持不变
-        leaderElectionRecord.AcquireTime = oldLeaderElectionRecord.AcquireTime
+    <span style="color:#000080">// 3. leaderElectionRecord 在函数开始的地方设置了默认值，这里根据自己是否是 leader 来更新相关的设置
+</span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> le.IsLeader() {
+        <span style="color:#000080">// Renew 操作，AcquireTime 使用旧的值，LeaderTransitions 保持不变
+</span><span style="color:#000080"></span>        leaderElectionRecord.AcquireTime = oldLeaderElectionRecord.AcquireTime
         leaderElectionRecord.LeaderTransitions = oldLeaderElectionRecord.LeaderTransitions
-    } else {
-        // 有 leader 切换，LeaderTransitions 值 + 1
-        leaderElectionRecord.LeaderTransitions = oldLeaderElectionRecord.LeaderTransitions + 1
+    } <span style="color:#cdcd00">else</span> {
+        <span style="color:#000080">// 有 leader 切换，LeaderTransitions 值 + 1
+</span><span style="color:#000080"></span>        leaderElectionRecord.LeaderTransitions = oldLeaderElectionRecord.LeaderTransitions <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>
     }
 
-    // 更新锁资源，这里如果在 Get 和 Update 之间有变化，将会更新失败
-    if err = le.config.Lock.Update(leaderElectionRecord); err != nil {
-        klog.Errorf(&quot;Failed to update lock: %v&quot;, err)
-        return false
+    <span style="color:#000080">// 更新锁资源，这里如果在 Get 和 Update 之间有变化，将会更新失败
+</span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> err = le.config.Lock.Update(leaderElectionRecord); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        klog.Errorf(<span style="color:#cd0000">&#34;Failed to update lock: %v&#34;</span>, err)
+        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">false</span>
     }
     le.observedRecord = leaderElectionRecord
     le.observedTime = le.clock.Now()
-    return true
+    <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">true</span>
 }
-</code></pre>
-
-<p>这个步骤中很重要的一点是利用了 kubernetes API 操作的原子性。</p>
-
+</code></pre></div><p>这个步骤中很重要的一点是利用了 kubernetes API 操作的原子性。</p>
 <p>在 <code>le.config.Lock.Get()</code> 中会获取到锁的对象，其中有一个 <code>resourceVersion</code> 字段用于标识一个资源对象的内部版本，每次更新操作都会更新其值。如果一个更新操作附加上了 <code>resourceVersion</code> 字段，那么 apiserver 就会通过验证当前 <code>resourceVersion</code> 的值与指定的值是否相匹配来确保在此次更新操作周期内没有其他的更新操作，从而保证了更新操作的原子性。</p>
             </div>
             
@@ -318,7 +292,6 @@ func newKubeClient() (kubernetes.Interface, error) {
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2019/04/02/k8s-custom-controller/">kubernetes 自定义控制器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月02日)</span></li><li id="li-rels"><a href="/2019/03/25/k8s-crd-authorization/">kubernetes CRD 权限管理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月25日)</span></li><li id="li-rels"><a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月20日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">使用 telepresence 在 k8s 环境中实现快速开发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月03日)</span></li><li id="li-rels"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月10日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年11月21日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
-                
             </aside>
                 
             
@@ -351,16 +324,10 @@ func newKubeClient() (kubernetes.Interface, error) {
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#代码实现">代码实现</a></li>
-<li><a href="#原理分析">原理分析</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">代码实现</a></li>
+    <li><a href="#heading1">原理分析</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -375,19 +342,6 @@ func newKubeClient() (kubernetes.Interface, error) {
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

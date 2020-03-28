@@ -71,75 +71,51 @@
 
             <div class="post-content">
                 <p>在 k8s 平台测试自研 Service Mesh 方案时，发现更新服务时，会有少量请求耗时剧增。跟踪排查后确认是由于 Pod 被删除后，原先的 Pod 的 IP 不存在，客户端建立连接超时引起。</p>
-
-<h3 id="现象">现象</h3>
-
+<h3 id="heading">现象</h3>
 <p>正常升级某个服务的 Deployment。</p>
-
 <p>升级策略，先起一个新实例，再停一个旧实例：</p>
-
-<pre><code class="language-yaml">type: RollingUpdate
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">type: RollingUpdate
 rollingUpdate:
-  maxSurge: 1
-  maxUnavailable: 0
-</code></pre>
-
-<p>实例停止前如果没有请求会立即退出，如果有请求则等待最多 60 秒，仍然没有结束时会被强制杀掉。</p>
-
-<pre><code class="language-yaml">terminationGracePeriodSeconds: 60
-</code></pre>
-
-<p>升级过程中，发现服务响应时间的 98 值增长很多，95 值没有太大变化，看起来有少量请求被升级操作影响到了。</p>
-
-<h3 id="原因">原因</h3>
-
+  maxSurge: <span style="color:#cd00cd">1</span>
+  maxUnavailable: <span style="color:#cd00cd">0</span>
+</code></pre></div><p>实例停止前如果没有请求会立即退出，如果有请求则等待最多 60 秒，仍然没有结束时会被强制杀掉。</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">terminationGracePeriodSeconds: <span style="color:#cd00cd">60</span>
+</code></pre></div><p>升级过程中，发现服务响应时间的 98 值增长很多，95 值没有太大变化，看起来有少量请求被升级操作影响到了。</p>
+<h3 id="heading1">原因</h3>
 <p>排查后，确认部分请求变慢的原因是因为和后端实例建立连接超时，由于使用的是 Go 的 DefaultTransport，所以连接超时时间为 30s，部分请求在超时 30s 后才被重试，从而导致响应时间的 98 值变慢。</p>
-
 <p>为什么建立连接会超时？</p>
-
 <p>原来在升级实例的过程中，实例被杀掉，对应的容器的虚拟 IP 就不存在了，而客户端建立连接时发送的 SYNC 包收不到回应，会一直重发，直到超时。</p>
-
 <p>之所以客户端仍然会给该 IP 发送请求，是因为我们自研的 Service Mesh 方案的服务发现没有采用 k8s 默认的 DNS 轮询方式，而是自己开发的服务发现组件，为了能够更好地配合负载均衡的能力。网关是采用轮询的方式，每隔 10s 从 Discovery 组件同步一次数据，所以被杀掉的实例没有及时被同步到各网关。</p>
-
-<h3 id="kubernetes-pod-停止流程">kubernetes Pod 停止流程</h3>
-
+<h3 id="kubernetes-pod-">kubernetes Pod 停止流程</h3>
 <p>为了更好解决问题，我们需要理解 k8s 中单个 Pod 停止的流程。</p>
-
 <ol>
 <li>用户发送请求删除 Pod，默认终止等待时间为 30s</li>
 <li>在 Pod 超过该等待时间后 API server 就会更新 Pod 的状态为 <strong>dead</strong></li>
 <li>在客户端命令行上显示 Pod 状态为 <strong>terminating</strong></li>
 <li>与步骤三同时，当 Kubelet 观察到一个 Pod 在步骤2被标记为 <strong>terminating</strong>，开始终止工作
-
 <ol>
 <li>如果在pod中定义了 <strong>preStop hook</strong>，在停止 pod 前会被调用。如果在等待期过后，<strong>preStop hook</strong> 依然在运行，第二步会再增加2秒的等待期</li>
 <li>向 Pod 中的进程发送 <strong>SIGTERM</strong> 信号</li>
-</ol></li>
+</ol>
+</li>
 <li>跟第三步同时，该 Pod 将从该 service 的地址列表中删除，不再是 replication controllers 中处于运行状态的实例之一。关闭的慢的 Pod 将不会再处理流量，因为负载均衡器（像是 service proxy）会将它们移除</li>
 <li>过了等待期后，将向 Pod 中依然运行的进程发送 SIGKILL 信号而杀掉进程</li>
 <li>Kublete 会在 API server 中通过将优雅周期设置为0（立即删除）来完成 Pod 的删除。Pod 将会从 API 中消失，并且在客户端也不可见</li>
 </ol>
-
-<h3 id="解决方案">解决方案</h3>
-
-<h4 id="优化超时时间">优化超时时间</h4>
-
+<h3 id="heading2">解决方案</h3>
+<h4 id="heading3">优化超时时间</h4>
 <p>使用自定义的 Transport，内网的话超时时间可以减少为 1s，让请求尽快被重试，虽然不能解决问题，但是可以有效缓解问题。</p>
-
-<h4 id="确保实例被服务发现摘除后再停止">确保实例被服务发现摘除后再停止</h4>
-
+<h4 id="heading4">确保实例被服务发现摘除后再停止</h4>
 <p>思考了问题发生的原因，首先想到的就是能不能让实例先从服务发现中摘除，确认服务发现数据被同步到了各网关后，再杀实例。搜索了 k8s 的相关文档，发现通过 <strong>preStop</strong> 的 hook 机制，可以实现该功能。</p>
-
 <p>示例配置如下：</p>
-
-<pre><code class="language-yaml">apiVersion: apps/v1
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx-deployment
   labels:
     app: nginx
 spec:
-  replicas: 3
+  replicas: <span style="color:#cd00cd">3</span>
   selector:
     matchLabels:
       app: nginx
@@ -148,32 +124,23 @@ spec:
       labels:
         app: nginx
     spec:
-      terminationGracePeriodSeconds: 90
+      terminationGracePeriodSeconds: <span style="color:#cd00cd">90</span>
       containers:
       - name: nginx
         image: my-nginx:xxx
         lifecycle:
           preStop:
             exec:
-              command: [&quot;/bin/sh&quot;, &quot;-c&quot;, &quot;sleep 30&quot;]
+              command: [<span style="color:#cd0000">&#34;/bin/sh&#34;</span>, <span style="color:#cd0000">&#34;-c&#34;</span>, <span style="color:#cd0000">&#34;sleep 30&#34;</span>]
         ports:
-        - containerPort: 80
-</code></pre>
-
-<p>重点就在于 <strong>lifecycle</strong> 的配置。对应实例停止时，会先将该实例的服务发现地址从 <strong>service</strong> 中移除，之后会调用我们给定的命令 <code>sleep 30</code>，等待 30s 后，再给实例发送 SIGTERM 信号，如果实例超过 <strong>terminationGracePeriodSeconds</strong> 配置的时间后，会再给实例发送 SIGKILL 信号，强行杀掉实例。</p>
-
+        - containerPort: <span style="color:#cd00cd">80</span>
+</code></pre></div><p>重点就在于 <strong>lifecycle</strong> 的配置。对应实例停止时，会先将该实例的服务发现地址从 <strong>service</strong> 中移除，之后会调用我们给定的命令 <code>sleep 30</code>，等待 30s 后，再给实例发送 SIGTERM 信号，如果实例超过 <strong>terminationGracePeriodSeconds</strong> 配置的时间后，会再给实例发送 SIGKILL 信号，强行杀掉实例。</p>
 <p>我们服务发现数据同步间隔是 10s，留出 30s 的时间，所有网关的服务发现数据正常情况下已经全部同步完成，不会再有新的流量被路由到该实例上，也就不会出现新建连接超时的问题。</p>
-
 <p>需要注意的是，由于我们延迟了 30s 停止实例，所以保险起见 <strong>terminationGracePeriodSeconds</strong> 也可以相应的增加 30s。</p>
-
-<h3 id="猜想其他的解决方法">猜想其他的解决方法</h3>
-
-<h4 id="k8s-自身提供延迟停止实例的能力">k8s 自身提供延迟停止实例的能力</h4>
-
+<h3 id="heading5">猜想其他的解决方法</h3>
+<h4 id="k8s-">k8s 自身提供延迟停止实例的能力</h4>
 <p>如果 k8s 自身就能通过 Deployment 参数配置实现上文中我们通过 <strong>preStop</strong> 实现的功能会更好一些，毕竟是一个比较取巧的方案，不一定完善。</p>
-
-<h4 id="ip-被摘除后建立连接可以直接返回错误">IP 被摘除后建立连接可以直接返回错误</h4>
-
+<h4 id="ip-">IP 被摘除后建立连接可以直接返回错误</h4>
 <p>涉及到 k8s 集群的网络解决方案，不一定所有的架构都能支持，需要进一步调研。</p>
             </div>
             
@@ -203,7 +170,6 @@ spec:
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2019/04/17/k8s-custom-controller-high-available/">kubernetes 自定义控制器的高可用</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月17日)</span></li><li id="li-rels"><a href="/2019/04/02/k8s-custom-controller/">kubernetes 自定义控制器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月02日)</span></li><li id="li-rels"><a href="/2019/03/25/k8s-crd-authorization/">kubernetes CRD 权限管理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月25日)</span></li><li id="li-rels"><a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月20日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">使用 telepresence 在 k8s 环境中实现快速开发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月03日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年11月21日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
-                
             </aside>
                 
             
@@ -236,27 +202,23 @@ spec:
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#现象">现象</a></li>
-<li><a href="#原因">原因</a></li>
-<li><a href="#kubernetes-pod-停止流程">kubernetes Pod 停止流程</a></li>
-<li><a href="#解决方案">解决方案</a>
-<ul>
-<li><a href="#优化超时时间">优化超时时间</a></li>
-<li><a href="#确保实例被服务发现摘除后再停止">确保实例被服务发现摘除后再停止</a></li>
-</ul></li>
-<li><a href="#猜想其他的解决方法">猜想其他的解决方法</a>
-<ul>
-<li><a href="#k8s-自身提供延迟停止实例的能力">k8s 自身提供延迟停止实例的能力</a></li>
-<li><a href="#ip-被摘除后建立连接可以直接返回错误">IP 被摘除后建立连接可以直接返回错误</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">现象</a></li>
+    <li><a href="#heading1">原因</a></li>
+    <li><a href="#kubernetes-pod-">kubernetes Pod 停止流程</a></li>
+    <li><a href="#heading2">解决方案</a>
+      <ul>
+        <li><a href="#heading3">优化超时时间</a></li>
+        <li><a href="#heading4">确保实例被服务发现摘除后再停止</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading5">猜想其他的解决方法</a>
+      <ul>
+        <li><a href="#k8s-">k8s 自身提供延迟停止实例的能力</a></li>
+        <li><a href="#ip-">IP 被摘除后建立连接可以直接返回错误</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -271,19 +233,6 @@ spec:
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

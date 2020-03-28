@@ -73,129 +73,100 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
             <div class="post-content">
                 <p>最近在写程序时需要在 centos5 系统上获取 device mapper 中的虚拟块设备的读写信息。在这个过程中发现由于
 go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特殊信息的，或者是需要一些小技巧来实现。</p>
-
-<h3 id="获取磁盘读写速度">获取磁盘读写速度</h3>
-
+<h3 id="heading">获取磁盘读写速度</h3>
 <p>正常情况下 linux 上通过 <code>/proc/diskstats</code> 这个文件来获取磁盘设备的读写信息，这个文件的内容可以通过 <code>cat /proc/diskstats</code> 获取，如下：</p>
-
-<pre><code class="language-bash">   1    0 ram0 0 0 0 0 0 0 0 0 0 0 0
-   1    1 ram1 0 0 0 0 0 0 0 0 0 0 0
-   1    2 ram2 0 0 0 0 0 0 0 0 0 0 0
-   1    3 ram3 0 0 0 0 0 0 0 0 0 0 0
-   1    4 ram4 0 0 0 0 0 0 0 0 0 0 0
-   1    5 ram5 0 0 0 0 0 0 0 0 0 0 0
-   1    6 ram6 0 0 0 0 0 0 0 0 0 0 0
-   1    7 ram7 0 0 0 0 0 0 0 0 0 0 0
-   1    8 ram8 0 0 0 0 0 0 0 0 0 0 0
-   1    9 ram9 0 0 0 0 0 0 0 0 0 0 0
-   1   10 ram10 0 0 0 0 0 0 0 0 0 0 0
-   1   11 ram11 0 0 0 0 0 0 0 0 0 0 0
-   1   12 ram12 0 0 0 0 0 0 0 0 0 0 0
-   1   13 ram13 0 0 0 0 0 0 0 0 0 0 0
-   1   14 ram14 0 0 0 0 0 0 0 0 0 0 0
-   1   15 ram15 0 0 0 0 0 0 0 0 0 0 0
-   8    0 sda 29130 11247 905939 500914 155932 727767 7071070 2191673 0 552400 2692588
-   8    1 sda1 84 1040 2264 450 31 12 86 382 0 809 832
-   8    2 sda2 29026 10190 903379 500111 155901 727755 7070984 2191291 0 551590 2691403
- 253    0 dm-0 38942 0 902058 758838 883873 0 7070984 30357342 0 551667 31116195
- 253    1 dm-1 142 0 1136 502 0 0 0 0 0 84 502
-  22    0 hdc 0 0 0 0 0 0 0 0 0 0 0
-   2    0 fd0 0 0 0 0 0 0 0 0 0 0 0
-   9    0 md0 0 0 0 0 0 0 0 0 0 0 0
-</code></pre>
-
-<p>第一列和第二列是设备号，第三列是设备名称，第六列是读取的 sectors 数，第十列是写入的 sectors 数。</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">   <span style="color:#cd00cd">1</span>    <span style="color:#cd00cd">0</span> ram0 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>    <span style="color:#cd00cd">1</span> ram1 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>    <span style="color:#cd00cd">2</span> ram2 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>    <span style="color:#cd00cd">3</span> ram3 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>    <span style="color:#cd00cd">4</span> ram4 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>    <span style="color:#cd00cd">5</span> ram5 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>    <span style="color:#cd00cd">6</span> ram6 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>    <span style="color:#cd00cd">7</span> ram7 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>    <span style="color:#cd00cd">8</span> ram8 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>    <span style="color:#cd00cd">9</span> ram9 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>   <span style="color:#cd00cd">10</span> ram10 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>   <span style="color:#cd00cd">11</span> ram11 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>   <span style="color:#cd00cd">12</span> ram12 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>   <span style="color:#cd00cd">13</span> ram13 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>   <span style="color:#cd00cd">14</span> ram14 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">1</span>   <span style="color:#cd00cd">15</span> ram15 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">8</span>    <span style="color:#cd00cd">0</span> sda <span style="color:#cd00cd">29130</span> <span style="color:#cd00cd">11247</span> <span style="color:#cd00cd">905939</span> <span style="color:#cd00cd">500914</span> <span style="color:#cd00cd">155932</span> <span style="color:#cd00cd">727767</span> <span style="color:#cd00cd">7071070</span> <span style="color:#cd00cd">2191673</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">552400</span> <span style="color:#cd00cd">2692588</span>
+   <span style="color:#cd00cd">8</span>    <span style="color:#cd00cd">1</span> sda1 <span style="color:#cd00cd">84</span> <span style="color:#cd00cd">1040</span> <span style="color:#cd00cd">2264</span> <span style="color:#cd00cd">450</span> <span style="color:#cd00cd">31</span> <span style="color:#cd00cd">12</span> <span style="color:#cd00cd">86</span> <span style="color:#cd00cd">382</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">809</span> <span style="color:#cd00cd">832</span>
+   <span style="color:#cd00cd">8</span>    <span style="color:#cd00cd">2</span> sda2 <span style="color:#cd00cd">29026</span> <span style="color:#cd00cd">10190</span> <span style="color:#cd00cd">903379</span> <span style="color:#cd00cd">500111</span> <span style="color:#cd00cd">155901</span> <span style="color:#cd00cd">727755</span> <span style="color:#cd00cd">7070984</span> <span style="color:#cd00cd">2191291</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">551590</span> <span style="color:#cd00cd">2691403</span>
+ <span style="color:#cd00cd">253</span>    <span style="color:#cd00cd">0</span> dm-0 <span style="color:#cd00cd">38942</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">902058</span> <span style="color:#cd00cd">758838</span> <span style="color:#cd00cd">883873</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">7070984</span> <span style="color:#cd00cd">30357342</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">551667</span> <span style="color:#cd00cd">31116195</span>
+ <span style="color:#cd00cd">253</span>    <span style="color:#cd00cd">1</span> dm-1 <span style="color:#cd00cd">142</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">1136</span> <span style="color:#cd00cd">502</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">84</span> <span style="color:#cd00cd">502</span>
+  <span style="color:#cd00cd">22</span>    <span style="color:#cd00cd">0</span> hdc <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">2</span>    <span style="color:#cd00cd">0</span> fd0 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+   <span style="color:#cd00cd">9</span>    <span style="color:#cd00cd">0</span> md0 <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+</code></pre></div><p>第一列和第二列是设备号，第三列是设备名称，第六列是读取的 sectors 数，第十列是写入的 sectors 数。</p>
 <p>和计算 cpu 使用率类似，我们需要读取两次该文件，将两次读取到的值相减以后除以间隔时间来计算读写速度。</p>
-
-<h3 id="虚拟块设备的区别">虚拟块设备的区别</h3>
-
+<h3 id="heading1">虚拟块设备的区别</h3>
 <p>通过 <code>df -h</code> 可以看到其中 <code>/dev/mapper/VolGroup00-LogVol00</code> 就是一个虚拟块设备：</p>
-
-<pre><code class="language-bash">Filesystem            Size  Used Avail Use% Mounted on
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Filesystem            Size  Used Avail Use% Mounted on
 /dev/mapper/VolGroup00-LogVol00
                        18G  1.9G   15G  12% /
 /dev/sda1              99M   13M   81M  14% /boot
-tmpfs                 499M     0  499M   0% /dev/shm
-</code></pre>
-
-<p>但是获取读写信息时拿到的对应设备名并不是这个，实际上应该是 <code>dm-0</code>。</p>
-
+tmpfs                 499M     <span style="color:#cd00cd">0</span>  499M   0% /dev/shm
+</code></pre></div><p>但是获取读写信息时拿到的对应设备名并不是这个，实际上应该是 <code>dm-0</code>。</p>
 <p>所以我们需要通过设备号来获取他们的对应关系。</p>
-
-<h4 id="获取设备号">获取设备号</h4>
-
+<h4 id="heading2">获取设备号</h4>
 <p>在 centos5 上比较特殊，没法使用 <code>lsblk</code> 获取设备号，所以需要用其他的方法。</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ls -lh /dev/mapper/
 
-<pre><code class="language-bash">ls -lh /dev/mapper/
-
-total 0
-crw------- 1 root root  10, 60 Jul 11 22:18 control
-brw-rw---- 1 root disk 253,  0 Jul 11 22:19 VolGroup00-LogVol00
-brw-rw---- 1 root disk 253,  1 Jul 11 22:18 VolGroup00-LogVol01
-</code></pre>
-
-<p>可以看出 <code>VolGroup00-LogVol00</code> 的设备号为 <code>253,0</code>，既然 <code>ls -lh</code> 可以显示设备号信息，说明这个信息是可以通过 <code>stat</code> 获取到的。</p>
-
-<h4 id="go-中获取文件信息">go 中获取文件信息</h4>
-
+total <span style="color:#cd00cd">0</span>
+crw------- <span style="color:#cd00cd">1</span> root root  10, <span style="color:#cd00cd">60</span> Jul <span style="color:#cd00cd">11</span> 22:18 control
+brw-rw---- <span style="color:#cd00cd">1</span> root disk 253,  <span style="color:#cd00cd">0</span> Jul <span style="color:#cd00cd">11</span> 22:19 VolGroup00-LogVol00
+brw-rw---- <span style="color:#cd00cd">1</span> root disk 253,  <span style="color:#cd00cd">1</span> Jul <span style="color:#cd00cd">11</span> 22:18 VolGroup00-LogVol01
+</code></pre></div><p>可以看出 <code>VolGroup00-LogVol00</code> 的设备号为 <code>253,0</code>，既然 <code>ls -lh</code> 可以显示设备号信息，说明这个信息是可以通过 <code>stat</code> 获取到的。</p>
+<h4 id="go-">go 中获取文件信息</h4>
 <p>go 中文件的信息接口如下：</p>
-
-<pre><code class="language-go">type FileInfo interface {
-    Name() string           // 文件的名字（不含扩展名）
-    Size() int64            // 普通文件返回值表示其大小；其他文件的返回值含义各系统不同
-    Mode() FileMode         // 文件的模式位
-    ModTime() time.Time     // 文件的修改时间
-    IsDir() bool            // 等价于
-    Mode().IsDir()Sys() interface{} // 底层数据来源（可以返回nil）
-}
-</code></pre>
-
-<p>由于 go 语言需要考虑跨平台的特性，正常情况下只能拿到这些通用的信息。而如果要在 linux 下获取设备号，关键就在于那个 <code>Sys()</code> 函数所返回的 <code>Interface{}</code>。</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> FileInfo <span style="color:#00cd00">interface</span> {
+    Name() <span style="color:#00cd00">string</span>           <span style="color:#000080">// 文件的名字（不含扩展名）
+</span><span style="color:#000080"></span>    Size() <span style="color:#00cd00">int64</span>            <span style="color:#000080">// 普通文件返回值表示其大小；其他文件的返回值含义各系统不同
+</span><span style="color:#000080"></span>    Mode() FileMode         <span style="color:#000080">// 文件的模式位
+</span><span style="color:#000080"></span>    ModTime() time.Time     <span style="color:#000080">// 文件的修改时间
+</span><span style="color:#000080"></span>    IsDir() <span style="color:#00cd00">bool</span>            <span style="color:#000080">// 等价于
+</span><span style="color:#000080"></span>    Mode().IsDir()Sys() <span style="color:#00cd00">interface</span>{} <span style="color:#000080">// 底层数据来源（可以返回nil）
+</span><span style="color:#000080"></span>}
+</code></pre></div><p>由于 go 语言需要考虑跨平台的特性，正常情况下只能拿到这些通用的信息。而如果要在 linux 下获取设备号，关键就在于那个 <code>Sys()</code> 函数所返回的 <code>Interface{}</code>。</p>
 <p>在 linux 平台上，其对应的是一个 <code>Stat_t</code> 结构体：</p>
-
-<pre><code class="language-go">type Stat_t struct {
-    Dev       uint64
-    X__pad1   uint16
-    Pad_cgo_0 [2]byte
-    X__st_ino uint32
-    Mode      uint32
-    Nlink     uint32
-    Uid       uint32
-    Gid       uint32
-    Rdev      uint64
-    X__pad2   uint16
-    Pad_cgo_1 [2]byte
-    Size      int64
-    Blksize   int32
-    Blocks    int64
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> Stat_t <span style="color:#00cd00">struct</span> {
+    Dev       <span style="color:#00cd00">uint64</span>
+    X__pad1   <span style="color:#00cd00">uint16</span>
+    Pad_cgo_0 [<span style="color:#cd00cd">2</span>]<span style="color:#00cd00">byte</span>
+    X__st_ino <span style="color:#00cd00">uint32</span>
+    Mode      <span style="color:#00cd00">uint32</span>
+    Nlink     <span style="color:#00cd00">uint32</span>
+    Uid       <span style="color:#00cd00">uint32</span>
+    Gid       <span style="color:#00cd00">uint32</span>
+    Rdev      <span style="color:#00cd00">uint64</span>
+    X__pad2   <span style="color:#00cd00">uint16</span>
+    Pad_cgo_1 [<span style="color:#cd00cd">2</span>]<span style="color:#00cd00">byte</span>
+    Size      <span style="color:#00cd00">int64</span>
+    Blksize   <span style="color:#00cd00">int32</span>
+    Blocks    <span style="color:#00cd00">int64</span>
     Atim      Timespec
     Mtim      Timespec
     Ctim      Timespec
-    Ino       uint64
+    Ino       <span style="color:#00cd00">uint64</span>
 }
-</code></pre>
-
-<p><strong>需要注意这个结构体在不同平台上的定义是不同的。</strong></p>
-
+</code></pre></div><p><strong>需要注意这个结构体在不同平台上的定义是不同的。</strong></p>
 <p>其中的 <code>Rdev</code> 就是设备号的值，例如查看上文中的设备文件设备号返回结果是 <code>64768</code>，转换成 <code>ls -lh</code> 中显示的格式就是 <code>253,0</code>，转换成 16 进制是 <code>FD00</code>。</p>
-
 <p>下面是示例代码片段，需要注意的是这段代码可能并不能在除 linux 之外的其他平台运行。</p>
-
-<pre><code class="language-go">dev, err := os.Stat(&quot;/dev/mapper/VolGroup00-LogVol00&quot;)
-if err != nil {
-    os.Exit(1)
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">dev, err <span style="color:#39c">:=</span> os.Stat(<span style="color:#cd0000">&#34;/dev/mapper/VolGroup00-LogVol00&#34;</span>)
+<span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+    os.Exit(<span style="color:#cd00cd">1</span>)
 }
-sys, ok := dev.Sys().(*syscall.Stat_t)
-if !ok {
-    os.Exit(1)
+sys, ok <span style="color:#39c">:=</span> dev.Sys().(<span style="color:#39c">*</span>syscall.Stat_t)
+<span style="color:#cdcd00">if</span> !ok {
+    os.Exit(<span style="color:#cd00cd">1</span>)
 }
-major := sys.Rdev / 256
-minor := sys.Rdev % 256
-devNumStr := fmt.Sprintf(&quot;%d:%d&quot;, major, minor)
-fmt.Printf(&quot;get dev mapper [%s] [%s]&quot;, dev.Name, devNumStr)
-</code></pre>
+major <span style="color:#39c">:=</span> sys.Rdev <span style="color:#39c">/</span> <span style="color:#cd00cd">256</span>
+minor <span style="color:#39c">:=</span> sys.Rdev <span style="color:#39c">%</span> <span style="color:#cd00cd">256</span>
+devNumStr <span style="color:#39c">:=</span> fmt.Sprintf(<span style="color:#cd0000">&#34;%d:%d&#34;</span>, major, minor)
+fmt.Printf(<span style="color:#cd0000">&#34;get dev mapper [%s] [%s]&#34;</span>, dev.Name, devNumStr)
+</code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -230,8 +201,7 @@ fmt.Printf(&quot;get dev mapper [%s] [%s]&quot;, dev.Name, devNumStr)
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2017/01/01/golang-cross-compile/">golang 交叉编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年01月01日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/">go语言中使用smtp发送邮件及smtp协议的相关问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月20日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2017/01/01/golang-cross-compile/">golang 交叉编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年01月01日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li></ul>
             </aside>
                 
             
@@ -264,20 +234,15 @@ fmt.Printf(&quot;get dev mapper [%s] [%s]&quot;, dev.Name, devNumStr)
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#获取磁盘读写速度">获取磁盘读写速度</a></li>
-<li><a href="#虚拟块设备的区别">虚拟块设备的区别</a>
-<ul>
-<li><a href="#获取设备号">获取设备号</a></li>
-<li><a href="#go-中获取文件信息">go 中获取文件信息</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">获取磁盘读写速度</a></li>
+    <li><a href="#heading1">虚拟块设备的区别</a>
+      <ul>
+        <li><a href="#heading2">获取设备号</a></li>
+        <li><a href="#go-">go 中获取文件信息</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -292,19 +257,6 @@ fmt.Printf(&quot;get dev mapper [%s] [%s]&quot;, dev.Name, devNumStr)
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

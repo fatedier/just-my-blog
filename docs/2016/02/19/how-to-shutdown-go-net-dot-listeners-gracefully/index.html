@@ -71,66 +71,59 @@
 
             <div class="post-content">
                 <p>在开发一个 Go 语言写的服务器项目的时候，遇到一个很有意思的问题，这个程序会根据客户端的请求动态的监听本地的一个端口，并且与客户端交互结束后需要释放这个端口。Go 的标准库提供了常用的接口，开发网络服务非常方便，网上随便就可以找到很多样例代码。</p>
-
 <p>但是我在释放这个监听端口的时候遇到了一些问题，我发现很难优雅地去关闭这个 <strong>net.Listener</strong>。在网上查阅了一下资料，基本上都是程序结束时资源被系统自动回收，没发现有需要主动释放的。这个需求确实不多，不过想一下在写测试用例的时候或许可能会用到，我们先创建一个 <strong>net.Listener</strong> 监听一个端口，<strong>client</strong> 发送请求进行测试，通过后关闭这个 <strong>net.Listener</strong>，再创建另外一个 <strong>net.Listener</strong> 用于测试其他用例。</p>
-
 <p>初步思考了一下有两个办法来关闭 <strong>net.Listener</strong>：</p>
-
 <ol>
 <li>设置一个结束标志，为 <strong>net.Listener</strong> 的 <code>accept</code> 设置超时，<strong>net.Listener</strong> 提供了一个 <code>SetDeadline(t time.Time)</code> 接口，需要关闭时将标志置为 <strong>true</strong>，每次超时后检查一下结束标志，如果为 <strong>true</strong> 则退出。</li>
 <li>在另外一个协程中 <strong>close net.Listener</strong>，检查 <code>accept</code> 返回的 <strong>error</strong> 信息，如果是被 <strong>close</strong> 的话就退出，其他情况就继续。</li>
 </ol>
-
 <p>第一个方法很显然不够优雅，在大并发量连接请求时对效率有很大影响，而且退出机制是延迟的，不能及时退出。</p>
-
 <p>第二个方法的问题就在于如果 <strong>close net.Listener</strong>，<code>accept</code> 函数返回的 <strong>error</strong> 信息只能拿到错误的字符串信息，如果是被 <strong>close</strong> 的话返回的信息是：<code>use of closed network connection</code>，这个时候退出监听，如果是其他错误，则继续监听。想法是好的，然而并不能用错误信息的字符串来判断是哪一种类型的错误，有可能以后的版本中错误信息字符串变更也说不定，最好不要在代码中写死。这个 <strong>error</strong> 其实是有类型的，在标准库中是 <code>errClosing</code>，开头小写，说明只能在包内部使用，我们没有办法使用这个类型来判断具体是哪一种错误。个人觉得这方面可能还没有 <strong>c语言</strong> 中通过 <strong>errno</strong> 的值来判断是哪一种类型的错误来的方便。</p>
-
 <p>既然不能通过 <strong>error</strong> 的字符串信息判断是哪一种错误，那么我们只能用类似第一个方法中使用的标志来判断了，先将结束标志置为 <strong>true</strong>，之后 <strong>close net.Listener</strong>，<code>accept</code> 函数返回 <code>error != nil</code> 时，检查结束标志，如果为 <strong>true</strong> 就退出，这样相比较第一个方法退出时就没有延迟了，参考代码如下：</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#cd00cd">package</span> main
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
-    &quot;net&quot;
-    &quot;time&quot;
+<span style="color:#cd00cd">import</span> (
+    <span style="color:#cd0000">&#34;fmt&#34;</span>
+    <span style="color:#cd0000">&#34;net&#34;</span>
+    <span style="color:#cd0000">&#34;time&#34;</span>
 )
 
-var (
+<span style="color:#00cd00">var</span> (
     ln        net.Listener
-    closeFlag bool = false
+    closeFlag <span style="color:#00cd00">bool</span> = <span style="color:#cdcd00">false</span>
 )
 
-func startServer() (err error) {
-    ln, err = net.Listen(&quot;tcp&quot;, &quot;:12345&quot;)
-    if err != nil {
-        return err
+<span style="color:#00cd00">func</span> startServer() (err <span style="color:#00cd00">error</span>) {
+    ln, err = net.Listen(<span style="color:#cd0000">&#34;tcp&#34;</span>, <span style="color:#cd0000">&#34;:12345&#34;</span>)
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err
     }
-    defer ln.Close()
+    <span style="color:#cdcd00">defer</span> ln.Close()
 
-    for {
-        conn, err := ln.Accept()
-        if err != nil {
-            fmt.Printf(&quot;accept error: %v\n&quot;, err)
-            if closeFlag {
-                break
-            } else {
-                continue
+    <span style="color:#cdcd00">for</span> {
+        conn, err <span style="color:#39c">:=</span> ln.Accept()
+        <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+            fmt.Printf(<span style="color:#cd0000">&#34;accept error: %v\n&#34;</span>, err)
+            <span style="color:#cdcd00">if</span> closeFlag {
+                <span style="color:#cdcd00">break</span>
+            } <span style="color:#cdcd00">else</span> {
+                <span style="color:#cdcd00">continue</span>
             }
-        } else {
+        } <span style="color:#cdcd00">else</span> {
             conn.Close()
         }
     }
-    return nil
+    <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">nil</span>
 }
 
-func main() {
-    go startServer()
-    time.Sleep(1 * time.Second)
-    closeFlag = true
+<span style="color:#00cd00">func</span> main() {
+    <span style="color:#cdcd00">go</span> startServer()
+    time.Sleep(<span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> time.Second)
+    closeFlag = <span style="color:#cdcd00">true</span>
     ln.Close()
-    time.Sleep(1 * time.Second)
+    time.Sleep(<span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> time.Second)
 }
-</code></pre>
+</code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -158,8 +151,7 @@ func main() {
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2017/01/01/golang-cross-compile/">golang 交叉编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年01月01日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/">go语言中使用smtp发送邮件及smtp协议的相关问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月20日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2017/01/01/golang-cross-compile/">golang 交叉编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年01月01日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li></ul>
             </aside>
                 
             
@@ -191,7 +183,7 @@ func main() {
                 <h2 class="panel-title">Catalog</h2>
             </div>
 
-            
+            <nav id="TableOfContents"></nav>
         </div>
 </aside>
 
@@ -205,19 +197,6 @@ func main() {
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

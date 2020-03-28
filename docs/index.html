@@ -2,7 +2,7 @@
 
 <html lang="zh-cn">
 <head>
-	<meta name="generator" content="Hugo 0.59.1" />
+	<meta name="generator" content="Hugo 0.60.0" />
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
@@ -108,7 +108,6 @@
     </header>
     <div class="post-content">
         <p>kubernetes 的 controller-manager 通过 APIServer 实时监控内部资源的变化情况，通过各种操作将系统维持在一个我们预期的状态上。比如当我们将 Deployment 的副本数增加时，controller-manager 会监听到此变化，主动创建新的 Pod。</p>
-
 <p>对于通过 CRD 创建的资源，也可以创建一个自定义的 controller 来管理。</p>
     </div>
     </article>
@@ -544,19 +543,6 @@
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

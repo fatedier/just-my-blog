@@ -71,49 +71,32 @@
 
             <div class="post-content">
                 <p>go语言项目的第三方包资源现在十分丰富，使用起来也非常方便，直接在代码中 import 之后再使用 go get 命令下载到本地即可。但是在合作开发一个golang项目时，经常会遇到每个人在各自的机器上使用 go get 下载的第三方包版本不一致的情况（因为 go get 会下载指定包的最新版本），很有可能会遇到版本不兼容的情况。</p>
-
 <p>目前 go 自身的包管理体系比较薄弱，go 1.5 以后开始使用 vendor 机制来管理，但是依然缺乏对第三方包的版本的管理。</p>
-
-<h3 id="安装">安装</h3>
-
+<h3 id="heading">安装</h3>
 <ol>
 <li>确保已经有go语言的环境并且设置好了 GOPATH 环境变量。</li>
 <li>使用 <code>go get -u github.com/tools/godep</code> 下载 godep 包并自动安装。</li>
 <li>godep 可执行程序会放在 $GOPATH/bin 目录下。所以想直接用 godep 执行命令的话需要将该路径加入到全局的环境变量 PATH 中，可以将<code>export PATH=&quot;$PATH:$GOPATH/bin&quot;</code>加入到系统启动脚本中。</li>
 </ol>
-
-<h3 id="使用">使用</h3>
-
+<h3 id="heading1">使用</h3>
 <p>进入go项目的根目录，需要该项目已经可以使用 go build 正常编译。</p>
-
 <h4 id="godep-save">godep save</h4>
-
 <p>执行 <code>godep save</code> 或者 <code>godep save ./...</code>，后者会递归地查找所有引用的第三方包。</p>
-
 <p>如果加上 -r 参数，则会替换原来代码中的第三包的路径为 godep 在该项目下copy过后的路径，例如 <code>C/Godeps/_workspace/src/D</code>， 这样一来，以后直接执行 <code>go build</code> 等就可以了，不需要使用 <code>godep go build</code>。<strong>（这个特性在最新版本中已经被移除了）</strong></p>
-
 <p>这个命令做了以下几件事：</p>
-
 <ul>
 <li>查找项目中所用到的所有的第三方包</li>
 <li>在项目目录下创建 <code>Godeps</code> 目录，<code>Godeps/Godeps.json</code> 是依赖文件，包括了go的版本，用到的第三包的引入路径，版本号等信息，json文件需要一并加入到版本控制里。</li>
 <li>所有依赖的第三包的代码会被拷贝到 <code>Godeps/_workspace/src</code> 下，并且移除了 <code>.git</code> 这样的版本控制信息。<code>Godeps/_workspace</code> 里的内容如果加到版本控制里，别人下载代码后可以直接编译，不需要另外再下依赖包，但是项目大小会变大。</li>
 </ul>
-
 <h4 id="godep-restore">godep restore</h4>
-
 <p>这个命令是根据 <code>Godeps/Godeps.json</code> 文件把项目的依赖包下载到 <code>$GOPATH</code> 目录下，需要注意这个命令是会修改 <code>$GOPATH</code> 下依赖包的状态的，所以最好还是将 <code>Godeps/_workspace</code> 里的内容直接加到自己项目的版本控制里。</p>
-
-<h4 id="其他命令">其他命令</h4>
-
+<h4 id="heading2">其他命令</h4>
 <p>其他的 go 命令基本上都可以通过 godep 执行，例如</p>
-
-<pre><code class="language-bash">godep go build
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">godep go build
 godep go install
 godep go fmt
-</code></pre>
-
-<p>godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。</p>
+</code></pre></div><p>godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -148,8 +131,7 @@ godep go fmt
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2017/01/01/golang-cross-compile/">golang 交叉编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年01月01日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/">go语言中使用smtp发送邮件及smtp协议的相关问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年08月20日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/17/git-usually-command/">Git常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月17日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/16/learn-git-website/">学习Git的常用网站</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2017/01/01/golang-cross-compile/">golang 交叉编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年01月01日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li></ul>
             </aside>
                 
             
@@ -182,21 +164,16 @@ godep go fmt
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#安装">安装</a></li>
-<li><a href="#使用">使用</a>
-<ul>
-<li><a href="#godep-save">godep save</a></li>
-<li><a href="#godep-restore">godep restore</a></li>
-<li><a href="#其他命令">其他命令</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">安装</a></li>
+    <li><a href="#heading1">使用</a>
+      <ul>
+        <li><a href="#godep-save">godep save</a></li>
+        <li><a href="#godep-restore">godep restore</a></li>
+        <li><a href="#heading2">其他命令</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -211,19 +188,6 @@ godep go fmt
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

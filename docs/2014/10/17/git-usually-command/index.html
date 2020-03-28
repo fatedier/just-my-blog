@@ -71,114 +71,66 @@
 
             <div class="post-content">
                 <p>在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。</p>
-
-<h3 id="修改某一次提交的说明信息">修改某一次提交的说明信息</h3>
-
+<h3 id="heading">修改某一次提交的说明信息</h3>
 <p>有时候我们需要修改之前提交的时候的说明信息，没有操作命令可以直接完成，但是使用rebase命令可以实现。</p>
-
 <p>例如我们要修改倒数第二次的提交的说明信息：</p>
-
-<pre><code class="language-bash">$ git rebase -i HEAD~3
-</code></pre>
-
-<p><strong>注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。</strong></p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git rebase -i HEAD~3
+</code></pre></div><p><strong>注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。</strong></p>
 <p>之后会进入到文本编辑界面，如下图</p>
-
-<p><img src="http://image.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg" alt="reset-commit-message" /></p>
-
+<p><img src="http://image.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg" alt="reset-commit-message"></p>
 <p>将要修改的提交前面的 <strong>pick</strong> 改为 <strong>edit</strong> ，保存后退出。</p>
-
 <p>这个时候执行</p>
-
-<pre><code class="language-bash">$ git commit --amend
-</code></pre>
-
-<p>就可以修改该次提交的说明了，修改完成后保存并退出。</p>
-
-<pre><code class="language-bash">$ git rebase --continue
-</code></pre>
-
-<p>执行这条命令后，后续的提交说明将不会改变。</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git commit --amend
+</code></pre></div><p>就可以修改该次提交的说明了，修改完成后保存并退出。</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git rebase --continue
+</code></pre></div><p>执行这条命令后，后续的提交说明将不会改变。</p>
 <p><strong>注：不要修改已经 push 到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！</strong></p>
-
-<h3 id="查看-删除-重命名远程分支">查看、删除、重命名远程分支</h3>
-
+<h3 id="heading1">查看、删除、重命名远程分支</h3>
 <p>查看所有的分支（包括远程分支）</p>
-
-<pre><code class="language-bash">$ git branch -a
-</code></pre>
-
-<p>当一个分支已经被合并到主分支后，我们通常会删除这个分支，如果仅仅 git branch -d 是删除本地分支</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git branch -a
+</code></pre></div><p>当一个分支已经被合并到主分支后，我们通常会删除这个分支，如果仅仅 git branch -d 是删除本地分支</p>
 <p>删除远程分支的话可以使用如下命令</p>
-
-<pre><code class="language-bash">$ git push origin --delete &lt;branchName&gt;
-</code></pre>
-
-<p>重命名一个分支不是很常用，可以先删除远程分支，再重命名本地分支，之后将重命名后的本地分支推送到远程仓库</p>
-
-<pre><code class="language-bash">$ git push --delete origin &lt;branchName&gt;
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git push origin --delete &lt;branchName&gt;
+</code></pre></div><p>重命名一个分支不是很常用，可以先删除远程分支，再重命名本地分支，之后将重命名后的本地分支推送到远程仓库</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git push --delete origin &lt;branchName&gt;
 
 $ git branch -m &lt;branchName&gt; &lt;newBranchName&gt;
 
 $ git push origin &lt;newBranchName&gt;
-</code></pre>
-
-<h3 id="合并多个提交">合并多个提交</h3>
-
+</code></pre></div><h3 id="heading2">合并多个提交</h3>
 <p>比如要合并最后两次的提交，其实和修改某一次提交的说明信息有点类似。</p>
-
-<pre><code class="language-bash">$ git rebase -i HEAD~2
-</code></pre>
-
-<p>之后同样会进入到文本编辑界面，将第二行开头的 <strong>pick</strong> 改为 <strong>squash</strong> 或 <strong>s</strong>，保存后退出。</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git rebase -i HEAD~2
+</code></pre></div><p>之后同样会进入到文本编辑界面，将第二行开头的 <strong>pick</strong> 改为 <strong>squash</strong> 或 <strong>s</strong>，保存后退出。</p>
 <p>这时git会把两次提交合并，并且提示让你输入新的提交信息，保存后退出就成功完成两次提交的合并了。</p>
-
-<h3 id="强制回退远程仓库到指定提交">强制回退远程仓库到指定提交</h3>
-
+<h3 id="heading3">强制回退远程仓库到指定提交</h3>
 <p>当我们在开发的时候出现一些关键性的错误，并且确认现在已经做的开发工作是无意义的时候，可能需要回退到之前的版本。</p>
-
-<pre><code class="language-bash">$ git reset --hard &lt;commit_id&gt;
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git reset --hard &lt;commit_id&gt;
 
 $ git push origin HEAD --force
-</code></pre>
-
-<p>另外，reset命令还有几个可选参数</p>
-
+</code></pre></div><p>另外，reset命令还有几个可选参数</p>
 <ul>
-<li><p><strong>git reset &ndash;mixed</strong>：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息。</p></li>
-
-<li><p><strong>git reset &ndash;soft</strong>：回退到某个版本，只回退了commit的信息，不会恢复到indexfile一级。如果还要提交，直接commit即可。</p></li>
-
-<li><p><strong>git reset &ndash;hard</strong>：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。</p></li>
+<li>
+<p><strong>git reset &ndash;mixed</strong>：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息。</p>
+</li>
+<li>
+<p><strong>git reset &ndash;soft</strong>：回退到某个版本，只回退了commit的信息，不会恢复到indexfile一级。如果还要提交，直接commit即可。</p>
+</li>
+<li>
+<p><strong>git reset &ndash;hard</strong>：彻底回退到某个版本，本地的源码也会变为上一个版本的内容。</p>
+</li>
 </ul>
-
-<h3 id="reset-hard之后的恢复">reset &ndash;hard之后的恢复</h3>
-
+<h3 id="reset-hard">reset &ndash;hard之后的恢复</h3>
 <p>使用 <code>git reset --hard</code> 之后，也许才发现这是一次错误的操作，那么我们就想要恢复到之前的版本。</p>
-
 <p>这个时候用git log是看不到之前的提交历史记录的。</p>
-
 <p>需要使用 <code>$ git reflog</code> 找到我们需要恢复的HEAD的ID，然后使用reset命令恢复回去。</p>
-
-<h3 id="查看指定版本的某个文件的内容">查看指定版本的某个文件的内容</h3>
-
+<h3 id="heading4">查看指定版本的某个文件的内容</h3>
 <p>例如要查看 f4869b0 这次提交的 test.cpp 文件的内容，test.cpp的路径需要使用相对于git目录的路径名，使用如下命令：</p>
-
-<pre><code class="language-bash">$ git show f4869b0:test.cpp
-</code></pre>
-
-<p>文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。</p>
-
-<h3 id="将远程分支已经删除的残留的本地分支追踪信息删除">将远程分支已经删除的残留的本地分支追踪信息删除</h3>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git show f4869b0:test.cpp
+</code></pre></div><p>文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。</p>
+<h3 id="heading5">将远程分支已经删除的残留的本地分支追踪信息删除</h3>
 <p>经过一段时间的开发后，远端的一些被 merge 后删除的分支，在本地使用 <code>git branch -a</code> 还是能看到，需要取消追踪并删除。</p>
-
-<pre><code class="language-bash">$ git fetch --prune
-</code></pre>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git fetch --prune
+</code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -213,8 +165,7 @@ $ git push origin HEAD --force
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/05/install-gitlab-supporting-ci-with-docker/">利用docker搭建gitlab及持续集成模块</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月05日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/16/learn-git-website/">学习Git的常用网站</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/05/install-gitlab-supporting-ci-with-docker/">利用docker搭建gitlab及持续集成模块</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月05日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li></ul>
             </aside>
                 
             
@@ -247,21 +198,15 @@ $ git push origin HEAD --force
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#修改某一次提交的说明信息">修改某一次提交的说明信息</a></li>
-<li><a href="#查看-删除-重命名远程分支">查看、删除、重命名远程分支</a></li>
-<li><a href="#合并多个提交">合并多个提交</a></li>
-<li><a href="#强制回退远程仓库到指定提交">强制回退远程仓库到指定提交</a></li>
-<li><a href="#reset-hard之后的恢复">reset &ndash;hard之后的恢复</a></li>
-<li><a href="#查看指定版本的某个文件的内容">查看指定版本的某个文件的内容</a></li>
-<li><a href="#将远程分支已经删除的残留的本地分支追踪信息删除">将远程分支已经删除的残留的本地分支追踪信息删除</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">修改某一次提交的说明信息</a></li>
+    <li><a href="#heading1">查看、删除、重命名远程分支</a></li>
+    <li><a href="#heading2">合并多个提交</a></li>
+    <li><a href="#heading3">强制回退远程仓库到指定提交</a></li>
+    <li><a href="#reset-hard">reset hard之后的恢复</a></li>
+    <li><a href="#heading4">查看指定版本的某个文件的内容</a></li>
+    <li><a href="#heading5">将远程分支已经删除的残留的本地分支追踪信息删除</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -276,19 +221,6 @@ $ git push origin HEAD --force
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

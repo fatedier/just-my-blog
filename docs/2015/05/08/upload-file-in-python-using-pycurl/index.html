@@ -71,44 +71,36 @@
 
             <div class="post-content">
                 <p>在对外提供各种语言SDK的时候经常会遇到需要上传文件的问题，例如在python中我们可以借助pycurl库实现这个功能。</p>
-
-<h3 id="项目地址">项目地址</h3>
-
+<h3 id="heading">项目地址</h3>
 <p><a href="https://github.com/pycurl/pycurl">https://github.com/pycurl/pycurl</a></p>
+<h3 id="heading1">示例代码</h3>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#cd00cd">import</span> pycurl
+<span style="color:#cd00cd">import</span> StringIO
 
-<h3 id="示例代码">示例代码</h3>
+<span style="color:#000080"># 用于执行http请求的通用函数</span>
+<span style="color:#000080"># post_data: post参数字符串</span>
+<span style="color:#000080"># upload_file: dict类型，需要有file_path(指定要上传的文件路径)和file_name(指定上传后的文件名)</span>
+<span style="color:#cdcd00">def</span> do_http_request(method, url, post_data<span style="color:#39c">=</span><span style="color:#cd0000"></span><span style="color:#cd0000">&#39;</span><span style="color:#cd0000">&#39;</span>, upload_file<span style="color:#39c">=</span>None): 
+    ch <span style="color:#39c">=</span> pycurl<span style="color:#39c">.</span>Curl() 
+    buf <span style="color:#39c">=</span> StringIO<span style="color:#39c">.</span>StringIO() 
+    ch<span style="color:#39c">.</span>setopt(ch<span style="color:#39c">.</span>URL, url) 
+    ch<span style="color:#39c">.</span>setopt(ch<span style="color:#39c">.</span>CUSTOMREQUEST, method) 
+    <span style="color:#cdcd00">if</span> upload_file <span style="color:#39c">!=</span> None: 
+        ch<span style="color:#39c">.</span>setopt(ch<span style="color:#39c">.</span>HTTPPOST, [(<span style="color:#cd0000"></span><span style="color:#cd0000">&#39;</span><span style="color:#cd0000">file</span><span style="color:#cd0000">&#39;</span>, (ch<span style="color:#39c">.</span>FORM_FILE, upload_file[<span style="color:#cd0000"></span><span style="color:#cd0000">&#39;</span><span style="color:#cd0000">file_path</span><span style="color:#cd0000">&#39;</span>], \ 
+            ch<span style="color:#39c">.</span>FORM_FILENAME, upload_file[<span style="color:#cd0000"></span><span style="color:#cd0000">&#39;</span><span style="color:#cd0000">file_name</span><span style="color:#cd0000">&#39;</span>]))]) 
+    <span style="color:#cdcd00">else</span>: 
+        <span style="color:#cdcd00">if</span> method <span style="color:#39c">==</span> self<span style="color:#39c">.</span>METHOD_POST: 
+            ch<span style="color:#39c">.</span>setopt(ch<span style="color:#39c">.</span>POSTFIELDS,  urlencode(post_data)) 
 
-<pre><code class="language-python">import pycurl
-import StringIO
-
-# 用于执行http请求的通用函数
-# post_data: post参数字符串
-# upload_file: dict类型，需要有file_path(指定要上传的文件路径)和file_name(指定上传后的文件名)
-def do_http_request(method, url, post_data='', upload_file=None): 
-    ch = pycurl.Curl() 
-    buf = StringIO.StringIO() 
-    ch.setopt(ch.URL, url) 
-    ch.setopt(ch.CUSTOMREQUEST, method) 
-    if upload_file != None: 
-        ch.setopt(ch.HTTPPOST, [('file', (ch.FORM_FILE, upload_file['file_path'], \ 
-            ch.FORM_FILENAME, upload_file['file_name']))]) 
-    else: 
-        if method == self.METHOD_POST: 
-            ch.setopt(ch.POSTFIELDS,  urlencode(post_data)) 
-
-    ch.setopt(ch.TIMEOUT, 30) 
-    ch.setopt(ch.WRITEFUNCTION, buf.write)
-    ch.perform() 
-    content = buf.getvalue()
-    buf.close()
-    ch.close()
-    return content
-</code></pre>
-
-<p>上面的代码是一个用pycurl库写的调用http请求的通用函数，如果upload_file不为None，则表示需要上传文件，upload_file是一个dict类型，需要有两个key，file_path(指定要上传的文件路径)和file_name(指定上传后的文件名)。</p>
-
+    ch<span style="color:#39c">.</span>setopt(ch<span style="color:#39c">.</span>TIMEOUT, <span style="color:#cd00cd">30</span>) 
+    ch<span style="color:#39c">.</span>setopt(ch<span style="color:#39c">.</span>WRITEFUNCTION, buf<span style="color:#39c">.</span>write)
+    ch<span style="color:#39c">.</span>perform() 
+    content <span style="color:#39c">=</span> buf<span style="color:#39c">.</span>getvalue()
+    buf<span style="color:#39c">.</span>close()
+    ch<span style="color:#39c">.</span>close()
+    <span style="color:#cdcd00">return</span> content
+</code></pre></div><p>上面的代码是一个用pycurl库写的调用http请求的通用函数，如果upload_file不为None，则表示需要上传文件，upload_file是一个dict类型，需要有两个key，file_path(指定要上传的文件路径)和file_name(指定上传后的文件名)。</p>
 <p><strong>ch.FORM_FILE</strong>：指定要上传文件的路径</p>
-
 <p><strong>ch.FORM_FILENAME</strong>：指定要上传文件的文件名</p>
             </div>
             
@@ -138,7 +130,6 @@ def do_http_request(method, url, post_data='', upload_file=None): 
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"></ul>
-                
             </aside>
                 
             
@@ -171,16 +162,10 @@ def do_http_request(method, url, post_data='', upload_file=None): 
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#项目地址">项目地址</a></li>
-<li><a href="#示例代码">示例代码</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">项目地址</a></li>
+    <li><a href="#heading1">示例代码</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -195,19 +180,6 @@ def do_http_request(method, url, post_data='', upload_file=None): 
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

@@ -71,34 +71,22 @@
 
             <div class="post-content">
                 <p>定位某个进程的网络故障时经常需要用到的一个功能就是查找所有连接的信息。通常查找某个端口的连接信息使用 ss 或者 netstat 可以轻松拿到，如果是主动与别的机器建立的连接信息则可以通过 lsof 命令来获得。</p>
-
 <p>例如我想要查看进程 <code>frps</code> 当前的所有连接信息，先获得进程的 pid：</p>
-
 <p><code>ps -ef|grep frps</code></p>
-
 <p>结果为：</p>
-
-<pre><code class="language-bash">wcl       4721     1  0 10:27 ?        00:00:01 ./frps
-</code></pre>
-
-<p>可以看到进程 pid 为 <strong>4721</strong>，之后通过 lsof 命令查看所有 TCP 连接信息：</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wcl       <span style="color:#cd00cd">4721</span>     <span style="color:#cd00cd">1</span>  <span style="color:#cd00cd">0</span> 10:27 ?        00:00:01 ./frps
+</code></pre></div><p>可以看到进程 pid 为 <strong>4721</strong>，之后通过 lsof 命令查看所有 TCP 连接信息：</p>
 <p><code>lsof -p 4721 -nP | grep TCP</code></p>
-
 <p>显示结果为：</p>
-
-<pre><code class="language-bash">frps    4721  wcl    4u     IPv6 117051764      0t0     TCP *:7000 (LISTEN)
-frps    4721  wcl    6u     IPv6 117051765      0t0     TCP *:7003 (LISTEN)
-frps    4721  wcl    7u     IPv6 117092563      0t0     TCP 139.129.11.120:7000-&gt;116.231.70.223:61545 (ESTABLISHED)
-frps    4721  wcl    8u     IPv6 117092565      0t0     TCP *:6000 (LISTEN)
-frps    4721  wcl    9u     IPv6 117334426      0t0     TCP 139.129.11.120:7000-&gt;116.237.93.230:64898 (ESTABLISHED)
-frps    4721  wcl   10u     IPv6 117053538      0t0     TCP 139.129.11.120:7000-&gt;115.231.20.123:41297 (ESTABLISHED)
-frps    4721  wcl   11u     IPv6 117053540      0t0     TCP *:6005 (LISTEN)
-frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
-</code></pre>
-
-<p>从 <strong>lsof</strong> 的输出结果中可以清楚的看到 <strong>frps</strong> 进程监听了 5 个端口，并且在 7000 端口上建立了 3 个连接，连接两端的 ip 信息也都可以查到。</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">frps    <span style="color:#cd00cd">4721</span>  wcl    4u     IPv6 <span style="color:#cd00cd">117051764</span>      0t0     TCP *:7000 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
+frps    <span style="color:#cd00cd">4721</span>  wcl    6u     IPv6 <span style="color:#cd00cd">117051765</span>      0t0     TCP *:7003 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
+frps    <span style="color:#cd00cd">4721</span>  wcl    7u     IPv6 <span style="color:#cd00cd">117092563</span>      0t0     TCP 139.129.11.120:7000-&gt;116.231.70.223:61545 <span style="color:#39c">(</span>ESTABLISHED<span style="color:#39c">)</span>
+frps    <span style="color:#cd00cd">4721</span>  wcl    8u     IPv6 <span style="color:#cd00cd">117092565</span>      0t0     TCP *:6000 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
+frps    <span style="color:#cd00cd">4721</span>  wcl    9u     IPv6 <span style="color:#cd00cd">117334426</span>      0t0     TCP 139.129.11.120:7000-&gt;116.237.93.230:64898 <span style="color:#39c">(</span>ESTABLISHED<span style="color:#39c">)</span>
+frps    <span style="color:#cd00cd">4721</span>  wcl   10u     IPv6 <span style="color:#cd00cd">117053538</span>      0t0     TCP 139.129.11.120:7000-&gt;115.231.20.123:41297 <span style="color:#39c">(</span>ESTABLISHED<span style="color:#39c">)</span>
+frps    <span style="color:#cd00cd">4721</span>  wcl   11u     IPv6 <span style="color:#cd00cd">117053540</span>      0t0     TCP *:6005 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
+frps    <span style="color:#cd00cd">4721</span>  wcl   12u     IPv6 <span style="color:#cd00cd">117334428</span>      0t0     TCP *:6004 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
+</code></pre></div><p>从 <strong>lsof</strong> 的输出结果中可以清楚的看到 <strong>frps</strong> 进程监听了 5 个端口，并且在 7000 端口上建立了 3 个连接，连接两端的 ip 信息也都可以查到。</p>
 <p><strong>lsof</strong> 的 <strong>-nP</strong> 参数用于将 ip 地址和端口号显示为正常的数值类型，否则可能会用别名表示。</p>
             </div>
             
@@ -127,8 +115,7 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li></ul>
             </aside>
                 
             
@@ -160,7 +147,7 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
                 <h2 class="panel-title">Catalog</h2>
             </div>
 
-            
+            <nav id="TableOfContents"></nav>
         </div>
 </aside>
 
@@ -174,19 +161,6 @@ frps    4721  wcl   12u     IPv6 117334428      0t0     TCP *:6004 (LISTEN)
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

@@ -7,7 +7,6 @@
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="description" content="kubernetes 的 controller-manager 通过 APIServer 实时监控内部资源的变化情况，通过各种操作将系统维持在一个我们预期的状态上。比如当我们将 Deployment 的副本数增加时，controller-manager 会监听到此变化，主动创建新的 Pod。
-
 对于通过 CRD 创建的资源，也可以创建一个自定义的 controller 来管理。">
 <meta property="og:url" content="http://blog.fatedier.com/"><meta property="og:type" content="article">
 <meta property="og:title" content="kubernetes 自定义控制器 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
@@ -73,238 +72,192 @@
 
             <div class="post-content">
                 <p>kubernetes 的 controller-manager 通过 APIServer 实时监控内部资源的变化情况，通过各种操作将系统维持在一个我们预期的状态上。比如当我们将 Deployment 的副本数增加时，controller-manager 会监听到此变化，主动创建新的 Pod。</p>
-
 <p>对于通过 CRD 创建的资源，也可以创建一个自定义的 controller 来管理。</p>
-
-<h3 id="目的">目的</h3>
-
+<h3 id="heading">目的</h3>
 <p>在 <a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a> 一文中我们创建了自己的 Scaling 资源，如果我们想要通过监听该资源的变化来实现实时的弹性伸缩，就需要自己写一个控制器，通过 APIserver watch 该资源的变化。</p>
-
 <p>当我们创建了一个 Scaling 对象，自定义控制器都能获得其参数，之后执行相关的检查，根据结果决定是否需要扩容或缩容相关的实例。</p>
-
-<h3 id="实现">实现</h3>
-
+<h3 id="heading1">实现</h3>
 <p><a href="https://github.com/kubernetes/client-go">client-go</a> 这个 repo 封装了对 k8s 内置资源的一些常用操作，包括了 clients/listers/informer 等对象和函数，可以 通过 Watch 或者 Get List 获取对应的 Object，并且通过 Cache，可以有效避免对 APIServer 频繁请求的压力。</p>
-
 <p>但是对于我们自己创建的 CRD，没有办法直接使用这些代码。</p>
-
 <p>通过 <a href="https://github.com/kubernetes/code-generator">code-generator</a> 这个 repo，我们可以提供自己的 CRD 相关的结构体，轻松的生成 client-go 中类似的代码，方便我们编写自己的控制器。</p>
-
-<h3 id="在自己的项目中使用-code-generator">在自己的项目中使用 code-generator</h3>
-
+<h3 id="-codegenerator">在自己的项目中使用 code-generator</h3>
 <p>这里主要参考了 <a href="https://github.com/kubernetes/sample-controller">sample-controller</a> 这个项目。</p>
-
-<h4 id="创建自定义-crd-结构体">创建自定义 CRD 结构体</h4>
-
+<h4 id="-crd-">创建自定义 CRD 结构体</h4>
 <p>假设我们有一个 <code>test</code> repo，在根目录创建一个 <code>pkg</code> 目录，用于存放我们自定义资源的 Spec 结构体。</p>
-
 <p>这里我们要知道自己创建的自定义资源的相关内容:</p>
-
 <ul>
 <li>API Group: 我们使用的是 <code>control.example.com</code>。</li>
 <li>Version: 我们用的是 <code>v1</code>，但是可以同时存在多个版本。</li>
 <li>资源名称: 这里是 <code>Scaling</code>。</li>
 </ul>
-
 <p>接着创建如下的目录结构:</p>
-
 <p><code>mkdir -p pkg/apis/control/v1</code></p>
-
 <p>在 <code>pkg/apis/control</code> 目录下创建一个 register.go 文件。内容如下:</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> control
 
-<pre><code class="language-golang">package control
-
-const (
-    GroupName = &quot;control.example.com&quot;
+<span style="color:#00cd00">const</span> (
+    GroupName = <span style="color:#cd0000">&#34;control.example.com&#34;</span>
 )
-</code></pre>
+</code></pre></div><p>创建 <code>pkg/apis/control/v1/types.go</code> 文件，内容如下:</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> v1
 
-<p>创建 <code>pkg/apis/control/v1/types.go</code> 文件，内容如下:</p>
-
-<pre><code class="language-golang">package v1
-
-import (
-    metav1 &quot;k8s.io/apimachinery/pkg/apis/meta/v1&quot;
+<span style="color:#cd00cd">import</span> (
+    metav1 <span style="color:#cd0000">&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span>
 )
 
-// +genclient
-// +genclient:noStatus
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+<span style="color:#000080">// +genclient
+</span><span style="color:#000080"></span><span style="color:#000080">// +genclient:noStatus
+</span><span style="color:#000080"></span><span style="color:#000080">// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+</span><span style="color:#000080"></span>
+<span style="color:#00cd00">type</span> Scaling <span style="color:#00cd00">struct</span> {
+    metav1.TypeMeta   <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;,inline&#34;</span><span style="color:#cd0000">`</span>
+    metav1.ObjectMeta <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;metadata,omitempty&#34;</span><span style="color:#cd0000">`</span>
 
-type Scaling struct {
-    metav1.TypeMeta   `json:&quot;,inline&quot;`
-    metav1.ObjectMeta `json:&quot;metadata,omitempty&quot;`
-
-    Spec ScalingSpec `json:&quot;spec&quot;`
+    Spec ScalingSpec <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;spec&#34;</span><span style="color:#cd0000">`</span>
 }
 
-type ScalingSpec struct {
-    TargetDeployment string `json:&quot;targetDeployment&quot;`
-    MinReplicas      int    `json:&quot;minReplicas&quot;`
-    MaxReplicas      int    `json:&quot;maxReplicas&quot;`
-    MetricType       string `json:&quot;metricType&quot;`
-    Step             int    `json:&quot;step&quot;`
-    ScaleUp          int    `json:&quot;scaleUp&quot;`
-    ScaleDown        int    `json:&quot;scaleDown&quot;`
+<span style="color:#00cd00">type</span> ScalingSpec <span style="color:#00cd00">struct</span> {
+    TargetDeployment <span style="color:#00cd00">string</span> <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;targetDeployment&#34;</span><span style="color:#cd0000">`</span>
+    MinReplicas      <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;minReplicas&#34;</span><span style="color:#cd0000">`</span>
+    MaxReplicas      <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;maxReplicas&#34;</span><span style="color:#cd0000">`</span>
+    MetricType       <span style="color:#00cd00">string</span> <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;metricType&#34;</span><span style="color:#cd0000">`</span>
+    Step             <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;step&#34;</span><span style="color:#cd0000">`</span>
+    ScaleUp          <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;scaleUp&#34;</span><span style="color:#cd0000">`</span>
+    ScaleDown        <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;scaleDown&#34;</span><span style="color:#cd0000">`</span>
 }
 
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+<span style="color:#000080">// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+</span><span style="color:#000080"></span>
+<span style="color:#00cd00">type</span> ScalingList <span style="color:#00cd00">struct</span> {
+    metav1.TypeMeta <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;,inline&#34;</span><span style="color:#cd0000">`</span>
+    metav1.ListMeta <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;metadata,omitempty&#34;</span><span style="color:#cd0000">`</span>
 
-type ScalingList struct {
-    metav1.TypeMeta `json:&quot;,inline&quot;`
-    metav1.ListMeta `json:&quot;metadata,omitempty&quot;`
-
-    Items []Scaling `json:&quot;items&quot;`
+    Items []Scaling <span style="color:#cd0000">`</span><span style="color:#cd0000">json:&#34;items&#34;</span><span style="color:#cd0000">`</span>
 }
-</code></pre>
-
-<p>这个文件中我们定义了 <code>Scaling</code> 这个自定义资源的结构体。</p>
-
+</code></pre></div><p>这个文件中我们定义了 <code>Scaling</code> 这个自定义资源的结构体。</p>
 <p>其中，类似 <code>// +&lt;tag_name&gt;[=value]</code> 这样格式的注释，可以控制代码生成器的一些行为。</p>
-
 <ul>
 <li><strong>+genclient</strong>: 为这个 package 创建 client。</li>
 <li><strong>+genclient:noStatus</strong>: 当创建 client 时，不存储 status。</li>
 <li><strong>+k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object</strong>: 为结构体生成 deepcopy 的代码，实现了 runtime.Object 的 Interface。</li>
 </ul>
-
 <p>创建 doc 文件，<code>pkg/apis/control/v1/doc.go</code>:</p>
-
-<pre><code class="language-golang">// +k8s:deepcopy-gen=package
-// +groupName=control.example.com
-
-package v1
-</code></pre>
-
-<p>最后 client 对于自定义资源结构还需要一些接口，例如 <code>AddToScheme</code> 和 <code>Resource</code>，这些函数负责将结构体注册到 schemes 中去。</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#000080">// +k8s:deepcopy-gen=package
+</span><span style="color:#000080"></span><span style="color:#000080">// +groupName=control.example.com
+</span><span style="color:#000080"></span>
+<span style="color:#cd00cd">package</span> v1
+</code></pre></div><p>最后 client 对于自定义资源结构还需要一些接口，例如 <code>AddToScheme</code> 和 <code>Resource</code>，这些函数负责将结构体注册到 schemes 中去。</p>
 <p>为此创建 <code>pkg/apis/control/v1/register.go</code> 文件:</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> v1
 
-<pre><code class="language-golang">package v1
+<span style="color:#cd00cd">import</span> (
+    <span style="color:#cd0000">&#34;test/pkg/apis/control&#34;</span>
 
-import (
-    &quot;test/pkg/apis/control&quot;
-
-    metav1 &quot;k8s.io/apimachinery/pkg/apis/meta/v1&quot;
-    &quot;k8s.io/apimachinery/pkg/runtime&quot;
-    &quot;k8s.io/apimachinery/pkg/runtime/schema&quot;
+    metav1 <span style="color:#cd0000">&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span>
+    <span style="color:#cd0000">&#34;k8s.io/apimachinery/pkg/runtime&#34;</span>
+    <span style="color:#cd0000">&#34;k8s.io/apimachinery/pkg/runtime/schema&#34;</span>
 )
 
-var SchemeGroupVersion = schema.GroupVersion{
+<span style="color:#00cd00">var</span> SchemeGroupVersion = schema.GroupVersion{
     Group:   control.GroupName,
-    Version: &quot;v1&quot;,
+    Version: <span style="color:#cd0000">&#34;v1&#34;</span>,
 }
 
-func Resource(resource string) schema.GroupResource {
-    return SchemeGroupVersion.WithResource(resource).GroupResource()
+<span style="color:#00cd00">func</span> Resource(resource <span style="color:#00cd00">string</span>) schema.GroupResource {
+    <span style="color:#cdcd00">return</span> SchemeGroupVersion.WithResource(resource).GroupResource()
 }
 
-var (
-    // localSchemeBuilder and AddToScheme will stay in k8s.io/kubernetes.
-    SchemeBuilder      runtime.SchemeBuilder
-    localSchemeBuilder = &amp;SchemeBuilder
+<span style="color:#00cd00">var</span> (
+    <span style="color:#000080">// localSchemeBuilder and AddToScheme will stay in k8s.io/kubernetes.
+</span><span style="color:#000080"></span>    SchemeBuilder      runtime.SchemeBuilder
+    localSchemeBuilder = <span style="color:#39c">&amp;</span>SchemeBuilder
     AddToScheme        = localSchemeBuilder.AddToScheme
 )
 
-func init() {
-    // We only register manually written functions here. The registration of the
-    // generated functions takes place in the generated files. The separation
-    // makes the code compile even when the generated files are missing.
-    localSchemeBuilder.Register(addKnownTypes)
+<span style="color:#00cd00">func</span> init() {
+    <span style="color:#000080">// We only register manually written functions here. The registration of the
+</span><span style="color:#000080"></span>    <span style="color:#000080">// generated functions takes place in the generated files. The separation
+</span><span style="color:#000080"></span>    <span style="color:#000080">// makes the code compile even when the generated files are missing.
+</span><span style="color:#000080"></span>    localSchemeBuilder.Register(addKnownTypes)
 }
 
-// Adds the list of known types to api.Scheme.
-func addKnownTypes(scheme *runtime.Scheme) error {
+<span style="color:#000080">// Adds the list of known types to api.Scheme.
+</span><span style="color:#000080"></span><span style="color:#00cd00">func</span> addKnownTypes(scheme <span style="color:#39c">*</span>runtime.Scheme) <span style="color:#00cd00">error</span> {
     scheme.AddKnownTypes(SchemeGroupVersion,
-        &amp;Scaling{},
-        &amp;ScalingList{},
+        <span style="color:#39c">&amp;</span>Scaling{},
+        <span style="color:#39c">&amp;</span>ScalingList{},
     )
     metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
-    return nil
+    <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">nil</span>
 }
-</code></pre>
-
-<p>至此，初期的准备工作已近完成，可以通过代码生成器来自动帮助我们生成相关的 client, informer, lister 的代码。</p>
-
-<h4 id="生成代码">生成代码</h4>
-
+</code></pre></div><p>至此，初期的准备工作已近完成，可以通过代码生成器来自动帮助我们生成相关的 client, informer, lister 的代码。</p>
+<h4 id="heading2">生成代码</h4>
 <p>通常我们通过创建一个 <code>hack/update-codegen.sh</code> 脚本来固化生成代码的步骤。</p>
-
-<pre><code class="language-sh">$GOPATH/src/k8s.io/code-generator/generate-groups.sh all \
-test/pkg/client \
-test/pkg/apis \
-control:v1
-</code></pre>
-
-<p>可以看到，执行这个脚本，需要使用 code-generator 中的的脚本，所以需要先通过 go get 将 code-generator 这个 repo 的内容下载到本地，并且编译出相关的二进制文件(client-gen, informer-gen, lister-gen)。</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#00cdcd">$GOPATH</span>/src/k8s.io/code-generator/generate-groups.sh all <span style="color:#cd0000">\
+</span><span style="color:#cd0000"></span>test/pkg/client <span style="color:#cd0000">\
+</span><span style="color:#cd0000"></span>test/pkg/apis <span style="color:#cd0000">\
+</span><span style="color:#cd0000"></span>control:v1
+</code></pre></div><p>可以看到，执行这个脚本，需要使用 code-generator 中的的脚本，所以需要先通过 go get 将 code-generator 这个 repo 的内容下载到本地，并且编译出相关的二进制文件(client-gen, informer-gen, lister-gen)。</p>
 <p>执行完成后，可以看到 <code>pkg</code> 目录下多了一个 <code>client</code> 目录，其中就包含了 informer 和 lister 相关的代码。</p>
-
 <p>并且在 <code>pkg/apis/control/v1</code> 目录下，会多一个 <code>zz_generated.deepcopy.go</code> 文件，用于 deepcopy 相关的处理。</p>
-
-<h4 id="创建自定义控制器代码">创建自定义控制器代码</h4>
-
+<h4 id="heading3">创建自定义控制器代码</h4>
 <p>这里只创建一个 <code>main.go</code> 文件用于简单示例，通过我们刚刚自动生成的代码，每隔一段时间，自动通过 lister 获取所有的 Scaling 对象。</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> main
 
-<pre><code class="language-golang">package main
+<span style="color:#cd00cd">import</span> (
+    <span style="color:#cd0000">&#34;fmt&#34;</span>
+    <span style="color:#cd0000">&#34;log&#34;</span>
+    <span style="color:#cd0000">&#34;os&#34;</span>
+    <span style="color:#cd0000">&#34;time&#34;</span>
 
-import (
-    &quot;fmt&quot;
-    &quot;log&quot;
-    &quot;os&quot;
-    &quot;time&quot;
-
-    &quot;k8s.io/apimachinery/pkg/labels&quot;
-    &quot;k8s.io/client-go/tools/clientcmd&quot;
-    clientset &quot;test/pkg/client/clientset/versioned&quot;
-    informers &quot;test/pkg/client/informers/externalversions&quot;
+    <span style="color:#cd0000">&#34;k8s.io/apimachinery/pkg/labels&#34;</span>
+    <span style="color:#cd0000">&#34;k8s.io/client-go/tools/clientcmd&#34;</span>
+    clientset <span style="color:#cd0000">&#34;test/pkg/client/clientset/versioned&#34;</span>
+    informers <span style="color:#cd0000">&#34;test/pkg/client/informers/externalversions&#34;</span>
 )
 
-func main() {
-    client, err := newCustomKubeClient()
-    if err != nil {
-        log.Fatalf(&quot;new kube client error: %v&quot;, err)
+<span style="color:#00cd00">func</span> main() {
+    client, err <span style="color:#39c">:=</span> newCustomKubeClient()
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        log.Fatalf(<span style="color:#cd0000">&#34;new kube client error: %v&#34;</span>, err)
     }
 
-    factory := informers.NewSharedInformerFactory(client, 30*time.Second)
-    informer := factory.Control().V1().Scalings()
-    lister := informer.Lister()
+    factory <span style="color:#39c">:=</span> informers.NewSharedInformerFactory(client, <span style="color:#cd00cd">30</span><span style="color:#39c">*</span>time.Second)
+    informer <span style="color:#39c">:=</span> factory.Control().V1().Scalings()
+    lister <span style="color:#39c">:=</span> informer.Lister()
 
-    stopCh := make(chan struct{})
+    stopCh <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>(<span style="color:#00cd00">chan</span> <span style="color:#00cd00">struct</span>{})
     factory.Start(stopCh)
 
-    for {
-        ret, err := lister.List(labels.Everything())
-        if err != nil {
-            log.Printf(&quot;list error: %v&quot;, err)
-        } else {
-            for _, scaling := range ret {
+    <span style="color:#cdcd00">for</span> {
+        ret, err <span style="color:#39c">:=</span> lister.List(labels.Everything())
+        <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+            log.Printf(<span style="color:#cd0000">&#34;list error: %v&#34;</span>, err)
+        } <span style="color:#cdcd00">else</span> {
+            <span style="color:#cdcd00">for</span> _, scaling <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> ret {
                 log.Println(scaling)
             }
         }
 
-        time.Sleep(5 * time.Second)
+        time.Sleep(<span style="color:#cd00cd">5</span> <span style="color:#39c">*</span> time.Second)
     }
 }
 
-func newCustomKubeClient() (clientset.Interface, error) {
-    kubeConfigPath := os.Getenv(&quot;HOME&quot;) + &quot;/.kube/config&quot;
+<span style="color:#00cd00">func</span> newCustomKubeClient() (clientset.Interface, <span style="color:#00cd00">error</span>) {
+    kubeConfigPath <span style="color:#39c">:=</span> os.Getenv(<span style="color:#cd0000">&#34;HOME&#34;</span>) <span style="color:#39c">+</span> <span style="color:#cd0000">&#34;/.kube/config&#34;</span>
 
-    config, err := clientcmd.BuildConfigFromFlags(&quot;&quot;, kubeConfigPath)
-    if err != nil {
-        return nil, fmt.Errorf(&quot;failed to create out-cluster kube cli configuration: %v&quot;, err)
+    config, err <span style="color:#39c">:=</span> clientcmd.BuildConfigFromFlags(<span style="color:#cd0000">&#34;&#34;</span>, kubeConfigPath)
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">nil</span>, fmt.Errorf(<span style="color:#cd0000">&#34;failed to create out-cluster kube cli configuration: %v&#34;</span>, err)
     }
 
-    cli, err := clientset.NewForConfig(config)
-    if err != nil {
-        return nil, fmt.Errorf(&quot;failed to create custom kube client: %v&quot;, err)
+    cli, err <span style="color:#39c">:=</span> clientset.NewForConfig(config)
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">nil</span>, fmt.Errorf(<span style="color:#cd0000">&#34;failed to create custom kube client: %v&#34;</span>, err)
     }
-    return cli, nil
+    <span style="color:#cdcd00">return</span> cli, <span style="color:#cdcd00">nil</span>
 }
-</code></pre>
-
-<p>编译并执行此代码，每隔 5 秒钟，会在标准输出中输出我们创建的所有 Scaling 对象的具体内容。</p>
-
+</code></pre></div><p>编译并执行此代码，每隔 5 秒钟，会在标准输出中输出我们创建的所有 Scaling 对象的具体内容。</p>
 <p>需要注意的是，这里生成的 kube client 只能用于操作我们自己的 Scaling 对象。如果需要操作 Deployment 这一类的内置的资源，仍然需要使用 <code>client-go</code> 中的代码，因为不同的 <code>clientset.Interface</code> 实现的接口也是不同的。</p>
             </div>
             
@@ -334,7 +287,6 @@ func newCustomKubeClient() (clientset.Interface, error) {
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2019/04/17/k8s-custom-controller-high-available/">kubernetes 自定义控制器的高可用</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月17日)</span></li><li id="li-rels"><a href="/2019/03/25/k8s-crd-authorization/">kubernetes CRD 权限管理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月25日)</span></li><li id="li-rels"><a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月20日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">使用 telepresence 在 k8s 环境中实现快速开发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月03日)</span></li><li id="li-rels"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月10日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年11月21日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
-                
             </aside>
                 
             
@@ -367,22 +319,17 @@ func newCustomKubeClient() (clientset.Interface, error) {
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#目的">目的</a></li>
-<li><a href="#实现">实现</a></li>
-<li><a href="#在自己的项目中使用-code-generator">在自己的项目中使用 code-generator</a>
-<ul>
-<li><a href="#创建自定义-crd-结构体">创建自定义 CRD 结构体</a></li>
-<li><a href="#生成代码">生成代码</a></li>
-<li><a href="#创建自定义控制器代码">创建自定义控制器代码</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">目的</a></li>
+    <li><a href="#heading1">实现</a></li>
+    <li><a href="#-codegenerator">在自己的项目中使用 code-generator</a>
+      <ul>
+        <li><a href="#-crd-">创建自定义 CRD 结构体</a></li>
+        <li><a href="#heading2">生成代码</a></li>
+        <li><a href="#heading3">创建自定义控制器代码</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -397,19 +344,6 @@ func newCustomKubeClient() (clientset.Interface, error) {
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

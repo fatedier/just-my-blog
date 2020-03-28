@@ -71,58 +71,41 @@
 
             <div class="post-content">
                 <p>在写一些脚本的时候输出信息太多，对一些重要信息加上颜色提示会更加友好。</p>
-
-<h3 id="前景色-文本颜色">前景色(文本颜色)</h3>
-
+<h3 id="heading">前景色(文本颜色)</h3>
 <p>例如要将 <code>hello</code> 在控制台上输出为红色，执行如下的命令</p>
-
 <p><code>echo -e &quot;\033[31mhello\033[0m&quot;</code></p>
-
 <p><code>\033[31m</code> 表示将字符的显示颜色改为红色</p>
-
 <p><code>\033[0m</code> 表示将字符的显示颜色改为正常值</p>
-
 <p>可以看到 <code>\033[</code> 以及最后的 <code>m</code> 都是一样的，就是中间的数字有区别，这个数字就代表了要显示的颜色，含义如下</p>
-
-<pre><code class="language-bash">30        黑色 
-31        红色 
-32        绿色 
-33        淡红色 
-34        蓝色 
-35        紫色 
-36        淡蓝色 
-37        灰色 
-</code></pre>
-
-<h3 id="背景色">背景色</h3>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">30</span>        黑色 
+<span style="color:#cd00cd">31</span>        红色 
+<span style="color:#cd00cd">32</span>        绿色 
+<span style="color:#cd00cd">33</span>        淡红色 
+<span style="color:#cd00cd">34</span>        蓝色 
+<span style="color:#cd00cd">35</span>        紫色 
+<span style="color:#cd00cd">36</span>        淡蓝色 
+<span style="color:#cd00cd">37</span>        灰色 
+</code></pre></div><h3 id="heading1">背景色</h3>
 <p>背景色和前景色设置的方法一样，只是使用的数字不同</p>
-
-<pre><code class="language-bash">40        黑色 
-41        红色 
-42        绿色 
-43        淡红色 
-44        蓝色 
-45        紫色 
-46        淡蓝色 
-47        灰色 
-</code></pre>
-
-<p>如果需要同时设置前景色和背景色，例如输出文本颜色为红色，背景色为绿色的字符串，需要以分号分隔两个数字，示例如下</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">40</span>        黑色 
+<span style="color:#cd00cd">41</span>        红色 
+<span style="color:#cd00cd">42</span>        绿色 
+<span style="color:#cd00cd">43</span>        淡红色 
+<span style="color:#cd00cd">44</span>        蓝色 
+<span style="color:#cd00cd">45</span>        紫色 
+<span style="color:#cd00cd">46</span>        淡蓝色 
+<span style="color:#cd00cd">47</span>        灰色 
+</code></pre></div><p>如果需要同时设置前景色和背景色，例如输出文本颜色为红色，背景色为绿色的字符串，需要以分号分隔两个数字，示例如下</p>
 <p><code>echo -e &quot;\033[31;42mhello\033[0m&quot;</code></p>
-
-<h3 id="简化">简化</h3>
-
+<h3 id="heading2">简化</h3>
 <p>从上面的示例可以看到这样写起来很麻烦，可以简单的将重复的内容定义为一个变量</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#00cdcd">lc</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;\033[&#39;</span>
+<span style="color:#00cdcd">rc</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;\033[0m&#39;</span>
+<span style="color:#00cdcd">cred</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;31m&#39;</span>        <span style="color:#000080"># red</span>
+<span style="color:#00cdcd">cgreen</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;32m&#39;</span>      <span style="color:#000080"># green</span>
 
-<pre><code class="language-bash">lc='\033['
-rc='\033[0m'
-cred='31m'        # red
-cgreen='32m'      # green
-
-echo -e &quot;${lc}${cred}hello${rc}&quot;
-</code></pre>
+<span style="color:#cd00cd">echo</span> -e <span style="color:#cd0000">&#34;</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">lc</span><span style="color:#cd0000">}</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">cred</span><span style="color:#cd0000">}</span><span style="color:#cd0000">hello</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">rc</span><span style="color:#cd0000">}</span><span style="color:#cd0000">&#34;</span>
+</code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -151,7 +134,6 @@ echo -e &quot;${lc}${cred}hello${rc}&quot;
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li></ul>
-                
             </aside>
                 
             
@@ -184,17 +166,11 @@ echo -e &quot;${lc}${cred}hello${rc}&quot;
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#前景色-文本颜色">前景色(文本颜色)</a></li>
-<li><a href="#背景色">背景色</a></li>
-<li><a href="#简化">简化</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">前景色(文本颜色)</a></li>
+    <li><a href="#heading1">背景色</a></li>
+    <li><a href="#heading2">简化</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -209,19 +185,6 @@ echo -e &quot;${lc}${cred}hello${rc}&quot;
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

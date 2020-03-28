@@ -18,4 +18,3 @@ cat ./static/css/custom.css >> ${oocss}
 cat ./static/js/jquery-3.1.0.slim.min.js >> ${oojs}
 cat ./static/js/bootstrap.min.js >> ${oojs}
 cat ./static/js/highlight.min.js >> ${oojs}
-#cat ./static/js/custom.js >> ${oojs}

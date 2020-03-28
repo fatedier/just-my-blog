@@ -71,208 +71,164 @@
 
             <div class="post-content">
                 <p>go 的标准库中有一个 smtp 包提供了一个可以非常方便的使用 smtp 协议发送邮件的函数，通常情况下使用起来简单方便，不过我在使用中却意外遇到了一个会导致邮件发送出错的情况。</p>
-
-<h3 id="smtp-协议发送邮件">smtp 协议发送邮件</h3>
-
-<h4 id="sendmail-函数">sendmail 函数</h4>
-
+<h3 id="smtp-">smtp 协议发送邮件</h3>
+<h4 id="sendmail-">sendmail 函数</h4>
 <p>go 标准库的 net/smtp 包提供了一个 SendMail 函数用于发送邮件。</p>
-
-<pre><code class="language-go">func SendMail(addr string, a Auth, from string, to []string, msg []byte) error
-</code></pre>
-
-<p><strong>SendMail</strong>： 连接到 <strong>addr</strong> 指定的服务器；如果支持会开启 <strong>TLS</strong>；如果支持会使用 <strong>a(Auth)</strong> 认证身份；然后以 <strong>from</strong> 为邮件源地址发送邮件 <strong>msg</strong> 到目标地址 <strong>to</strong>。（可以是多个目标地址：群发）</p>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">func</span> SendMail(addr <span style="color:#00cd00">string</span>, a Auth, from <span style="color:#00cd00">string</span>, to []<span style="color:#00cd00">string</span>, msg []<span style="color:#00cd00">byte</span>) <span style="color:#00cd00">error</span>
+</code></pre></div><p><strong>SendMail</strong>： 连接到 <strong>addr</strong> 指定的服务器；如果支持会开启 <strong>TLS</strong>；如果支持会使用 <strong>a(Auth)</strong> 认证身份；然后以 <strong>from</strong> 为邮件源地址发送邮件 <strong>msg</strong> 到目标地址 <strong>to</strong>。（可以是多个目标地址：群发）</p>
 <p><strong>addr</strong>： 邮件服务器的地址。</p>
-
 <p><strong>a</strong>： 身份认证接口，可以由 <code>func PlainAuth(identity, username, password, host string) Auth</code> 函数创建。</p>
+<h4 id="heading">简单发送邮件示例</h4>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#cd00cd">package</span> main
 
-<h4 id="简单发送邮件示例">简单发送邮件示例</h4>
-
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
-    &quot;net/smtp&quot;
-    &quot;strings&quot;
+<span style="color:#cd00cd">import</span> (
+    <span style="color:#cd0000">&#34;fmt&#34;</span>
+    <span style="color:#cd0000">&#34;net/smtp&#34;</span>
+    <span style="color:#cd0000">&#34;strings&#34;</span>
 )
 
-func main() {
-    auth := smtp.PlainAuth(&quot;&quot;, &quot;username@qq.com&quot;, &quot;passwd&quot;, &quot;smtp.qq.com&quot;)
-    to := []string{&quot;to-user@qq.com&quot;}
-    nickname := &quot;test&quot;
-    user := &quot;username@qq.com&quot;
-    subject := &quot;test mail&quot;
-    content_type := &quot;Content-Type: text/plain; charset=UTF-8&quot;
-    body := &quot;This is the email body.&quot;
-    msg := []byte(&quot;To: &quot; + strings.Join(to, &quot;,&quot;) + &quot;\r\nFrom: &quot; + nickname +
-        &quot;&lt;&quot; + user + &quot;&gt;\r\nSubject: &quot; + subject + &quot;\r\n&quot; + content_type + &quot;\r\n\r\n&quot; + body)
-    err := smtp.SendMail(&quot;smtp.qq.com:25&quot;, auth, user, to, msg)
-    if err != nil {
-        fmt.Printf(&quot;send mail error: %v&quot;, err)
+<span style="color:#00cd00">func</span> main() {
+    auth <span style="color:#39c">:=</span> smtp.PlainAuth(<span style="color:#cd0000">&#34;&#34;</span>, <span style="color:#cd0000">&#34;username@qq.com&#34;</span>, <span style="color:#cd0000">&#34;passwd&#34;</span>, <span style="color:#cd0000">&#34;smtp.qq.com&#34;</span>)
+    to <span style="color:#39c">:=</span> []<span style="color:#00cd00">string</span>{<span style="color:#cd0000">&#34;to-user@qq.com&#34;</span>}
+    nickname <span style="color:#39c">:=</span> <span style="color:#cd0000">&#34;test&#34;</span>
+    user <span style="color:#39c">:=</span> <span style="color:#cd0000">&#34;username@qq.com&#34;</span>
+    subject <span style="color:#39c">:=</span> <span style="color:#cd0000">&#34;test mail&#34;</span>
+    content_type <span style="color:#39c">:=</span> <span style="color:#cd0000">&#34;Content-Type: text/plain; charset=UTF-8&#34;</span>
+    body <span style="color:#39c">:=</span> <span style="color:#cd0000">&#34;This is the email body.&#34;</span>
+    msg <span style="color:#39c">:=</span> []<span style="color:#cd00cd">byte</span>(<span style="color:#cd0000">&#34;To: &#34;</span> <span style="color:#39c">+</span> strings.Join(to, <span style="color:#cd0000">&#34;,&#34;</span>) <span style="color:#39c">+</span> <span style="color:#cd0000">&#34;\r\nFrom: &#34;</span> <span style="color:#39c">+</span> nickname <span style="color:#39c">+</span>
+        <span style="color:#cd0000">&#34;&lt;&#34;</span> <span style="color:#39c">+</span> user <span style="color:#39c">+</span> <span style="color:#cd0000">&#34;&gt;\r\nSubject: &#34;</span> <span style="color:#39c">+</span> subject <span style="color:#39c">+</span> <span style="color:#cd0000">&#34;\r\n&#34;</span> <span style="color:#39c">+</span> content_type <span style="color:#39c">+</span> <span style="color:#cd0000">&#34;\r\n\r\n&#34;</span> <span style="color:#39c">+</span> body)
+    err <span style="color:#39c">:=</span> smtp.SendMail(<span style="color:#cd0000">&#34;smtp.qq.com:25&#34;</span>, auth, user, to, msg)
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        fmt.Printf(<span style="color:#cd0000">&#34;send mail error: %v&#34;</span>, err)
     }
 }
-</code></pre>
-
-<p><strong>autu</strong>： 这里采用简单的明文用户名和密码的认证方式。</p>
-
+</code></pre></div><p><strong>autu</strong>： 这里采用简单的明文用户名和密码的认证方式。</p>
 <p><strong>nickname</strong>： 发送方的昵称。</p>
-
 <p><strong>subject</strong>： 邮件主题。</p>
-
 <p><strong>content_type</strong>： 可以有两种方式，一种 text/plain，纯字符串，不做转义。一种 text/html，会展示成 html 页面。</p>
-
 <p><strong>body</strong>： 邮件正文内容。</p>
-
 <p><strong>msg</strong>： msg 的内容需要遵循 smtp 协议的格式，参考上例。</p>
-
-<h3 id="特定邮件服务器出错">特定邮件服务器出错</h3>
-
-<pre><code class="language-bash">certificate signed by unknown authority
-</code></pre>
-
-<p>在通过公司内部自己搭建的邮件服务器发送邮件时报了上述错误，看上去是因为认证不通过的问题，检查了一下用户名和密码没有问题。</p>
-
+<h3 id="heading1">特定邮件服务器出错</h3>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">certificate signed by unknown authority
+</code></pre></div><p>在通过公司内部自己搭建的邮件服务器发送邮件时报了上述错误，看上去是因为认证不通过的问题，检查了一下用户名和密码没有问题。</p>
 <p>我通过抓包以及手动 telnet 执行了一遍 smtp 的过程，发送问题出现在是否加密和身份验证上。</p>
-
-<h4 id="smtp-协议">SMTP 协议</h4>
-
+<h4 id="smtp-1">SMTP 协议</h4>
 <p>smtp 协议开始时客户端主动向邮件服务器发送 <code>EHLO</code>，服务器会返回支持的所有命令，例如</p>
-
-<pre><code class="language-bash">250-PIPELINING
-250-SIZE 10240000
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">250-PIPELINING
+250-SIZE <span style="color:#cd00cd">10240000</span>
 250-VRFY
 250-ETRN
 250-STARTTLS
 250-AUTH PLAIN LOGIN
-250-AUTH=PLAIN LOGIN
+250-AUTH<span style="color:#39c">=</span>PLAIN LOGIN
 250-ENHANCEDSTATUSCODES
 250-8BITMIME
-250 DSN
-</code></pre>
-
-<p>如果有 <strong>STARTTLS</strong>，说明支持加密传输，golang 的标准库中会进行判断然后决定是否选择使用 <strong>STARTTLS</strong> 加密传输。</p>
-
+<span style="color:#cd00cd">250</span> DSN
+</code></pre></div><p>如果有 <strong>STARTTLS</strong>，说明支持加密传输，golang 的标准库中会进行判断然后决定是否选择使用 <strong>STARTTLS</strong> 加密传输。</p>
 <p>如果没有 <strong>AUTH=PLAIN LOGIN</strong>，说明不支持 <strong>PLAIN</strong> 方式。</p>
-
 <p>一共有3种验证方式，可以参考这篇 blog： <a href="http://blog.csdn.net/mhfh611/article/details/9470599">http://blog.csdn.net/mhfh611/article/details/9470599</a></p>
-
-<h4 id="starttls-引起的错误">STARTTLS 引起的错误</h4>
-
+<h4 id="starttls-">STARTTLS 引起的错误</h4>
 <p>公司内部的邮件服务器返回了 <strong>STARTTLS</strong>，但是实际上却不支持加密传输的认证方式，所以就导致了身份认证失败。</p>
-
 <p>大部分国内的邮件服务器都支持 <strong>LOGIN</strong> 和 <strong>PLAIN</strong> 方式，所以我们可以在代码中直接采用 <strong>PLAIN</strong> 的方式，不过安全性就降低了。</p>
-
 <p>想要强制使用 <strong>PLAIN</strong> 方式也不是这么容易的，因为涉及到修改 <strong>net/smtp</strong> 的 <code>SendMail</code> 函数，当然标准库我们修改不了，所以只能重新实现一个 <code>SendMail</code> 函数。</p>
-
 <p>标准库中 <code>SendMail</code> 函数代码如下：</p>
-
-<pre><code class="language-go">func SendMail(addr string, a Auth, from string, to []string, msg []byte) error {
-    c, err := Dial(addr)
-    if err != nil {
-        return err
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">func</span> SendMail(addr <span style="color:#00cd00">string</span>, a Auth, from <span style="color:#00cd00">string</span>, to []<span style="color:#00cd00">string</span>, msg []<span style="color:#00cd00">byte</span>) <span style="color:#00cd00">error</span> {
+    c, err <span style="color:#39c">:=</span> Dial(addr)
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err
     }
-    defer c.Close()
-    if err = c.hello(); err != nil {
-        return err
+    <span style="color:#cdcd00">defer</span> c.Close()
+    <span style="color:#cdcd00">if</span> err = c.hello(); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err
     }
-    if ok, _ := c.Extension(&quot;STARTTLS&quot;); ok {
-        config := &amp;tls.Config{ServerName: c.serverName}
-        if testHookStartTLS != nil {
+    <span style="color:#cdcd00">if</span> ok, _ <span style="color:#39c">:=</span> c.Extension(<span style="color:#cd0000">&#34;STARTTLS&#34;</span>); ok {
+        config <span style="color:#39c">:=</span> <span style="color:#39c">&amp;</span>tls.Config{ServerName: c.serverName}
+        <span style="color:#cdcd00">if</span> testHookStartTLS <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
             testHookStartTLS(config)
         }
-        if err = c.StartTLS(config); err != nil {
-            return err
+        <span style="color:#cdcd00">if</span> err = c.StartTLS(config); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+            <span style="color:#cdcd00">return</span> err
         }
     }
-    if a != nil &amp;&amp; c.ext != nil {
-        if _, ok := c.ext[&quot;AUTH&quot;]; ok {
-            if err = c.Auth(a); err != nil {
-                return err
+    <span style="color:#cdcd00">if</span> a <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> <span style="color:#39c">&amp;&amp;</span> c.ext <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">if</span> _, ok <span style="color:#39c">:=</span> c.ext[<span style="color:#cd0000">&#34;AUTH&#34;</span>]; ok {
+            <span style="color:#cdcd00">if</span> err = c.Auth(a); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+                <span style="color:#cdcd00">return</span> err
             }
         }
     }
-    if err = c.Mail(from); err != nil {
-        return err
+    <span style="color:#cdcd00">if</span> err = c.Mail(from); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err
     }
-    for _, addr := range to {
-        if err = c.Rcpt(addr); err != nil {
-            return err
+    <span style="color:#cdcd00">for</span> _, addr <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> to {
+        <span style="color:#cdcd00">if</span> err = c.Rcpt(addr); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+            <span style="color:#cdcd00">return</span> err
         }
     }
-    w, err := c.Data()
-    if err != nil {
-        return err
+    w, err <span style="color:#39c">:=</span> c.Data()
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err
     }
     _, err = w.Write(msg)
-    if err != nil {
-        return err
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err
     }
     err = w.Close()
-    if err != nil {
-        return err
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err
     }
-    return c.Quit()
+    <span style="color:#cdcd00">return</span> c.Quit()
 }
-</code></pre>
-
-<p>重点就在于下面这一段</p>
-
-<pre><code class="language-go">if ok, _ := c.Extension(&quot;STARTTLS&quot;); ok {
-    config := &amp;tls.Config{ServerName: c.serverName}
-    if testHookStartTLS != nil {
+</code></pre></div><p>重点就在于下面这一段</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#cdcd00">if</span> ok, _ <span style="color:#39c">:=</span> c.Extension(<span style="color:#cd0000">&#34;STARTTLS&#34;</span>); ok {
+    config <span style="color:#39c">:=</span> <span style="color:#39c">&amp;</span>tls.Config{ServerName: c.serverName}
+    <span style="color:#cdcd00">if</span> testHookStartTLS <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
         testHookStartTLS(config)
     }
-    if err = c.StartTLS(config); err != nil {
-        return err
+    <span style="color:#cdcd00">if</span> err = c.StartTLS(config); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err
     }
 }
-</code></pre>
-
-<p>逻辑上就是检查服务器端对于 <strong>EHLO</strong> 命令返回的所支持的命令中是否有 <strong>STARTTLS</strong>，如果有，则采用加密传输的方式。我们自己实现的函数中直接把这部分去掉。</p>
-
+</code></pre></div><p>逻辑上就是检查服务器端对于 <strong>EHLO</strong> 命令返回的所支持的命令中是否有 <strong>STARTTLS</strong>，如果有，则采用加密传输的方式。我们自己实现的函数中直接把这部分去掉。</p>
 <p>我们仿照 <code>SendMail</code> 函数实现一个 <code>NewSendMail</code> 函数</p>
-
-<pre><code class="language-go">func NewSendMail(addr string, a smtp.Auth, from string, to []string, msg []byte) error {
-    c, err := smtp.Dial(addr)
-    if err != nil {
-        return err 
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">func</span> NewSendMail(addr <span style="color:#00cd00">string</span>, a smtp.Auth, from <span style="color:#00cd00">string</span>, to []<span style="color:#00cd00">string</span>, msg []<span style="color:#00cd00">byte</span>) <span style="color:#00cd00">error</span> {
+    c, err <span style="color:#39c">:=</span> smtp.Dial(addr)
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err 
     }   
-    defer c.Close()
-    if err = c.Hello(&quot;localhost&quot;); err != nil {
-        return err 
+    <span style="color:#cdcd00">defer</span> c.Close()
+    <span style="color:#cdcd00">if</span> err = c.Hello(<span style="color:#cd0000">&#34;localhost&#34;</span>); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err 
     }   
     err = c.Auth(a)
-    if err != nil {
-        return err 
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err 
     }   
 
-    if err = c.Mail(from); err != nil {
-        fmt.Printf(&quot;mail\n&quot;)
-        return err 
+    <span style="color:#cdcd00">if</span> err = c.Mail(from); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        fmt.Printf(<span style="color:#cd0000">&#34;mail\n&#34;</span>)
+        <span style="color:#cdcd00">return</span> err 
     }   
-    for _, addr := range to {
-        if err = c.Rcpt(addr); err != nil {
-            return err 
+    <span style="color:#cdcd00">for</span> _, addr <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> to {
+        <span style="color:#cdcd00">if</span> err = c.Rcpt(addr); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+            <span style="color:#cdcd00">return</span> err 
         }   
     }
-    w, err := c.Data()
-    if err != nil {
-        return err
+    w, err <span style="color:#39c">:=</span> c.Data()
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err
     }
     _, err = w.Write(msg)
-    if err != nil {
-        return err
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err
     }
     err = w.Close()
-    if err != nil {
-        return err
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">return</span> err
     }
-    return c.Quit()
+    <span style="color:#cdcd00">return</span> c.Quit()
 }
-</code></pre>
-
-<p>通过这个函数发送邮件，则身份认证时不会采用加密的方式，而是直接使用 <strong>PLAIN</strong> 方式。</p>
+</code></pre></div><p>通过这个函数发送邮件，则身份认证时不会采用加密的方式，而是直接使用 <strong>PLAIN</strong> 方式。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -307,8 +263,7 @@ func main() {
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2017/01/01/golang-cross-compile/">golang 交叉编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年01月01日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li><li id="li-rels"><a href="/2016/02/19/how-to-shutdown-go-net-dot-listeners-gracefully/">Go中如何优雅地关闭net.Listener</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月19日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2020/03/28/golang-jwt/">Golang 中使用 JWT 做用户认证</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2020年03月28日)</span></li><li id="li-rels"><a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年02月04日)</span></li><li id="li-rels"><a href="/2017/01/01/golang-cross-compile/">golang 交叉编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年01月01日)</span></li><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/08/01/compile-assets-into-binary-file-with-statik-in-golang/">golang 中使用 statik 将静态资源编译进二进制文件中</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月01日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/04/27/go-program-does-not-use-all-nameservers-for-dns-lookups/">go程序中dns解析无法使用所有域名服务器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年04月27日)</span></li><li id="li-rels"><a href="/2016/02/25/how-to-compile-go-project-in-any-directory/">如何使golang项目可以在任意目录下编译</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年02月25日)</span></li></ul>
             </aside>
                 
             
@@ -341,24 +296,20 @@ func main() {
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#smtp-协议发送邮件">smtp 协议发送邮件</a>
-<ul>
-<li><a href="#sendmail-函数">sendmail 函数</a></li>
-<li><a href="#简单发送邮件示例">简单发送邮件示例</a></li>
-</ul></li>
-<li><a href="#特定邮件服务器出错">特定邮件服务器出错</a>
-<ul>
-<li><a href="#smtp-协议">SMTP 协议</a></li>
-<li><a href="#starttls-引起的错误">STARTTLS 引起的错误</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#smtp-">smtp 协议发送邮件</a>
+      <ul>
+        <li><a href="#sendmail-">sendmail 函数</a></li>
+        <li><a href="#heading">简单发送邮件示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading1">特定邮件服务器出错</a>
+      <ul>
+        <li><a href="#smtp-1">SMTP 协议</a></li>
+        <li><a href="#starttls-">STARTTLS 引起的错误</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -373,19 +324,6 @@ func main() {
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

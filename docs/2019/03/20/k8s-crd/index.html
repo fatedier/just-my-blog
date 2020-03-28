@@ -71,116 +71,88 @@
 
             <div class="post-content">
                 <p>在研究 Service Mesh 的过程中，发现 Istio 很多参数都通过 kubernetes CRD 来管理，例如 VirtualService 和 DestinationRule，这种方式使部署在 k8s 集群上的服务的管理方式更趋向一致。</p>
-
 <p>kubernetes 的资源管理方式和声明式 API 的良好设计使得在这个平台上的功能扩展变得异常容易。例如 CoreOS 推出的 Operator 框架就是一个很好的例子。</p>
-
 <p>这篇文章通过一个简短的示例来演示如何创建自定义资源。</p>
-
-<h3 id="创建-crd-customresourcedefinition">创建 CRD(CustomResourceDefinition)</h3>
-
+<h3 id="-crdcustomresourcedefinition">创建 CRD(CustomResourceDefinition)</h3>
 <p>这里以创建一个简单的弹性伸缩配置的 CRD 为例。将下面的内容保存在 <code>scaling_crd.yaml</code> 文件中。</p>
-
-<pre><code class="language-yaml">apiVersion: apiextensions.k8s.io/v1beta1
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  # name must match the spec fields below, and be in the form: &lt;plural&gt;.&lt;group&gt;
+  <span style="color:#000080"># name must match the spec fields below, and be in the form: &lt;plural&gt;.&lt;group&gt;</span>
   name: scalings.control.example.com
 spec:
-  # group name to use for REST API: /apis/&lt;group&gt;/&lt;version&gt;
+  <span style="color:#000080"># group name to use for REST API: /apis/&lt;group&gt;/&lt;version&gt;</span>
   group: control.example.com
-  # list of versions supported by this CustomResourceDefinition
+  <span style="color:#000080"># list of versions supported by this CustomResourceDefinition</span>
   versions:
     - name: v1
-      # Each version can be enabled/disabled by Served flag.
-      served: true
-      # One and only one version must be marked as the storage version.
-      storage: true
-  # either Namespaced or Cluster
+      <span style="color:#000080"># Each version can be enabled/disabled by Served flag.</span>
+      served: <span style="color:#cdcd00">true</span>
+      <span style="color:#000080"># One and only one version must be marked as the storage version.</span>
+      storage: <span style="color:#cdcd00">true</span>
+  <span style="color:#000080"># either Namespaced or Cluster</span>
   scope: Namespaced
   names:
-    # plural name to be used in the URL: /apis/&lt;group&gt;/&lt;version&gt;/&lt;plural&gt;
+    <span style="color:#000080"># plural name to be used in the URL: /apis/&lt;group&gt;/&lt;version&gt;/&lt;plural&gt;</span>
     plural: scalings
-    # singular name to be used as an alias on the CLI and for display
+    <span style="color:#000080"># singular name to be used as an alias on the CLI and for display</span>
     singular: scaling
-    # kind is normally the CamelCased singular type. Your resource manifests use this.
+    <span style="color:#000080"># kind is normally the CamelCased singular type. Your resource manifests use this.</span>
     kind: Scaling
-    # shortNames allow shorter string to match your resource on the CLI
+    <span style="color:#000080"># shortNames allow shorter string to match your resource on the CLI</span>
     shortNames:
     - sc
-</code></pre>
-
-<p>通过 kubectl 创建这个 CRD:</p>
-
+</code></pre></div><p>通过 kubectl 创建这个 CRD:</p>
 <p><code>kubectl apply -f scaling_crd.yaml</code></p>
-
-<h3 id="创建自定义资源的对象">创建自定义资源的对象</h3>
-
+<h3 id="heading">创建自定义资源的对象</h3>
 <p>我们编写一个 <code>test.yaml</code> 文件来创建一个自定义的 <code>Scaling</code> 对象。</p>
-
-<pre><code class="language-yaml">apiVersion: &quot;control.example.io/v1&quot;
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: <span style="color:#cd0000">&#34;control.example.io/v1&#34;</span>
 kind: Scaling
 metadata:
   name: test
 spec:
   targetDeployment: test
-  minReplicas: 1
-  maxReplicas: 5
+  minReplicas: <span style="color:#cd00cd">1</span>
+  maxReplicas: <span style="color:#cd00cd">5</span>
   metricType: CPU
-  step: 1
-  scaleUp: 80
-  scaleDown: 40
-</code></pre>
-
-<p>通过 kubectl 创建:</p>
-
+  step: <span style="color:#cd00cd">1</span>
+  scaleUp: <span style="color:#cd00cd">80</span>
+  scaleDown: <span style="color:#cd00cd">40</span>
+</code></pre></div><p>通过 kubectl 创建:</p>
 <p><code>kubectl apply -f test.yaml</code></p>
-
 <p>提示:</p>
-
 <p><code>scaling.control.example.io/test created</code></p>
-
 <p>你可以通过 kubectl 查看已经创建的名为 <code>test</code> 的 Scaling 对象。</p>
-
 <p><code>kubectl get scalings.control.example.io test -o yaml</code></p>
-
 <p>会输出类似如下的结果:</p>
-
-<pre><code class="language-yaml">apiVersion: control.example.io/v1
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: control.example.io/v1
 kind: Scaling
 metadata:
   annotations:
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {&quot;apiVersion&quot;:&quot;control.example.io/v1&quot;,&quot;kind&quot;:&quot;Scaling&quot;,&quot;metadata&quot;:{&quot;annotations&quot;:{},&quot;name&quot;:&quot;test&quot;,&quot;namespace&quot;:&quot;default&quot;},&quot;spec&quot;:{&quot;maxReplicas&quot;:5,&quot;metricType&quot;:&quot;CPU&quot;,&quot;minReplicas&quot;:1,&quot;scaleDown&quot;:40,&quot;scaleUp&quot;:80,&quot;step&quot;:1,&quot;targetDeployment&quot;:&quot;test&quot;}}
-  creationTimestamp: &quot;2019-01-09T12:22:36Z&quot;
-  generation: 1
+    kubectl.kubernetes.io/last-applied-configuration: <span style="color:#cd0000">|
+</span><span style="color:#cd0000">     </span><span style="color:#cd0000"> </span><span style="color:#cd0000">{&#34;apiVersion&#34;:&#34;control.example.io/v1&#34;,&#34;kind&#34;:&#34;Scaling&#34;,&#34;metadata&#34;:{&#34;annotations&#34;:{},&#34;name&#34;:&#34;test&#34;,&#34;namespace&#34;:&#34;default&#34;},&#34;spec&#34;:{&#34;maxReplicas&#34;:5,&#34;metricType&#34;:&#34;CPU&#34;,&#34;minReplicas&#34;:1,&#34;scaleDown&#34;:40,&#34;scaleUp&#34;:80,&#34;step&#34;:1,&#34;targetDeployment&#34;:&#34;test&#34;}}</span>
+  creationTimestamp: <span style="color:#cd0000">&#34;2019-01-09T12:22:36Z&#34;</span>
+  generation: <span style="color:#cd00cd">1</span>
   name: test
   namespace: default
-  resourceVersion: &quot;1316610&quot;
+  resourceVersion: <span style="color:#cd0000">&#34;1316610&#34;</span>
   selfLink: /apis/control.example.io/v1/namespaces/default/scalings/test
-  uid: 28717b37-5ac2-11e9-89f8-080027a9fd96
+  uid: 28717b37-5ac2<span style="color:#cd00cd">-11e9</span>-89f8-080027a9fd96
 spec:
-  maxReplicas: 5
+  maxReplicas: <span style="color:#cd00cd">5</span>
   metricType: CPU
-  minReplicas: 1
-  scaleDown: 40
-  scaleUp: 80
-  step: 1
+  minReplicas: <span style="color:#cd00cd">1</span>
+  scaleDown: <span style="color:#cd00cd">40</span>
+  scaleUp: <span style="color:#cd00cd">80</span>
+  step: <span style="color:#cd00cd">1</span>
   targetDeployment: test
-</code></pre>
-
-<p>我们可以像操作 k8s 内置的 Deployment 资源一样操作我们创建的 Scaling 资源，同样可以对它进行更新和删除的操作。</p>
-
-<h3 id="参数校验">参数校验</h3>
-
+</code></pre></div><p>我们可以像操作 k8s 内置的 Deployment 资源一样操作我们创建的 Scaling 资源，同样可以对它进行更新和删除的操作。</p>
+<h3 id="heading1">参数校验</h3>
 <p>上面的 CRD 配置中我们并没有指定这个资源的 Spec，也就是说用户可以使用任意的 Spec 创建这个 Scaling 资源，这并不符合我们的要求。我们希望在用户创建 Scaling 对象时，可以像 k8s 的原生资源一样进行参数校验，如果出错的情况下，就不会去创建或更新这个对象，而是给用户错误提示。</p>
-
 <p>k8s 目前提供了两种方式来实现参数校验，<code>OpenAPI v3 schema</code> 和 <code>validatingadmissionwebhook</code>。</p>
-
 <p>这里主要使用比较简单的 <code>OpenAPI v3 schema</code> 来实现。<code>validatingadmissionwebhook</code> 需要用户自己提供一个检查服务，通过创建 <code>ValidatingWebhookConfiguration</code> 让 APIServer 将指定的操作请求转发给这个检查服务，检查服务返回 true 或者 false，决定参数校验是否成功。</p>
-
 <p>我们将之前的 CRD 配置文件 <code>scaling_crd.yaml</code> 做一下修改，增加参数校验的部分:</p>
-
-<pre><code class="language-yaml">apiVersion: apiextensions.k8s.io/v1beta1
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
   name: scalings.control.example.io
@@ -188,8 +160,8 @@ spec:
   group: control.example.io
   versions:
     - name: v1
-      served: true
-      storage: true
+      served: <span style="color:#cdcd00">true</span>
+      storage: <span style="color:#cdcd00">true</span>
   scope: Namespaced
   names:
     plural: scalings
@@ -212,10 +184,10 @@ spec:
               type: string
             minReplicas:
               type: integer
-              minimum: 0
+              minimum: <span style="color:#cd00cd">0</span>
             maxReplicas:
               type: integer
-              minimum: 0
+              minimum: <span style="color:#cd00cd">0</span>
             metricType:
               type: string
               enum:
@@ -224,42 +196,29 @@ spec:
               - REQUESTS
             step:
               type: integer
-              minimum: 1
+              minimum: <span style="color:#cd00cd">1</span>
             scaleUp:
               type: integer
             scaleDown:
               type: integer
-              minimum: 0
-</code></pre>
-
-<p>可以看到 spec 中增加了 validation 字段，其中定义了对各个参数的检验要求。</p>
-
+              minimum: <span style="color:#cd00cd">0</span>
+</code></pre></div><p>可以看到 spec 中增加了 validation 字段，其中定义了对各个参数的检验要求。</p>
 <ul>
 <li><code>required</code> 表示数组中的参数必须要设置。</li>
 <li><code>type string</code> 和 <code>type integer</code> 表示限制参数类型。</li>
 <li><code>minimum: 0</code> 表示数字最小值为 0。</li>
 <li><code>enum</code> 表示参数只能在指定的值中。</li>
 </ul>
-
 <p>具体支持哪些校验方法可以通过 <a href="https://github.com/OAI/OpenAPI-Specification">https://github.com/OAI/OpenAPI-Specification</a> 查看。</p>
-
 <p>更新 CRD 资源:</p>
-
 <p><code>kubectl apply -f scaling_crd.yaml</code></p>
-
 <p>再次修改 <code>test.yaml</code> 测试我们的参数校验是否生效，将 <code>targetDeployment: test</code> 这一行删除。</p>
-
 <p>更新 Name 为 test 的 Scaling 对象。</p>
-
 <p><code>kubectl apply -f test.yaml</code></p>
-
 <p>可以看到错误提示输出如下:</p>
-
 <pre><code>validation failure list:
 spec.targetDeployment in body is required
-</code></pre>
-
-<p>至此，不符合我们要求的 Scaling 对象将不被允许创建。</p>
+</code></pre><p>至此，不符合我们要求的 Scaling 对象将不被允许创建。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -288,7 +247,6 @@ spec.targetDeployment in body is required
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2019/04/17/k8s-custom-controller-high-available/">kubernetes 自定义控制器的高可用</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月17日)</span></li><li id="li-rels"><a href="/2019/04/02/k8s-custom-controller/">kubernetes 自定义控制器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月02日)</span></li><li id="li-rels"><a href="/2019/03/25/k8s-crd-authorization/">kubernetes CRD 权限管理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月25日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">使用 telepresence 在 k8s 环境中实现快速开发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月03日)</span></li><li id="li-rels"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月10日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年11月21日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
-                
             </aside>
                 
             
@@ -321,17 +279,11 @@ spec.targetDeployment in body is required
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#创建-crd-customresourcedefinition">创建 CRD(CustomResourceDefinition)</a></li>
-<li><a href="#创建自定义资源的对象">创建自定义资源的对象</a></li>
-<li><a href="#参数校验">参数校验</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#-crdcustomresourcedefinition">创建 CRD(CustomResourceDefinition)</a></li>
+    <li><a href="#heading">创建自定义资源的对象</a></li>
+    <li><a href="#heading1">参数校验</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -346,19 +298,6 @@ spec.targetDeployment in body is required
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

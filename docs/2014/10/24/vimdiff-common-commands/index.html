@@ -71,56 +71,31 @@
 
             <div class="post-content">
                 <p>整理了一下在使用vimdiff进行文件合并的时候用到的一些常用的命令，方便以后查询。</p>
-
 <p>可以有多种方式使用vimdiff，例如：</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vimdiff <span style="color:#39c">[</span>file1<span style="color:#39c">]</span> <span style="color:#39c">[</span>file2<span style="color:#39c">]</span>
 
-<pre><code class="language-bash">vimdiff [file1] [file2]
-
-vim -d [file1] [file2]
-</code></pre>
-
-<hr />
-
+vim -d <span style="color:#39c">[</span>file1<span style="color:#39c">]</span> <span style="color:#39c">[</span>file2<span style="color:#39c">]</span>
+</code></pre></div><hr>
 <p>其他的一些的编辑命令与vim相同，这里主要记录一些常用的合并文件需要用到的命令：</p>
-
-<h4 id="ctrl-w之后按w">Ctrl+w之后按w</h4>
-
+<h4 id="ctrlww">Ctrl+w之后按w</h4>
 <p>可以切换到另外一个文件</p>
-
 <h4 id="c">[c</h4>
-
 <p>跳转到上一个差异点</p>
-
-<h4 id="c-1">]c</h4>
-
+<h4 id="c1">]c</h4>
 <p>跳转到下一个差一点</p>
-
-<h4 id="zo或者i">zo或者i</h4>
-
+<h4 id="zoi">zo或者i</h4>
 <p>展开折叠区域，或者使用i进入插入模式也会进行展开</p>
-
 <h4 id="zc">zc</h4>
-
 <p>重新折叠，可以把使用zo展开折叠的区域恢复原样</p>
-
-<h4 id="dp-diff-put的意思">dp（diff put的意思）</h4>
-
+<h4 id="dpdiff-put">dp（diff put的意思）</h4>
 <p>把当前文件的差异点内容复制到另一个文件</p>
-
-<h4 id="do-diff-obtain的意思">do（diff obtain的意思）</h4>
-
+<h4 id="dodiff-obtain">do（diff obtain的意思）</h4>
 <p>把另一个文件的差异点内容复制到当前文件</p>
-
 <h4 id="diffupdate">:diffupdate</h4>
-
 <p>有时候修改了文件之后不会立即刷新重新比对，使用该命令可以重新进行文件比较。</p>
-
 <h4 id="qa">qa</h4>
-
 <p>退出所有打开的文件，但是不保存</p>
-
 <h4 id="wqa">wqa</h4>
-
 <p>退出并保存所有已打开的文件</p>
             </div>
             
@@ -156,8 +131,7 @@ vim -d [file1] [file2]
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/17/git-usually-command/">Git常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月17日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/16/learn-git-website/">学习Git的常用网站</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li></ul>
             </aside>
                 
             
@@ -190,27 +164,22 @@ vim -d [file1] [file2]
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#ctrl-w之后按w">Ctrl+w之后按w</a></li>
-<li><a href="#c">[c</a></li>
-<li><a href="#c-1">]c</a></li>
-<li><a href="#zo或者i">zo或者i</a></li>
-<li><a href="#zc">zc</a></li>
-<li><a href="#dp-diff-put的意思">dp（diff put的意思）</a></li>
-<li><a href="#do-diff-obtain的意思">do（diff obtain的意思）</a></li>
-<li><a href="#diffupdate">:diffupdate</a></li>
-<li><a href="#qa">qa</a></li>
-<li><a href="#wqa">wqa</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#ctrlww">Ctrl+w之后按w</a></li>
+        <li><a href="#c">[c</a></li>
+        <li><a href="#c1">]c</a></li>
+        <li><a href="#zoi">zo或者i</a></li>
+        <li><a href="#zc">zc</a></li>
+        <li><a href="#dpdiff-put">dp（diff put的意思）</a></li>
+        <li><a href="#dodiff-obtain">do（diff obtain的意思）</a></li>
+        <li><a href="#diffupdate">:diffupdate</a></li>
+        <li><a href="#qa">qa</a></li>
+        <li><a href="#wqa">wqa</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -225,19 +194,6 @@ vim -d [file1] [file2]
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

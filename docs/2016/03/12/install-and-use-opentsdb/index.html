@@ -71,26 +71,19 @@
 
             <div class="post-content">
                 <p>OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。</p>
-
-<h3 id="安装-hbase">安装 HBase</h3>
-
+<h3 id="-hbase">安装 HBase</h3>
 <p>因为 OpenTSDB 的后端存储使用的是 HBase，所以我们需要先安装 HBase。</p>
-
 <p>参考文档： <a href="https://hbase.apache.org/book.html#quickstart">Quick Start - Standalone HBase</a></p>
-
 <p>这里简单搭建了一个<strong>单机</strong>的 HBase 环境：</p>
-
 <ol>
 <li>安装 JDK 环境，centos 上可以直接通过 yum 安装。</li>
-<li>下载 HBase，<a href="http://apache.fayea.com/hbase/stable">http://apache.fayea.com/hbase/stable</a>，这里我们选择下载 stable 的 1.1.3 版本，文件名为 <code>hbase-1.1.3-bin.tar.gz</code>，解压到任意目录。</li>
+<li>下载 HBase，<a href="http://apache.fayea.com/hbase/stable"><a href="http://apache.fayea.com/hbase/stable">http://apache.fayea.com/hbase/stable</a></a>，这里我们选择下载 stable 的 1.1.3 版本，文件名为 <code>hbase-1.1.3-bin.tar.gz</code>，解压到任意目录。</li>
 <li>修改 <code>conf/hbase-env.sh</code> ，设置  <code>JAVA_HOME=/usr</code>，这个是 <code>/bin/java</code> 所在的目录，通过 <code>which java</code> 查看。</li>
 <li>修改 <code>conf/hbase-site.xml</code>， 设置 hbase 的数据存储目录以及 zookeeper 的数据存储目录，默认会放到 <code>/tmp</code> 目录下，这个目录机器重启后会清空，所以需要更改目录。</li>
 <li>执行 <code>bin/start-hbase.sh</code> 启动 HBase，之后可以通过 <code>jps</code> 命令来查看 HMaster 进程是否启动成功。 <code>bin/stop-hbase.sh</code> 用于关闭 HBase。</li>
 </ol>
-
 <p><code>conf/hbase-site.xml</code> 的配置示例如下</p>
-
-<pre><code class="language-xml">&lt;configuration&gt;
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">&lt;configuration&gt;
     &lt;property&gt;
         &lt;name&gt;hbase.rootdir&lt;/name&gt;
         &lt;value&gt;file:///home/testuser/hbase&lt;/value&gt;
@@ -100,208 +93,154 @@
         &lt;value&gt;/home/testuser/zookeeper&lt;/value&gt;
     &lt;/property&gt;
 &lt;/configuration&gt;
-</code></pre>
-
-<h3 id="通过命令行操作-hbase">通过命令行操作 HBase</h3>
-
+</code></pre></div><h3 id="-hbase1">通过命令行操作 HBase</h3>
 <p>这里可以稍微熟悉一下 HBase 的操作，非必须。</p>
-
-<h5 id="连接到-hbase">连接到 HBase</h5>
-
+<h5 id="-hbase2">连接到 HBase</h5>
 <p><code>./bin/hbase shell</code></p>
-
-<h5 id="创建一张表">创建一张表</h5>
-
+<h5 id="heading">创建一张表</h5>
 <p><code>create 'test', 'cf'</code></p>
-
-<h5 id="查看表信息">查看表信息</h5>
-
+<h5 id="heading1">查看表信息</h5>
 <p><code>list 'test'</code></p>
-
-<h5 id="向表中插入数据">向表中插入数据</h5>
-
-<pre><code class="language-bash">put 'test', 'row1', 'cf:a', 'value1'
-put 'test', 'row2', 'cf:b', 'value2'
-put 'test', 'row3', 'cf:c', 'value3'
-</code></pre>
-
-<h5 id="查看表中所有数据">查看表中所有数据</h5>
-
+<h5 id="heading2">向表中插入数据</h5>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row1&#39;</span>, <span style="color:#cd0000">&#39;cf:a&#39;</span>, <span style="color:#cd0000">&#39;value1&#39;</span>
+put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row2&#39;</span>, <span style="color:#cd0000">&#39;cf:b&#39;</span>, <span style="color:#cd0000">&#39;value2&#39;</span>
+put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row3&#39;</span>, <span style="color:#cd0000">&#39;cf:c&#39;</span>, <span style="color:#cd0000">&#39;value3&#39;</span>
+</code></pre></div><h5 id="heading3">查看表中所有数据</h5>
 <p><code>scan 'test'</code></p>
-
-<h5 id="查看指定行的数据">查看指定行的数据</h5>
-
+<h5 id="heading4">查看指定行的数据</h5>
 <p><code>get 'test', 'row1'</code></p>
-
-<h5 id="禁用指定表-删除表或修改表设置前需要先禁用该表">禁用指定表（删除表或修改表设置前需要先禁用该表）</h5>
-
+<h5 id="heading5">禁用指定表（删除表或修改表设置前需要先禁用该表）</h5>
 <p><code>disable 'test'</code></p>
-
-<h5 id="恢复指定表">恢复指定表</h5>
-
+<h5 id="heading6">恢复指定表</h5>
 <p><code>enable 'test'</code></p>
-
-<h5 id="删除表">删除表</h5>
-
+<h5 id="heading7">删除表</h5>
 <p><code>drop 'test'</code></p>
-
-<h3 id="安装opentsdb">安装OpenTSDB</h3>
-
+<h3 id="opentsdb">安装OpenTSDB</h3>
 <p><strong>参考文章</strong></p>
-
-<p><a href="http://debugo.com/opentsdb/">http://debugo.com/opentsdb/</a></p>
-
-<p><a href="http://opentsdb.net/docs/build/html/installation.html#runtime-requirements">http://opentsdb.net/docs/build/html/installation.html#runtime-requirements</a></p>
-
+<p><a href="http://debugo.com/opentsdb/"><a href="http://debugo.com/opentsdb/">http://debugo.com/opentsdb/</a></a></p>
+<p><a href="http://opentsdb.net/docs/build/html/installation.html#runtime-requirements"><a href="http://opentsdb.net/docs/build/html/installation.html#runtime-requirements">http://opentsdb.net/docs/build/html/installation.html#runtime-requirements</a></a></p>
 <ol>
-<li><p>直接从 github 上下载 OpenTSDB 的 <a href="https://github.com/OpenTSDB/opentsdb">release</a> 版本的 RPM 包。安装 <code>yum localinstall opentsdb-2.2.0.noarch.rpm</code>。</p></li>
-
-<li><p>配置完成后，我们通过下面命令在 HBase 中建立 opentsdb 所需的表。默认情况下 opentsdb 建立的 HBase 表启用了 lzo 压缩。需要开启 Hadoop 中的 lzo 压缩支持， 这里我们直接在下面脚本中把 COMPRESSION 的支持关闭。修改 <code>/usr/share/opentsdb/tools/create_table.sh</code>，设置 <code>COMPRESSION=NONE</code>，并且在文件开始处设置 HBase 所在目录， <code>HBASE_HOME=/home/xxx/hbase-1.1.3</code>。之后执行该脚本，在 HBase 中创建相应的表。</p></li>
-
-<li><p>修改 OpenTSDB 的配置文件，<code>/etc/opentsdb/opentsdb.conf</code>，例如绑定的端口号等。<strong>这里需要注意的是 tsd.core.auto_create_metrics 从 false 改为 true。这样上传数据时会自动创建 metric，否则会提示 Unknown metric 的错误。也可以设置为 false，但是使用 <code>tsdb mkmetric proc.loadavg.1m</code> 来手动添加 metric。</strong></p></li>
-
-<li><p>启动 OpenTSDB，<code>service opentsdb start</code> 或者 <code>nohup tsdb tsd &amp;</code>。</p></li>
-
-<li><p>通过浏览器访问 <a href="http://x.x.x.x:4242">http://x.x.x.x:4242</a> 查看是否安装成功。</p></li>
+<li>
+<p>直接从 github 上下载 OpenTSDB 的 <a href="https://github.com/OpenTSDB/opentsdb">release</a> 版本的 RPM 包。安装 <code>yum localinstall opentsdb-2.2.0.noarch.rpm</code>。</p>
+</li>
+<li>
+<p>配置完成后，我们通过下面命令在 HBase 中建立 opentsdb 所需的表。默认情况下 opentsdb 建立的 HBase 表启用了 lzo 压缩。需要开启 Hadoop 中的 lzo 压缩支持， 这里我们直接在下面脚本中把 COMPRESSION 的支持关闭。修改 <code>/usr/share/opentsdb/tools/create_table.sh</code>，设置 <code>COMPRESSION=NONE</code>，并且在文件开始处设置 HBase 所在目录， <code>HBASE_HOME=/home/xxx/hbase-1.1.3</code>。之后执行该脚本，在 HBase 中创建相应的表。</p>
+</li>
+<li>
+<p>修改 OpenTSDB 的配置文件，<code>/etc/opentsdb/opentsdb.conf</code>，例如绑定的端口号等。<strong>这里需要注意的是 tsd.core.auto_create_metrics 从 false 改为 true。这样上传数据时会自动创建 metric，否则会提示 Unknown metric 的错误。也可以设置为 false，但是使用 <code>tsdb mkmetric proc.loadavg.1m</code> 来手动添加 metric。</strong></p>
+</li>
+<li>
+<p>启动 OpenTSDB，<code>service opentsdb start</code> 或者 <code>nohup tsdb tsd &amp;</code>。</p>
+</li>
+<li>
+<p>通过浏览器访问 http://x.x.x.x:4242 查看是否安装成功。</p>
+</li>
 </ol>
-
 <h3 id="http-api">HTTP API</h3>
-
-<h4 id="插入数据">插入数据</h4>
-
+<h4 id="heading8">插入数据</h4>
 <p><strong>/api/put</strong></p>
-
 <p>根据 url 参数的不同，可以选择是否获取详细的信息。</p>
-
 <p><strong>/api/put?summary</strong>        // 返回失败和成功的个数</p>
-
-<pre><code class="language-json">{
-    &quot;failed&quot;: 0,
-    &quot;success&quot;: 1
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    &#34;failed&#34;: <span style="color:#cd00cd">0</span>,
+    &#34;success&#34;: <span style="color:#cd00cd">1</span>
 }
-</code></pre>
-
-<p><strong>/api/put?details</strong>        // 返回详细信息</p>
-
-<pre><code class="language-json">{
-    &quot;errors&quot;: [],
-    &quot;failed&quot;: 0,
-    &quot;success&quot;: 1
+</code></pre></div><p><strong>/api/put?details</strong>        // 返回详细信息</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    &#34;errors&#34;: [],
+    &#34;failed&#34;: <span style="color:#cd00cd">0</span>,
+    &#34;success&#34;: <span style="color:#cd00cd">1</span>
 }
-</code></pre>
-
-<p>通过POST方式插入数据，JSON格式，例如</p>
-
-<pre><code class="language-json">{
-    &quot;metric&quot;:&quot;self.test&quot;, 
-    &quot;timestamp&quot;:1456123787, 
-    &quot;value&quot;:20, 
-    &quot;tags&quot;:{
-        &quot;host&quot;:&quot;web1&quot;
+</code></pre></div><p>通过POST方式插入数据，JSON格式，例如</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    &#34;metric&#34;:<span style="color:#cd0000">&#34;self.test&#34;</span>, 
+    &#34;timestamp&#34;:<span style="color:#cd00cd">1456123787</span>, 
+    &#34;value&#34;:<span style="color:#cd00cd">20</span>, 
+    &#34;tags&#34;:{
+        &#34;host&#34;:<span style="color:#cd0000">&#34;web1&#34;</span>
     }
 }
-</code></pre>
-
-<h3 id="查询数据">查询数据</h3>
-
+</code></pre></div><h3 id="heading9">查询数据</h3>
 <p><strong>/api/query</strong></p>
-
 <p>可以选择 Get 或者 Post 两种方式，推荐使用 Post 方式，JSON 格式。</p>
-
-<pre><code class="language-json">{
-    &quot;start&quot;: 1456123705,
-    &quot;end&quot;: 1456124985,
-    &quot;queries&quot;: [
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    &#34;start&#34;: <span style="color:#cd00cd">1456123705</span>,
+    &#34;end&#34;: <span style="color:#cd00cd">1456124985</span>,
+    &#34;queries&#34;: [
         {
-            &quot;aggregator&quot;: &quot;sum&quot;,
-            &quot;metric&quot;: &quot;self.test&quot;,
-            &quot;tags&quot;: {
-                &quot;host&quot;: &quot;web1&quot;
+            &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
+            &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+            &#34;tags&#34;: {
+                &#34;host&#34;: <span style="color:#cd0000">&#34;web1&#34;</span>
             }
         },
         {
-            &quot;aggregator&quot;: &quot;sum&quot;,
-            &quot;metric&quot;: &quot;self.test&quot;,
-            &quot;tags&quot;: {
-                &quot;host&quot;: &quot;web2&quot;
+            &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
+            &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+            &#34;tags&#34;: {
+                &#34;host&#34;: <span style="color:#cd0000">&#34;web2&#34;</span>
             }
         }
     ]
 }
-</code></pre>
-
-<p>start 和 end 为指定的查询时间段。</p>
-
+</code></pre></div><p>start 和 end 为指定的查询时间段。</p>
 <p>queries 为一个数组，可以指定多个查询。</p>
-
 <p>metric 和 tags 是用于过滤的查询条件。</p>
-
 <p><strong>返回字符串也为json格式</strong></p>
-
-<pre><code class="language-json">[
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">[
     {
-        &quot;metric&quot;: &quot;self.test&quot;,
-        &quot;tags&quot;: {},
-        &quot;aggregateTags&quot;: [
-            &quot;host&quot;
+        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+        &#34;tags&#34;: {},
+        &#34;aggregateTags&#34;: [
+            <span style="color:#cd0000">&#34;host&#34;</span>
         ],
-        &quot;dps&quot;: {
-            &quot;1456123785&quot;: 10,
-            &quot;1456123786&quot;: 10
+        &#34;dps&#34;: {
+            &#34;1456123785&#34;: <span style="color:#cd00cd">10</span>,
+            &#34;1456123786&#34;: <span style="color:#cd00cd">10</span>
         }
     },
     {
-        &quot;metric&quot;: &quot;self.test&quot;,
-        &quot;tags&quot;: {
-            &quot;host&quot;: &quot;web1&quot;
+        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+        &#34;tags&#34;: {
+            &#34;host&#34;: <span style="color:#cd0000">&#34;web1&#34;</span>
         },
-        &quot;aggregateTags&quot;: [],
-        &quot;dps&quot;: {
-            &quot;1456123784&quot;: 10,
-            &quot;1456123786&quot;: 15
+        &#34;aggregateTags&#34;: [],
+        &#34;dps&#34;: {
+            &#34;1456123784&#34;: <span style="color:#cd00cd">10</span>,
+            &#34;1456123786&#34;: <span style="color:#cd00cd">15</span>
         }
     }
 ]
-</code></pre>
-
-<h4 id="聚合">聚合</h4>
-
+</code></pre></div><h4 id="heading10">聚合</h4>
 <p><strong>aggregator</strong> 是用于对查询结果进行聚合，将同一 unix 时间戳内的数据进行聚合计算后返回结果，例如如果 tags 不填，1456123705 有两条数据，一条 <code>host=web1</code>，另外一条 <code>host=web2</code>，值都为10，那么返回的该时间点的值为 sum 后的 20。</p>
-
-<h4 id="条件过滤">条件过滤</h4>
-
+<h4 id="heading11">条件过滤</h4>
 <p>可以针对 tag 进行一些条件的过滤，返回 tag 中 host 的值以 web 开头的数据。</p>
-
-<pre><code class="language-json">&quot;queries&quot;: [
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#cd0000">&#34;queries&#34;</span><span style="">:</span> [
     {
-        &quot;aggregator&quot;: &quot;sum&quot;,
-        &quot;metric&quot;: &quot;self.test&quot;,
-        &quot;filters&quot;: [
+        &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
+        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+        &#34;filters&#34;: [
             {
-                &quot;type&quot;: &quot;wildcard&quot;,
-                &quot;tagk&quot;: &quot;host&quot;,
-                &quot;filter&quot;: &quot;web*&quot;
+                &#34;type&#34;: <span style="color:#cd0000">&#34;wildcard&#34;</span>,
+                &#34;tagk&#34;: <span style="color:#cd0000">&#34;host&#34;</span>,
+                &#34;filter&#34;: <span style="color:#cd0000">&#34;web*&#34;</span>
             }
         ]
     }
 ]
-</code></pre>
-
-<h4 id="downsample">downsample</h4>
-
+</code></pre></div><h4 id="downsample">downsample</h4>
 <p>简单来说就是对指定时间段内的数据进行聚合后返回，例如需要返回每分钟的平均值数据</p>
-
-<pre><code class="language-json">&quot;queries&quot;: [
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#cd0000">&#34;queries&#34;</span><span style="">:</span> [
     {
-        &quot;aggregator&quot;: &quot;sum&quot;,
-        &quot;metric&quot;: &quot;self.test&quot;,
-        &quot;downsample&quot;: &quot;1m-avg&quot;,
-        &quot;tags&quot;: {
-            &quot;host&quot;: &quot;web1&quot;
+        &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
+        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+        &#34;downsample&#34;: <span style="color:#cd0000">&#34;1m-avg&#34;</span>,
+        &#34;tags&#34;: {
+            &#34;host&#34;: <span style="color:#cd0000">&#34;web1&#34;</span>
         }
     }
 ]
-</code></pre>
+</code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -337,7 +276,6 @@ put 'test', 'row3', 'cf:c', 'value3'
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/">InfluxDB详解之TSM存储引擎解析（二）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月15日)</span></li><li id="li-rels"><a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">InfluxDB详解之TSM存储引擎解析（一）</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月05日)</span></li><li id="li-rels"><a href="/2016/07/06/test-influxdb-and-opentsdb/">InfluxDB 与 OpenTSDB 对比测试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月06日)</span></li><li id="li-rels"><a href="/2016/07/05/research-of-time-series-database-influxdb/">时间序列数据库调研之InfluxDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月05日)</span></li><li id="li-rels"><a href="/2016/07/04/research-of-time-series-database-opentsdb/">时间序列数据库调研之OpenTSDB</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月04日)</span></li></ul>
-                
             </aside>
                 
             
@@ -370,41 +308,39 @@ put 'test', 'row3', 'cf:c', 'value3'
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#安装-hbase">安装 HBase</a></li>
-<li><a href="#通过命令行操作-hbase">通过命令行操作 HBase</a>
-<ul>
-<li>
-<ul>
-<li><a href="#连接到-hbase">连接到 HBase</a></li>
-<li><a href="#创建一张表">创建一张表</a></li>
-<li><a href="#查看表信息">查看表信息</a></li>
-<li><a href="#向表中插入数据">向表中插入数据</a></li>
-<li><a href="#查看表中所有数据">查看表中所有数据</a></li>
-<li><a href="#查看指定行的数据">查看指定行的数据</a></li>
-<li><a href="#禁用指定表-删除表或修改表设置前需要先禁用该表">禁用指定表（删除表或修改表设置前需要先禁用该表）</a></li>
-<li><a href="#恢复指定表">恢复指定表</a></li>
-<li><a href="#删除表">删除表</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#安装opentsdb">安装OpenTSDB</a></li>
-<li><a href="#http-api">HTTP API</a>
-<ul>
-<li><a href="#插入数据">插入数据</a></li>
-</ul></li>
-<li><a href="#查询数据">查询数据</a>
-<ul>
-<li><a href="#聚合">聚合</a></li>
-<li><a href="#条件过滤">条件过滤</a></li>
-<li><a href="#downsample">downsample</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#-hbase">安装 HBase</a></li>
+    <li><a href="#-hbase1">通过命令行操作 HBase</a>
+      <ul>
+        <li>
+          <ul>
+            <li><a href="#-hbase2">连接到 HBase</a></li>
+            <li><a href="#heading">创建一张表</a></li>
+            <li><a href="#heading1">查看表信息</a></li>
+            <li><a href="#heading2">向表中插入数据</a></li>
+            <li><a href="#heading3">查看表中所有数据</a></li>
+            <li><a href="#heading4">查看指定行的数据</a></li>
+            <li><a href="#heading5">禁用指定表（删除表或修改表设置前需要先禁用该表）</a></li>
+            <li><a href="#heading6">恢复指定表</a></li>
+            <li><a href="#heading7">删除表</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#opentsdb">安装OpenTSDB</a></li>
+    <li><a href="#http-api">HTTP API</a>
+      <ul>
+        <li><a href="#heading8">插入数据</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading9">查询数据</a>
+      <ul>
+        <li><a href="#heading10">聚合</a></li>
+        <li><a href="#heading11">条件过滤</a></li>
+        <li><a href="#downsample">downsample</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -419,19 +355,6 @@ put 'test', 'row3', 'cf:c', 'value3'
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

@@ -73,182 +73,130 @@
             <div class="post-content">
                 <p>在完成公司项目，测试进程的时候，经常会发现日志到了某一段特定的代码的时候就没了，进程直接退出，也没有捕获到任何的异常信息，如果日志打印的较多还可能比较容易发现问题
 题，如果日志较少，就很难进行进一步的查错了。但是发现在该目录下生成了一个core文件，可以帮助我们查找程序崩溃的原因。</p>
-
-<h3 id="什么是core文件">什么是core文件</h3>
-
+<h3 id="core">什么是core文件</h3>
 <p>在linux系统下，如果进程不能正常运行，就可能会产生core文件。core文件就是当前内存状态的一个映像，同时加上一些调试信息。</p>
-
 <p>bug和操作系统或硬件的保护机制都会导致程序异常终止，操作系统会kill掉这些进程并产生core文件，比如常见的段错误等。</p>
-
-<h3 id="为什么我的linux不会生成core文件">为什么我的linux不会生成core文件</h3>
-
+<h3 id="linuxcore">为什么我的linux不会生成core文件</h3>
 <p>使用 <code>ulimit -a</code> 命令可以查看当前系统资源的一些限制信息，如下：</p>
-
-<pre><code class="language-bash">-t: cpu time (seconds)              unlimited
--f: file size (blocks)              unlimited
--d: data seg size (kbytes)          unlimited
--s: stack size (kbytes)             8192
--c: core file size (blocks)         0
--m: resident set size (kbytes)      unlimited
--u: processes                       3847
--n: file descriptors                1024
--l: locked-in-memory size (kbytes)  64
--v: address space (kbytes)          unlimited
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-t: cpu <span style="color:#cd00cd">time</span> <span style="color:#39c">(</span>seconds<span style="color:#39c">)</span>              unlimited
+-f: file size <span style="color:#39c">(</span>blocks<span style="color:#39c">)</span>              unlimited
+-d: data seg size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>          unlimited
+-s: stack size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>             <span style="color:#cd00cd">8192</span>
+-c: core file size <span style="color:#39c">(</span>blocks<span style="color:#39c">)</span>         <span style="color:#cd00cd">0</span>
+-m: resident <span style="color:#cd00cd">set</span> size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>      unlimited
+-u: processes                       <span style="color:#cd00cd">3847</span>
+-n: file descriptors                <span style="color:#cd00cd">1024</span>
+-l: locked-in-memory size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>  <span style="color:#cd00cd">64</span>
+-v: address space <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>          unlimited
 -x: file locks                      unlimited
--i: pending signals                 3847
--q: bytes in POSIX msg queues       819200
--e: max nice                        0
--r: max rt priority                 0
+-i: pending signals                 <span style="color:#cd00cd">3847</span>
+-q: bytes in POSIX msg queues       <span style="color:#cd00cd">819200</span>
+-e: max nice                        <span style="color:#cd00cd">0</span>
+-r: max rt priority                 <span style="color:#cd00cd">0</span>
 -N 15:                              unlimited
-</code></pre>
-
-<p>其中的 <strong>-c: core file size</strong> 如果设置为0的话，当程序崩溃的时候就不会产生core文件。</p>
-
-<pre><code class="language-bash">ulimit -c unlimited
-</code></pre>
-
-<p>设置core文件大小为无限</p>
-
-<pre><code class="language-bash">ulimit -c 0
-</code></pre>
-
-<p>阻止系统生成core文件</p>
-
+</code></pre></div><p>其中的 <strong>-c: core file size</strong> 如果设置为0的话，当程序崩溃的时候就不会产生core文件。</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">ulimit</span> -c unlimited
+</code></pre></div><p>设置core文件大小为无限</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">ulimit</span> -c <span style="color:#cd00cd">0</span>
+</code></pre></div><p>阻止系统生成core文件</p>
 <p><strong>注：这条命令只在当前生效，如果希望永久生效，就需要在 .bash_profile 或者类似文件中加上这条命令。</strong></p>
-
-<h3 id="设置core-dump的核心转储文件目录和命名规则">设置Core Dump的核心转储文件目录和命名规则</h3>
-
+<h3 id="core-dump">设置Core Dump的核心转储文件目录和命名规则</h3>
 <p><strong>/proc/sys/kernel/core_uses_pid</strong> 可以控制产生的core文件的文件名中是否添加pid作为扩展，如果添加则文件内容为1，否则为0。需要有超级用户的权限才能进行修改。</p>
-
 <p><strong>/proc/sys/kernel/core_pattern</strong> 可以设置格式化的 core文件保存位置或文件名，默认的是 <strong>|/usr/libexec/abrt-hook-ccpp %s %c %p %u %g %t e</strong>。</p>
-
 <p>需要修改的话，可以使用这条命令：<code>echo &quot;/corefile/core-%e-%p-%t&quot;&gt; /proc/sys/kernel/core_pattern</code></p>
-
 <p>将会控制所产生的core文件会存放到 /corefile 目录下，产生的文件名为 <strong>core-命令名-pid-时间戳</strong></p>
-
 <p>以下是参数列表：</p>
-
-<pre><code class="language-bash">%p - insert pid into filename 添加pid
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%p - insert pid into filename 添加pid
 %u - insert current uid into filename 添加当前uid
 %g - insert current gid into filename 添加当前gid
 %s - insert signal that caused the coredump into the filename 添加导致产生core的信号
-%t - insert UNIX time that the coredump occurred into filename 添加core文件生成时的unix时间
+%t - insert UNIX <span style="color:#cd00cd">time</span> that the coredump occurred into filename 添加core文件生成时的unix时间
 %h - insert hostname where the coredump happened into filename 添加主机名
 %e - insertcoredumping executable name into filename 添加命令名
-</code></pre>
-
-<h3 id="使用core文件">使用core文件</h3>
-
+</code></pre></div><h3 id="core1">使用core文件</h3>
 <p>在linux上可以使用gdb来调试core文件，格式为：</p>
-
-<pre><code class="language-bash">gdb [程序名] [core文件名]
-</code></pre>
-
-<p>如果你不知道这个core文件到底是哪个程序生成的，可以使用</p>
-
-<pre><code class="language-bash">gdb -c[core 文件名] 来查看生成此core文件的程序名。
-</code></pre>
-
-<p>显示结果中可以看出程序名，可能像下面这样</p>
-
-<pre><code class="language-bash">Core wasgenerated by `./test'.
-</code></pre>
-
-<p>之后进入gdb调试状态，输入 where 就可以看到程序崩溃时堆栈信息（当前函数之前的所有已调用函数的列表（包括当前函数），我们可以借此找出是程序中的哪个部分导致了程序崩溃。注意：在编译程序的时候要加入选项-g。</p>
-
-<h3 id="一个简单的例子">一个简单的例子</h3>
-
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gdb <span style="color:#39c">[</span>程序名<span style="color:#39c">]</span> <span style="color:#39c">[</span>core文件名<span style="color:#39c">]</span>
+</code></pre></div><p>如果你不知道这个core文件到底是哪个程序生成的，可以使用</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gdb -c<span style="color:#39c">[</span>core 文件名<span style="color:#39c">]</span> 来查看生成此core文件的程序名。
+</code></pre></div><p>显示结果中可以看出程序名，可能像下面这样</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Core wasgenerated by <span style="color:#cd0000">`</span>./test<span style="">&#39;</span>.
+</code></pre></div><p>之后进入gdb调试状态，输入 where 就可以看到程序崩溃时堆栈信息（当前函数之前的所有已调用函数的列表（包括当前函数），我们可以借此找出是程序中的哪个部分导致了程序崩溃。注意：在编译程序的时候要加入选项-g。</p>
+<h3 id="heading">一个简单的例子</h3>
 <p>编译如下的程序</p>
-
-<pre><code class="language-cpp">#include &lt;iostream&gt;
-using namespace std;
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#</span><span style="color:#000080">include</span> <span style="color:#000080">&lt;iostream&gt;</span><span style="color:#000080">
+</span><span style="color:#000080"></span><span style="color:#cdcd00">using</span> <span style="color:#cdcd00">namespace</span> std;
  
-class A
+<span style="color:#cdcd00">class</span> <span style="color:#00cdcd">A</span>
 {
-public:
-    int a;
+<span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
+    <span style="color:#00cd00">int</span> a;
 };
  
-void fun()
+<span style="color:#00cd00">void</span> fun()
 {
-    A*t = new A();
-    t-&gt;a = 1;
-    cout &lt;&lt; t-&gt;a &lt;&lt; endl;
-    delete t;
-    delete t;
+    A<span style="color:#39c">*</span>t <span style="color:#39c">=</span> <span style="color:#cdcd00">new</span> A();
+    t<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>a <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span>;
+    cout <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> t<span style="color:#39c">-</span><span style="color:#39c">&gt;</span>a <span style="color:#39c">&lt;</span><span style="color:#39c">&lt;</span> endl;
+    <span style="color:#cdcd00">delete</span> t;
+    <span style="color:#cdcd00">delete</span> t;
 }
  
-int main()
+<span style="color:#00cd00">int</span> main()
 {
     fun();
-    return 0;
+    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
 }
-</code></pre>
-
-<p>执行</p>
-
-<pre><code class="language-bash">./test
-</code></pre>
-
-<p>结果为</p>
-
-<pre><code class="language-bash">1
-*** glibc detected *** ./test: double freeor corruption (fasttop): 0x09fd7008 ***
-======= Backtrace: =========
-/lib/libc.so.6[0x3ebe31]
-/usr/lib/libstdc++.so.6(_ZdlPv+0x22)[0x43fc552]
-./test[0x8048705]
-./test[0x8048712]
-/lib/libc.so.6(__libc_start_main+0xe6)[0x391d26]
-./test[0x8048611]
-======= Memory map: ========
-00327000-00328000 r-xp 00000000 00:000          [vdso]
-00334000-00351000 r-xp 00000000 08:02926955    /lib/libgcc_s-4.4.7-20120601.so.1
+</code></pre></div><p>执行</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./test
+</code></pre></div><p>结果为</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">1</span>
+*** glibc detected *** ./test: double freeor corruption <span style="color:#39c">(</span>fasttop<span style="color:#39c">)</span>: 0x09fd7008 ***
+<span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span> Backtrace: <span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span>
+/lib/libc.so.6<span style="color:#39c">[</span>0x3ebe31<span style="color:#39c">]</span>
+/usr/lib/libstdc++.so.6<span style="color:#39c">(</span>_ZdlPv+0x22<span style="color:#39c">)</span><span style="color:#39c">[</span>0x43fc552<span style="color:#39c">]</span>
+./test<span style="color:#39c">[</span>0x8048705<span style="color:#39c">]</span>
+./test<span style="color:#39c">[</span>0x8048712<span style="color:#39c">]</span>
+/lib/libc.so.6<span style="color:#39c">(</span>__libc_start_main+0xe6<span style="color:#39c">)</span><span style="color:#39c">[</span>0x391d26<span style="color:#39c">]</span>
+./test<span style="color:#39c">[</span>0x8048611<span style="color:#39c">]</span>
+<span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span> Memory map: <span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span><span style="color:#39c">=</span>
+00327000-00328000 r-xp <span style="color:#cd00cd">00000000</span> 00:000          <span style="color:#39c">[</span>vdso<span style="color:#39c">]</span>
+00334000-00351000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926955    /lib/libgcc_s-4.4.7-20120601.so.1
 00351000-00352000 rw-p 0001d000 08:02926955    /lib/libgcc_s-4.4.7-20120601.so.1
-00355000-00373000 r-xp 00000000 08:02926876     /lib/ld-2.12.so
+00355000-00373000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926876     /lib/ld-2.12.so
 00373000-00374000 r--p 0001d000 08:02926876     /lib/ld-2.12.so
 00374000-00375000 rw-p 0001e000 08:02926876     /lib/ld-2.12.so
-0037b000-0050c000 r-xp 00000000 08:02926877     /lib/libc-2.12.so
-0050c000-0050e000 r--p 00191000 08:02926877     /lib/libc-2.12.so
-0050e000-0050f000 rw-p 00193000 08:02926877     /lib/libc-2.12.so
-0050f000-00512000 rw-p 00000000 00:00 0
-00543000-0056b000 r-xp 00000000 08:02926889     /lib/libm-2.12.so
-0056b000-0056c000 r--p 00027000 08:02926889     /lib/libm-2.12.so
-0056c000-0056d000 rw-p 00028000 08:02926889     /lib/libm-2.12.so
-0434d000-0442e000 r-xp 00000000 08:02155001     /usr/lib/libstdc++.so.6.0.13
+0037b000-0050c000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926877     /lib/libc-2.12.so
+0050c000-0050e000 r--p <span style="color:#cd00cd">00191000</span> 08:02926877     /lib/libc-2.12.so
+0050e000-0050f000 rw-p <span style="color:#cd00cd">00193000</span> 08:02926877     /lib/libc-2.12.so
+0050f000-00512000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
+00543000-0056b000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926889     /lib/libm-2.12.so
+0056b000-0056c000 r--p <span style="color:#cd00cd">00027000</span> 08:02926889     /lib/libm-2.12.so
+0056c000-0056d000 rw-p <span style="color:#cd00cd">00028000</span> 08:02926889     /lib/libm-2.12.so
+0434d000-0442e000 r-xp <span style="color:#cd00cd">00000000</span> 08:02155001     /usr/lib/libstdc++.so.6.0.13
 0442e000-04432000 r--p 000e0000 08:02155001     /usr/lib/libstdc++.so.6.0.13
 04432000-04434000 rw-p 000e4000 08:02155001     /usr/lib/libstdc++.so.6.0.13
-04434000-0443a000 rw-p 00000000 00:00 0
-08048000-08049000 r-xp 00000000 08:02419326    /home/wcl/fate/src/app/test/test
-08049000-0804a000 rw-p 00000000 08:02419326    /home/wcl/fate/src/app/test/test
-09fd7000-09ff8000 rw-p 00000000 00:000          [heap]
-b7719000-b771c000 rw-p 00000000 00:00 0
-b7727000-b772a000 rw-p 00000000 00:00 0
-bfd2a000-bfd3f000 rw-p 00000000 00:000          [stack]
-Aborted (core dumped)
-</code></pre>
-
-<p>因为我们对一个已经delete过了的指针再次delete，所以程序down掉了，可以看到在当前目录下已经生成了一个core.4377的文件，4377就是之前程序启动的PID。</p>
-
+04434000-0443a000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
+08048000-08049000 r-xp <span style="color:#cd00cd">00000000</span> 08:02419326    /home/wcl/fate/src/app/test/test
+08049000-0804a000 rw-p <span style="color:#cd00cd">00000000</span> 08:02419326    /home/wcl/fate/src/app/test/test
+09fd7000-09ff8000 rw-p <span style="color:#cd00cd">00000000</span> 00:000          <span style="color:#39c">[</span>heap<span style="color:#39c">]</span>
+b7719000-b771c000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
+b7727000-b772a000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
+bfd2a000-bfd3f000 rw-p <span style="color:#cd00cd">00000000</span> 00:000          <span style="color:#39c">[</span>stack<span style="color:#39c">]</span>
+Aborted <span style="color:#39c">(</span>core dumped<span style="color:#39c">)</span>
+</code></pre></div><p>因为我们对一个已经delete过了的指针再次delete，所以程序down掉了，可以看到在当前目录下已经生成了一个core.4377的文件，4377就是之前程序启动的PID。</p>
 <p>调试core文件</p>
-
-<pre><code class="language-bash">gdb test core.4377
-</code></pre>
-
-<p>进入gdb调试后，键入where命令</p>
-
-<pre><code class="language-bash">(gdb) where
-#0 0x00327424 in __kernel_vsyscall ()
-#1 0x003a5b11 in raise () from /lib/libc.so.6
-#2 0x003a73ea in abort () from /lib/libc.so.6
-#3 0x003e59d5 in __libc_message () from /lib/libc.so.6
-#4 0x003ebe31 in malloc_printerr () from /lib/libc.so.6
-#5 0x043fc552 in operator delete(void*) () from/usr/lib/libstdc++.so.6
-#6 0x08048705 in fun() ()
-#7 0x08048712 in main ()
-</code></pre>
-
-<p>可以很明显的看出是在main函数中调用fun函数，之后delete指针的时候出错了，后面的函数调用栈就是程序输出错误信息的部分了，和我们的用户代码无关。到这一步，我们就能推断是是fun()这个函数中delete某个指针的时候出现了错误，就可以有的放矢地查找具体的问题了。</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gdb <span style="color:#cd00cd">test</span> core.4377
+</code></pre></div><p>进入gdb调试后，键入where命令</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">(</span>gdb<span style="color:#39c">)</span> where
+<span style="color:#000080">#0 0x00327424 in __kernel_vsyscall ()</span>
+<span style="color:#000080">#1 0x003a5b11 in raise () from /lib/libc.so.6</span>
+<span style="color:#000080">#2 0x003a73ea in abort () from /lib/libc.so.6</span>
+<span style="color:#000080">#3 0x003e59d5 in __libc_message () from /lib/libc.so.6</span>
+<span style="color:#000080">#4 0x003ebe31 in malloc_printerr () from /lib/libc.so.6</span>
+<span style="color:#000080">#5 0x043fc552 in operator delete(void*) () from/usr/lib/libstdc++.so.6</span>
+<span style="color:#000080">#6 0x08048705 in fun() ()</span>
+<span style="color:#000080">#7 0x08048712 in main ()</span>
+</code></pre></div><p>可以很明显的看出是在main函数中调用fun函数，之后delete指针的时候出错了，后面的函数调用栈就是程序输出错误信息的部分了，和我们的用户代码无关。到这一步，我们就能推断是是fun()这个函数中delete某个指针的时候出现了错误，就可以有的放矢地查找具体的问题了。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -283,8 +231,7 @@ Aborted (core dumped)
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/10/use-astyle-to-format-code/">使用astyle进行代码格式化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月10日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/17/git-usually-command/">Git常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月17日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/16/learn-git-website/">学习Git的常用网站</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li></ul>
             </aside>
                 
             
@@ -317,19 +264,13 @@ Aborted (core dumped)
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#什么是core文件">什么是core文件</a></li>
-<li><a href="#为什么我的linux不会生成core文件">为什么我的linux不会生成core文件</a></li>
-<li><a href="#设置core-dump的核心转储文件目录和命名规则">设置Core Dump的核心转储文件目录和命名规则</a></li>
-<li><a href="#使用core文件">使用core文件</a></li>
-<li><a href="#一个简单的例子">一个简单的例子</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#core">什么是core文件</a></li>
+    <li><a href="#linuxcore">为什么我的linux不会生成core文件</a></li>
+    <li><a href="#core-dump">设置Core Dump的核心转储文件目录和命名规则</a></li>
+    <li><a href="#core1">使用core文件</a></li>
+    <li><a href="#heading">一个简单的例子</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -344,19 +285,6 @@ Aborted (core dumped)
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

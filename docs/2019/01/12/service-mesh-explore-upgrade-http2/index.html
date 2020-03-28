@@ -71,153 +71,120 @@
 
             <div class="post-content">
                 <p>HTTP/2 是 HTTP/1.1 的升级，在请求方法、状态码乃至 URI 和绝大多数 HTTP 头部字段等方面保持高度兼容性，同时能够减少网络延迟和连接资源占用。Service Mesh 架构中，由于两个服务之间的通信由 proxy 介入，对于依靠 HTTP/1.1 通信的服务来说，可以无缝升级到 HTTP/2 协议。</p>
-
-<h3 id="http-2-的优势">HTTP/2 的优势</h3>
-
+<h3 id="http2-">HTTP/2 的优势</h3>
 <ul>
 <li>对 HTTP 头字段进行数据压缩(即 HPACK 算法)。</li>
 <li>HTTP/2 服务端推送(Server Push)。</li>
 <li>修复 HTTP/1.0 版本以来未修复的队头阻塞问题。</li>
 <li>对数据传输采用多路复用，让多个请求合并在同一 TCP 连接内。</li>
 </ul>
-
 <p>对于我们最主要的收益在于 TCP 连接的多路复用和头部字段压缩。</p>
-
 <p>TCP 连接的多路复用可以有效减少连接建立的延迟。在 HTTP/1.1 中我们也会复用空闲连接的方式来解决此问题，但是通常的实现方式是一个连接池，当空闲连接超过多长时间之后会被关闭，所以并没有完全解决这一问题。</p>
-
 <p>Header 字段压缩，对于内部服务来说可以有效减少请求和响应的数据大小。内部服务之间通常会在 Header 中附加较多的内容来表征一些类似标签格式的信息。经过测试，HTTP/2 使我们的内部服务在 Header 上的传输的数据量减少了 50% 以上。</p>
-
-<h3 id="在同一个端口上同时支持-http-1-1-和-http-2">在同一个端口上同时支持 HTTP/1.1 和 HTTP/2</h3>
-
+<h3 id="-http11--http2">在同一个端口上同时支持 HTTP/1.1 和 HTTP/2</h3>
 <p>HTTP/2 协议本身和 TLS 无关，但是通常浏览器 (Chrome 等) 都要求必须结合 TLS 来使用。</p>
-
 <p>h2c（HTTP/2 cleartext）是不带 TLS 的 HTTP/2。对于内部 API 服务来说，TLS 并非必须，反而会增加额外的资源开销。</p>
-
 <p>Go 的标准库已经支持了 h2，不支持 h2c，但是在 <code>golang.org/x/net/http2/h2c</code> 中有对 h2c 的支持，算是半个标准库。</p>
-
 <p>由于 HTTP/2 和 HTTP/1.1 高度兼容，Golang 中我们需要提供的 <code>http.Handler</code> 方法并没有什么变化，所以只需要替换 <code>Transport</code> 就可以实现升级到 HTTP/2 这一能力。</p>
-
-<h4 id="服务端">服务端</h4>
-
+<h4 id="heading">服务端</h4>
 <p>示例程序:</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> main
 
-<pre><code class="language-golang">package main
+<span style="color:#cd00cd">import</span> (
+    <span style="color:#cd0000">&#34;fmt&#34;</span>
+    <span style="color:#cd0000">&#34;log&#34;</span>
+    <span style="color:#cd0000">&#34;net/http&#34;</span>
 
-import (
-    &quot;fmt&quot;
-    &quot;log&quot;
-    &quot;net/http&quot;
-
-    &quot;golang.org/x/net/http2&quot;
-    &quot;golang.org/x/net/http2/h2c&quot;
+    <span style="color:#cd0000">&#34;golang.org/x/net/http2&#34;</span>
+    <span style="color:#cd0000">&#34;golang.org/x/net/http2/h2c&#34;</span>
 )
 
-func main() {
-    mux := http.NewServeMux()
-    mux.HandleFunc(&quot;/&quot;, func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintf(w, &quot;You tell %s\n&quot;, r.Proto)
+<span style="color:#00cd00">func</span> main() {
+    mux <span style="color:#39c">:=</span> http.NewServeMux()
+    mux.HandleFunc(<span style="color:#cd0000">&#34;/&#34;</span>, <span style="color:#00cd00">func</span>(w http.ResponseWriter, r <span style="color:#39c">*</span>http.Request) {
+        fmt.Fprintf(w, <span style="color:#cd0000">&#34;You tell %s\n&#34;</span>, r.Proto)
     })
-    h2s := &amp;http2.Server{}
-    h1s := &amp;http.Server{Addr: &quot;:9100&quot;, Handler: h2c.NewHandler(mux, h2s)}
+    h2s <span style="color:#39c">:=</span> <span style="color:#39c">&amp;</span>http2.Server{}
+    h1s <span style="color:#39c">:=</span> <span style="color:#39c">&amp;</span>http.Server{Addr: <span style="color:#cd0000">&#34;:9100&#34;</span>, Handler: h2c.NewHandler(mux, h2s)}
 
     log.Fatal(h1s.ListenAndServe())
 }
-</code></pre>
-
-<p>服务端会监听在 9100 端口，并且同时支持 HTTP/1.1 和 HTTP/2。</p>
-
+</code></pre></div><p>服务端会监听在 9100 端口，并且同时支持 HTTP/1.1 和 HTTP/2。</p>
 <p>通过 curl 用不同的协议访问的输出结果如下:</p>
-
 <pre><code>curl http://127.0.0.1:9100
 You tell HTTP/1.1
 
 curl http://127.0.0.1:9100 --http2
 You tell HTTP/2.0
-</code></pre>
-
-<p>之所以能够在同一个端口上同时支持这两个协议，是因为 <code>h2c.NewHandler</code> 这个函数的封装。这个函数会在连接建立时先检测 <code>Request</code> 的内容，h2c 要求连接以 <code>PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n</code> 开头，如果匹配成功则交给 h2c 的 Handler 处理，否则交给 HTTP/1.1 的 Handler 处理。</p>
-
+</code></pre><p>之所以能够在同一个端口上同时支持这两个协议，是因为 <code>h2c.NewHandler</code> 这个函数的封装。这个函数会在连接建立时先检测 <code>Request</code> 的内容，h2c 要求连接以 <code>PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n</code> 开头，如果匹配成功则交给 h2c 的 Handler 处理，否则交给 HTTP/1.1 的 Handler 处理。</p>
 <p>h2c 这部分的源码如下:</p>
-
-<pre><code class="language-golang">// ServeHTTP implement the h2c support that is enabled by h2c.GetH2CHandler.
-func (s h2cHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    // Handle h2c with prior knowledge (RFC 7540 Section 3.4)
-    if r.Method == &quot;PRI&quot; &amp;&amp; len(r.Header) == 0 &amp;&amp; r.URL.Path == &quot;*&quot; &amp;&amp; r.Proto == &quot;HTTP/2.0&quot; {
-        if http2VerboseLogs {
-            log.Print(&quot;h2c: attempting h2c with prior knowledge.&quot;)
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#000080">// ServeHTTP implement the h2c support that is enabled by h2c.GetH2CHandler.
+</span><span style="color:#000080"></span><span style="color:#00cd00">func</span> (s h2cHandler) ServeHTTP(w http.ResponseWriter, r <span style="color:#39c">*</span>http.Request) {
+    <span style="color:#000080">// Handle h2c with prior knowledge (RFC 7540 Section 3.4)
+</span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> r.Method <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;PRI&#34;</span> <span style="color:#39c">&amp;&amp;</span> <span style="color:#cd00cd">len</span>(r.Header) <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span> <span style="color:#39c">&amp;&amp;</span> r.URL.Path <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;*&#34;</span> <span style="color:#39c">&amp;&amp;</span> r.Proto <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;HTTP/2.0&#34;</span> {
+        <span style="color:#cdcd00">if</span> http2VerboseLogs {
+            log.Print(<span style="color:#cd0000">&#34;h2c: attempting h2c with prior knowledge.&#34;</span>)
         }
-        conn, err := initH2CWithPriorKnowledge(w)
-        if err != nil {
-            if http2VerboseLogs {
-                log.Printf(&quot;h2c: error h2c with prior knowledge: %v&quot;, err)
+        conn, err <span style="color:#39c">:=</span> initH2CWithPriorKnowledge(w)
+        <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+            <span style="color:#cdcd00">if</span> http2VerboseLogs {
+                log.Printf(<span style="color:#cd0000">&#34;h2c: error h2c with prior knowledge: %v&#34;</span>, err)
             }
-            return
+            <span style="color:#cdcd00">return</span>
         }
-        defer conn.Close()
+        <span style="color:#cdcd00">defer</span> conn.Close()
 
-        s.s.ServeConn(conn, &amp;http2.ServeConnOpts{Handler: s.Handler})
-        return
+        s.s.ServeConn(conn, <span style="color:#39c">&amp;</span>http2.ServeConnOpts{Handler: s.Handler})
+        <span style="color:#cdcd00">return</span>
     }
-    // Handle Upgrade to h2c (RFC 7540 Section 3.2)
-    if conn, err := h2cUpgrade(w, r); err == nil {
-        defer conn.Close()
+    <span style="color:#000080">// Handle Upgrade to h2c (RFC 7540 Section 3.2)
+</span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> conn, err <span style="color:#39c">:=</span> h2cUpgrade(w, r); err <span style="color:#39c">==</span> <span style="color:#cdcd00">nil</span> {
+        <span style="color:#cdcd00">defer</span> conn.Close()
 
-        s.s.ServeConn(conn, &amp;http2.ServeConnOpts{Handler: s.Handler})
-        return
+        s.s.ServeConn(conn, <span style="color:#39c">&amp;</span>http2.ServeConnOpts{Handler: s.Handler})
+        <span style="color:#cdcd00">return</span>
     }
 
     s.Handler.ServeHTTP(w, r)
-    return
+    <span style="color:#cdcd00">return</span>
 }
-</code></pre>
-
-<h4 id="客户端">客户端</h4>
-
+</code></pre></div><h4 id="heading1">客户端</h4>
 <p>由于我们的服务端同时支持 HTTP/1.1 和 HTTP/2，所以客户端可以通过任意的协议来通信，最好通过配置或环境变量的方式来决定是否启用升级 HTTP/2 的功能，后面会讲一下这个里面存在的坑。</p>
-
 <p>客户端的示例代码:</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> main
 
-<pre><code class="language-golang">package main
+<span style="color:#cd00cd">import</span> (
+    <span style="color:#cd0000">&#34;crypto/tls&#34;</span>
+    <span style="color:#cd0000">&#34;fmt&#34;</span>
+    <span style="color:#cd0000">&#34;log&#34;</span>
+    <span style="color:#cd0000">&#34;net&#34;</span>
+    <span style="color:#cd0000">&#34;net/http&#34;</span>
 
-import (
-    &quot;crypto/tls&quot;
-    &quot;fmt&quot;
-    &quot;log&quot;
-    &quot;net&quot;
-    &quot;net/http&quot;
-
-    &quot;golang.org/x/net/http2&quot;
+    <span style="color:#cd0000">&#34;golang.org/x/net/http2&#34;</span>
 )
 
-func main() {
-    client := http.Client{
-        // Skip TLS dial
-        Transport: &amp;http2.Transport{
-            AllowHTTP: true,
-            DialTLS: func(network, addr string, cfg *tls.Config) (net.Conn, error) {
-                return net.Dial(network, addr)
+<span style="color:#00cd00">func</span> main() {
+    client <span style="color:#39c">:=</span> http.Client{
+        <span style="color:#000080">// Skip TLS dial
+</span><span style="color:#000080"></span>        Transport: <span style="color:#39c">&amp;</span>http2.Transport{
+            AllowHTTP: <span style="color:#cdcd00">true</span>,
+            DialTLS: <span style="color:#00cd00">func</span>(network, addr <span style="color:#00cd00">string</span>, cfg <span style="color:#39c">*</span>tls.Config) (net.Conn, <span style="color:#00cd00">error</span>) {
+                <span style="color:#cdcd00">return</span> net.Dial(network, addr)
             },
         },
     }
-    resp, err := client.Get(&quot;http://127.0.0.1:9100&quot;)
-    if err != nil {
-        log.Fatal(fmt.Errorf(&quot;get response error: %v&quot;, err))
+    resp, err <span style="color:#39c">:=</span> client.Get(<span style="color:#cd0000">&#34;http://127.0.0.1:9100&#34;</span>)
+    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+        log.Fatal(fmt.Errorf(<span style="color:#cd0000">&#34;get response error: %v&#34;</span>, err))
     }
     fmt.Println(resp.StatusCode)
     fmt.Println(resp.Proto)
 }
-</code></pre>
-
-<p>http2.Transport 本身没有提供 <code>Dial</code> 方法来不启用 TLS，但是由于 HTTP/2 和 TLS 无关，只需要将 <code>DialTLS</code> 替换成我们自己方法，不建立 TLS 连接，对上层的 HTTP/2 的协议处理完全没有影响。</p>
-
-<h3 id="遇到的问题">遇到的问题</h3>
-
+</code></pre></div><p>http2.Transport 本身没有提供 <code>Dial</code> 方法来不启用 TLS，但是由于 HTTP/2 和 TLS 无关，只需要将 <code>DialTLS</code> 替换成我们自己方法，不建立 TLS 连接，对上层的 HTTP/2 的协议处理完全没有影响。</p>
+<h3 id="heading2">遇到的问题</h3>
 <p>实际上线此功能后，运行了两天，出现了服务超时的问题，排查后看起来和 <a href="https://github.com/golang/go/issues/28204">https://github.com/golang/go/issues/28204</a> 这个 issue 比较相似。</p>
-
 <p>目前 Golang 标准库(Go1.11)中对于 HTTP/2 的流量控制在某些特殊场景下存在 Bug，会导致 Flow Control 的写窗口一直为 0，且无法恢复。这就导致了请求超时，并且复用的 Stream 没有被正常关闭，如果持续请求，默认单个 TCP 连接中存在 100 个 Stream 时，会新建一个 TCP 连接，此时后续的请求会恢复正常，但是如果又出现了有问题的请求，会重复之前的错误。</p>
-
 <p>由于时间原因，并没有继续跟踪源码查看问题到底在哪，因为本地环境经过大量并发测试也并没有出现问题，说明应该是一个比较极端的 case 导致了这个错误。后续有精力时，可以考虑在线上开启流量复制的功能，将流量额外复制一份到单独版本的实例上，这个版本可以开启更多的 Debug 日志来辅助调试。</p>
-
 <p>线上暂时关闭了此功能，待问题确认修复后再通过环境变量控制开启。</p>
             </div>
             
@@ -254,7 +221,6 @@ func main() {
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2019/04/17/k8s-custom-controller-high-available/">kubernetes 自定义控制器的高可用</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月17日)</span></li><li id="li-rels"><a href="/2019/04/02/k8s-custom-controller/">kubernetes 自定义控制器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月02日)</span></li><li id="li-rels"><a href="/2019/03/25/k8s-crd-authorization/">kubernetes CRD 权限管理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月25日)</span></li><li id="li-rels"><a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月20日)</span></li><li id="li-rels"><a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">使用 telepresence 在 k8s 环境中实现快速开发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月03日)</span></li><li id="li-rels"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月10日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年11月21日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
-                
             </aside>
                 
             
@@ -287,21 +253,16 @@ func main() {
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#http-2-的优势">HTTP/2 的优势</a></li>
-<li><a href="#在同一个端口上同时支持-http-1-1-和-http-2">在同一个端口上同时支持 HTTP/1.1 和 HTTP/2</a>
-<ul>
-<li><a href="#服务端">服务端</a></li>
-<li><a href="#客户端">客户端</a></li>
-</ul></li>
-<li><a href="#遇到的问题">遇到的问题</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#http2-">HTTP/2 的优势</a></li>
+    <li><a href="#-http11--http2">在同一个端口上同时支持 HTTP/1.1 和 HTTP/2</a>
+      <ul>
+        <li><a href="#heading">服务端</a></li>
+        <li><a href="#heading1">客户端</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading2">遇到的问题</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -316,19 +277,6 @@ func main() {
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

@@ -71,37 +71,24 @@
 
             <div class="post-content">
                 <p>对于一个多个用户的集群而言，通常单个用户只有自己 namespace 的相关权限，而 kubernetes CRD 需要配置额外的权限才能使用。</p>
-
 <p>在 <a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a> 一文中，我们尝试创建了一个 scalings 资源，对于拥有 Admin 权限的用户没有问题，但是对于普通用户，创建时则会提示</p>
-
-<p><code>
-customresourcedefinitions.apiextensions.k8s.io &quot;scalings.control.example.io&quot; is forbidden: User &quot;test&quot; cannot get customresourcedefinitions.apiextensions.k8s.io at the cluster scope
-</code></p>
-
-<h3 id="kubernetes-中的权限管理">kubernetes 中的权限管理</h3>
-
+<p><code>customresourcedefinitions.apiextensions.k8s.io &quot;scalings.control.example.io&quot; is forbidden: User &quot;test&quot; cannot get customresourcedefinitions.apiextensions.k8s.io at the cluster scope</code></p>
+<h3 id="kubernetes-">kubernetes 中的权限管理</h3>
 <p>当前 kubernetes 通常采用 RBAC(Role-Based Access Control) 的授权管理方式，可以很好的实现资源隔离效果。</p>
-
 <p>这种方法引入了几个概念: Role, ClusterRole, RoleBinding, ClusterRoleBinding</p>
-
 <p>Role 表示角色，每一个角色都可以定义一些规则表征这个角色对哪些资源有哪些操作的权限。Role 和 ClusterRole 的区别就在于 Role 是区分 Namespace 的，而 ClusterRole 则是整个集群的权限。</p>
-
 <p>比如如下的配置表示 Role <code>pod-reader</code> 拥有对 <code>default</code> Namespace 的 <code>pods</code> 的只读权限。</p>
-
-<pre><code class="language-yaml">kind: Role
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: pod-reader
 rules:
-- apiGroups: [&quot;&quot;] # 空字符串表明使用 core API group
-  resources: [&quot;pods&quot;]
-  verbs: [&quot;get&quot;, &quot;watch&quot;, &quot;list&quot;]
-</code></pre>
-
-<p>接着我们需要将这个 Role 和具体的用户绑定起来使其生效。</p>
-
-<pre><code class="language-yaml">kind: RoleBinding
+- apiGroups: [<span style="color:#cd0000">&#34;&#34;</span>] <span style="color:#000080"># 空字符串表明使用 core API group</span>
+  resources: [<span style="color:#cd0000">&#34;pods&#34;</span>]
+  verbs: [<span style="color:#cd0000">&#34;get&#34;</span>, <span style="color:#cd0000">&#34;watch&#34;</span>, <span style="color:#cd0000">&#34;list&#34;</span>]
+</code></pre></div><p>接着我们需要将这个 Role 和具体的用户绑定起来使其生效。</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: read-pods
@@ -111,29 +98,22 @@ subjects:
   name: jane
   apiGroup: rbac.authorization.k8s.io
 roleRef:
-  kind: Role # this must be Role or ClusterRole
-  name: pod-reader # this must match the name of the Role or ClusterRole you wish to bind to
+  kind: Role <span style="color:#000080"># this must be Role or ClusterRole</span>
+  name: pod-reader <span style="color:#000080"># this must match the name of the Role or ClusterRole you wish to bind to</span>
   apiGroup: rbac.authorization.k8s.io
-</code></pre>
-
-<p>通过这两个配置，jane 这个用户就具备了 <code>default</code> Namespace 的 <code>pods</code> 资源的只读权限。</p>
-
+</code></pre></div><p>通过这两个配置，jane 这个用户就具备了 <code>default</code> Namespace 的 <code>pods</code> 资源的只读权限。</p>
 <p>ClusterRole 和 ClusterRoleBinding 的使用姿势没有太大区别，只是作用域是整个集群，不需要指定 Namespace。</p>
-
-<h3 id="crd-资源操作权限">CRD 资源操作权限</h3>
-
+<h3 id="crd-">CRD 资源操作权限</h3>
 <p>CustomResourceDefinition 存在于所有 namespace 下，所以需要创建 ClusterRole 和 ClusterRoleBinding 来让普通用户拥有操作 CRD 的 admin 权限。</p>
-
 <p>参考配置如下:</p>
-
-<pre><code class="language-yaml">apiVersion: rbac.authorization.k8s.io/v1
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: crd-admin
 rules:
-- apiGroups: [&quot;apiextensions.k8s.io&quot;]
-  resources: [&quot;customresourcedefinitions&quot;]
-  verbs: [&quot;create&quot;, &quot;delete&quot;, &quot;deletecollection&quot;, &quot;patch&quot;, &quot;update&quot;, &quot;get&quot;, &quot;list&quot;, &quot;watch&quot;]
+- apiGroups: [<span style="color:#cd0000">&#34;apiextensions.k8s.io&#34;</span>]
+  resources: [<span style="color:#cd0000">&#34;customresourcedefinitions&#34;</span>]
+  verbs: [<span style="color:#cd0000">&#34;create&#34;</span>, <span style="color:#cd0000">&#34;delete&#34;</span>, <span style="color:#cd0000">&#34;deletecollection&#34;</span>, <span style="color:#cd0000">&#34;patch&#34;</span>, <span style="color:#cd0000">&#34;update&#34;</span>, <span style="color:#cd0000">&#34;get&#34;</span>, <span style="color:#cd0000">&#34;list&#34;</span>, <span style="color:#cd0000">&#34;watch&#34;</span>]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -147,27 +127,20 @@ roleRef:
   kind: ClusterRole
   name: crd-admin
   apiGroup: rbac.authorization.k8s.io
-</code></pre>
-
-<p>kubectl apply 该配置，则 test 用户具备了对 <code>customresourcedefinitions.apiextensions.k8s.io</code> 的所有操作权限，可以正常创建，删除，更新 CRD 资源。</p>
-
+</code></pre></div><p>kubectl apply 该配置，则 test 用户具备了对 <code>customresourcedefinitions.apiextensions.k8s.io</code> 的所有操作权限，可以正常创建，删除，更新 CRD 资源。</p>
 <p>但是对于我们通过 CRD 创建出来的自定义资源，例如 <code>scalings.control.example.com</code>，还没有任何权限，不能创建和查看对象。</p>
-
-<h3 id="crd-对象操作权限">CRD 对象操作权限</h3>
-
+<h3 id="crd-1">CRD 对象操作权限</h3>
 <p>对于 <code>scalings.control.example.com</code> 这样的我们自己创建出来的资源，也需要对普通用户授予权限，但是不需要是集群范围内的，只需要授予用户关联的 namespace 下的权限即可。所以可以通过创建新的 Role 和 RoleBinding 来实现这一能力。</p>
-
 <p>参考配置如下:</p>
-
-<pre><code class="language-yaml">apiVersion: rbac.authorization.k8s.io/v1
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: default-crd-object
   namespace: default
 rules:
-- apiGroups: [&quot;control.example.com&quot;]
-  resources: [&quot;scalings&quot;]
-  verbs: [&quot;create&quot;, &quot;delete&quot;, &quot;deletecollection&quot;, &quot;patch&quot;, &quot;update&quot;, &quot;get&quot;, &quot;list&quot;, &quot;watch&quot;]
+- apiGroups: [<span style="color:#cd0000">&#34;control.example.com&#34;</span>]
+  resources: [<span style="color:#cd0000">&#34;scalings&#34;</span>]
+  verbs: [<span style="color:#cd0000">&#34;create&#34;</span>, <span style="color:#cd0000">&#34;delete&#34;</span>, <span style="color:#cd0000">&#34;deletecollection&#34;</span>, <span style="color:#cd0000">&#34;patch&#34;</span>, <span style="color:#cd0000">&#34;update&#34;</span>, <span style="color:#cd0000">&#34;get&#34;</span>, <span style="color:#cd0000">&#34;list&#34;</span>, <span style="color:#cd0000">&#34;watch&#34;</span>]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -182,9 +155,7 @@ roleRef:
   kind: Role
   name: default-crd-object
   apiGroup: rbac.authorization.k8s.io
-</code></pre>
-
-<p>kubectl apply 该配置，则 test 用户可以正常创建和查看 scalings 资源对象。</p>
+</code></pre></div><p>kubectl apply 该配置，则 test 用户可以正常创建和查看 scalings 资源对象。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -213,7 +184,6 @@ roleRef:
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2019/04/17/k8s-custom-controller-high-available/">kubernetes 自定义控制器的高可用</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月17日)</span></li><li id="li-rels"><a href="/2019/04/02/k8s-custom-controller/">kubernetes 自定义控制器</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年04月02日)</span></li><li id="li-rels"><a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年03月20日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/">使用 telepresence 在 k8s 环境中实现快速开发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月03日)</span></li><li id="li-rels"><a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月10日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年11月21日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li><li id="li-rels"><a href="/2016/06/24/demystifying-kubernetes-and-deployment/">kubernetes 初探及部署实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年06月24日)</span></li></ul>
-                
             </aside>
                 
             
@@ -246,17 +216,11 @@ roleRef:
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#kubernetes-中的权限管理">kubernetes 中的权限管理</a></li>
-<li><a href="#crd-资源操作权限">CRD 资源操作权限</a></li>
-<li><a href="#crd-对象操作权限">CRD 对象操作权限</a></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#kubernetes-">kubernetes 中的权限管理</a></li>
+    <li><a href="#crd-">CRD 资源操作权限</a></li>
+    <li><a href="#crd-1">CRD 对象操作权限</a></li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -271,19 +235,6 @@ roleRef:
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

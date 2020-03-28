@@ -71,82 +71,52 @@
 
             <div class="post-content">
                 <p>MongoDB 是一个基于分布式文件存储的数据库，由C++编写，介于关系数据库和非关系数据库之间的产品，所以在很多业务上可以取代 mysql，提供更高的性能以及更好的扩展性。虽然 MongoDB 不支持 sql 语法，但是从常用的操作命令上来说和 sql 的用法相类似。</p>
-
-<h4 id="查询有哪些数据库">查询有哪些数据库</h4>
-
+<h4 id="heading">查询有哪些数据库</h4>
 <p><code>show dbs</code></p>
-
-<h4 id="切换数据库">切换数据库</h4>
-
+<h4 id="heading1">切换数据库</h4>
 <p><code>use &lt;db_name&gt;</code></p>
-
 <p>如果数据库不存在，则创建数据库，否则切换到指定数据库。但是只有在数据库中插入数据，才会在查询数据库列表时显示。</p>
-
-<h4 id="查询当前数据库的所有集合">查询当前数据库的所有集合</h4>
-
+<h4 id="heading2">查询当前数据库的所有集合</h4>
 <p><code>db.getCollectionNames()</code></p>
-
-<h4 id="查看指定集合的状态信息">查看指定集合的状态信息</h4>
-
+<h4 id="heading3">查看指定集合的状态信息</h4>
 <p><code>db.&lt;collection_name&gt;.stats()</code></p>
-
-<pre><code class="language-json">{
-    &quot;ns&quot; : &quot;&lt;db_name&gt;.&lt;collection_name&gt;&quot;,
-    &quot;count&quot; : 1,
-    &quot;size&quot; : 4080,
-    &quot;avgObjSize&quot; : 4080,
-    &quot;numExtents&quot; : 1,
-    &quot;storageSize&quot; : 8192,
-    &quot;lastExtentSize&quot; : 8192,
-    &quot;paddingFactor&quot; : 1,
-    &quot;paddingFactorNote&quot; : &quot;paddingFactor is unused and unmaintained in 3.0. It remains hard coded to 1.0 for compatibility only.&quot;,
-    &quot;userFlags&quot; : 1,
-    &quot;capped&quot; : false,
-    &quot;nindexes&quot; : 1,
-    &quot;totalIndexSize&quot; : 8176,
-    &quot;indexSizes&quot; : {
-        &quot;_id_&quot; : 8176
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    &#34;ns&#34; : <span style="color:#cd0000">&#34;&lt;db_name&gt;.&lt;collection_name&gt;&#34;</span>,
+    &#34;count&#34; : <span style="color:#cd00cd">1</span>,
+    &#34;size&#34; : <span style="color:#cd00cd">4080</span>,
+    &#34;avgObjSize&#34; : <span style="color:#cd00cd">4080</span>,
+    &#34;numExtents&#34; : <span style="color:#cd00cd">1</span>,
+    &#34;storageSize&#34; : <span style="color:#cd00cd">8192</span>,
+    &#34;lastExtentSize&#34; : <span style="color:#cd00cd">8192</span>,
+    &#34;paddingFactor&#34; : <span style="color:#cd00cd">1</span>,
+    &#34;paddingFactorNote&#34; : <span style="color:#cd0000">&#34;paddingFactor is unused and unmaintained in 3.0. It remains hard coded to 1.0 for compatibility only.&#34;</span>,
+    &#34;userFlags&#34; : <span style="color:#cd00cd">1</span>,
+    &#34;capped&#34; : <span style="color:#cdcd00">false</span>,
+    &#34;nindexes&#34; : <span style="color:#cd00cd">1</span>,
+    &#34;totalIndexSize&#34; : <span style="color:#cd00cd">8176</span>,
+    &#34;indexSizes&#34; : {
+        &#34;_id_&#34; : <span style="color:#cd00cd">8176</span>
     },
-    &quot;ok&quot; : 1
+    &#34;ok&#34; : <span style="color:#cd00cd">1</span>
 }
-</code></pre>
-
-<h4 id="查看当前数据库中的所有的索引">查看当前数据库中的所有的索引</h4>
-
+</code></pre></div><h4 id="heading4">查看当前数据库中的所有的索引</h4>
 <p><code>db.system.indexes.find()</code></p>
-
-<h4 id="查看指定集合中的索引">查看指定集合中的索引</h4>
-
+<h4 id="heading5">查看指定集合中的索引</h4>
 <p><code>db.col.getIndexes()</code></p>
-
-<h4 id="创建指定集合中的索引">创建指定集合中的索引</h4>
-
+<h4 id="heading6">创建指定集合中的索引</h4>
 <p><code>db.col.ensureIndex({&quot;name&quot;: 1, &quot;age&quot;: -1})</code></p>
-
 <p>根据 name 和 age 进行索引，1表示升序，-1表示降序。</p>
-
-<h4 id="查看集合中的文档">查看集合中的文档</h4>
-
-<h5 id="查询所有文档">查询所有文档</h5>
-
+<h4 id="heading7">查看集合中的文档</h4>
+<h5 id="heading8">查询所有文档</h5>
 <p><code>db.col.find()</code></p>
-
-<h5 id="以易读的方式显示文档内容">以易读的方式显示文档内容</h5>
-
+<h5 id="heading9">以易读的方式显示文档内容</h5>
 <p><code>db.col.find().pretty()</code></p>
-
-<h5 id="查询前10个文档">查询前10个文档</h5>
-
+<h5 id="10">查询前10个文档</h5>
 <p><code>db.col.find().limit(10)</code></p>
-
-<h5 id="查询结果排序展示">查询结果排序展示</h5>
-
+<h5 id="heading10">查询结果排序展示</h5>
 <p><code>db.col.find().sort({'clock':-1})</code></p>
-
 <p>查询结果按照 clock 排序展示，1 为升序，-1 为降序。</p>
-
-<h5 id="where-条件">where 条件</h5>
-
+<h5 id="where-">where 条件</h5>
 <table>
 <thead>
 <tr>
@@ -155,38 +125,32 @@
 <th align="left">RDBMS中的类似语句</th>
 </tr>
 </thead>
-
 <tbody>
 <tr>
 <td align="left">等于</td>
 <td align="left">db.col.find({&ldquo;key&rdquo;:&ldquo;value&rdquo;}).pretty()</td>
 <td align="left">where key = &lsquo;value&rsquo;</td>
 </tr>
-
 <tr>
 <td align="left">小于</td>
 <td align="left">db.col.find({&ldquo;key&rdquo;:{$lt:50}}).pretty()</td>
 <td align="left">where key &lt; 50</td>
 </tr>
-
 <tr>
 <td align="left">小于等于</td>
 <td align="left">db.col.find({&ldquo;key&rdquo;:{$lte:50}}).pretty()</td>
 <td align="left">where key &lt;= 50</td>
 </tr>
-
 <tr>
 <td align="left">大于</td>
 <td align="left">db.col.find({&ldquo;key&rdquo;:{$gt:50}}).pretty()</td>
 <td align="left">where key &gt; 50</td>
 </tr>
-
 <tr>
 <td align="left">大于或等于</td>
 <td align="left">db.col.find({&ldquo;key&rdquo;:{$gte:50}}).pretty()</td>
 <td align="left">where key &gt;= 50</td>
 </tr>
-
 <tr>
 <td align="left">不等于</td>
 <td align="left">db.col.find({&ldquo;key&rdquo;:{$ne:50}}).pretty()</td>
@@ -194,46 +158,28 @@
 </tr>
 </tbody>
 </table>
-
-<h5 id="and-条件">and 条件</h5>
-
+<h5 id="and-">and 条件</h5>
 <p>find() 方法可以传入多个键，每个键以逗号隔开。</p>
-
 <p><code>db.col.find({key1:value1, key2:value2}).pretty()</code></p>
-
-<h5 id="or-条件">or 条件</h5>
-
-<pre><code class="language-json">db.col.find(
+<h5 id="or-">or 条件</h5>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="">d</span><span style="">b</span><span style="">.</span><span style="">c</span><span style="">o</span><span style="">l</span><span style="">.</span><span style="">f</span><span style="">i</span><span style="">n</span><span style="">d</span><span style="">(</span>
     {
-        $or: [
-            {key1: value1}, {key2:value2}
-        ]
-    }
-).pretty()
-</code></pre>
-
-<p>例如 <code>db.col.find({$or:[{&quot;key1&quot;:&quot;value1&quot;}, {&quot;key2&quot;: &quot;value2&quot;}]}).pretty()</code></p>
-
-<h5 id="更新操作">更新操作</h5>
-
+        <span style="">$</span><span style="">o</span><span style="">r</span><span style="">:</span> <span style="">[</span>
+            <span style="">{</span><span style="">k</span><span style="">e</span><span style="">y</span><span style="">1</span><span style="">:</span> <span style="">v</span><span style="">a</span><span style="">l</span><span style="">u</span><span style="">e</span><span style="">1</span>}<span style="">,</span> {<span style="">k</span><span style="">e</span><span style="">y</span><span style="">2</span><span style="">:</span><span style="">v</span><span style="">a</span><span style="">l</span><span style="">u</span><span style="">e</span><span style="">2</span>}
+        <span style="">]</span>
+    <span style="">}</span>
+<span style="">)</span><span style="">.</span><span style="">p</span><span style="">r</span><span style="">e</span><span style="">t</span><span style="">t</span><span style="">y</span><span style="">(</span><span style="">)</span>
+</code></pre></div><p>例如 <code>db.col.find({$or:[{&quot;key1&quot;:&quot;value1&quot;}, {&quot;key2&quot;: &quot;value2&quot;}]}).pretty()</code></p>
+<h5 id="heading11">更新操作</h5>
 <p><code>db.collection.update( query, update, upsert, multi )</code></p>
-
 <p><strong>query</strong>： update 的查询条件，类似 sql update 操作的 where 子句。</p>
-
 <p><strong>update</strong>： update 的对象和一些更新的操作符（如$set, $inc&hellip;）等，也可以理解为 sql update 操作的 set 子句。</p>
-
 <p><strong>upsert</strong>： 可选，这个参数的意思是，如果不存在 update 的记录，是否插入新的记录，true 为插入，默认是 false，不插入。</p>
-
 <p><strong>multi</strong>： 可选，默认为 false，只更新找到的第一条记录，如果这个参数为 true，就把按条件查出来多条记录全部更新。</p>
-
 <p><code>db.agent_conf.update({hostid:137}, {$set: {upload:{interval:10}}}, true)</code></p>
-
 <p>将 agent_conf 集合中 hostid = 137 的记录将 upload.interval 的值修改为 3，如果不存在就插入，只修改匹配的第一条。</p>
-
-<h4 id="删除操作">删除操作</h4>
-
+<h4 id="heading12">删除操作</h4>
 <p><code>db.col.remove({id:1})</code></p>
-
 <p>remove 的过滤条件同 find。</p>
             </div>
             
@@ -263,7 +209,6 @@
                 
                 <h4 id="real-rels">相关文章</h4>
                 <ul class="post-rels" id="real-rels"></ul>
-                
             </aside>
                 
             
@@ -296,36 +241,32 @@
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#查询有哪些数据库">查询有哪些数据库</a></li>
-<li><a href="#切换数据库">切换数据库</a></li>
-<li><a href="#查询当前数据库的所有集合">查询当前数据库的所有集合</a></li>
-<li><a href="#查看指定集合的状态信息">查看指定集合的状态信息</a></li>
-<li><a href="#查看当前数据库中的所有的索引">查看当前数据库中的所有的索引</a></li>
-<li><a href="#查看指定集合中的索引">查看指定集合中的索引</a></li>
-<li><a href="#创建指定集合中的索引">创建指定集合中的索引</a></li>
-<li><a href="#查看集合中的文档">查看集合中的文档</a>
-<ul>
-<li><a href="#查询所有文档">查询所有文档</a></li>
-<li><a href="#以易读的方式显示文档内容">以易读的方式显示文档内容</a></li>
-<li><a href="#查询前10个文档">查询前10个文档</a></li>
-<li><a href="#查询结果排序展示">查询结果排序展示</a></li>
-<li><a href="#where-条件">where 条件</a></li>
-<li><a href="#and-条件">and 条件</a></li>
-<li><a href="#or-条件">or 条件</a></li>
-<li><a href="#更新操作">更新操作</a></li>
-</ul></li>
-<li><a href="#删除操作">删除操作</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#heading">查询有哪些数据库</a></li>
+        <li><a href="#heading1">切换数据库</a></li>
+        <li><a href="#heading2">查询当前数据库的所有集合</a></li>
+        <li><a href="#heading3">查看指定集合的状态信息</a></li>
+        <li><a href="#heading4">查看当前数据库中的所有的索引</a></li>
+        <li><a href="#heading5">查看指定集合中的索引</a></li>
+        <li><a href="#heading6">创建指定集合中的索引</a></li>
+        <li><a href="#heading7">查看集合中的文档</a>
+          <ul>
+            <li><a href="#heading8">查询所有文档</a></li>
+            <li><a href="#heading9">以易读的方式显示文档内容</a></li>
+            <li><a href="#10">查询前10个文档</a></li>
+            <li><a href="#heading10">查询结果排序展示</a></li>
+            <li><a href="#where-">where 条件</a></li>
+            <li><a href="#and-">and 条件</a></li>
+            <li><a href="#or-">or 条件</a></li>
+            <li><a href="#heading11">更新操作</a></li>
+          </ul>
+        </li>
+        <li><a href="#heading12">删除操作</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -340,19 +281,6 @@
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

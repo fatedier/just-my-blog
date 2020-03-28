@@ -71,116 +71,83 @@
 
             <div class="post-content">
                 <p>在参与团队的开发的时候，由于平台和编写代码的工具的不同等等问题，经常会遇到代码格式非常混乱的情况，严重影响了代码的阅读效率。后来发现了一款比较好的工具 &ndash; &ldquo;astyle&rdquo;。</p>
-
 <p>astyle这个工具可以将现有的代码格式转换为指定的风格，当你将乱七八糟的代码用astyle转换一下之后，就会感觉整个世界都清静了……</p>
-
-<h3 id="如何获取">如何获取</h3>
-
+<h3 id="heading">如何获取</h3>
 <p>astyle是一个开放源码的项目，支持C/C++、C#和java的代码格式化</p>
-
-<p>SourceForge地址: <a href="http://sourceforge.net/projects/astyle/">http://sourceforge.net/projects/astyle/</a></p>
-
-<p>我的Github拷贝: <a href="https://github.com/fatedier/fatedier-tools/tree/master/astyle">https://github.com/fatedier/fatedier-tools/tree/master/astyle</a></p>
-
-<h3 id="编译">编译</h3>
-
+<p>SourceForge地址: <a href="http://sourceforge.net/projects/astyle/"><a href="http://sourceforge.net/projects/astyle/">http://sourceforge.net/projects/astyle/</a></a></p>
+<p>我的Github拷贝: <a href="https://github.com/fatedier/fatedier-tools/tree/master/astyle"><a href="https://github.com/fatedier/fatedier-tools/tree/master/astyle">https://github.com/fatedier/fatedier-tools/tree/master/astyle</a></a></p>
+<h3 id="heading1">编译</h3>
 <p>直接写一个Makefile编译下源码，我的Github的拷贝里有写好的Makefile，直接用gmake命令编译一下就可以用了。</p>
-
-<h3 id="示例">示例</h3>
-
-<pre><code class="language-bash">./astyle --style=ansi test.cpp
-</code></pre>
-
-<p>执行之后会提示</p>
-
-<pre><code class="language-bash">Formatted  xxx/test.cpp
-</code></pre>
-
-<p><strong>astyle</strong> 会在当前目录下生成一个备份文件，以 <strong>.orig</strong> 结尾，例如 &ldquo;test.cpp.orig&rdquo;。</p>
-
+<h3 id="heading2">示例</h3>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./astyle --style<span style="color:#39c">=</span>ansi test.cpp
+</code></pre></div><p>执行之后会提示</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Formatted  xxx/test.cpp
+</code></pre></div><p><strong>astyle</strong> 会在当前目录下生成一个备份文件，以 <strong>.orig</strong> 结尾，例如 &ldquo;test.cpp.orig&rdquo;。</p>
 <p>而 <strong>test.cpp</strong> 就已经转换为了 <strong>ansi</strong> 代码风格了。</p>
-
-<h3 id="常用选项">常用选项</h3>
-
+<h3 id="heading3">常用选项</h3>
 <p><strong>注：使用 &ndash;help 选项可以查看astyle的帮助文档</strong></p>
-
-<h4 id="style风格设置">style风格设置</h4>
-
+<h4 id="style">style风格设置</h4>
 <p>常用的代码风格主要有三种: <strong>ansi</strong> 和 <strong>k&amp;r</strong> 以及 <strong>java</strong></p>
-
 <ol>
-<li><p>&ndash;style=allman  OR &ndash;style=ansi OR &ndash;style=bsd OR &ndash;style=break OR -A1</p>
-
-<pre><code class="language-cpp">int Foo()
+<li>
+<p>&ndash;style=allman  OR &ndash;style=ansi OR &ndash;style=bsd OR &ndash;style=break OR -A1</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">int</span> Foo()
 {
-   if (isBar)
+   <span style="color:#cdcd00">if</span> (isBar)
     {
        bar();
-       return 1;
+       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span>;
     }
-   else
+   <span style="color:#cdcd00">else</span>
     {
-       return 0;
+       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
     }
 }
-</code></pre></li>
-
-<li><p>&ndash;style=kr OR &ndash;style=k&amp;r OR &ndash;style=k/r OR -A3</p>
-
-<pre><code class="language-cpp">int Foo()
+</code></pre></div></li>
+<li>
+<p>&ndash;style=kr OR &ndash;style=k&amp;r OR &ndash;style=k/r OR -A3</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">int</span> Foo()
 {
-   if (isBar) {
+   <span style="color:#cdcd00">if</span> (isBar) {
        bar();
-       return 1;
-    }else {
-       return 0;
+       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span>;
+    }<span style="color:#cdcd00">else</span> {
+       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
     }
 }
-</code></pre></li>
-
-<li><p>&ndash;style=java OR &ndash;style=attach OR -A2</p>
-
-<pre><code class="language-cpp">int Foo() {
-   if (isBar) {
+</code></pre></div></li>
+<li>
+<p>&ndash;style=java OR &ndash;style=attach OR -A2</p>
+<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">int</span> Foo() {
+   <span style="color:#cdcd00">if</span> (isBar) {
        bar();
-       return 1;
-    }else {
-       return 0;
+       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span>;
+    }<span style="color:#cdcd00">else</span> {
+       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
     }
 }
-</code></pre></li>
+</code></pre></div></li>
 </ol>
-
-<h4 id="tab选项">Tab选项</h4>
-
+<h4 id="tab">Tab选项</h4>
 <p>默认是使用4个空格替换一个tab。</p>
-
 <ol>
-<li><p>&ndash;indent=spaces=# OR -s#</p>
-
-<p>指定用几个空格替换一个tab，例如 &ndash;indent=spaces=8 ，指定用8个空格替换一个tab。</p></li>
-
-<li><p>&ndash;indent=tab OR &ndash;indent=tab=# OR -t OR -t#</p>
-
-<p>指定缩进使用tab，=#同上，指定一个tab占几个空格，不说明的话默认是4个。</p></li>
+<li>
+<p>&ndash;indent=spaces=# OR -s#</p>
+<p>指定用几个空格替换一个tab，例如 &ndash;indent=spaces=8 ，指定用8个空格替换一个tab。</p>
+</li>
+<li>
+<p>&ndash;indent=tab OR &ndash;indent=tab=# OR -t OR -t#</p>
+<p>指定缩进使用tab，=#同上，指定一个tab占几个空格，不说明的话默认是4个。</p>
+</li>
 </ol>
-
-<h4 id="递归处理">递归处理</h4>
-
+<h4 id="heading4">递归处理</h4>
 <p>&ndash;recursive OR -r OR -R</p>
-
 <p>可以递归处理所有子目录的文件。</p>
-
-<h4 id="排除不处理的文件">排除不处理的文件</h4>
-
+<h4 id="heading5">排除不处理的文件</h4>
 <p>&ndash;exclude=####</p>
-
 <p>指定哪些文件或者文件夹不需要进行处理。</p>
-
-<h4 id="指定配置文件">指定配置文件</h4>
-
+<h4 id="heading6">指定配置文件</h4>
 <p>&ndash;options=####</p>
-
 <p>可以指定读取某个文件的内容作为参数选项。</p>
             </div>
             
@@ -216,8 +183,7 @@
                 
                 
                 <h4 id="real-rels">相关文章</h4>
-                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li><li id="li-rels"><a href="/2014/12/16/how-to-deal-with-zombie-process/">如何处理僵尸进程</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月16日)</span></li><li id="li-rels"><a href="/2014/12/07/debug-with-linux-core-file/">linux core文件调试</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年12月07日)</span></li><li id="li-rels"><a href="/2014/11/24/conditional-judgement-in-linux-shell/">linux shell中的条件判断</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月24日)</span></li><li id="li-rels"><a href="/2014/11/03/how-to-convert-file-encoding-format-on-linux/">Linux下如何进行文件编码格式转换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年11月03日)</span></li><li id="li-rels"><a href="/2014/10/29/use-vim-to-make-my-ide/">使用Vim打造自己的IDE</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月29日)</span></li><li id="li-rels"><a href="/2014/10/24/vimdiff-common-commands/">vimdiff常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月24日)</span></li><li id="li-rels"><a href="/2014/10/17/git-usually-command/">Git常用命令</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月17日)</span></li><li id="li-rels"><a href="/2014/10/16/git-use-for-remind/">Git使用备忘</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/16/learn-git-website/">学习Git的常用网站</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月16日)</span></li><li id="li-rels"><a href="/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with-agent/">主机使用代理上网，虚拟机Linux的shell如何连外网</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2014年10月14日)</span></li></ul>
-                
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2017年03月03日)</span></li><li id="li-rels"><a href="/2016/08/08/get-wr-speed-of-virtual-block-device-in-golang/">go 程序中获取虚拟块设备的读写速度</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年08月08日)</span></li><li id="li-rels"><a href="/2016/07/25/use-different-go-version-by-gvm/">使用gvm在不同go版本之间切换</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月25日)</span></li><li id="li-rels"><a href="/2016/07/18/stat-all-connection-info-of-special-process-in-linux/">linux下查看指定进程的所有连接信息</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年07月18日)</span></li><li id="li-rels"><a href="/2016/03/25/using-sed-to-batch-replace-strings-in-files/">简记用sed对文件执行批量替换字符串的方法</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年03月25日)</span></li><li id="li-rels"><a href="/2016/01/15/use-godep-to-manage-third-party-packages-of-golang-projects/">使用godep管理golang项目的第三方包</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2016年01月15日)</span></li><li id="li-rels"><a href="/2015/12/18/terminal-multiplexer-tmux/">终端利器 Tmux</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年12月18日)</span></li><li id="li-rels"><a href="/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/">mac上将socks5代理转为http代理</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年09月20日)</span></li><li id="li-rels"><a href="/2015/07/22/ssh-port-forwarding/">SSH 端口转发</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年07月22日)</span></li><li id="li-rels"><a href="/2015/01/25/introduction-of-using-epoll/">epoll使用说明</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2015年01月25日)</span></li></ul>
             </aside>
                 
             
@@ -250,25 +216,20 @@
             </div>
 
             <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#如何获取">如何获取</a></li>
-<li><a href="#编译">编译</a></li>
-<li><a href="#示例">示例</a></li>
-<li><a href="#常用选项">常用选项</a>
-<ul>
-<li><a href="#style风格设置">style风格设置</a></li>
-<li><a href="#tab选项">Tab选项</a></li>
-<li><a href="#递归处理">递归处理</a></li>
-<li><a href="#排除不处理的文件">排除不处理的文件</a></li>
-<li><a href="#指定配置文件">指定配置文件</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
+  <ul>
+    <li><a href="#heading">如何获取</a></li>
+    <li><a href="#heading1">编译</a></li>
+    <li><a href="#heading2">示例</a></li>
+    <li><a href="#heading3">常用选项</a>
+      <ul>
+        <li><a href="#style">style风格设置</a></li>
+        <li><a href="#tab">Tab选项</a></li>
+        <li><a href="#heading4">递归处理</a></li>
+        <li><a href="#heading5">排除不处理的文件</a></li>
+        <li><a href="#heading6">指定配置文件</a></li>
+      </ul>
+    </li>
+  </ul>
 </nav>
         </div>
 </aside>
@@ -283,19 +244,6 @@
     <p>&copy; 2020  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
-
-<script>
-var children = $("#TableOfContents").children().first().children().first().children().first().children().first().children().first();
-$("#TableOfContents").children().first().remove();
-$("#TableOfContents").append(children);
-
-var real = $("li#li-rels:lt(8)");
-$("ul.post-rels").children().remove();
-$("ul.post-rels").append(real);
-if ($("ul.post-rels").children().length == 0) {
-    $("#real-rels").remove();
-}
-</script>
 
 <script>hljs.initHighlightingOnLoad();</script>
 

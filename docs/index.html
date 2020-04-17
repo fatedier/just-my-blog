@@ -2,7 +2,7 @@
 
 <html lang="zh-cn">
 <head>
-	<meta name="generator" content="Hugo 0.65.3" />
+	<meta name="generator" content="Hugo 0.68.3" />
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
@@ -61,6 +61,24 @@
 <div class="row">
     <div class="col-md-8">
         <div class="posts">
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
+            2020年04月17日
+        </div>
+        <h2 class="post-title">
+            <a href="/2020/04/17/pod-loopcrash-of-k8s-subpath/">Kubernetes 挂载 subpath 的容器在 configmap 变更后重启时挂载失败</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>Kubernetes 对于挂载了 subpath 的容器，在 configmap 或其他 volume 变更后，如果容器因为意外退出后，就会持续 crash，无法正常启动。</p>
+<p>当前 Kubernetes 已经发布了 1.18 版本，这个问题仍然存在。</p>
+    </div>
+    </article>
+<hr>
+
             
             
 <article class="post li">
@@ -301,23 +319,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2017年02月04日
-        </div>
-        <h2 class="post-title">
-            <a href="/2017/02/04/reduce-golang-program-size/">减小 golang 编译出程序的体积</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>Go 语言的优势是可以很方便地编译出跨平台的应用程序，而不需要为每一个平台做代码适配，也不像 JAVA 一样需要预先安装 JDK 环境。相应的问题就是 go 编译出的程序体积较大，和 c/c++ 不同，它将大多数依赖都以静态编译的方式编译进了程序中。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -338,6 +339,8 @@
                 </div>
                 <div class="list-group">
                     
+                    <a href="/2020/04/17/pod-loopcrash-of-k8s-subpath/" class="list-group-item">Kubernetes 挂载 subpath 的容器在 configmap 变更后重启时挂载失败</a>
+                    
                     <a href="/2020/03/28/golang-jwt/" class="list-group-item">Golang 中使用 JWT 做用户认证</a>
                     
                     <a href="/2019/04/17/k8s-custom-controller-high-available/" class="list-group-item">kubernetes 自定义控制器的高可用</a>
@@ -351,8 +354,6 @@
                     <a href="/2019/01/12/service-mesh-explore-upgrade-http2/" class="list-group-item">Service Mesh 探索之升级 HTTP/2 协议</a>
                     
                     <a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/" class="list-group-item">使用 telepresence 在 k8s 环境中实现快速开发</a>
-                    
-                    <a href="/2018/12/10/a-connect-timeout-problem-caused-by-k8s-pod-deleting/" class="list-group-item">kubernetes 中删除 pod 导致客户端连接不存在的 IP 超时问题</a>
                     
                 </div>
             </div>
@@ -402,7 +403,7 @@
                     </a>
                     
                     <a href="/tags/kubernetes/" class="list-group-item">
-                        <span class="badge">11</span>
+                        <span class="badge">12</span>
                         kubernetes
                     </a>
                     

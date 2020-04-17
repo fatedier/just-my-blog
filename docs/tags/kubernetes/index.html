@@ -63,6 +63,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2020年04月17日
+        </div>
+        <h2 class="post-title">
+            <a href="/2020/04/17/pod-loopcrash-of-k8s-subpath/">Kubernetes 挂载 subpath 的容器在 configmap 变更后重启时挂载失败</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>Kubernetes 对于挂载了 subpath 的容器，在 configmap 或其他 volume 变更后，如果容器因为意外退出后，就会持续 crash，无法正常启动。</p>
+<p>当前 Kubernetes 已经发布了 1.18 版本，这个问题仍然存在。</p>
+    </div>
+    </article>
+<hr>
+
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
             2019年04月17日
         </div>
         <h2 class="post-title">

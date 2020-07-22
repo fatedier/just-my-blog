@@ -33,7 +33,7 @@ Label 是用于将上述几个概念关联起来的一些 k-v 值。例如我们
 
 ### 主要组件
 
-![k8s-overview](http://image.fatedier.com/pic/2016/2016-06-24-demystifying-kubernetes-and-deployment-k8s-overview.png)
+![k8s-overview](https://image.fatedier.com/pic/2016/2016-06-24-demystifying-kubernetes-and-deployment-k8s-overview.png)
 
 Kubernetes 集群中主要存在两种类型的节点，分别是 master 节点，以及 minion 节点。
 

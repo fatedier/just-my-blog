@@ -75,7 +75,7 @@
 <p>在 K8s 中，kube-scheduler 负责将需要调度的 Pod 调度到一个合适的节点上。</p>
 <p>它通过各种算法计算运行当前 Pod 的最佳节点。当出现新的 Pod 需要调度时，调度程序会根据其当时对 Kubernetes 集群的资源描述做出最佳的调度决定。但是，由于集群整体上是动态变化的，例如服务实例的弹性伸缩，节点的上下线，都会导致这个集群的状态逐渐呈现碎片化，从而产生资源的浪费。</p>
 <h4 id="资源碎片">资源碎片</h4>
-<p><img src="http://image.fatedier.com/pic/2020/2020-07-22-k8s-pod-directional-migration-fragment.jpg" alt="fragment"></p>
+<p><img src="https://image.fatedier.com/pic/2020/2020-07-22-k8s-pod-directional-migration-fragment.jpg" alt="fragment"></p>
 <p>如上图所示， 随时间推移后，当前集群的状态可能呈现一种碎片化，宿主机 D 和 E 各分配了 2 核的容器。此时如果我们需要再创建一个 4 核的容器 C，会由于资源不足而无法调度。</p>
 <p>如果我们能将容器 B 从 主机 E 迁移到 主机 D，就可以将主机 E 腾空出来，节省了一台整机的成本。或者在需要创建一个新的 4 核的容器时，不会由于资源不足而无法调度。</p>
 <h4 id="k8s-背景知识">K8s 背景知识</h4>

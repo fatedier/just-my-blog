@@ -77,7 +77,7 @@
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git rebase -i HEAD~3
 </code></pre></div><p><strong>注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。</strong></p>
 <p>之后会进入到文本编辑界面，如下图</p>
-<p><img src="http://image.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg" alt="reset-commit-message"></p>
+<p><img src="https://image.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg" alt="reset-commit-message"></p>
 <p>将要修改的提交前面的 <strong>pick</strong> 改为 <strong>edit</strong> ，保存后退出。</p>
 <p>这个时候执行</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git commit --amend

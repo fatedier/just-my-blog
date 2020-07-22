@@ -111,7 +111,7 @@
 <h4 id="多平台架构支持">多平台，架构支持</h4>
 <p>架构上尽量的抽象，屏蔽底层平台的细节，能够通过扩展的方式方便地支持在 k8s, mesos 或是在物理机上部署的服务。</p>
 <h3 id="架构">架构</h3>
-<p><img src="http://image.fatedier.com/pic/2018/2018-10-15-self-designed-service-mesh-architecture.jpg" alt="architecture"></p>
+<p><img src="https://image.fatedier.com/pic/2018/2018-10-15-self-designed-service-mesh-architecture.jpg" alt="architecture"></p>
 <h4 id="discovery">discovery</h4>
 <p>discovery 为平台提供服务发现的能力，通过抽象，支持同时对接多种后端数据源，例如 k8s, consul, config 等。</p>
 <p>discovery 屏蔽了后端各个数据源的细节，对外提供统一的 GRPC 服务发现接口，将服务发现的数据传播到 proxy 中。</p>

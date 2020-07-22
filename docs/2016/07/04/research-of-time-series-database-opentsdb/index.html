@@ -91,14 +91,14 @@
 <p><code>&lt;metric_UID&gt;&lt;timestamp&gt;&lt;tagk1_UID&gt;&lt;tagv1_UID&gt;[...&lt;tagkN_UID&gt;&lt;tagvN_UID&gt;]</code></p>
 <p>写入 HBase 时的 row key 格式，其中的 metric、tagk 和 tagv 都被转换成了 UID。</p>
 <h4 id="data-table-schema">Data Table Schema</h4>
-<p><img src="http://image.fatedier.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-data-table-schema.png" alt="data-table-schema"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-data-table-schema.png" alt="data-table-schema"></p>
 <p><strong>RowKey</strong> 就是上述的 TSUID，除了时间戳占 4 byte，其余 UID 占 3 byte。</p>
 <p>时间戳的部分只保留到了小时粒度，具体相对于小时的偏移量被存储在了 <strong>列族 t</strong> 中。这样就减小了 HBase 中的存储行数。也就是说对于同一个小时的 metric + tags 相同的数据都会存放在一个 row 下面，这样的设计提高了 row 的检索速度。</p>
 <p>这样的 RowKey 设计使得 metric + tags 相同的数据都会连续存放，且 metric 相同的数据也会连续存放，底层 HBase 中会放在同一 Region 中，在做 Scan 的时候可以快速读取到大片数据，加速查询的过程。</p>
 <p><strong>value</strong> 使用 8 bytes 存储，既可以存储 long,也可以存储 double。</p>
 <h4 id="compaction">Compaction</h4>
 <p>在 OpenTSDB 中，会将多列合并到一列之中以减少磁盘占用空间，这个过程会在 TSD 写数据或者查询过程中不定期的发生。</p>
-<p><img src="http://image.fatedier.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-compaction.png" alt="compaction"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-07-04-research-of-time-series-database-opentsdb-compaction.png" alt="compaction"></p>
 <p>例如图中，将列 1890 和 列 1892 合并到了一起。</p>
 <h3 id="api">API</h3>
 <p>OpenTSDB 同样提供了一套基于 HTTP 的 API 接口。</p>

@@ -186,7 +186,7 @@ func tryOneName(cfg *dnsConfig, name string, qtype uint16) (string, []dnsRR, err
 
 ### dns 查询协议格式
 
-![dns-query-package](http://image.fatedier.com/pic/2016/2016-04-27-go-program-does-not-use-all-nameservers-for-dns-lookups-dns-query-package.png)
+![dns-query-package](https://image.fatedier.com/pic/2016/2016-04-27-go-program-does-not-use-all-nameservers-for-dns-lookups-dns-query-package.png)
 
 我们只需要关注首部的12字节。
 

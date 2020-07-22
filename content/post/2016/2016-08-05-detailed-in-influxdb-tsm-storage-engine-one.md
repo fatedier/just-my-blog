@@ -81,7 +81,7 @@ func shardGroupDuration(d time.Duration) time.Duration {
 
 TSM 存储引擎主要由几个部分组成： **cache、wal、tsm file、compactor**。
 
-![tsm-architecture](http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-architecture.png)
+![tsm-architecture](https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-architecture.png)
 
 #### Shard
 
@@ -187,7 +187,7 @@ InfluxDB 的数据存储主要有三个目录。
 
 #### WAL 文件
 
-![wal-entry](http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-wal-entry.png)
+![wal-entry](https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-wal-entry.png)
 
 wal 文件中的一条数据，对应的是一个 key(measument + tags + fieldName) 下的所有 value 数据，按照时间排序。
 
@@ -202,7 +202,7 @@ wal 文件中的一条数据，对应的是一个 key(measument + tags + fieldNa
 
 单个 tsm 文件的主要格式如下：
 
-![tsm-file](http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file.png)
+![tsm-file](https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file.png)
 
 主要分为四个部分： **Header, Blocks, Index, Footer**。
 
@@ -210,14 +210,14 @@ wal 文件中的一条数据，对应的是一个 key(measument + tags + fieldNa
 
 ##### Header
 
-![tsm-file-header](http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-header.png)
+![tsm-file-header](https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-header.png)
 
 * **MagicNumber  (4 bytes)**: 用于区分是哪一个存储引擎，目前使用的 tsm1 引擎，MagicNumber 为 `0x16D116D1`。
 * **Version (1 byte)**: 目前是 tsm1 引擎，此值固定为 `1`。
 
 ##### Blocks
 
-![tsm-file-blocks](http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-blocks.png)
+![tsm-file-blocks](https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-blocks.png)
 
 Blocks 内部是一些连续的 Block，block 是 InfluxDB 中的最小读取对象，每次读取操作都会读取一个 block。每一个 Block 分为 CRC32 值和 Data 两部分，CRC32 值用于校验 Data 的内容是否有问题。Data 的长度记录在之后的 Index 部分中。
 
@@ -227,7 +227,7 @@ Data 的数据解压后的格式为 8 字节的时间戳以及紧跟着的 value
 
 ##### Index
 
-![tsm-file-index](http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index.png)
+![tsm-file-index](https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index.png)
 
 Index 存放的是前面 Blocks 里内容的索引。索引条目的顺序是先按照 key 的字典序排序，再按照 time 排序。InfluxDB 在做查询操作时，可以根据 Index 的信息快速定位到 tsm file 中要查询的 block 的位置。
 
@@ -268,9 +268,9 @@ type Index []*KeyIndex
 
 间接索引只存在于内存中，是为了可以快速定位到一个 key 在详细索引信息中的位置而创建的，可以被用于二分查找来实现快速检索。
 
-![tsm-file-index-simple](http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index-simple.png)
+![tsm-file-index-simple](https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index-simple.png)
 
-![tsm-file-sub-index](http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-sub-index.png)
+![tsm-file-sub-index](https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-sub-index.png)
 
 offsets 是一个数组，其中存储的值为每一个 key 在 Index 表中的位置，由于 key 的长度固定为 2字节，所以根据这个位置就可以找到该位置上对应的 key 的内容。
 
@@ -278,7 +278,7 @@ offsets 是一个数组，其中存储的值为每一个 key 在 Index 表中的
 
 ##### Footer
 
-![tsm-file-footer](http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-footer.png)
+![tsm-file-footer](https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-footer.png)
 
 tsm file 的最后8字节的内容存放了 Index 部分的起始位置在 tsm file 中的偏移量，方便将索引信息加载到内存中。
 

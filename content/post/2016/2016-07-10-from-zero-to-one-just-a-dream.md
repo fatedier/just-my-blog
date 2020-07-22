@@ -133,4 +133,4 @@ Facebook 采用扁平化的管理方式，公司的高管层人数很少，基�
 
 ----
 
-![book-pic](http://image.fatedier.com/pic/2016/2016-07-10-from-zero-to-one-just-a-dream-book-pic.png)
+![book-pic](https://image.fatedier.com/pic/2016/2016-07-10-from-zero-to-one-just-a-dream-book-pic.png)

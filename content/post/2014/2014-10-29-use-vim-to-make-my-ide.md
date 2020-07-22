@@ -21,7 +21,7 @@ url: "/2014/10/29/use-vim-to-make-my-ide"
 
 最终的效果：
 
-![overview](http://image.fatedier.com/pic/2014/2014-10-29-use-vim-to-make-my-ide-overview.jpg)
+![overview](https://image.fatedier.com/pic/2014/2014-10-29-use-vim-to-make-my-ide-overview.jpg)
 
 现在把整个配置的过程记录下来，方便以后参考。
 

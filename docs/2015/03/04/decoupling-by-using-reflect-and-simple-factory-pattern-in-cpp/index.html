@@ -190,8 +190,8 @@ t<span style="color:#39c">-&gt;</span>parseMsg();
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">REGISTER_CLASS(GSBank)
 </code></pre></div><p>就可以通过工厂类传入 &ldquo;GSBank&rdquo; 字符串获得工商银行交互类的实例。</p>
 <h3 id="测试">测试</h3>
-<p><img src="http://image.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg" alt="GSBANK"></p>
-<p><img src="http://image.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg" alt="RMBANK"></p>
+<p><img src="https://image.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg" alt="GSBANK"></p>
+<p><img src="https://image.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg" alt="RMBANK"></p>
 <p>通过传入不同的银行编码，会实例化不同的银行交互类，并且执行其对应的函数。</p>
 <p>如果需要增加新的银行接口，例如农业银行，只需要新增一个 <strong>NYBank</strong> 类，实现具体的业务逻辑，不需要改动原来的任何代码，传入 <strong>NYBank</strong> 字符串，就会执行农业银行相关的处理流程。</p>
             </div>

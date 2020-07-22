@@ -14,7 +14,7 @@ url: "/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with
 
 <!--more-->
 
-![vmware-net](http://image.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg)
+![vmware-net](https://image.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-vmware-net.jpg)
 
 在VMware界面，点击“编辑”，“虚拟网络编辑器”
 
@@ -24,11 +24,11 @@ url: "/2014/10/14/how-virtual-machine-connect-internet-while-host-getonline-with
 
 一般来说这时我们的主机会自动分配一个IP类似192.168.131.1这样的，子网掩码为255.255.255.0，如下图所示。
 
-![host-net](http://image.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-host-net.jpg)
+![host-net](https://image.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-host-net.jpg)
 
 现在进入虚拟机的Linux进行设置。
 
-![network-configuration](http://image.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-network-configuration.jpg)
+![network-configuration](https://image.fatedier.com/pic/2014/2014-10-14-how-virtual-machine-connect-internet-while-host-getonline-with-agent-network-configuration.jpg)
 
 注意IP需要设置成192.168.131.x的形势，网关是192.168.131.2。
 

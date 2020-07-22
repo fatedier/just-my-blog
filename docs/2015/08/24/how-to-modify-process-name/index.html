@@ -73,7 +73,7 @@
                 <p>在开发 php 扩展的过程中，希望能创建一个独立的子进程做一些额外的处理工作，并且为子进程修改一个有意义的名称，发现还是有一些难度的。</p>
 <h3 id="效果预览">效果预览</h3>
 <p>要实现的效果就像 nginx 启动后通过 ps 查到的名称一样，这个名称就是自定义的，如下图</p>
-<p><img src="http://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-nginx-process-name.png" alt="nginx-process-name"></p>
+<p><img src="https://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-nginx-process-name.png" alt="nginx-process-name"></p>
 <h3 id="方法一">方法一</h3>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">prctl(PR_SET_NAME, name);
 </code></pre></div><p>通过这个函数可以将当前进程的名称修改为 <code>name</code> 的内容。</p>
@@ -115,7 +115,7 @@
 }
 </code></pre></div><p>稍微解释一下，每一个 c 程序都有个 main 函数，作为程序启动入口函数。main 函数的原型是 <code>int main(int argc , char *argv[])</code>，其中 <strong>argc</strong> 表示命令行参数的个数，<strong>argv</strong> 是一个指针数组，保存所有命令行字符串。Linux进程名称是通过命令行参数 <strong>argv[0]</strong> 来表示的。</p>
 <p>而进程执行时的环境变量信息的存储地址就是紧接着 <strong>argv</strong> 之后，通过 <code>char **environ</code> 变量来获取，类似于下图</p>
-<p><img src="http://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-argv-info.png" alt="argv-info"></p>
+<p><img src="https://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-argv-info.png" alt="argv-info"></p>
 <p>由于我们需要修改 <strong>argv[0]</strong> 的值，有可能新的字符串的长度超过原来 <strong>argv</strong> 中所有字符串长度的总和，又因为 <strong>environ</strong> 在内存空间上是紧跟着 <strong>argv</strong> 的，我们如果直接修改 <strong>argv[0]</strong> 的值，有可能会覆盖掉 <strong>environ</strong> 的内存空间，所以需要先将 <strong>environ</strong> 的内容 copy 到一块新的内存空间，之后再将 <strong>environ</strong> 指针指向新的空间。</p>
 <h3 id="php-扩展中遇到的困难">php 扩展中遇到的困难</h3>
 <p>在修改 php 扩展中 fork 的子进程名称时遇到了问题，由于 php 扩展是注入的方式，提供的动态库，无法获取到从 <strong>main</strong> 函数传入过来的 <strong>argv</strong> 参数的地址。</p>

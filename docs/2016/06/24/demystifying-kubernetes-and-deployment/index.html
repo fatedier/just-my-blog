@@ -81,7 +81,7 @@
 <h4 id="label">Label</h4>
 <p>Label 是用于将上述几个概念关联起来的一些 k-v 值。例如我们创建了一个 pod 并且设置了 label 为 <code>app=nginx</code>，同样在创建 service 和 replicationController 时也设置相同的 label，这样通过 label 的 selector 机制就可以将创建好的 service 和 replicationController 作用在之前创建的 pod 上。</p>
 <h3 id="主要组件">主要组件</h3>
-<p><img src="http://image.fatedier.com/pic/2016/2016-06-24-demystifying-kubernetes-and-deployment-k8s-overview.png" alt="k8s-overview"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-06-24-demystifying-kubernetes-and-deployment-k8s-overview.png" alt="k8s-overview"></p>
 <p>Kubernetes 集群中主要存在两种类型的节点，分别是 master 节点，以及 minion 节点。</p>
 <p>Minion 节点是实际运行 Docker 容器的节点，负责和节点上运行的 Docker 进行交互，并且提供了代理功能。</p>
 <p>Master 节点负责对外提供一系列管理集群的 API 接口，并且通过和 Minion 节点交互来实现对集群的操作管理。</p>

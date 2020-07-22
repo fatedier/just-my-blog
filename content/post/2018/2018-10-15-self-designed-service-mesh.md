@@ -76,7 +76,7 @@ url: "/2018/10/15/self-designed-service-mesh"
 
 ### 架构
 
-![architecture](http://image.fatedier.com/pic/2018/2018-10-15-self-designed-service-mesh-architecture.jpg)
+![architecture](https://image.fatedier.com/pic/2018/2018-10-15-self-designed-service-mesh-architecture.jpg)
 
 #### discovery
 

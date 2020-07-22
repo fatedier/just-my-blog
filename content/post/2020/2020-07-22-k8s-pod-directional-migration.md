@@ -20,7 +20,7 @@ url: "/2020/07/22/k8s-pod-directional-migration"
 
 #### 资源碎片
 
-![fragment](http://image.fatedier.com/pic/2020/2020-07-22-k8s-pod-directional-migration-fragment.jpg)
+![fragment](https://image.fatedier.com/pic/2020/2020-07-22-k8s-pod-directional-migration-fragment.jpg)
 
 如上图所示， 随时间推移后，当前集群的状态可能呈现一种碎片化，宿主机 D 和 E 各分配了 2 核的容器。此时如果我们需要再创建一个 4 核的容器 C，会由于资源不足而无法调度。
 

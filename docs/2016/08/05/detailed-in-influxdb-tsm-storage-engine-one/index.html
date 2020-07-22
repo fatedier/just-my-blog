@@ -114,7 +114,7 @@
 </code></pre></div><p>如果创建一个新的 retention policy 设置数据的保留时间为 1 天，则单个 shard 所存储数据的时间间隔为 1 小时，超过1个小时的数据会被存放到下一个 shard 中。</p>
 <h3 id="组件">组件</h3>
 <p>TSM 存储引擎主要由几个部分组成： <strong>cache、wal、tsm file、compactor</strong>。</p>
-<p><img src="http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-architecture.png" alt="tsm-architecture"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-architecture.png" alt="tsm-architecture"></p>
 <h4 id="shard-1">Shard</h4>
 <p>shard 并不能算是其中的一个组件，因为这是在 tsm 存储引擎之上的一个概念。在 InfluxDB 中按照数据的时间戳所在的范围，会去创建不同的 shard，每一个 shard 都有自己的 cache、wal、tsm file 以及 compactor，这样做的目的就是为了可以通过时间来快速定位到要查询数据的相关资源，加速查询的过程，并且也让之后的批量删除数据的操作变得非常简单且高效。</p>
 <p>在 LSM Tree 中删除数据是通过给指定 key 插入一个删除标记的方式，数据并不立即删除，需要等之后对文件进行压缩合并时才会真正地将数据删除，所以删除大量数据在 LSM Tree 中是一个非常低效的操作。</p>
@@ -186,7 +186,7 @@
             -- 000000002-000000002.tsm
 </code></pre></div><p>其中 <strong>mydb</strong> 是数据库名称，<strong>autogen</strong> 和 <strong>2hours</strong> 是存储策略名称，再下一层目录中的以数字命名的目录是 shard 的 ID 值，比如 <strong>autogen</strong> 存储策略下有两个 shard，ID 分别为 1 和 2，shard 存储了某一个时间段范围内的数据。再下一级的目录则为具体的文件，分别是 <code>.wal</code> 和 <code>.tsm</code> 结尾的文件。</p>
 <h4 id="wal-文件">WAL 文件</h4>
-<p><img src="http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-wal-entry.png" alt="wal-entry"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-wal-entry.png" alt="wal-entry"></p>
 <p>wal 文件中的一条数据，对应的是一个 key(measument + tags + fieldName) 下的所有 value 数据，按照时间排序。</p>
 <ul>
 <li><strong>Type (1 byte)</strong>: 表示这个条目中 value 的类型。</li>
@@ -198,22 +198,22 @@
 </ul>
 <h4 id="tsm-文件">TSM 文件</h4>
 <p>单个 tsm 文件的主要格式如下：</p>
-<p><img src="http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file.png" alt="tsm-file"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file.png" alt="tsm-file"></p>
 <p>主要分为四个部分： <strong>Header, Blocks, Index, Footer</strong>。</p>
 <p>其中 <strong>Index</strong> 部分的内容会被缓存在内存中，下面详细说明一下每一个部分的数据结构。</p>
 <h5 id="header">Header</h5>
-<p><img src="http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-header.png" alt="tsm-file-header"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-header.png" alt="tsm-file-header"></p>
 <ul>
 <li><strong>MagicNumber  (4 bytes)</strong>: 用于区分是哪一个存储引擎，目前使用的 tsm1 引擎，MagicNumber 为 <code>0x16D116D1</code>。</li>
 <li><strong>Version (1 byte)</strong>: 目前是 tsm1 引擎，此值固定为 <code>1</code>。</li>
 </ul>
 <h5 id="blocks">Blocks</h5>
-<p><img src="http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-blocks.png" alt="tsm-file-blocks"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-blocks.png" alt="tsm-file-blocks"></p>
 <p>Blocks 内部是一些连续的 Block，block 是 InfluxDB 中的最小读取对象，每次读取操作都会读取一个 block。每一个 Block 分为 CRC32 值和 Data 两部分，CRC32 值用于校验 Data 的内容是否有问题。Data 的长度记录在之后的 Index 部分中。</p>
 <p><strong>Data 中的内容根据数据类型的不同，在 InfluxDB 中会采用不同的压缩方式</strong>，float 值采用了 Gorilla float compression，而 timestamp 因为是一个递增的序列，所以实际上压缩时只需要记录时间的偏移量信息。string 类型的 value 采用了 snappy 算法进行压缩。</p>
 <p>Data 的数据解压后的格式为 8 字节的时间戳以及紧跟着的 value，value 根据类型的不同，会占用不同大小的空间，其中 string 为不定长，会在数据开始处存放长度，这一点和 WAL 文件中的格式相同。</p>
 <h5 id="index">Index</h5>
-<p><img src="http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index.png" alt="tsm-file-index"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index.png" alt="tsm-file-index"></p>
 <p>Index 存放的是前面 Blocks 里内容的索引。索引条目的顺序是先按照 key 的字典序排序，再按照 time 排序。InfluxDB 在做查询操作时，可以根据 Index 的信息快速定位到 tsm file 中要查询的 block 的位置。</p>
 <p>这张图只展示了其中一部分，用结构体来表示的话类似下面的代码：</p>
 <div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> BlockIndex <span style="color:#00cd00">struct</span> {
@@ -247,12 +247,12 @@
 </ul>
 <h5 id="间接索引">间接索引</h5>
 <p>间接索引只存在于内存中，是为了可以快速定位到一个 key 在详细索引信息中的位置而创建的，可以被用于二分查找来实现快速检索。</p>
-<p><img src="http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index-simple.png" alt="tsm-file-index-simple"></p>
-<p><img src="http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-sub-index.png" alt="tsm-file-sub-index"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index-simple.png" alt="tsm-file-index-simple"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-sub-index.png" alt="tsm-file-sub-index"></p>
 <p>offsets 是一个数组，其中存储的值为每一个 key 在 Index 表中的位置，由于 key 的长度固定为 2字节，所以根据这个位置就可以找到该位置上对应的 key 的内容。</p>
 <p>当指定一个要查询的 key 时，就可以通过二分查找，定位到其在 Index 表中的位置，再根据要查询的数据的时间进行定位，由于 KeyIndex  中的 BlockIndex 结构是定长的，所以也可以进行一次二分查找，找到要查询的数据所在的 BlockIndex 的内容，之后根据偏移量以及 block 长度就可以从 tsm 文件中快速读取出一个 block 的内容。</p>
 <h5 id="footer">Footer</h5>
-<p><img src="http://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-footer.png" alt="tsm-file-footer"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-footer.png" alt="tsm-file-footer"></p>
 <p>tsm file 的最后8字节的内容存放了 Index 部分的起始位置在 tsm file 中的偏移量，方便将索引信息加载到内存中。</p>
 <p><strong>由于内容较多，具体的写入与查询操作的流程，以及部分代码的详解会在下一篇文章中介绍。</strong></p>
             </div>

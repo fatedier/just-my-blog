@@ -31,7 +31,7 @@ Redis集群的目标就是为了实现高可用性，避免性能瓶颈，可动
 
 通常需要 smart-client 支持，在业务程序端根据预先设置的路由规则进行分片，从而实现对多个redis实例的分布式访问。
 
-![jedis](http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-jedis.png)
+![jedis](https://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-jedis.png)
 
 鉴于redis本身的高性能，并且有一些设计良好的第三方库，例如java开发者可以使用jedis，所以很多小公司使用此方案。
 
@@ -59,7 +59,7 @@ Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：
 
 #### 整体架构图
 
-![twemproxy_architecture](http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-twemproxy-architecture.png)
+![twemproxy_architecture](https://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-twemproxy-architecture.png)
 
 #### twemproxy的特点
 
@@ -87,7 +87,7 @@ Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：
 
 #### 数据分布：预分片
 
-![redis-cluster-pre-sharding](http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-pre-sharding.png)
+![redis-cluster-pre-sharding](https://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-pre-sharding.png)
 
 * 预先分配好 16384 个slot
 * slot 和 server 的映射关系存储每一个 server 的路由表中
@@ -96,7 +96,7 @@ Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：
 
 #### 架构：去中心化
 
-![redis-cluster-architecture](http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-architecture.png)
+![redis-cluster-architecture](https://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-redis-cluster-architecture.png)
 
 * 无中心结构，每个节点都保存数据和整个集群的状态。
 * 采用 gossip 协议传播信息以及发现新节点（最终一致性）。
@@ -132,7 +132,7 @@ Redis3.0之后的版本开始正式支持 redis cluster，核心目标是：
 
 Go语言开发的分布式 Redis 解决方案，对于上层的应用来说，访问 codis 和原生的 redis server 没有明显区别（不支持发布订阅等某些命令，支持 pipeline）。
 
-![codis-architecture](http://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png)
+![codis-architecture](https://image.fatedier.com/pic/2015/2015-09-15-redis-cluster-survey-codis-architecture.png)
 
 Codis由四部分组成：
 

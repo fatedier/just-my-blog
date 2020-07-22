@@ -83,12 +83,12 @@
 <p>顾名思义，Immutable Memtable 就是在内存中只读的 MemTable，由于内存是有限的，通常我们会设置一个阀值，当 MemTable 占用的内存达到阀值后就自动转换为 Immutable Memtable，Immutable Memtable 和 MemTable 的区别就是它是只读的，系统此时会生成新的 MemTable 供写操作继续写入。</p>
 <p>之所以要使用 Immutable Memtable，就是为了避免将 MemTable 中的内容序列化到磁盘中时会阻塞写操作。</p>
 <h4 id="sstable">SSTable</h4>
-<p><img src="http://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-sstable.png" alt="sstable"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-sstable.png" alt="sstable"></p>
 <p>SSTable 就是 MemTable 中的数据在磁盘上的有序存储，其内部数据是根据 key 从小到大排列的。通常为了加快查找的速度，需要在 SSTable 中加入数据索引，可以快读定位到指定的 k-v 数据。</p>
 <p>SSTable 通常采用的分级的结构，例如 LevelDB 中就是如此。MemTable 中的数据达到指定阀值后会在 Level 0 层创建一个新的 SSTable。当某个 Level 下的文件数超过一定值后，就会将这个 Level 下的一个 SSTable 文件和更高一级的 SSTable 文件合并，由于 SSTable 中的 k-v 数据都是有序的，相当于是一个多路归并排序，所以合并操作相当快速，最终生成一个新的 SSTable 文件，将旧的文件删除，这样就完成了一次合并过程。</p>
 <h3 id="常用操作的实现">常用操作的实现</h3>
 <h4 id="写入">写入</h4>
-<p><img src="http://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-write.png" alt="write"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-write.png" alt="write"></p>
 <p>在 LSM Tree 中，写入操作是相当快速的，只需要在 WAL 文件中顺序写入当次操作的内容，成功之后将该 k-v 数据写入 MemTable 中即可。尽管做了一次磁盘 IO，但是由于是顺序追加写入操作，效率相对来说很高，并不会导致写入速度的降低。数据写入 MemTable 中其实就是往 SkipList 中插入一条数据，过程也相当简单快速。</p>
 <h4 id="更新">更新</h4>
 <p>更新操作其实并不真正存在，和写入一个 k-v 数据没有什么不同，只是在读取的时候，会从 Level0 层的 SSTable 文件开始查找数据，数据在低层的 SSTable 文件中必然比高层的文件中要新，所以总能读取到最新的那条数据。也就是说此时在整个 LSM Tree 中可能会同时存在多个 key 值相同的数据，只有在之后合并 SSTable 文件的时候，才会将旧的值删除。</p>
@@ -103,7 +103,7 @@
 <li>当一层的文件达到指定数量后，其中的一个文件会被合并进入上一层的文件中。</li>
 </ol>
 <h4 id="读取">读取</h4>
-<p><img src="http://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-read.png" alt="read"></p>
+<p><img src="https://image.fatedier.com/pic/2016/2016-06-15-learn-lsm-tree-read.png" alt="read"></p>
 <p>LSM Tree 的读取效率并不高，当需要读取指定 key 的数据时，先在内存中的 MemTable 和 Immutable MemTable 中查找，如果没有找到，则继续从 Level 0 层开始，找不到就从更高层的 SSTable 文件中查找，如果查找失败，说明整个 LSM Tree 中都不存在这个 key 的数据。如果中间在任何一个地方找到这个 key 的数据，那么按照这个路径找到的数据都是最新的。</p>
 <p>在每一层的 SSTable 文件的 key 值范围是不重复的，所以只需要查找其中一个 SSTable 文件即可确定指定 key 的数据是否存在于这一层中。Level 0 层比较特殊，因为数据是 Immutable MemTable 直接写入此层的，所以 Level 0 层的 SSTable 文件的 key 值范围可能存在重复，查找数据时有可能需要查找多个文件。</p>
 <h4 id="优化读取">优化读取</h4>

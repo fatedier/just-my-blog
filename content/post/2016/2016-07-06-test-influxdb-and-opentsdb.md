@@ -15,7 +15,7 @@ url: "/2016/07/06/test-influxdb-and-opentsdb"
 
 ### 时间序列数据库热度排名
 
-![db-rank](http://image.fatedier.com/pic/2016/2016-07-06-test-influxdb-and-opentsdb-db-rank.png)
+![db-rank](https://image.fatedier.com/pic/2016/2016-07-06-test-influxdb-and-opentsdb-db-rank.png)
 
 ### 测试环境
 

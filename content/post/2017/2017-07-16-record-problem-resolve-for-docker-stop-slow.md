@@ -91,7 +91,7 @@ E..(..@.@.u...L5..L5N1Uu.q.Q....P.      .....
 
 查看 meso-agent 日志如下：
 
-![mesos-agent-log](http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-agent-log.png)
+![mesos-agent-log](https://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-agent-log.png)
 
 确认 mesos-agent 在 **00:39:22** 给 mesos-docker-executor 发送了 kill task 的消息，但是 mesos-docker-executor 在 **00:44:22** 时才回复消息确认实例被停止了。
 
@@ -99,15 +99,15 @@ E..(..@.@.u...L5..L5N1Uu.q.Q....P.      .....
 
 #### 分析 mesos-docker-executor 源码
 
-![mesos-docker-executor](http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-docker-executor.png)
+![mesos-docker-executor](https://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-mesos-docker-executor.png)
 
 可以看出，这里有一个很关键的 `gracePeriod` 变量，如果停止任务的请求中有设置 `killPolicy` 则此值为 `killPolicy` 中的值，否则使用默认值。
 
-![shutdown-code](http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-executor-shutdown-code.png)
+![shutdown-code](https://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-executor-shutdown-code.png)
 
 这个值在 mesos-agent 启动的时候通过 `--executor_shutdown_grace_period` 传进去，实际环境中我们配置的是 5 分钟。
 
-![docker-stop-code](http://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-docker-stop-code.png)
+![docker-stop-code](https://image.fatedier.com/pic/2017/2017-07-16-record-problem-resolve-for-docker-stop-slow-docker-stop-code.png)
 
 mesos-docker-executor 会根据 `gracePeriod` 的值调用 `docker stop -t` 来停止容器。
 

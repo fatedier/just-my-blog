@@ -16,7 +16,7 @@ url: "/2015/08/24/how-to-modify-process-name"
 
 要实现的效果就像 nginx 启动后通过 ps 查到的名称一样，这个名称就是自定义的，如下图
 
-![nginx-process-name](http://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-nginx-process-name.png)
+![nginx-process-name](https://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-nginx-process-name.png)
 
 ### 方法一
 
@@ -72,7 +72,7 @@ void set_proctitle(char** argv, const char* new_name)
 
 而进程执行时的环境变量信息的存储地址就是紧接着 **argv** 之后，通过 `char **environ` 变量来获取，类似于下图
 
-![argv-info](http://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-argv-info.png)
+![argv-info](https://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-argv-info.png)
 
 由于我们需要修改 **argv[0]** 的值，有可能新的字符串的长度超过原来 **argv** 中所有字符串长度的总和，又因为 **environ** 在内存空间上是紧跟着 **argv** 的，我们如果直接修改 **argv[0]** 的值，有可能会覆盖掉 **environ** 的内存空间，所以需要先将 **environ** 的内容 copy 到一块新的内存空间，之后再将 **environ** 指针指向新的空间。
 

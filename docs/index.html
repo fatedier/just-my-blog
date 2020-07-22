@@ -66,6 +66,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2020年07月22日
+        </div>
+        <h2 class="post-title">
+            <a href="/2020/07/22/k8s-pod-directional-migration/">Kubernetes 中支持 Pod 定向迁移</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>原生的 K8s 并不支持将指定的 Pod 从当前节点迁移到另外一个指定的节点上。但是我们可以基于 K8s 提供的扩展能力来实现对这一功能的支持。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2020年04月17日
         </div>
         <h2 class="post-title">
@@ -302,23 +319,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2017年03月03日
-        </div>
-        <h2 class="post-title">
-            <a href="/2017/03/03/support-udp-in-mtcp/">为 mtcp 项目添加 udp 支持</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>mtcp 是一个用户态的 tcp 协议栈，结合 dpdk 可以实现高性能的收发包。mtcp 不支持 udp 协议，想要在 bind 里利用 mtcp 进行加速，需要改动源码以提供支持。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -339,6 +339,8 @@
                 </div>
                 <div class="list-group">
                     
+                    <a href="/2020/07/22/k8s-pod-directional-migration/" class="list-group-item">Kubernetes 中支持 Pod 定向迁移</a>
+                    
                     <a href="/2020/04/17/pod-loopcrash-of-k8s-subpath/" class="list-group-item">Kubernetes 挂载 subpath 的容器在 configmap 变更后重启时挂载失败</a>
                     
                     <a href="/2020/03/28/golang-jwt/" class="list-group-item">Golang 中使用 JWT 做用户认证</a>
@@ -352,8 +354,6 @@
                     <a href="/2019/03/20/k8s-crd/" class="list-group-item">kubernetes 自定义资源(CRD)</a>
                     
                     <a href="/2019/01/12/service-mesh-explore-upgrade-http2/" class="list-group-item">Service Mesh 探索之升级 HTTP/2 协议</a>
-                    
-                    <a href="/2019/01/03/using-telepresence-for-quick-dev-in-k8s/" class="list-group-item">使用 telepresence 在 k8s 环境中实现快速开发</a>
                     
                 </div>
             </div>
@@ -403,7 +403,7 @@
                     </a>
                     
                     <a href="/tags/kubernetes/" class="list-group-item">
-                        <span class="badge">12</span>
+                        <span class="badge">13</span>
                         kubernetes
                     </a>
                     

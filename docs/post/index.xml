@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Fri, 17 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 22 Jul 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://blog.fatedier.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kubernetes 中支持 Pod 定向迁移</title>
+      <link>https://blog.fatedier.com/2020/07/22/k8s-pod-directional-migration/</link>
+      <pubDate>Wed, 22 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2020/07/22/k8s-pod-directional-migration/</guid>
+      <description>&lt;p&gt;原生的 K8s 并不支持将指定的 Pod 从当前节点迁移到另外一个指定的节点上。但是我们可以基于 K8s 提供的扩展能力来实现对这一功能的支持。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Kubernetes 挂载 subpath 的容器在 configmap 变更后重启时挂载失败</title>

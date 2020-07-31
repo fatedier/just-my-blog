@@ -177,6 +177,8 @@ mount: mount(2) failed: No such file or directory
 <p>之后正常的容器启动，但是指定了 subpath，如果 kubelet 直接 Mount 软链接，会将宿主机的根目录 Mount 到用户容器中。</p>
 <p>为了解决这个问题，需要解析出软链接对应的真实文件路径，并且判断此路径是否是在 Volume 目录下，校验通过后才能挂载到容器中。但是由于校验和挂载之间存在时间差，此文件还是有可能会被篡改。</p>
 <p>社区讨论后，通过引入中间 Bind Mount 的机制，相当于给这个文件加锁，将原文件的路径固化，之后再 Mount 到容器中时，只会 Mount 当时创建挂载点时的源文件。</p>
+<h3 id="更新">更新</h3>
+<p>给社区提交的修复 PR 已经被合入 <a href="https://github.com/kubernetes/kubernetes/pull/89629">89629</a> 。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
@@ -253,6 +255,7 @@ mount: mount(2) failed: No such file or directory
       </ul>
     </li>
     <li><a href="#为什么使用间接-bind-mount-而不是直接-mount-软链接">为什么使用间接 Bind Mount 而不是直接 Mount 软链接</a></li>
+    <li><a href="#更新">更新</a></li>
   </ul>
 </nav>
         </div>

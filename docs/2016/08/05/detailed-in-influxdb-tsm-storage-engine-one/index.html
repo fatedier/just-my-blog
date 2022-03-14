@@ -93,25 +93,25 @@
 <p>series 相当于是 InfluxDB 中一些数据的集合，在同一个 database 中，retention policy、measurement、tag sets 完全相同的数据同属于一个 series，同一个 series 的数据在物理上会按照时间顺序排列存储在一起。</p>
 <p>series 的 key 为 <code>measurement + 所有 tags 的序列化字符串</code>，这个 key 在之后会经常用到。</p>
 <p>代码中的结构如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> Series <span style="color:#00cd00">struct</span> {
-    mu          sync.RWMutex
-    Key         <span style="color:#00cd00">string</span>              <span style="color:#000080">// series key
-</span><span style="color:#000080"></span>    Tags        <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">string</span>   <span style="color:#000080">// tags
-</span><span style="color:#000080"></span>    id          <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// id
-</span><span style="color:#000080"></span>    measurement <span style="color:#39c">*</span>Measurement        <span style="color:#000080">// measurement
-</span><span style="color:#000080"></span>}
-</code></pre></div><h4 id="shard">Shard</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> Series <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    mu          sync.RWMutex
+</span></span><span style="display:flex;"><span>    Key         <span style="color:#00cd00">string</span>              <span style="color:#000080">// series key
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    Tags        <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">string</span>   <span style="color:#000080">// tags
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    id          <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// id
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    measurement <span style="color:#39c">*</span>Measurement        <span style="color:#000080">// measurement
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>}
+</span></span></code></pre></div><h4 id="shard">Shard</h4>
 <p>shard 在 InfluxDB 中是一个比较重要的概念，它和 retention policy 相关联。每一个存储策略下会存在许多 shard，每一个 shard 存储一个指定时间段内的数据，并且不重复，例如 7点-8点 的数据落入 shard0 中，8点-9点的数据则落入 shard1 中。每一个 shard 都对应一个底层的 tsm 存储引擎，有独立的 cache、wal、tsm file。</p>
 <p>创建数据库时会自动创建一个默认存储策略，永久保存数据，对应的在此存储策略下的 shard 所保存的数据的时间段为 7 天，计算的函数如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">func</span> shardGroupDuration(d time.Duration) time.Duration {
-    <span style="color:#cdcd00">if</span> d <span style="color:#39c">&gt;=</span> <span style="color:#cd00cd">180</span><span style="color:#39c">*</span><span style="color:#cd00cd">24</span><span style="color:#39c">*</span>time.Hour <span style="color:#39c">||</span> d <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span> { <span style="color:#000080">// 6 months or 0
-</span><span style="color:#000080"></span>        <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">7</span> <span style="color:#39c">*</span> <span style="color:#cd00cd">24</span> <span style="color:#39c">*</span> time.Hour
-    } <span style="color:#cdcd00">else</span> <span style="color:#cdcd00">if</span> d <span style="color:#39c">&gt;=</span> <span style="color:#cd00cd">2</span><span style="color:#39c">*</span><span style="color:#cd00cd">24</span><span style="color:#39c">*</span>time.Hour { <span style="color:#000080">// 2 days
-</span><span style="color:#000080"></span>        <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> <span style="color:#cd00cd">24</span> <span style="color:#39c">*</span> time.Hour
-    }
-    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> time.Hour
-}
-</code></pre></div><p>如果创建一个新的 retention policy 设置数据的保留时间为 1 天，则单个 shard 所存储数据的时间间隔为 1 小时，超过1个小时的数据会被存放到下一个 shard 中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">func</span> shardGroupDuration(d time.Duration) time.Duration {
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> d <span style="color:#39c">&gt;=</span> <span style="color:#cd00cd">180</span><span style="color:#39c">*</span><span style="color:#cd00cd">24</span><span style="color:#39c">*</span>time.Hour <span style="color:#39c">||</span> d <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span> { <span style="color:#000080">// 6 months or 0
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">7</span> <span style="color:#39c">*</span> <span style="color:#cd00cd">24</span> <span style="color:#39c">*</span> time.Hour
+</span></span><span style="display:flex;"><span>    } <span style="color:#cdcd00">else</span> <span style="color:#cdcd00">if</span> d <span style="color:#39c">&gt;=</span> <span style="color:#cd00cd">2</span><span style="color:#39c">*</span><span style="color:#cd00cd">24</span><span style="color:#39c">*</span>time.Hour { <span style="color:#000080">// 2 days
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> <span style="color:#cd00cd">24</span> <span style="color:#39c">*</span> time.Hour
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> time.Hour
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>如果创建一个新的 retention policy 设置数据的保留时间为 1 天，则单个 shard 所存储数据的时间间隔为 1 小时，超过1个小时的数据会被存放到下一个 shard 中。</p>
 <h3 id="组件">组件</h3>
 <p>TSM 存储引擎主要由几个部分组成： <strong>cache、wal、tsm file、compactor</strong>。</p>
 <p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-architecture.png" alt="tsm-architecture"></p>
@@ -121,28 +121,28 @@
 <p><strong>而在 InfluxDB 中，通过 retention policy 设置数据的保留时间，当检测到一个 shard 中的数据过期后，只需要将这个 shard 的资源释放，相关文件删除即可，这样的做法使得删除过期数据变得非常高效。</strong></p>
 <h4 id="cache">Cache</h4>
 <p>cache 相当于是 LSM Tree 中的 memtable，在内存中是一个简单的 map 结构，这里的 key 为 <code>seriesKey + 分隔符 + filedName</code>，目前代码中的分隔符为 <code>#!~#</code>，entry 相当于是一个按照时间排序的存放实际值的数组，具体结构如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> Cache <span style="color:#00cd00">struct</span> {
-    commit  sync.Mutex
-    mu      sync.RWMutex
-    store   <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>entry
-    size    <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// 当前使用内存的大小
-</span><span style="color:#000080"></span>    maxSize <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// 缓存最大值
-</span><span style="color:#000080"></span>
-    <span style="color:#000080">// snapshots are the cache objects that are currently being written to tsm files
-</span><span style="color:#000080"></span>    <span style="color:#000080">// they&#39;re kept in memory while flushing so they can be queried along with the cache.
-</span><span style="color:#000080"></span>    <span style="color:#000080">// they are read only and should never be modified
-</span><span style="color:#000080"></span>    <span style="color:#000080">// memtable 快照，用于写入 tsm 文件，只读
-</span><span style="color:#000080"></span>    snapshot     <span style="color:#39c">*</span>Cache
-    snapshotSize <span style="color:#00cd00">uint64</span>
-    snapshotting <span style="color:#00cd00">bool</span>
-
-    <span style="color:#000080">// This number is the number of pending or failed WriteSnaphot attempts since the last successful one.
-</span><span style="color:#000080"></span>    snapshotAttempts <span style="color:#00cd00">int</span>
-
-    stats        <span style="color:#39c">*</span>CacheStatistics
-    lastSnapshot time.Time
-}
-</code></pre></div><p>插入数据时，实际上是同时往 cache 与 wal 中写入数据，可以认为 cache 是 wal 文件中的数据在内存中的缓存。当 InfluxDB 启动时，会遍历所有的 wal 文件，重新构造 cache，这样即使系统出现故障，也不会导致数据的丢失。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> Cache <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    commit  sync.Mutex
+</span></span><span style="display:flex;"><span>    mu      sync.RWMutex
+</span></span><span style="display:flex;"><span>    store   <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>entry
+</span></span><span style="display:flex;"><span>    size    <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// 当前使用内存的大小
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    maxSize <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// 缓存最大值
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// snapshots are the cache objects that are currently being written to tsm files
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// they&#39;re kept in memory while flushing so they can be queried along with the cache.
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// they are read only and should never be modified
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// memtable 快照，用于写入 tsm 文件，只读
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    snapshot     <span style="color:#39c">*</span>Cache
+</span></span><span style="display:flex;"><span>    snapshotSize <span style="color:#00cd00">uint64</span>
+</span></span><span style="display:flex;"><span>    snapshotting <span style="color:#00cd00">bool</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// This number is the number of pending or failed WriteSnaphot attempts since the last successful one.
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    snapshotAttempts <span style="color:#00cd00">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    stats        <span style="color:#39c">*</span>CacheStatistics
+</span></span><span style="display:flex;"><span>    lastSnapshot time.Time
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>插入数据时，实际上是同时往 cache 与 wal 中写入数据，可以认为 cache 是 wal 文件中的数据在内存中的缓存。当 InfluxDB 启动时，会遍历所有的 wal 文件，重新构造 cache，这样即使系统出现故障，也不会导致数据的丢失。</p>
 <p>**cache 中的数据并不是无限增长的，有一个 maxSize 参数用于控制当 cache 中的数据占用多少内存后就会将数据写入 tsm 文件。**如果不配置的话，默认上限为 25MB，每当 cache 中的数据达到阀值后，会将当前的 cache 进行一次快照，之后清空当前 cache 中的内容，再创建一个新的 wal 文件用于写入，剩下的 wal 文件最后会被删除，快照中的数据会经过排序写入一个新的 tsm 文件中。</p>
 <p><strong>目前的 cache 的设计有一个问题</strong>，当一个快照正在被写入一个新的 tsm 文件时，当前的 cache 由于大量数据写入，又达到了阀值，此时前一次快照还没有完全写入磁盘，InfluxDB 的做法是让后续的写入操作失败，用户需要自己处理，等待恢复后继续写入数据。</p>
 <h4 id="wal">WAL</h4>
@@ -161,30 +161,30 @@
 <p>默认情况下是 <strong>meta</strong>, <strong>wal</strong> 以及 <strong>data</strong> 三个目录。</p>
 <p><strong>meta</strong> 用于存储数据库的一些元数据，<strong>meta</strong> 目录下有一个 <code>meta.db</code> 文件。</p>
 <p><strong>wal</strong> 目录存放预写日志文件，以 <code>.wal</code> 结尾。<strong>data</strong> 目录存放实际存储的数据文件，以 <code>.tsm</code> 结尾。这两个目录下的结构是相似的，其基本结构如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080"># wal 目录结构</span>
--- wal
-   -- mydb
-      -- autogen
-         -- <span style="color:#cd00cd">1</span>
-            -- _00001.wal
-         -- <span style="color:#cd00cd">2</span>
-            -- _00035.wal
-      -- 2hours
-         -- <span style="color:#cd00cd">1</span>
-            -- _00001.wal
-
-<span style="color:#000080"># data 目录结构</span>
--- data
-   -- mydb
-      -- autogen
-         -- <span style="color:#cd00cd">1</span>
-            -- 000000001-000000003.tsm
-         -- <span style="color:#cd00cd">2</span>
-            -- 000000001-000000001.tsm
-      -- 2hours
-         -- <span style="color:#cd00cd">1</span>
-            -- 000000002-000000002.tsm
-</code></pre></div><p>其中 <strong>mydb</strong> 是数据库名称，<strong>autogen</strong> 和 <strong>2hours</strong> 是存储策略名称，再下一层目录中的以数字命名的目录是 shard 的 ID 值，比如 <strong>autogen</strong> 存储策略下有两个 shard，ID 分别为 1 和 2，shard 存储了某一个时间段范围内的数据。再下一级的目录则为具体的文件，分别是 <code>.wal</code> 和 <code>.tsm</code> 结尾的文件。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000080"># wal 目录结构</span>
+</span></span><span style="display:flex;"><span>-- wal
+</span></span><span style="display:flex;"><span>   -- mydb
+</span></span><span style="display:flex;"><span>      -- autogen
+</span></span><span style="display:flex;"><span>         -- <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>            -- _00001.wal
+</span></span><span style="display:flex;"><span>         -- <span style="color:#cd00cd">2</span>
+</span></span><span style="display:flex;"><span>            -- _00035.wal
+</span></span><span style="display:flex;"><span>      -- 2hours
+</span></span><span style="display:flex;"><span>         -- <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>            -- _00001.wal
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080"># data 目录结构</span>
+</span></span><span style="display:flex;"><span>-- data
+</span></span><span style="display:flex;"><span>   -- mydb
+</span></span><span style="display:flex;"><span>      -- autogen
+</span></span><span style="display:flex;"><span>         -- <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>            -- 000000001-000000003.tsm
+</span></span><span style="display:flex;"><span>         -- <span style="color:#cd00cd">2</span>
+</span></span><span style="display:flex;"><span>            -- 000000001-000000001.tsm
+</span></span><span style="display:flex;"><span>      -- 2hours
+</span></span><span style="display:flex;"><span>         -- <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>            -- 000000002-000000002.tsm
+</span></span></code></pre></div><p>其中 <strong>mydb</strong> 是数据库名称，<strong>autogen</strong> 和 <strong>2hours</strong> 是存储策略名称，再下一层目录中的以数字命名的目录是 shard 的 ID 值，比如 <strong>autogen</strong> 存储策略下有两个 shard，ID 分别为 1 和 2，shard 存储了某一个时间段范围内的数据。再下一级的目录则为具体的文件，分别是 <code>.wal</code> 和 <code>.tsm</code> 结尾的文件。</p>
 <h4 id="wal-文件">WAL 文件</h4>
 <p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-wal-entry.png" alt="wal-entry"></p>
 <p>wal 文件中的一条数据，对应的是一个 key(measument + tags + fieldName) 下的所有 value 数据，按照时间排序。</p>
@@ -216,23 +216,23 @@
 <p><img src="https://image.fatedier.com/pic/2016/2016-08-05-detailed-in-influxdb-tsm-storage-engine-one-tsm-file-index.png" alt="tsm-file-index"></p>
 <p>Index 存放的是前面 Blocks 里内容的索引。索引条目的顺序是先按照 key 的字典序排序，再按照 time 排序。InfluxDB 在做查询操作时，可以根据 Index 的信息快速定位到 tsm file 中要查询的 block 的位置。</p>
 <p>这张图只展示了其中一部分，用结构体来表示的话类似下面的代码：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> BlockIndex <span style="color:#00cd00">struct</span> {
-    MinTime     <span style="color:#00cd00">int64</span>
-    MaxTime     <span style="color:#00cd00">int64</span>
-    Offset      <span style="color:#00cd00">int64</span>
-    Size        <span style="color:#00cd00">uint32</span>
-}
-
-<span style="color:#00cd00">type</span> KeyIndex <span style="color:#00cd00">struct</span> {
-    KeyLen      <span style="color:#00cd00">uint16</span>
-    Key         <span style="color:#00cd00">string</span>
-    Type        <span style="color:#00cd00">byte</span>
-    Count       <span style="color:#00cd00">uint32</span>
-    Blocks      []<span style="color:#39c">*</span>BlockIndex
-}
-
-<span style="color:#00cd00">type</span> Index []<span style="color:#39c">*</span>KeyIndex
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> BlockIndex <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    MinTime     <span style="color:#00cd00">int64</span>
+</span></span><span style="display:flex;"><span>    MaxTime     <span style="color:#00cd00">int64</span>
+</span></span><span style="display:flex;"><span>    Offset      <span style="color:#00cd00">int64</span>
+</span></span><span style="display:flex;"><span>    Size        <span style="color:#00cd00">uint32</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">type</span> KeyIndex <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    KeyLen      <span style="color:#00cd00">uint16</span>
+</span></span><span style="display:flex;"><span>    Key         <span style="color:#00cd00">string</span>
+</span></span><span style="display:flex;"><span>    Type        <span style="color:#00cd00">byte</span>
+</span></span><span style="display:flex;"><span>    Count       <span style="color:#00cd00">uint32</span>
+</span></span><span style="display:flex;"><span>    Blocks      []<span style="color:#39c">*</span>BlockIndex
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">type</span> Index []<span style="color:#39c">*</span>KeyIndex
+</span></span></code></pre></div><ul>
 <li><strong>Key Len (2 bytes)</strong>: 下面一个字段 key 的长度。</li>
 <li><strong>Key (N bytes)</strong>: 这里的 key 指的是 seriesKey + 分隔符 + fieldName。</li>
 <li><strong>Type (1 bytes)</strong>: fieldName 所对应的 fieldValue 的类型，也就是 Block 中 Data 内的数据的类型。</li>

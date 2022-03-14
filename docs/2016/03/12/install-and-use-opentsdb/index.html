@@ -83,17 +83,17 @@
 <li>执行 <code>bin/start-hbase.sh</code> 启动 HBase，之后可以通过 <code>jps</code> 命令来查看 HMaster 进程是否启动成功。 <code>bin/stop-hbase.sh</code> 用于关闭 HBase。</li>
 </ol>
 <p><code>conf/hbase-site.xml</code> 的配置示例如下</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">&lt;configuration&gt;
-    &lt;property&gt;
-        &lt;name&gt;hbase.rootdir&lt;/name&gt;
-        &lt;value&gt;file:///home/testuser/hbase&lt;/value&gt;
-    &lt;/property&gt;
-    &lt;property&gt;
-        &lt;name&gt;hbase.zookeeper.property.dataDir&lt;/name&gt;
-        &lt;value&gt;/home/testuser/zookeeper&lt;/value&gt;
-    &lt;/property&gt;
-&lt;/configuration&gt;
-</code></pre></div><h3 id="通过命令行操作-hbase">通过命令行操作 HBase</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span>&lt;configuration&gt;
+</span></span><span style="display:flex;"><span>    &lt;property&gt;
+</span></span><span style="display:flex;"><span>        &lt;name&gt;hbase.rootdir&lt;/name&gt;
+</span></span><span style="display:flex;"><span>        &lt;value&gt;file:///home/testuser/hbase&lt;/value&gt;
+</span></span><span style="display:flex;"><span>    &lt;/property&gt;
+</span></span><span style="display:flex;"><span>    &lt;property&gt;
+</span></span><span style="display:flex;"><span>        &lt;name&gt;hbase.zookeeper.property.dataDir&lt;/name&gt;
+</span></span><span style="display:flex;"><span>        &lt;value&gt;/home/testuser/zookeeper&lt;/value&gt;
+</span></span><span style="display:flex;"><span>    &lt;/property&gt;
+</span></span><span style="display:flex;"><span>&lt;/configuration&gt;
+</span></span></code></pre></div><h3 id="通过命令行操作-hbase">通过命令行操作 HBase</h3>
 <p>这里可以稍微熟悉一下 HBase 的操作，非必须。</p>
 <h5 id="连接到-hbase">连接到 HBase</h5>
 <p><code>./bin/hbase shell</code></p>
@@ -102,10 +102,10 @@
 <h5 id="查看表信息">查看表信息</h5>
 <p><code>list 'test'</code></p>
 <h5 id="向表中插入数据">向表中插入数据</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row1&#39;</span>, <span style="color:#cd0000">&#39;cf:a&#39;</span>, <span style="color:#cd0000">&#39;value1&#39;</span>
-put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row2&#39;</span>, <span style="color:#cd0000">&#39;cf:b&#39;</span>, <span style="color:#cd0000">&#39;value2&#39;</span>
-put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row3&#39;</span>, <span style="color:#cd0000">&#39;cf:c&#39;</span>, <span style="color:#cd0000">&#39;value3&#39;</span>
-</code></pre></div><h5 id="查看表中所有数据">查看表中所有数据</h5>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row1&#39;</span>, <span style="color:#cd0000">&#39;cf:a&#39;</span>, <span style="color:#cd0000">&#39;value1&#39;</span>
+</span></span><span style="display:flex;"><span>put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row2&#39;</span>, <span style="color:#cd0000">&#39;cf:b&#39;</span>, <span style="color:#cd0000">&#39;value2&#39;</span>
+</span></span><span style="display:flex;"><span>put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd0000">&#39;row3&#39;</span>, <span style="color:#cd0000">&#39;cf:c&#39;</span>, <span style="color:#cd0000">&#39;value3&#39;</span>
+</span></span></code></pre></div><h5 id="查看表中所有数据">查看表中所有数据</h5>
 <p><code>scan 'test'</code></p>
 <h5 id="查看指定行的数据">查看指定行的数据</h5>
 <p><code>get 'test', 'row1'</code></p>
@@ -141,106 +141,106 @@ put <span style="color:#cd0000">&#39;test&#39;</span>, <span style="color:#cd000
 <p><strong>/api/put</strong></p>
 <p>根据 url 参数的不同，可以选择是否获取详细的信息。</p>
 <p><strong>/api/put?summary</strong>        // 返回失败和成功的个数</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    &#34;failed&#34;: <span style="color:#cd00cd">0</span>,
-    &#34;success&#34;: <span style="color:#cd00cd">1</span>
-}
-</code></pre></div><p><strong>/api/put?details</strong>        // 返回详细信息</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    &#34;errors&#34;: [],
-    &#34;failed&#34;: <span style="color:#cd00cd">0</span>,
-    &#34;success&#34;: <span style="color:#cd00cd">1</span>
-}
-</code></pre></div><p>通过POST方式插入数据，JSON格式，例如</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    &#34;metric&#34;:<span style="color:#cd0000">&#34;self.test&#34;</span>, 
-    &#34;timestamp&#34;:<span style="color:#cd00cd">1456123787</span>, 
-    &#34;value&#34;:<span style="color:#cd00cd">20</span>, 
-    &#34;tags&#34;:{
-        &#34;host&#34;:<span style="color:#cd0000">&#34;web1&#34;</span>
-    }
-}
-</code></pre></div><h3 id="查询数据">查询数据</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    &#34;failed&#34;: <span style="color:#cd00cd">0</span>,
+</span></span><span style="display:flex;"><span>    &#34;success&#34;: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>/api/put?details</strong>        // 返回详细信息</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    &#34;errors&#34;: [],
+</span></span><span style="display:flex;"><span>    &#34;failed&#34;: <span style="color:#cd00cd">0</span>,
+</span></span><span style="display:flex;"><span>    &#34;success&#34;: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>通过POST方式插入数据，JSON格式，例如</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    &#34;metric&#34;:<span style="color:#cd0000">&#34;self.test&#34;</span>, 
+</span></span><span style="display:flex;"><span>    &#34;timestamp&#34;:<span style="color:#cd00cd">1456123787</span>, 
+</span></span><span style="display:flex;"><span>    &#34;value&#34;:<span style="color:#cd00cd">20</span>, 
+</span></span><span style="display:flex;"><span>    &#34;tags&#34;:{
+</span></span><span style="display:flex;"><span>        &#34;host&#34;:<span style="color:#cd0000">&#34;web1&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="查询数据">查询数据</h3>
 <p><strong>/api/query</strong></p>
 <p>可以选择 Get 或者 Post 两种方式，推荐使用 Post 方式，JSON 格式。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    &#34;start&#34;: <span style="color:#cd00cd">1456123705</span>,
-    &#34;end&#34;: <span style="color:#cd00cd">1456124985</span>,
-    &#34;queries&#34;: [
-        {
-            &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
-            &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
-            &#34;tags&#34;: {
-                &#34;host&#34;: <span style="color:#cd0000">&#34;web1&#34;</span>
-            }
-        },
-        {
-            &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
-            &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
-            &#34;tags&#34;: {
-                &#34;host&#34;: <span style="color:#cd0000">&#34;web2&#34;</span>
-            }
-        }
-    ]
-}
-</code></pre></div><p>start 和 end 为指定的查询时间段。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    &#34;start&#34;: <span style="color:#cd00cd">1456123705</span>,
+</span></span><span style="display:flex;"><span>    &#34;end&#34;: <span style="color:#cd00cd">1456124985</span>,
+</span></span><span style="display:flex;"><span>    &#34;queries&#34;: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;tags&#34;: {
+</span></span><span style="display:flex;"><span>                &#34;host&#34;: <span style="color:#cd0000">&#34;web1&#34;</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;tags&#34;: {
+</span></span><span style="display:flex;"><span>                &#34;host&#34;: <span style="color:#cd0000">&#34;web2&#34;</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>start 和 end 为指定的查询时间段。</p>
 <p>queries 为一个数组，可以指定多个查询。</p>
 <p>metric 和 tags 是用于过滤的查询条件。</p>
 <p><strong>返回字符串也为json格式</strong></p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">[
-    {
-        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
-        &#34;tags&#34;: {},
-        &#34;aggregateTags&#34;: [
-            <span style="color:#cd0000">&#34;host&#34;</span>
-        ],
-        &#34;dps&#34;: {
-            &#34;1456123785&#34;: <span style="color:#cd00cd">10</span>,
-            &#34;1456123786&#34;: <span style="color:#cd00cd">10</span>
-        }
-    },
-    {
-        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
-        &#34;tags&#34;: {
-            &#34;host&#34;: <span style="color:#cd0000">&#34;web1&#34;</span>
-        },
-        &#34;aggregateTags&#34;: [],
-        &#34;dps&#34;: {
-            &#34;1456123784&#34;: <span style="color:#cd00cd">10</span>,
-            &#34;1456123786&#34;: <span style="color:#cd00cd">15</span>
-        }
-    }
-]
-</code></pre></div><h4 id="聚合">聚合</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>[
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;tags&#34;: {},
+</span></span><span style="display:flex;"><span>        &#34;aggregateTags&#34;: [
+</span></span><span style="display:flex;"><span>            <span style="color:#cd0000">&#34;host&#34;</span>
+</span></span><span style="display:flex;"><span>        ],
+</span></span><span style="display:flex;"><span>        &#34;dps&#34;: {
+</span></span><span style="display:flex;"><span>            &#34;1456123785&#34;: <span style="color:#cd00cd">10</span>,
+</span></span><span style="display:flex;"><span>            &#34;1456123786&#34;: <span style="color:#cd00cd">10</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;tags&#34;: {
+</span></span><span style="display:flex;"><span>            &#34;host&#34;: <span style="color:#cd0000">&#34;web1&#34;</span>
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        &#34;aggregateTags&#34;: [],
+</span></span><span style="display:flex;"><span>        &#34;dps&#34;: {
+</span></span><span style="display:flex;"><span>            &#34;1456123784&#34;: <span style="color:#cd00cd">10</span>,
+</span></span><span style="display:flex;"><span>            &#34;1456123786&#34;: <span style="color:#cd00cd">15</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><h4 id="聚合">聚合</h4>
 <p><strong>aggregator</strong> 是用于对查询结果进行聚合，将同一 unix 时间戳内的数据进行聚合计算后返回结果，例如如果 tags 不填，1456123705 有两条数据，一条 <code>host=web1</code>，另外一条 <code>host=web2</code>，值都为10，那么返回的该时间点的值为 sum 后的 20。</p>
 <h4 id="条件过滤">条件过滤</h4>
 <p>可以针对 tag 进行一些条件的过滤，返回 tag 中 host 的值以 web 开头的数据。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#cd0000">&#34;queries&#34;</span><span style="">:</span> [
-    {
-        &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
-        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
-        &#34;filters&#34;: [
-            {
-                &#34;type&#34;: <span style="color:#cd0000">&#34;wildcard&#34;</span>,
-                &#34;tagk&#34;: <span style="color:#cd0000">&#34;host&#34;</span>,
-                &#34;filter&#34;: <span style="color:#cd0000">&#34;web*&#34;</span>
-            }
-        ]
-    }
-]
-</code></pre></div><h4 id="downsample">downsample</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span><span style="color:#cd0000">&#34;queries&#34;</span><span style="">:</span> [
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;filters&#34;: [
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                &#34;type&#34;: <span style="color:#cd0000">&#34;wildcard&#34;</span>,
+</span></span><span style="display:flex;"><span>                &#34;tagk&#34;: <span style="color:#cd0000">&#34;host&#34;</span>,
+</span></span><span style="display:flex;"><span>                &#34;filter&#34;: <span style="color:#cd0000">&#34;web*&#34;</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        ]
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><h4 id="downsample">downsample</h4>
 <p>简单来说就是对指定时间段内的数据进行聚合后返回，例如需要返回每分钟的平均值数据</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#cd0000">&#34;queries&#34;</span><span style="">:</span> [
-    {
-        &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
-        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
-        &#34;downsample&#34;: <span style="color:#cd0000">&#34;1m-avg&#34;</span>,
-        &#34;tags&#34;: {
-            &#34;host&#34;: <span style="color:#cd0000">&#34;web1&#34;</span>
-        }
-    }
-]
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span><span style="color:#cd0000">&#34;queries&#34;</span><span style="">:</span> [
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;metric&#34;: <span style="color:#cd0000">&#34;self.test&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;downsample&#34;: <span style="color:#cd0000">&#34;1m-avg&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;tags&#34;: {
+</span></span><span style="display:flex;"><span>            &#34;host&#34;: <span style="color:#cd0000">&#34;web1&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

@@ -77,105 +77,105 @@
 <p><strong>一个已经终止、但是其父进程尚未对其进行善后处理（获取终止子进程的有关信息，释放它仍占用的资源）的进程被称为僵尸进程。</strong> ps命令将僵尸进程的状态打印为Z。</p>
 <p>可以设想一下，比如一个web服务器端，假如每次接收到一个连接都创建一个子进程去处理，处理完毕后结束子进程。假如在父进程中没有使用wait或waitpid函数进行善后，这些子进程将全部变为僵尸进程，Linux系统的进程数一般有一个固定限制值，僵尸进程将会逐渐耗尽系统资源。</p>
 <h3 id="查看僵尸进程的例子">查看僵尸进程的例子</h3>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;string.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;unistd.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdlib.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;errno.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span> 
-<span style="color:#00cd00">int</span> main(<span style="color:#00cd00">int</span> argc, <span style="color:#00cd00">char</span> <span style="color:#39c">**</span>argv)
-{
-    pid_t pid;
-    <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">5</span>; i<span style="color:#39c">++</span>) {
-        <span style="color:#cdcd00">if</span> ((pid <span style="color:#39c">=</span> fork()) <span style="color:#39c">&lt;</span> <span style="color:#cd00cd">0</span>) {
-            printf(<span style="color:#cd0000">&#34;fork error,%s</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>, strerror(errno));
-            <span style="color:#cdcd00">return</span> <span style="color:#39c">-</span><span style="color:#cd00cd">1</span>;
-        }
-        
-        <span style="color:#000080">/* child */</span>
-        <span style="color:#cdcd00">if</span> (pid <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>) {
-            sleep(<span style="color:#cd00cd">1</span>);
-            exit(<span style="color:#cd00cd">0</span>);
-        }
-    }  
-    <span style="color:#000080">/* parent */</span>
-    sleep(<span style="color:#cd00cd">20</span>);
-    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
-}
-</code></pre></div><p>编译完成后，在执行程序的命令后加上 &ldquo;&amp;&rdquo; 符号，表示让当前程序在后台运行。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;string.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;unistd.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdlib.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;errno.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span> 
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">int</span> main(<span style="color:#00cd00">int</span> argc, <span style="color:#00cd00">char</span> <span style="color:#39c">**</span>argv)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    pid_t pid;
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">5</span>; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> ((pid <span style="color:#39c">=</span> fork()) <span style="color:#39c">&lt;</span> <span style="color:#cd00cd">0</span>) {
+</span></span><span style="display:flex;"><span>            printf(<span style="color:#cd0000">&#34;fork error,%s</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>, strerror(errno));
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">return</span> <span style="color:#39c">-</span><span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">/* child */</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> (pid <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>) {
+</span></span><span style="display:flex;"><span>            sleep(<span style="color:#cd00cd">1</span>);
+</span></span><span style="display:flex;"><span>            exit(<span style="color:#cd00cd">0</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }  
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">/* parent */</span>
+</span></span><span style="display:flex;"><span>    sleep(<span style="color:#cd00cd">20</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>编译完成后，在执行程序的命令后加上 &ldquo;&amp;&rdquo; 符号，表示让当前程序在后台运行。</p>
 <p>之后输入</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ps –e –o pid,ppid,stat,command|grep <span style="color:#39c">[</span>程序名<span style="color:#39c">]</span>
-</code></pre></div><p>可以看到如下的结果</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">2915</span>  <span style="color:#cd00cd">1961</span> S    ./dd
-<span style="color:#cd00cd">2917</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
-<span style="color:#cd00cd">2918</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
-<span style="color:#cd00cd">2919</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
-<span style="color:#cd00cd">2920</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
-<span style="color:#cd00cd">2921</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
-</code></pre></div><p>可以看到5个子进程都已经是僵尸进程了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ps –e –o pid,ppid,stat,command|grep <span style="color:#39c">[</span>程序名<span style="color:#39c">]</span>
+</span></span></code></pre></div><p>可以看到如下的结果</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#cd00cd">2915</span>  <span style="color:#cd00cd">1961</span> S    ./dd
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">2917</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">2918</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">2919</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">2920</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">2921</span>  <span style="color:#cd00cd">2915</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+</span></span></code></pre></div><p>可以看到5个子进程都已经是僵尸进程了。</p>
 <h3 id="sigchld信号和处理僵尸进程">SIGCHLD信号和处理僵尸进程</h3>
 <p>当子进程终止时，内核就会向它的父进程发送一个SIGCHLD信号，父进程可以选择忽略该信号，<strong>也可以提供一个接收到信号以后的处理函数</strong>。对于这种信号的系统默认动作是忽略它。</p>
 <p>我们不希望有过多的僵尸进程产生，所以当父进程接收到SIGCHLD信号后就应该调用 wait 或 waitpid 函数对子进程进行善后处理，释放子进程占用的资源。</p>
 <p>下面是一个捕获SIGCHLD信号以后使用wait函数进行处理的简单例子：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;string.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;unistd.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdlib.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;errno.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;signal.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;sys/wait.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span> 
-<span style="color:#00cd00">void</span> deal_child(<span style="color:#00cd00">int</span> sig_no)
-{
-    wait(<span style="color:#cd00cd">NULL</span>);
-}
- 
-<span style="color:#00cd00">int</span> main(<span style="color:#00cd00">int</span> argc, <span style="color:#00cd00">char</span> <span style="color:#39c">**</span>argv)
-{
-    signal(SIGCHLD, deal_child);
- 
-    pid_t pid;
-    <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">5</span>; i<span style="color:#39c">++</span>) {
-        <span style="color:#cdcd00">if</span> ((pid <span style="color:#39c">=</span> fork()) <span style="color:#39c">&lt;</span> <span style="color:#cd00cd">0</span>) {
-            printf(<span style="color:#cd0000">&#34;fork error,%s</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>,strerror(errno));
-            <span style="color:#cdcd00">return</span> <span style="color:#39c">-</span><span style="color:#cd00cd">1</span>;
-        }  
- 
-        <span style="color:#000080">/* child */</span>
-        <span style="color:#cdcd00">if</span> (pid <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>) {
-            sleep(<span style="color:#cd00cd">1</span>);
-            exit(<span style="color:#cd00cd">0</span>);
-        }  
-    }  
-    <span style="color:#000080">/* parent */</span>
-    <span style="color:#cdcd00">for</span>(<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">100000</span>; i<span style="color:#39c">++</span>) {
-        <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> j<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; j<span style="color:#39c">&lt;</span><span style="color:#cd00cd">100000</span>; j<span style="color:#39c">++</span>) {
-            <span style="color:#00cd00">int</span> temp <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
-        }  
-    }  
-    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
-}
-</code></pre></div><p>同样在后台运行后使用ps命令查看进程状态，结果如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">6622</span>  <span style="color:#cd00cd">1961</span> R    ./dd
-<span style="color:#cd00cd">6627</span>  <span style="color:#cd00cd">6622</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
-<span style="color:#cd00cd">6628</span>  <span style="color:#cd00cd">6622</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
-</code></pre></div><p>发现创建的5个进程，有3个已经被彻底销毁，但是还有2个仍然处于僵尸进程的状态。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;string.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;unistd.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdlib.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;errno.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;signal.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;sys/wait.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span> 
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">void</span> deal_child(<span style="color:#00cd00">int</span> sig_no)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    wait(<span style="color:#cd00cd">NULL</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">int</span> main(<span style="color:#00cd00">int</span> argc, <span style="color:#00cd00">char</span> <span style="color:#39c">**</span>argv)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    signal(SIGCHLD, deal_child);
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    pid_t pid;
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">5</span>; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> ((pid <span style="color:#39c">=</span> fork()) <span style="color:#39c">&lt;</span> <span style="color:#cd00cd">0</span>) {
+</span></span><span style="display:flex;"><span>            printf(<span style="color:#cd0000">&#34;fork error,%s</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>,strerror(errno));
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">return</span> <span style="color:#39c">-</span><span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>        }  
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">/* child */</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> (pid <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>) {
+</span></span><span style="display:flex;"><span>            sleep(<span style="color:#cd00cd">1</span>);
+</span></span><span style="display:flex;"><span>            exit(<span style="color:#cd00cd">0</span>);
+</span></span><span style="display:flex;"><span>        }  
+</span></span><span style="display:flex;"><span>    }  
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">/* parent */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span>(<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">100000</span>; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> j<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; j<span style="color:#39c">&lt;</span><span style="color:#cd00cd">100000</span>; j<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#00cd00">int</span> temp <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>        }  
+</span></span><span style="display:flex;"><span>    }  
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>同样在后台运行后使用ps命令查看进程状态，结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#cd00cd">6622</span>  <span style="color:#cd00cd">1961</span> R    ./dd
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">6627</span>  <span style="color:#cd00cd">6622</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">6628</span>  <span style="color:#cd00cd">6622</span> Z    <span style="color:#39c">[</span>dd<span style="color:#39c">]</span> &lt;defunct&gt;
+</span></span></code></pre></div><p>发现创建的5个进程，有3个已经被彻底销毁，但是还有2个仍然处于僵尸进程的状态。</p>
 <p><strong>这是因为当5个进程同时终止的时候，内核都会向父进程发送SIGCHLD信号，而父进程此时有可能仍然处于信号处理的deal_child函数中，那么在处理完之前，中间接收到的SIGCHLD信号就会丢失，内核并没有使用队列等方式来存储同一种信号。</strong></p>
 <h3 id="正确地处理僵尸进程的方法">正确地处理僵尸进程的方法</h3>
 <p>为了解决上面出现的这种问题，我们需要使用waitpid函数。</p>
 <p>函数原型</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">pid_t waitpid(pid_t pid, <span style="color:#00cd00">int</span> <span style="color:#39c">*</span>statloc, <span style="color:#00cd00">int</span> options);
-</code></pre></div><p>若成功则返回进程ID，如果设置为非阻塞方式，返回0表示子进程状态未改变，出错时返回-1。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>pid_t waitpid(pid_t pid, <span style="color:#00cd00">int</span> <span style="color:#39c">*</span>statloc, <span style="color:#00cd00">int</span> options);
+</span></span></code></pre></div><p>若成功则返回进程ID，如果设置为非阻塞方式，返回0表示子进程状态未改变，出错时返回-1。</p>
 <p><strong>options参数可以设置为WNOHANG常量，表示waitpid不阻塞，如果由pid指定的子进程不是立即可用的，则立即返回0。</strong></p>
 <p>只需要修改一下SIGCHLD信号的处理函数即可:</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">void</span> deal_child(<span style="color:#00cd00">int</span> sig_no)
-{
-    <span style="color:#cdcd00">for</span> (;;) {
-        <span style="color:#cdcd00">if</span> (waitpid(<span style="color:#39c">-</span><span style="color:#cd00cd">1</span>, <span style="color:#cd00cd">NULL</span>, WNOHANG) <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>)
-            <span style="color:#cdcd00">break</span>;
-    }  
-}
-</code></pre></div><p>再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00cd00">void</span> deal_child(<span style="color:#00cd00">int</span> sig_no)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> (;;) {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> (waitpid(<span style="color:#39c">-</span><span style="color:#cd00cd">1</span>, <span style="color:#cd00cd">NULL</span>, WNOHANG) <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">break</span>;
+</span></span><span style="display:flex;"><span>    }  
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>再次执行程序后使用ps命令查看，发现已经不会产生僵尸进程了。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

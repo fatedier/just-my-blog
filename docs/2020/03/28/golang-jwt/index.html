@@ -98,80 +98,80 @@
 <p>jwt 是基于 token 的认证方式的一种。这里我们使用 <a href="https://github.com/dgrijalva/jwt-go">jwt-go</a> 在 Golang 项目中使用 jwt。以下代码均为示例代码，部分内容有所删减，仅供参考。</p>
 <h3 id="生成-token">生成 Token</h3>
 <p>服务器端需要提供一个登录接口用于用户登录。客户端提供用户名和密码，服务器端进行校验，如果校验通过，则生成 Token 返回给客户端。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">import</span> (
-    jwt <span style="color:#cd0000">&#34;github.com/dgrijalva/jwt-go&#34;</span>
-)
-
-<span style="color:#00cd00">func</span> GenerateToken(uid <span style="color:#00cd00">string</span>, role <span style="color:#00cd00">int</span>, expireDuration time.Duration) (<span style="color:#00cd00">string</span>, <span style="color:#00cd00">error</span>) {
-    expire <span style="color:#39c">:=</span> time.Now().Add(expireDuration)
-    <span style="color:#000080">// 将 uid，用户角色， 过期时间作为数据写入 token 中
-</span><span style="color:#000080"></span>    token <span style="color:#39c">:=</span> jwt.NewWithClaims(jwt.SigningMethodHS256, util.LoginClaims{
-        Uid:  uid,
-        Role: role,
-        StandardClaims: jwt.StandardClaims{
-            ExpiresAt: expire.Unix(),
-        },
-    })
-    <span style="color:#000080">// SecretKey 用于对用户数据进行签名，不能暴露
-</span><span style="color:#000080"></span>    <span style="color:#cdcd00">return</span> token.SignedString([]<span style="color:#cd00cd">byte</span>(util.SecretKey))
-}
-
-<span style="color:#00cd00">func</span> (ctl <span style="color:#39c">*</span>LoginController) Login(rw http.ResponseWriter, req <span style="color:#39c">*</span>http.Request) {
-    <span style="color:#00cd00">var</span> u loginRequest
-    json.NewDecoder(req.Body).Decode(<span style="color:#39c">&amp;</span>u)
-
-    <span style="color:#000080">// 将用户传入的用户名和密码和数据库中的进行比对
-</span><span style="color:#000080"></span>    user, err <span style="color:#39c">:=</span> ctl.db.GetUserByName(req.Context(), u.User)
-    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
-        log.Warn(<span style="color:#cd0000">&#34;get user from db by name error: %v&#34;</span>, err)
-        httputil.Error(rw, errors.ErrInternal)
-        <span style="color:#cdcd00">return</span>
-    }
-
-    <span style="color:#cdcd00">if</span> common.EncodePassowrd(u.Password, u.User) <span style="color:#39c">!=</span> user.Password {
-        log.Warn(<span style="color:#cd0000">&#34;name [%s] password incorrent&#34;</span>, u.User)
-        httputil.Error(rw, errors.ErrLoginFailed)
-        <span style="color:#cdcd00">return</span>
-    }
-
-    <span style="color:#000080">// 生成返回给用户的 token
-</span><span style="color:#000080"></span>    token, err <span style="color:#39c">:=</span> GenerateToken(user.UID, user.Role, <span style="color:#cd00cd">3</span><span style="color:#39c">*</span><span style="color:#cd00cd">24</span><span style="color:#39c">*</span>time.Hour)
-    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
-        log.Warn(<span style="color:#cd0000">&#34;name [%s] generateToken error: %v&#34;</span>, u.User, err)
-        httputil.Error(rw, errors.ErrInternal)
-        <span style="color:#cdcd00">return</span>
-    }
-
-    res <span style="color:#39c">:=</span> <span style="color:#00cd00">struct</span> {
-        Token <span style="color:#00cd00">string</span> <span style="color:#cd0000">`json:&#34;token&#34;`</span>
-    }{
-        Token: token,
-    }
-    httputil.Reply(rw, <span style="color:#39c">&amp;</span>res)
-}
-</code></pre></div><h3 id="校验-token">校验 Token</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#cd00cd">import</span> (
+</span></span><span style="display:flex;"><span>    jwt <span style="color:#cd0000">&#34;github.com/dgrijalva/jwt-go&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> GenerateToken(uid <span style="color:#00cd00">string</span>, role <span style="color:#00cd00">int</span>, expireDuration time.Duration) (<span style="color:#00cd00">string</span>, <span style="color:#00cd00">error</span>) {
+</span></span><span style="display:flex;"><span>    expire <span style="color:#39c">:=</span> time.Now().Add(expireDuration)
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 将 uid，用户角色， 过期时间作为数据写入 token 中
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    token <span style="color:#39c">:=</span> jwt.NewWithClaims(jwt.SigningMethodHS256, util.LoginClaims{
+</span></span><span style="display:flex;"><span>        Uid:  uid,
+</span></span><span style="display:flex;"><span>        Role: role,
+</span></span><span style="display:flex;"><span>        StandardClaims: jwt.StandardClaims{
+</span></span><span style="display:flex;"><span>            ExpiresAt: expire.Unix(),
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>    })
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// SecretKey 用于对用户数据进行签名，不能暴露
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">return</span> token.SignedString([]<span style="color:#cd00cd">byte</span>(util.SecretKey))
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> (ctl <span style="color:#39c">*</span>LoginController) Login(rw http.ResponseWriter, req <span style="color:#39c">*</span>http.Request) {
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">var</span> u loginRequest
+</span></span><span style="display:flex;"><span>    json.NewDecoder(req.Body).Decode(<span style="color:#39c">&amp;</span>u)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 将用户传入的用户名和密码和数据库中的进行比对
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    user, err <span style="color:#39c">:=</span> ctl.db.GetUserByName(req.Context(), u.User)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>        log.Warn(<span style="color:#cd0000">&#34;get user from db by name error: %v&#34;</span>, err)
+</span></span><span style="display:flex;"><span>        httputil.Error(rw, errors.ErrInternal)
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> common.EncodePassowrd(u.Password, u.User) <span style="color:#39c">!=</span> user.Password {
+</span></span><span style="display:flex;"><span>        log.Warn(<span style="color:#cd0000">&#34;name [%s] password incorrent&#34;</span>, u.User)
+</span></span><span style="display:flex;"><span>        httputil.Error(rw, errors.ErrLoginFailed)
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 生成返回给用户的 token
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    token, err <span style="color:#39c">:=</span> GenerateToken(user.UID, user.Role, <span style="color:#cd00cd">3</span><span style="color:#39c">*</span><span style="color:#cd00cd">24</span><span style="color:#39c">*</span>time.Hour)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>        log.Warn(<span style="color:#cd0000">&#34;name [%s] generateToken error: %v&#34;</span>, u.User, err)
+</span></span><span style="display:flex;"><span>        httputil.Error(rw, errors.ErrInternal)
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    res <span style="color:#39c">:=</span> <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>        Token <span style="color:#00cd00">string</span> <span style="color:#cd0000">`json:&#34;token&#34;`</span>
+</span></span><span style="display:flex;"><span>    }{
+</span></span><span style="display:flex;"><span>        Token: token,
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    httputil.Reply(rw, <span style="color:#39c">&amp;</span>res)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="校验-token">校验 Token</h3>
 <p>这里要求客户端每次将通过登录接口获取到的 token 设置在发送请求的 <code>Authorization</code> header 中。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#00cd00">func</span> (a <span style="color:#39c">*</span>AuthFilter) Filter(next http.Handler) http.Handler {
-    <span style="color:#cdcd00">return</span> http.HandlerFunc(<span style="color:#00cd00">func</span>(rw http.ResponseWriter, req <span style="color:#39c">*</span>http.Request) {
-        tokenStr <span style="color:#39c">:=</span> req.Header.Get(<span style="color:#cd0000">&#34;Authorization&#34;</span>)
-        token, err <span style="color:#39c">:=</span> jwt.ParseWithClaims(tokenStr, <span style="color:#39c">&amp;</span>util.LoginClaims{}, <span style="color:#00cd00">func</span>(token <span style="color:#39c">*</span>jwt.Token) (<span style="color:#00cd00">interface</span>{}, <span style="color:#00cd00">error</span>) {
-            <span style="color:#cdcd00">return</span> []<span style="color:#cd00cd">byte</span>(util.SecretKey), <span style="color:#cdcd00">nil</span> 
-        }   
-        <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
-            httputil.Error(rw, errors.ErrUnauthorized)
-            <span style="color:#cdcd00">return</span>
-        }   
-
-        <span style="color:#cdcd00">if</span> claims, ok <span style="color:#39c">:=</span> token.Claims.(<span style="color:#39c">*</span>util.LoginClaims); ok <span style="color:#39c">&amp;&amp;</span> token.Valid {
-            log.Infof(<span style="color:#cd0000">&#34;uid: %s, role: %v&#34;</span>, claims.Uid, claims.Role)
-        } <span style="color:#cdcd00">else</span> {
-            httputil.Error(rw, errors.ErrUnauthorized)
-            <span style="color:#cdcd00">return</span>
-        }   
-        next.ServeHTTP(rw, req)
-    }   
-}
-</code></pre></div><h3 id="注意点">注意点</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#00cd00">func</span> (a <span style="color:#39c">*</span>AuthFilter) Filter(next http.Handler) http.Handler {
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> http.HandlerFunc(<span style="color:#00cd00">func</span>(rw http.ResponseWriter, req <span style="color:#39c">*</span>http.Request) {
+</span></span><span style="display:flex;"><span>        tokenStr <span style="color:#39c">:=</span> req.Header.Get(<span style="color:#cd0000">&#34;Authorization&#34;</span>)
+</span></span><span style="display:flex;"><span>        token, err <span style="color:#39c">:=</span> jwt.ParseWithClaims(tokenStr, <span style="color:#39c">&amp;</span>util.LoginClaims{}, <span style="color:#00cd00">func</span>(token <span style="color:#39c">*</span>jwt.Token) (<span style="color:#00cd00">interface</span>{}, <span style="color:#00cd00">error</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">return</span> []<span style="color:#cd00cd">byte</span>(util.SecretKey), <span style="color:#cdcd00">nil</span> 
+</span></span><span style="display:flex;"><span>        }   
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>            httputil.Error(rw, errors.ErrUnauthorized)
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">return</span>
+</span></span><span style="display:flex;"><span>        }   
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> claims, ok <span style="color:#39c">:=</span> token.Claims.(<span style="color:#39c">*</span>util.LoginClaims); ok <span style="color:#39c">&amp;&amp;</span> token.Valid {
+</span></span><span style="display:flex;"><span>            log.Infof(<span style="color:#cd0000">&#34;uid: %s, role: %v&#34;</span>, claims.Uid, claims.Role)
+</span></span><span style="display:flex;"><span>        } <span style="color:#cdcd00">else</span> {
+</span></span><span style="display:flex;"><span>            httputil.Error(rw, errors.ErrUnauthorized)
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">return</span>
+</span></span><span style="display:flex;"><span>        }   
+</span></span><span style="display:flex;"><span>        next.ServeHTTP(rw, req)
+</span></span><span style="display:flex;"><span>    }   
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="注意点">注意点</h3>
 <ul>
 <li>由于 jwt 返回的 Token 中的数据仅做了 Base64 处理，没有加密，所以不应放入重要的信息。</li>
 <li>jwt Token 由于是无状态的，任何获取到此 Token 的人都可以访问，所以为了减少盗用，可以将 Token 有效期设置短一些。对一些重要的操作，尽量再次进行认证。</li>

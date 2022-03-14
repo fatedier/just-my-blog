@@ -90,33 +90,33 @@
 <h5 id="nodeaffinity">NodeAffinity</h5>
 <p>节点亲和概念上类似于 nodeSelector，它使你可以根据节点上的标签来约束 pod 可以调度到哪些节点。</p>
 <p>目前有两种类型的节点亲和，分别为<code>requiredDuringSchedulingIgnoredDuringExecution</code> 和 <code>preferredDuringSchedulingIgnoredDuringExecution</code>。你可以视它们为<code>硬限制</code>和<code>软限制</code>，意思是，前者指定了将 pod 调度到一个节点上必须满足的规则（就像 nodeSelector 但使用更具表现力的语法），后者指定调度器将尝试执行但不能保证的偏好。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: v1
-<span style="color:#cdcd00">kind</span>: Pod
-<span style="color:#cdcd00">metadata</span>:
-  <span style="color:#cdcd00">name</span>: with-node-affinity
-<span style="color:#cdcd00">spec</span>:
-  <span style="color:#cdcd00">affinity</span>:
-    <span style="color:#cdcd00">nodeAffinity</span>:
-      <span style="color:#cdcd00">requiredDuringSchedulingIgnoredDuringExecution</span>:
-        <span style="color:#cdcd00">nodeSelectorTerms</span>:
-        - <span style="color:#cdcd00">matchExpressions</span>:
-          - <span style="color:#cdcd00">key</span>: kubernetes.io/e2e-az-name
-            <span style="color:#cdcd00">operator</span>: In
-            <span style="color:#cdcd00">values</span>:
-            - e2e-az1
-            - e2e-az2
-      <span style="color:#cdcd00">preferredDuringSchedulingIgnoredDuringExecution</span>:
-      - <span style="color:#cdcd00">weight</span>: <span style="color:#cd00cd">1</span>
-        <span style="color:#cdcd00">preference</span>:
-          <span style="color:#cdcd00">matchExpressions</span>:
-          - <span style="color:#cdcd00">key</span>: another-node-label-key
-            <span style="color:#cdcd00">operator</span>: In
-            <span style="color:#cdcd00">values</span>:
-            - another-node-label-value
-  <span style="color:#cdcd00">containers</span>:
-  - <span style="color:#cdcd00">name</span>: with-node-affinity
-    <span style="color:#cdcd00">image</span>: k8s.gcr.io/pause:<span style="color:#cd00cd">2.0</span>
-</code></pre></div><p>此节点亲和规则表示，pod 只能放置在具有 Label Key 为 kubernetes.io/e2e-az-name 且值为 e2e-az1 或 e2e-az2 的节点上。另外，在满足这些标准的节点中，具有 Label Key 为 another-node-label-key 且值为 another-node-label-value 的节点应该优先使用。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: v1
+</span></span><span style="display:flex;"><span>kind: Pod
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: with-node-affinity
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  affinity:
+</span></span><span style="display:flex;"><span>    nodeAffinity:
+</span></span><span style="display:flex;"><span>      requiredDuringSchedulingIgnoredDuringExecution:
+</span></span><span style="display:flex;"><span>        nodeSelectorTerms:
+</span></span><span style="display:flex;"><span>        - matchExpressions:
+</span></span><span style="display:flex;"><span>          - key: kubernetes.io/e2e-az-name
+</span></span><span style="display:flex;"><span>            operator: In
+</span></span><span style="display:flex;"><span>            values:
+</span></span><span style="display:flex;"><span>            - e2e-az1
+</span></span><span style="display:flex;"><span>            - e2e-az2
+</span></span><span style="display:flex;"><span>      preferredDuringSchedulingIgnoredDuringExecution:
+</span></span><span style="display:flex;"><span>      - weight: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>        preference:
+</span></span><span style="display:flex;"><span>          matchExpressions:
+</span></span><span style="display:flex;"><span>          - key: another-node-label-key
+</span></span><span style="display:flex;"><span>            operator: In
+</span></span><span style="display:flex;"><span>            values:
+</span></span><span style="display:flex;"><span>            - another-node-label-value
+</span></span><span style="display:flex;"><span>  containers:
+</span></span><span style="display:flex;"><span>  - name: with-node-affinity
+</span></span><span style="display:flex;"><span>    image: k8s.gcr.io/pause:2.0
+</span></span></code></pre></div><p>此节点亲和规则表示，pod 只能放置在具有 Label Key 为 kubernetes.io/e2e-az-name 且值为 e2e-az1 或 e2e-az2 的节点上。另外，在满足这些标准的节点中，具有 Label Key 为 another-node-label-key 且值为 another-node-label-value 的节点应该优先使用。</p>
 <h5 id="admission-webhook">Admission webhook</h5>
 <p>Admission webhook 是一种用于接收准入请求并对其进行处理的 HTTP 回调机制。 可以定义两种类型的 admission webhook，即 validating admission webhook 和 mutating admission webhook。 Mutating admission webhook 会先被调用。它们可以更改发送到 API 服务器的对象以执行自定义的设置默认值操作。</p>
 <p>在完成了所有对象修改并且 API 服务器也验证了所传入的对象之后，validating admission webhook 会被调用，并通过拒绝请求的方式来强制实施自定义的策略。</p>
@@ -134,32 +134,32 @@
 <p>通过这一方法，我们可以先创建一个 SchedPatch 对象，指明某个 Deployment 的下一个 Pod 倾向于调度到某一个指定的节点上，之后驱逐想要迁移的 Pod。Deployment 观测到有一个 Pod 被驱逐，会创建一个新的 Pod 补充，此时 kube-apiserver 会将 Pod Create 请求转发给 SchedPatch webhook，在这个 webhook 中我们将会修改 Pod 的调度需求，从而让 kube-scheduler 会倾向于将这个 Pod 调度到某一个指定的节点。</p>
 <h5 id="crd">CRD</h5>
 <p>下面是一个简单的 SchedPatch CRD 定义。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> SchedPatch <span style="color:#00cd00">struct</span> {
-    metav1.TypeMeta   <span style="color:#cd0000">`json:&#34;,inline&#34;`</span>
-    metav1.ObjectMeta <span style="color:#cd0000">`json:&#34;metadata,omitempty&#34;`</span>
- 
-    Spec   SchedPatchSpec   <span style="color:#cd0000">`json:&#34;spec,omitempty&#34;`</span>
-    Status SchedPatchStatus <span style="color:#cd0000">`json:&#34;status,omitempty&#34;`</span>
-}
-
-<span style="color:#00cd00">type</span> SchedPatchSpec <span style="color:#00cd00">struct</span> {
-    <span style="color:#000080">// 匹配哪些 Pod
-</span><span style="color:#000080"></span>    Selector <span style="color:#39c">*</span>metav1.LabelSelector <span style="color:#cd0000">`json:&#34;selector&#34;`</span>
-    <span style="color:#000080">// 最大会 Patch 的符合匹配条件的 Pod 数量，超过后不再注入新的调度规则
-</span><span style="color:#000080"></span>    MaxCount <span style="color:#00cd00">int64</span> <span style="color:#cd0000">`json:&#34;maxCount&#34;`</span>
-    
-    Affinity <span style="color:#39c">*</span>Affinity <span style="color:#cd0000">`json:&#34;affinity,omitempty&#34;`</span>
-    Tolerations []Toleration <span style="color:#cd0000">`json:&#34;tolerations,omitempty&#34;`</span>
-    NodeSelector <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">string</span> <span style="color:#cd0000">`json:&#34;nodeSelector,omitempty&#34;`</span>
-}
-
-<span style="color:#00cd00">type</span> SchedPatchStatus <span style="color:#00cd00">struct</span> {
-    ObservedGeneration <span style="color:#00cd00">int64</span> <span style="color:#cd0000">`json:&#34;observedGeneration&#34;`</span>
-    
-    <span style="color:#000080">// 记录哪些 Pod 被 Patch 了新的调度规则
-</span><span style="color:#000080"></span>    PatchedPods []<span style="color:#00cd00">string</span> <span style="color:#cd0000">`json:&#34;patchedPods,omitempty&#34;`</span>
-}
-</code></pre></div><h5 id="webhook-逻辑">Webhook 逻辑</h5>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> SchedPatch <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    metav1.TypeMeta   <span style="color:#cd0000">`json:&#34;,inline&#34;`</span>
+</span></span><span style="display:flex;"><span>    metav1.ObjectMeta <span style="color:#cd0000">`json:&#34;metadata,omitempty&#34;`</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    Spec   SchedPatchSpec   <span style="color:#cd0000">`json:&#34;spec,omitempty&#34;`</span>
+</span></span><span style="display:flex;"><span>    Status SchedPatchStatus <span style="color:#cd0000">`json:&#34;status,omitempty&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">type</span> SchedPatchSpec <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 匹配哪些 Pod
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    Selector <span style="color:#39c">*</span>metav1.LabelSelector <span style="color:#cd0000">`json:&#34;selector&#34;`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 最大会 Patch 的符合匹配条件的 Pod 数量，超过后不再注入新的调度规则
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    MaxCount <span style="color:#00cd00">int64</span> <span style="color:#cd0000">`json:&#34;maxCount&#34;`</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    Affinity <span style="color:#39c">*</span>Affinity <span style="color:#cd0000">`json:&#34;affinity,omitempty&#34;`</span>
+</span></span><span style="display:flex;"><span>    Tolerations []Toleration <span style="color:#cd0000">`json:&#34;tolerations,omitempty&#34;`</span>
+</span></span><span style="display:flex;"><span>    NodeSelector <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">string</span> <span style="color:#cd0000">`json:&#34;nodeSelector,omitempty&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">type</span> SchedPatchStatus <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    ObservedGeneration <span style="color:#00cd00">int64</span> <span style="color:#cd0000">`json:&#34;observedGeneration&#34;`</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 记录哪些 Pod 被 Patch 了新的调度规则
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    PatchedPods []<span style="color:#00cd00">string</span> <span style="color:#cd0000">`json:&#34;patchedPods,omitempty&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="webhook-逻辑">Webhook 逻辑</h5>
 <ol>
 <li>接收 kube-apiserver 发送过来的 Pod Create 请求。</li>
 <li>从 Informer Cache 中获取所有的 SchedPatch 对象，过滤出和创建的 Pod 匹配的所有对象。如果 PatchedPods 的数量已经达到 MaxCount，也需要过滤掉。</li>
@@ -169,23 +169,23 @@
 <h5 id="迁移示例步骤">迁移示例步骤</h5>
 <p>假设我们有一个 test 的 Deployment，Pod Label 中含有 <code>service: test</code>。当前有一个 Pod 在 node-1 上，我们期望将这个 Pod 迁移到 node-2 上。</p>
 <p>创建一个 SchedPatch 对象，匹配后续创建的一个含有 <code>service: test</code> Label 的 Pod，注入 NodeAffinity，表示倾向于将这个 Pod 调度到节点 node-2 上。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">kind</span>: SchedPatch
-<span style="color:#cdcd00">spec</span>:
-  <span style="color:#cdcd00">selector</span>:
-  <span style="color:#cdcd00">matchLabels</span>:
-    <span style="color:#cdcd00">service</span>: <span style="color:#cd0000">&#34;test&#34;</span>
-  <span style="color:#cdcd00">maxCount</span>: <span style="color:#cd00cd">1</span>
-  <span style="color:#cdcd00">affinity</span>:
-    <span style="color:#cdcd00">nodeAffinity</span>:
-      <span style="color:#cdcd00">preferredDuringSchedulingIgnoredDuringExecution</span>:
-        - <span style="color:#cdcd00">weight</span>: <span style="color:#cd00cd">1</span>
-          <span style="color:#cdcd00">preference</span>:
-            <span style="color:#cdcd00">matchExpressions</span>:
-            - <span style="color:#cdcd00">key</span>: kubernetes.io/hostname
-              <span style="color:#cdcd00">operator</span>: In
-              <span style="color:#cdcd00">values</span>:
-              - node<span style="color:#cd00cd">-2</span>
-</code></pre></div><p>直接通过 kubectl 删除 node-1 上的 Pod。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>kind: SchedPatch
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  selector:
+</span></span><span style="display:flex;"><span>  matchLabels:
+</span></span><span style="display:flex;"><span>    service: <span style="color:#cd0000">&#34;test&#34;</span>
+</span></span><span style="display:flex;"><span>  maxCount: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>  affinity:
+</span></span><span style="display:flex;"><span>    nodeAffinity:
+</span></span><span style="display:flex;"><span>      preferredDuringSchedulingIgnoredDuringExecution:
+</span></span><span style="display:flex;"><span>        - weight: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>          preference:
+</span></span><span style="display:flex;"><span>            matchExpressions:
+</span></span><span style="display:flex;"><span>            - key: kubernetes.io/hostname
+</span></span><span style="display:flex;"><span>              operator: In
+</span></span><span style="display:flex;"><span>              values:
+</span></span><span style="display:flex;"><span>              - node-2
+</span></span></code></pre></div><p>直接通过 kubectl 删除 node-1 上的 Pod。</p>
 <p>此时 Deployment Controller 会创建一个新的 Pod，观察这个 Pod 会被调度到 node-2 上。</p>
 <h3 id="备注">备注</h3>
 <p>上述方案只是初步阐述了一下实现这个功能的思想，实际使用过程中，仍然需要解决很多细节问题。</p>

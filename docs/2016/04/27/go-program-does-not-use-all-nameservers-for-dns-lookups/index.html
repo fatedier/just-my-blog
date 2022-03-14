@@ -74,118 +74,118 @@
 <h3 id="背景">背景</h3>
 <h4 id="nameserver-配置">nameserver 配置</h4>
 <p><code>/etc/resolv.conf</code> 中配置了多个 nameserver</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">nameserver 10.10.100.3
-nameserver 114.114.114.114
-nameserver 8.8.8.8
-</code></pre></div><p><code>10.10.100.3</code> 用于解析内网域名，外网域名通过 <code>114.114.114.114</code> 或者 <code>8.8.8.8</code> 来解析。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nameserver 10.10.100.3
+</span></span><span style="display:flex;"><span>nameserver 114.114.114.114
+</span></span><span style="display:flex;"><span>nameserver 8.8.8.8
+</span></span></code></pre></div><p><code>10.10.100.3</code> 用于解析内网域名，外网域名通过 <code>114.114.114.114</code> 或者 <code>8.8.8.8</code> 来解析。</p>
 <h4 id="测试代码">测试代码</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#cd00cd">package</span> main
-
-<span style="color:#cd00cd">import</span> (
-    <span style="color:#cd0000">&#34;net&#34;</span>
-    <span style="color:#cd0000">&#34;fmt&#34;</span>
-)
-
-<span style="color:#00cd00">func</span> main() {
-    hostname <span style="color:#39c">:=</span> <span style="color:#cd0000">&#34;www.baidu.com&#34;</span>
-    addrs, err <span style="color:#39c">:=</span> net.LookupHost(hostname)
-    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
-        fmt.Printf(<span style="color:#cd0000">&#34;lookup host error: %v\n&#34;</span>, err)
-    } <span style="color:#cdcd00">else</span> {
-        fmt.Printf(<span style="color:#cd0000">&#34;addrs: %v&#34;</span>, addrs)
-    }   
-}
-</code></pre></div><h4 id="结果">结果</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">lookup host error: lookup www.baidu.com on 10.10.100.3:53: no such host
-</code></pre></div><p>使用 go1.5 版本进行编译，发现程序并没有按照预想的过程来解析，通过 <code>10.10.100.3</code> 无法解析后就直接返回了错误信息。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#cd00cd">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#cd0000">&#34;net&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cd0000">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> main() {
+</span></span><span style="display:flex;"><span>    hostname <span style="color:#39c">:=</span> <span style="color:#cd0000">&#34;www.baidu.com&#34;</span>
+</span></span><span style="display:flex;"><span>    addrs, err <span style="color:#39c">:=</span> net.LookupHost(hostname)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>        fmt.Printf(<span style="color:#cd0000">&#34;lookup host error: %v\n&#34;</span>, err)
+</span></span><span style="display:flex;"><span>    } <span style="color:#cdcd00">else</span> {
+</span></span><span style="display:flex;"><span>        fmt.Printf(<span style="color:#cd0000">&#34;addrs: %v&#34;</span>, addrs)
+</span></span><span style="display:flex;"><span>    }   
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="结果">结果</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>lookup host error: lookup www.baidu.com on 10.10.100.3:53: no such host
+</span></span></code></pre></div><p>使用 go1.5 版本进行编译，发现程序并没有按照预想的过程来解析，通过 <code>10.10.100.3</code> 无法解析后就直接返回了错误信息。</p>
 <p>而使用 go1.4 版本编译运行后，确得到了正确的结果。</p>
 <h3 id="调试标准库的方法">调试标准库的方法</h3>
 <p>调试 golang 的标准库非常简单，先找到标准库源码的存放位置，然后将要修改的文件备份一份，之后直接在其中添加输出语句，大部分可以 <code>import &quot;fmt&quot;</code> 后使用 <code>fmt.Printf</code> 函数进行输出，有的包中需要使用其他方式，避免循环引用，这里不详述，因为我们要改的 <code>net</code> 包并不涉及这个问题，注意调试完之后将标准库的文件恢复。</p>
 <h4 id="查找标准库所在的目录">查找标准库所在的目录</h4>
 <p>执行 <code>go env</code> 查看 go 的环境变量如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#00cdcd">GOARCH</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;amd64&#34;</span>
-<span style="color:#00cdcd">GOBIN</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;&#34;</span><span style="color:#00cdcd">GOCHAR</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;6&#34;</span><span style="color:#00cdcd">GOEXE</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;&#34;</span><span style="color:#00cdcd">GOHOSTARCH</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;amd64&#34;</span><span style="color:#00cdcd">GOHOSTOS</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;linux&#34;</span><span style="color:#00cdcd">GOOS</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;linux&#34;</span>
-<span style="color:#00cdcd">GOPATH</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;/home/wcl/go_projects&#34;</span>
-<span style="color:#00cdcd">GORACE</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;&#34;</span>
-<span style="color:#00cdcd">GOROOT</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;/usr/lib/golang&#34;</span>
-<span style="color:#00cdcd">GOTOOLDIR</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;/usr/lib/golang/pkg/tool/linux_amd64&#34;</span>
-<span style="color:#00cdcd">CC</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;gcc&#34;</span>
-<span style="color:#00cdcd">GOGCCFLAGS</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;-fPIC -m64 -pthread -fmessage-length=0&#34;</span>
-<span style="color:#00cdcd">CXX</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;g++&#34;</span>
-<span style="color:#00cdcd">CGO_ENABLED</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;1&#34;</span>
-</code></pre></div><p><strong>GOROOT</strong> 的值即是标准库所在的目录，<code>net</code> 包的具体路径为 <code>/usr/lib/golang/src/net</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#00cdcd">GOARCH</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;amd64&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">GOBIN</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;&#34;</span><span style="color:#00cdcd">GOCHAR</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;6&#34;</span><span style="color:#00cdcd">GOEXE</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;&#34;</span><span style="color:#00cdcd">GOHOSTARCH</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;amd64&#34;</span><span style="color:#00cdcd">GOHOSTOS</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;linux&#34;</span><span style="color:#00cdcd">GOOS</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;linux&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">GOPATH</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;/home/wcl/go_projects&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">GORACE</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">GOROOT</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;/usr/lib/golang&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">GOTOOLDIR</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;/usr/lib/golang/pkg/tool/linux_amd64&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">CC</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;gcc&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">GOGCCFLAGS</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;-fPIC -m64 -pthread -fmessage-length=0&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">CXX</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;g++&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">CGO_ENABLED</span><span style="color:#39c">=</span><span style="color:#cd0000">&#34;1&#34;</span>
+</span></span></code></pre></div><p><strong>GOROOT</strong> 的值即是标准库所在的目录，<code>net</code> 包的具体路径为 <code>/usr/lib/golang/src/net</code></p>
 <h3 id="go-14-与-15-版本中-dns-查询逻辑的不同">go 1.4 与 1.5 版本中 dns 查询逻辑的不同</h3>
 <p>因为最近很多程序都是使用 <strong>go1.5</strong> 版本进行编译的，所以理所当然查看了两个版本这部分源码的区别，还真的有所改变。</p>
 <p>标准库对外暴露的 dns 查询函数是 <code>func LookupHost(host string) (addrs []string, err error)</code> <strong>(net/lookup.go)</strong></p>
 <p>这个函数会调用实际处理函数 <code>lookupHost</code> <strong>(net/lookup_unix.go)</strong></p>
 <h4 id="cgo-与纯-go-实现的-dns-查询">cgo 与纯 go 实现的 dns 查询</h4>
 <p><strong>go1.4 版本源码</strong></p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#00cd00">func</span> lookupHost(host <span style="color:#00cd00">string</span>) (addrs []<span style="color:#00cd00">string</span>, err <span style="color:#00cd00">error</span>) {
-    addrs, err, ok <span style="color:#39c">:=</span> cgoLookupHost(host)
-    <span style="color:#cdcd00">if</span> !ok {
-        addrs, err = goLookupHost(host)
-    }
-    <span style="color:#cdcd00">return</span>
-}
-</code></pre></div><p><strong>go1.5 版本源码</strong></p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#00cd00">func</span> lookupHost(host <span style="color:#00cd00">string</span>) (addrs []<span style="color:#00cd00">string</span>, err <span style="color:#00cd00">error</span>) {
-    order <span style="color:#39c">:=</span> systemConf().hostLookupOrder(host)
-    <span style="color:#cdcd00">if</span> order <span style="color:#39c">==</span> hostLookupCgo {
-        <span style="color:#cdcd00">if</span> addrs, err, ok <span style="color:#39c">:=</span> cgoLookupHost(host); ok {
-            <span style="color:#cdcd00">return</span> addrs, err
-        }
-        <span style="color:#000080">// cgo not available (or netgo); fall back to Go&#39;s DNS resolver
-</span><span style="color:#000080"></span>        order = hostLookupFilesDNS
-    }
-    <span style="color:#cdcd00">return</span> goLookupHostOrder(host, order)
-}
-</code></pre></div><p><strong>可以明显的看到 1.4 的源码中默认使用 cgo 的方式进行 dns 查询</strong>（这个函数最终会创建一个线程调用c的 getaddrinfo 函数来获取 dns 查询结果），如果查询失败则会再使用纯 go 实现的查询方式。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#00cd00">func</span> lookupHost(host <span style="color:#00cd00">string</span>) (addrs []<span style="color:#00cd00">string</span>, err <span style="color:#00cd00">error</span>) {
+</span></span><span style="display:flex;"><span>    addrs, err, ok <span style="color:#39c">:=</span> cgoLookupHost(host)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> !ok {
+</span></span><span style="display:flex;"><span>        addrs, err = goLookupHost(host)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>go1.5 版本源码</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#00cd00">func</span> lookupHost(host <span style="color:#00cd00">string</span>) (addrs []<span style="color:#00cd00">string</span>, err <span style="color:#00cd00">error</span>) {
+</span></span><span style="display:flex;"><span>    order <span style="color:#39c">:=</span> systemConf().hostLookupOrder(host)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> order <span style="color:#39c">==</span> hostLookupCgo {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> addrs, err, ok <span style="color:#39c">:=</span> cgoLookupHost(host); ok {
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">return</span> addrs, err
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// cgo not available (or netgo); fall back to Go&#39;s DNS resolver
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        order = hostLookupFilesDNS
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> goLookupHostOrder(host, order)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>可以明显的看到 1.4 的源码中默认使用 cgo 的方式进行 dns 查询</strong>（这个函数最终会创建一个线程调用c的 getaddrinfo 函数来获取 dns 查询结果），如果查询失败则会再使用纯 go 实现的查询方式。</p>
 <p><strong>而在 1.5 的源码中，这一点有所改变，cgo 的方式不再是默认值，而是根据 <code>systemConf().hostLookupOrder(host)</code> 的返回值来判断具体使用哪种方式</strong>。这个函数定义在 <strong>net/conf.go</strong> 中，稍微看了一下， 除非通过编译标志强制使用 cgo 方式或者在某些特定的系统上会使用 cgo 方式，其他时候都使用纯 go 实现的查询方式。</p>
 <p>cgo 的方式没有问题，看起来程序会并发地向 <code>/etc/resolv.conf</code> 中所有配置的域名服务器发送 dns 解析请求，然后将最先成功响应的结果返回。</p>
 <h4 id="纯-go-实现的-dns-查询分析">纯 go 实现的 dns 查询分析</h4>
 <p>问题就出在纯 go 实现的查询上，主要看一下 go1.5 的实现。</p>
 <p>函数调用逻辑如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">LookupHost <span style="color:#39c">(</span>net/lookup.go<span style="color:#39c">)</span>
-    lookupHost  <span style="color:#39c">(</span>net/lookup_unix.go<span style="color:#39c">)</span>
-        goLookupHostOrder  <span style="color:#39c">(</span>net/dnsclient_unix.go<span style="color:#39c">)</span>
-            goLookupIPOrder  <span style="color:#39c">(</span>net/dnsclient_unix.go<span style="color:#39c">)</span>
-                tryOneName   <span style="color:#39c">(</span>net/dnsclient_unix.go<span style="color:#39c">)</span>
-</code></pre></div><p>大部分实现代码在 <code>net/dnsclient_unix.go</code> 这个文件中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>LookupHost <span style="color:#39c">(</span>net/lookup.go<span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span>    lookupHost  <span style="color:#39c">(</span>net/lookup_unix.go<span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span>        goLookupHostOrder  <span style="color:#39c">(</span>net/dnsclient_unix.go<span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span>            goLookupIPOrder  <span style="color:#39c">(</span>net/dnsclient_unix.go<span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span>                tryOneName   <span style="color:#39c">(</span>net/dnsclient_unix.go<span style="color:#39c">)</span>
+</span></span></code></pre></div><p>大部分实现代码在 <code>net/dnsclient_unix.go</code> 这个文件中。</p>
 <p>重点看一下 <code>tryOneName</code> 这个函数</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#00cd00">func</span> tryOneName(cfg <span style="color:#39c">*</span>dnsConfig, name <span style="color:#00cd00">string</span>, qtype <span style="color:#00cd00">uint16</span>) (<span style="color:#00cd00">string</span>, []dnsRR, <span style="color:#00cd00">error</span>) {
-    <span style="color:#cdcd00">if</span> <span style="color:#cd00cd">len</span>(cfg.servers) <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span> {
-        <span style="color:#cdcd00">return</span> <span style="color:#cd0000">&#34;&#34;</span>, <span style="color:#cdcd00">nil</span>, <span style="color:#39c">&amp;</span>DNSError{Err: <span style="color:#cd0000">&#34;no DNS servers&#34;</span>, Name: name}
-    }
-    <span style="color:#cdcd00">if</span> <span style="color:#cd00cd">len</span>(name) <span style="color:#39c">&gt;=</span> <span style="color:#cd00cd">256</span> {
-        <span style="color:#cdcd00">return</span> <span style="color:#cd0000">&#34;&#34;</span>, <span style="color:#cdcd00">nil</span>, <span style="color:#39c">&amp;</span>DNSError{Err: <span style="color:#cd0000">&#34;DNS name too long&#34;</span>, Name: name}
-    }
-    timeout <span style="color:#39c">:=</span> time.Duration(cfg.timeout) <span style="color:#39c">*</span> time.Second
-    <span style="color:#00cd00">var</span> lastErr <span style="color:#00cd00">error</span>
-    <span style="color:#cdcd00">for</span> i <span style="color:#39c">:=</span> <span style="color:#cd00cd">0</span>; i &lt; cfg.attempts; i<span style="color:#39c">++</span> {
-        <span style="color:#cdcd00">for</span> _, server <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> cfg.servers {
-            server = JoinHostPort(server, <span style="color:#cd0000">&#34;53&#34;</span>)
-            msg, err <span style="color:#39c">:=</span> exchange(server, name, qtype, timeout)
-            <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
-                lastErr = <span style="color:#39c">&amp;</span>DNSError{
-                    Err:    err.Error(),
-                    Name:   name,
-                    Server: server,
-                }
-                <span style="color:#cdcd00">if</span> nerr, ok <span style="color:#39c">:=</span> err.(Error); ok <span style="color:#39c">&amp;&amp;</span> nerr.Timeout() {
-                    lastErr.(<span style="color:#39c">*</span>DNSError).IsTimeout = <span style="color:#cdcd00">true</span>
-                }
-                <span style="color:#cdcd00">continue</span>
-            }
-            cname, rrs, err <span style="color:#39c">:=</span> answer(name, server, msg, qtype)
-            <span style="color:#cdcd00">if</span> err <span style="color:#39c">==</span> <span style="color:#cdcd00">nil</span> <span style="color:#39c">||</span> msg.rcode <span style="color:#39c">==</span> dnsRcodeSuccess <span style="color:#39c">||</span> msg.rcode <span style="color:#39c">==</span> dnsRcodeNameError <span style="color:#39c">&amp;&amp;</span> msg.recursion_available {
-                <span style="color:#cdcd00">return</span> cname, rrs, err
-            }
-            lastErr = err
-        }
-    }
-    <span style="color:#cdcd00">return</span> <span style="color:#cd0000">&#34;&#34;</span>, <span style="color:#cdcd00">nil</span>, lastErr
-}
-</code></pre></div><p>第一层 for 循环是尝试的次数，第二层 for 循环是遍历 <code>/etc/resolv.conf</code> 中配置的所有域名服务器，<code>exchange</code> 函数是发送 dns 查询请求并将响应结果解析到 <code>msg</code> 变量中返回，初看到这里，觉得实现是没问题的，顺序向每一个域名服务器发送 dns 查询请求，如果成功就返回，如果失败就尝试下一个。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#00cd00">func</span> tryOneName(cfg <span style="color:#39c">*</span>dnsConfig, name <span style="color:#00cd00">string</span>, qtype <span style="color:#00cd00">uint16</span>) (<span style="color:#00cd00">string</span>, []dnsRR, <span style="color:#00cd00">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> <span style="color:#cd00cd">len</span>(cfg.servers) <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#cd0000">&#34;&#34;</span>, <span style="color:#cdcd00">nil</span>, <span style="color:#39c">&amp;</span>DNSError{Err: <span style="color:#cd0000">&#34;no DNS servers&#34;</span>, Name: name}
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> <span style="color:#cd00cd">len</span>(name) <span style="color:#39c">&gt;=</span> <span style="color:#cd00cd">256</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#cd0000">&#34;&#34;</span>, <span style="color:#cdcd00">nil</span>, <span style="color:#39c">&amp;</span>DNSError{Err: <span style="color:#cd0000">&#34;DNS name too long&#34;</span>, Name: name}
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    timeout <span style="color:#39c">:=</span> time.Duration(cfg.timeout) <span style="color:#39c">*</span> time.Second
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">var</span> lastErr <span style="color:#00cd00">error</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> i <span style="color:#39c">:=</span> <span style="color:#cd00cd">0</span>; i &lt; cfg.attempts; i<span style="color:#39c">++</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> _, server <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> cfg.servers {
+</span></span><span style="display:flex;"><span>            server = JoinHostPort(server, <span style="color:#cd0000">&#34;53&#34;</span>)
+</span></span><span style="display:flex;"><span>            msg, err <span style="color:#39c">:=</span> exchange(server, name, qtype, timeout)
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>                lastErr = <span style="color:#39c">&amp;</span>DNSError{
+</span></span><span style="display:flex;"><span>                    Err:    err.Error(),
+</span></span><span style="display:flex;"><span>                    Name:   name,
+</span></span><span style="display:flex;"><span>                    Server: server,
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">if</span> nerr, ok <span style="color:#39c">:=</span> err.(Error); ok <span style="color:#39c">&amp;&amp;</span> nerr.Timeout() {
+</span></span><span style="display:flex;"><span>                    lastErr.(<span style="color:#39c">*</span>DNSError).IsTimeout = <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">continue</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            cname, rrs, err <span style="color:#39c">:=</span> answer(name, server, msg, qtype)
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> err <span style="color:#39c">==</span> <span style="color:#cdcd00">nil</span> <span style="color:#39c">||</span> msg.rcode <span style="color:#39c">==</span> dnsRcodeSuccess <span style="color:#39c">||</span> msg.rcode <span style="color:#39c">==</span> dnsRcodeNameError <span style="color:#39c">&amp;&amp;</span> msg.recursion_available {
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">return</span> cname, rrs, err
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            lastErr = err
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> <span style="color:#cd0000">&#34;&#34;</span>, <span style="color:#cdcd00">nil</span>, lastErr
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>第一层 for 循环是尝试的次数，第二层 for 循环是遍历 <code>/etc/resolv.conf</code> 中配置的所有域名服务器，<code>exchange</code> 函数是发送 dns 查询请求并将响应结果解析到 <code>msg</code> 变量中返回，初看到这里，觉得实现是没问题的，顺序向每一个域名服务器发送 dns 查询请求，如果成功就返回，如果失败就尝试下一个。</p>
 <p>问题出现在判断是否成功的那一行代码 <code>if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;&amp; msg.recursion_available</code>，这里的意思是如果 dns 查询成功，或者出错了但是对方支持递归查询的话，就直接返回，不继续请求下一个域名服务器。如果对方支持递归查询但是仍然没有查到的话，说明上级服务器也没有这个域名的记录，没有必要继续往下查。（这个逻辑在 go1.6 版本中被修改了，出错了以后不再判断是否支持递归查询，仍然尝试向下一个域名服务器发送请求）</p>
 <p><code>msg.rcode</code> 这个值很重要，是问题的关键。</p>
 <h3 id="dns-查询协议格式">dns 查询协议格式</h3>
@@ -210,37 +210,37 @@ nameserver 8.8.8.8
 <h3 id="bind-的-dns-回复问题">bind 的 dns 回复问题</h3>
 <p><code>10.10.100.3</code> 上是使用 <strong>bind</strong> 搭建的本地域名服务器。</p>
 <p>使用 <code>dig @10.10.100.3 www.baidu.com</code> 命令查看解析结果如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">; &lt;&lt;&gt;&gt; DiG 9.8.2rc1-RedHat-9.8.2-0.23.rc1.el6_5.1 &lt;&lt;&gt;&gt; @10.10.100.3 www.baidu.com ;
-<span style="color:#39c">(</span><span style="color:#cd00cd">1</span> server found<span style="color:#39c">)</span> 
-;; global options: +cmd 
-;; Got answer: 
-;; -&gt;&gt;HEADER<span style="color:#cd0000">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span style="color:#cd00cd">55909</span> 
-;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: <span style="color:#cd00cd">0</span> 
-;; WARNING: recursion requested but not available 
-
-;; QUESTION SECTION: 
-;www.baidu.com.         IN  A 
-
-;; AUTHORITY SECTION: 
-.           <span style="color:#cd00cd">518400</span>  IN  NS  H.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  K.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  C.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  A.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  B.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  F.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  L.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  D.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  I.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  E.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  G.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  M.ROOT-SERVERS.NET.  
-.           <span style="color:#cd00cd">518400</span>  IN  NS  J.ROOT-SERVERS.NET.  
-
-;; Query time: <span style="color:#cd00cd">1</span> msec 
-;; SERVER: 10.10.100.3#53<span style="color:#39c">(</span>10.10.100.3<span style="color:#39c">)</span> 
-;; WHEN: Wed Apr <span style="color:#cd00cd">27</span> 17:35:15 <span style="color:#cd00cd">2016</span> 
-;; MSG SIZE  rcvd: <span style="color:#cd00cd">242</span> 
-</code></pre></div><p><strong>bind</strong> 并没有返回 <code>www.baidu.com</code> 的 A 记录，而是返回了13个根域名服务器的地址，并且 <strong>status</strong> 的状态是 <strong>NOERROR</strong>（这个值就是前述的 <strong>RCODE</strong>，这里返回0表示没有错误)，问题就在这里，没有查到 A 记录还返回 <code>RCODE=0</code>，回顾一下上面 go 代码中的判断条件</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>; &lt;&lt;&gt;&gt; DiG 9.8.2rc1-RedHat-9.8.2-0.23.rc1.el6_5.1 &lt;&lt;&gt;&gt; @10.10.100.3 www.baidu.com ;
+</span></span><span style="display:flex;"><span><span style="color:#39c">(</span><span style="color:#cd00cd">1</span> server found<span style="color:#39c">)</span> 
+</span></span><span style="display:flex;"><span>;; global options: +cmd 
+</span></span><span style="display:flex;"><span>;; Got answer: 
+</span></span><span style="display:flex;"><span>;; -&gt;&gt;HEADER<span style="color:#cd0000">&lt;&lt;- opco</span>de: QUERY, status: NOERROR, id: <span style="color:#cd00cd">55909</span> 
+</span></span><span style="display:flex;"><span>;; flags: qr rd; QUERY: 1, ANSWER: 0, AUTHORITY: 13, ADDITIONAL: <span style="color:#cd00cd">0</span> 
+</span></span><span style="display:flex;"><span>;; WARNING: recursion requested but not available 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>;; QUESTION SECTION: 
+</span></span><span style="display:flex;"><span>;www.baidu.com.         IN  A 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>;; AUTHORITY SECTION: 
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  H.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  K.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  C.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  A.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  B.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  F.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  L.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  D.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  I.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  E.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  G.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  M.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>.           <span style="color:#cd00cd">518400</span>  IN  NS  J.ROOT-SERVERS.NET.  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>;; Query time: <span style="color:#cd00cd">1</span> msec 
+</span></span><span style="display:flex;"><span>;; SERVER: 10.10.100.3#53<span style="color:#39c">(</span>10.10.100.3<span style="color:#39c">)</span> 
+</span></span><span style="display:flex;"><span>;; WHEN: Wed Apr <span style="color:#cd00cd">27</span> 17:35:15 <span style="color:#cd00cd">2016</span> 
+</span></span><span style="display:flex;"><span>;; MSG SIZE  rcvd: <span style="color:#cd00cd">242</span> 
+</span></span></code></pre></div><p><strong>bind</strong> 并没有返回 <code>www.baidu.com</code> 的 A 记录，而是返回了13个根域名服务器的地址，并且 <strong>status</strong> 的状态是 <strong>NOERROR</strong>（这个值就是前述的 <strong>RCODE</strong>，这里返回0表示没有错误)，问题就在这里，没有查到 A 记录还返回 <code>RCODE=0</code>，回顾一下上面 go 代码中的判断条件</p>
 <p><code>if err == nil || msg.rcode == dnsRcodeSuccess || msg.rcode == dnsRcodeNameError &amp;&amp; msg.recursion_available</code></p>
 <p>如果返回的 <strong>RCODE</strong> 值为 0，则直接退出，不继续尝试后面的域名服务器，从而导致了域名解析失败。</p>
 <h3 id="解决方案">解决方案</h3>
@@ -252,10 +252,10 @@ nameserver 8.8.8.8
 <h4 id="修改-bind-的配置文件">修改 bind 的配置文件</h4>
 <p>在 <strong>bind</strong> 中彻底关闭对递归查询的支持也可以解决此问题，但是由于对 <strong>bind</strong> 不是很熟悉，具体是什么原因导致没有查到 <strong>A 记录</strong>但仍然返回 <strong>NOERROR</strong> 不是很清楚，猜测可能和递归转发的查询方式有关，有可能 <strong>bind</strong> 认为返回了根域名服务器的地址，<strong>client</strong> 可以去这些地址上查，所以该次请求并不算做出错。</p>
 <p>修改配置文件加上以下内容以后，再次查询时会返回 <strong>RCODE=5</strong>，拒绝递归查询，这样可以达到我们的目的，查询非内网域名时通过其他域名服务器查询</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">recursion no;
-allow-query-cache <span style="color:#39c">{</span> none; <span style="color:#39c">}</span>;
-allow-recursion <span style="color:#39c">{</span> none; <span style="color:#39c">}</span>;
-</code></pre></div><h4 id="更新">更新</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>recursion no;
+</span></span><span style="display:flex;"><span>allow-query-cache <span style="color:#39c">{</span> none; <span style="color:#39c">}</span>;
+</span></span><span style="display:flex;"><span>allow-recursion <span style="color:#39c">{</span> none; <span style="color:#39c">}</span>;
+</span></span></code></pre></div><h4 id="更新">更新</h4>
 <p>发现在 go1.7 版本中对这个问题做了修复，使用纯 go 实现的 dns 解析方式也已经运行正常。具体信息可以参考 <a href="https://github.com/golang/go/issues/15434">issue 15434</a>。</p>
             </div>
             

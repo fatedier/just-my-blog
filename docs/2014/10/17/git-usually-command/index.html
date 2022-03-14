@@ -74,40 +74,40 @@
 <h3 id="修改某一次提交的说明信息">修改某一次提交的说明信息</h3>
 <p>有时候我们需要修改之前提交的时候的说明信息，没有操作命令可以直接完成，但是使用rebase命令可以实现。</p>
 <p>例如我们要修改倒数第二次的提交的说明信息：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git rebase -i HEAD~3
-</code></pre></div><p><strong>注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git rebase -i HEAD~3
+</span></span></code></pre></div><p><strong>注意：这里HEAD~后面跟着的是3而不是2，因为这里指的是要修改的提交的父提交。</strong></p>
 <p>之后会进入到文本编辑界面，如下图</p>
 <p><img src="https://image.fatedier.com/pic/2014/2014-10-17-git-usually-command-git-reset-commit-message.jpg" alt="reset-commit-message"></p>
 <p>将要修改的提交前面的 <strong>pick</strong> 改为 <strong>edit</strong> ，保存后退出。</p>
 <p>这个时候执行</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git commit --amend
-</code></pre></div><p>就可以修改该次提交的说明了，修改完成后保存并退出。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git rebase --continue
-</code></pre></div><p>执行这条命令后，后续的提交说明将不会改变。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git commit --amend
+</span></span></code></pre></div><p>就可以修改该次提交的说明了，修改完成后保存并退出。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git rebase --continue
+</span></span></code></pre></div><p>执行这条命令后，后续的提交说明将不会改变。</p>
 <p><strong>注：不要修改已经 push 到远程仓库的提交！！！会引起版本混乱，使提交历史变的不清晰！</strong></p>
 <h3 id="查看删除重命名远程分支">查看、删除、重命名远程分支</h3>
 <p>查看所有的分支（包括远程分支）</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git branch -a
-</code></pre></div><p>当一个分支已经被合并到主分支后，我们通常会删除这个分支，如果仅仅 git branch -d 是删除本地分支</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git branch -a
+</span></span></code></pre></div><p>当一个分支已经被合并到主分支后，我们通常会删除这个分支，如果仅仅 git branch -d 是删除本地分支</p>
 <p>删除远程分支的话可以使用如下命令</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git push origin --delete &lt;branchName&gt;
-</code></pre></div><p>重命名一个分支不是很常用，可以先删除远程分支，再重命名本地分支，之后将重命名后的本地分支推送到远程仓库</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git push --delete origin &lt;branchName&gt;
-
-$ git branch -m &lt;branchName&gt; &lt;newBranchName&gt;
-
-$ git push origin &lt;newBranchName&gt;
-</code></pre></div><h3 id="合并多个提交">合并多个提交</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git push origin --delete &lt;branchName&gt;
+</span></span></code></pre></div><p>重命名一个分支不是很常用，可以先删除远程分支，再重命名本地分支，之后将重命名后的本地分支推送到远程仓库</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git push --delete origin &lt;branchName&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ git branch -m &lt;branchName&gt; &lt;newBranchName&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ git push origin &lt;newBranchName&gt;
+</span></span></code></pre></div><h3 id="合并多个提交">合并多个提交</h3>
 <p>比如要合并最后两次的提交，其实和修改某一次提交的说明信息有点类似。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git rebase -i HEAD~2
-</code></pre></div><p>之后同样会进入到文本编辑界面，将第二行开头的 <strong>pick</strong> 改为 <strong>squash</strong> 或 <strong>s</strong>，保存后退出。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git rebase -i HEAD~2
+</span></span></code></pre></div><p>之后同样会进入到文本编辑界面，将第二行开头的 <strong>pick</strong> 改为 <strong>squash</strong> 或 <strong>s</strong>，保存后退出。</p>
 <p>这时git会把两次提交合并，并且提示让你输入新的提交信息，保存后退出就成功完成两次提交的合并了。</p>
 <h3 id="强制回退远程仓库到指定提交">强制回退远程仓库到指定提交</h3>
 <p>当我们在开发的时候出现一些关键性的错误，并且确认现在已经做的开发工作是无意义的时候，可能需要回退到之前的版本。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git reset --hard &lt;commit_id&gt;
-
-$ git push origin HEAD --force
-</code></pre></div><p>另外，reset命令还有几个可选参数</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git reset --hard &lt;commit_id&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$ git push origin HEAD --force
+</span></span></code></pre></div><p>另外，reset命令还有几个可选参数</p>
 <ul>
 <li>
 <p><strong>git reset &ndash;mixed</strong>：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息。</p>
@@ -125,12 +125,12 @@ $ git push origin HEAD --force
 <p>需要使用 <code>$ git reflog</code> 找到我们需要恢复的HEAD的ID，然后使用reset命令恢复回去。</p>
 <h3 id="查看指定版本的某个文件的内容">查看指定版本的某个文件的内容</h3>
 <p>例如要查看 f4869b0 这次提交的 test.cpp 文件的内容，test.cpp的路径需要使用相对于git目录的路径名，使用如下命令：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git show f4869b0:test.cpp
-</code></pre></div><p>文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git show f4869b0:test.cpp
+</span></span></code></pre></div><p>文件的内容会全部显示在界面上，可以使用文件重定向到另外的文件，再进行后续操作。</p>
 <h3 id="将远程分支已经删除的残留的本地分支追踪信息删除">将远程分支已经删除的残留的本地分支追踪信息删除</h3>
 <p>经过一段时间的开发后，远端的一些被 merge 后删除的分支，在本地使用 <code>git branch -a</code> 还是能看到，需要取消追踪并删除。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git fetch --prune
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git fetch --prune
+</span></span></code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

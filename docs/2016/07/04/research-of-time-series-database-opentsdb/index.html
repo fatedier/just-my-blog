@@ -105,52 +105,52 @@
 <h4 id="插入数据">插入数据</h4>
 <p>http://localhost:4242/api/put, POST</p>
 <p>内容为 JSON 格式，支持同时插入多条数据。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">[
-    {
-        &#34;metric&#34;: <span style="color:#cd0000">&#34;sys.cpu.nice&#34;</span>,
-        &#34;timestamp&#34;: <span style="color:#cd00cd">1346846400</span>,
-        &#34;value&#34;: <span style="color:#cd00cd">18</span>,
-        &#34;tags&#34;: {
-           &#34;host&#34;: <span style="color:#cd0000">&#34;web01&#34;</span>,
-           &#34;dc&#34;: <span style="color:#cd0000">&#34;lga&#34;</span>
-        }
-    },
-    {
-        &#34;metric&#34;: <span style="color:#cd0000">&#34;sys.cpu.nice&#34;</span>,
-        &#34;timestamp&#34;: <span style="color:#cd00cd">1346846400</span>,
-        &#34;value&#34;: <span style="color:#cd00cd">9</span>,
-        &#34;tags&#34;: {
-           &#34;host&#34;: <span style="color:#cd0000">&#34;web02&#34;</span>,
-           &#34;dc&#34;: <span style="color:#cd0000">&#34;lga&#34;</span>
-        }
-    }
-]
-</code></pre></div><h4 id="查询数据">查询数据</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>[
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        &#34;metric&#34;: <span style="color:#cd0000">&#34;sys.cpu.nice&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;timestamp&#34;: <span style="color:#cd00cd">1346846400</span>,
+</span></span><span style="display:flex;"><span>        &#34;value&#34;: <span style="color:#cd00cd">18</span>,
+</span></span><span style="display:flex;"><span>        &#34;tags&#34;: {
+</span></span><span style="display:flex;"><span>           &#34;host&#34;: <span style="color:#cd0000">&#34;web01&#34;</span>,
+</span></span><span style="display:flex;"><span>           &#34;dc&#34;: <span style="color:#cd0000">&#34;lga&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        &#34;metric&#34;: <span style="color:#cd0000">&#34;sys.cpu.nice&#34;</span>,
+</span></span><span style="display:flex;"><span>        &#34;timestamp&#34;: <span style="color:#cd00cd">1346846400</span>,
+</span></span><span style="display:flex;"><span>        &#34;value&#34;: <span style="color:#cd00cd">9</span>,
+</span></span><span style="display:flex;"><span>        &#34;tags&#34;: {
+</span></span><span style="display:flex;"><span>           &#34;host&#34;: <span style="color:#cd0000">&#34;web02&#34;</span>,
+</span></span><span style="display:flex;"><span>           &#34;dc&#34;: <span style="color:#cd0000">&#34;lga&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><h4 id="查询数据">查询数据</h4>
 <p>http://localhost:4242/api/query, POST</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    &#34;start&#34;: <span style="color:#cd00cd">1463452826</span>,
-    &#34;end&#34;: <span style="color:#cd00cd">1463453026</span>,
-    &#34;globalAnnotations&#34;: <span style="color:#cdcd00">true</span>,
-    &#34;queries&#34;: [
-        {
-            &#34;aggregator&#34;: <span style="color:#cd0000">&#34;avg&#34;</span>,
-            &#34;metric&#34;: <span style="color:#cd0000">&#34;sys.disk.usage&#34;</span>,
-            &#34;downsample&#34;: <span style="color:#cd0000">&#34;60s-avg&#34;</span>,
-            &#34;tags&#34;: {
-                &#34;host_id&#34;: <span style="color:#cd0000">&#34;123&#34;</span>
-            }
-        },
-        {
-            &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
-            &#34;metric&#34;: <span style="color:#cd0000">&#34;sys.cpu.load&#34;</span>,
-            &#34;downsample&#34;: <span style="color:#cd0000">&#34;60s-avg&#34;</span>,
-            &#34;tags&#34;: {
-                &#34;host_id&#34;: <span style="color:#cd0000">&#34;123&#34;</span>
-            }
-        }
-    ]
-}
-</code></pre></div><p><strong>start</strong> 和 <strong>end</strong> 指定了查询的时间范围。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    &#34;start&#34;: <span style="color:#cd00cd">1463452826</span>,
+</span></span><span style="display:flex;"><span>    &#34;end&#34;: <span style="color:#cd00cd">1463453026</span>,
+</span></span><span style="display:flex;"><span>    &#34;globalAnnotations&#34;: <span style="color:#cdcd00">true</span>,
+</span></span><span style="display:flex;"><span>    &#34;queries&#34;: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            &#34;aggregator&#34;: <span style="color:#cd0000">&#34;avg&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;metric&#34;: <span style="color:#cd0000">&#34;sys.disk.usage&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;downsample&#34;: <span style="color:#cd0000">&#34;60s-avg&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;tags&#34;: {
+</span></span><span style="display:flex;"><span>                &#34;host_id&#34;: <span style="color:#cd0000">&#34;123&#34;</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            &#34;aggregator&#34;: <span style="color:#cd0000">&#34;sum&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;metric&#34;: <span style="color:#cd0000">&#34;sys.cpu.load&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;downsample&#34;: <span style="color:#cd0000">&#34;60s-avg&#34;</span>,
+</span></span><span style="display:flex;"><span>            &#34;tags&#34;: {
+</span></span><span style="display:flex;"><span>                &#34;host_id&#34;: <span style="color:#cd0000">&#34;123&#34;</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>start</strong> 和 <strong>end</strong> 指定了查询的时间范围。</p>
 <p><strong>tags</strong> 指定了过滤条件，2.2 版本中将不被推荐，取而代之的是 filters 参数。</p>
 <p><strong>downsample</strong> 聚合计算，例如上面是对每隔60s的数据计算一次平均值。</p>
 <h3 id="总结">总结</h3>

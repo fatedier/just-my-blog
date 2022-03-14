@@ -74,19 +74,19 @@
 <p>例如我想要查看进程 <code>frps</code> 当前的所有连接信息，先获得进程的 pid：</p>
 <p><code>ps -ef|grep frps</code></p>
 <p>结果为：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wcl       <span style="color:#cd00cd">4721</span>     <span style="color:#cd00cd">1</span>  <span style="color:#cd00cd">0</span> 10:27 ?        00:00:01 ./frps
-</code></pre></div><p>可以看到进程 pid 为 <strong>4721</strong>，之后通过 lsof 命令查看所有 TCP 连接信息：</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wcl       <span style="color:#cd00cd">4721</span>     <span style="color:#cd00cd">1</span>  <span style="color:#cd00cd">0</span> 10:27 ?        00:00:01 ./frps
+</span></span></code></pre></div><p>可以看到进程 pid 为 <strong>4721</strong>，之后通过 lsof 命令查看所有 TCP 连接信息：</p>
 <p><code>lsof -p 4721 -nP | grep TCP</code></p>
 <p>显示结果为：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">frps    <span style="color:#cd00cd">4721</span>  wcl    4u     IPv6 <span style="color:#cd00cd">117051764</span>      0t0     TCP *:7000 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
-frps    <span style="color:#cd00cd">4721</span>  wcl    6u     IPv6 <span style="color:#cd00cd">117051765</span>      0t0     TCP *:7003 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
-frps    <span style="color:#cd00cd">4721</span>  wcl    7u     IPv6 <span style="color:#cd00cd">117092563</span>      0t0     TCP 139.129.11.120:7000-&gt;116.231.70.223:61545 <span style="color:#39c">(</span>ESTABLISHED<span style="color:#39c">)</span>
-frps    <span style="color:#cd00cd">4721</span>  wcl    8u     IPv6 <span style="color:#cd00cd">117092565</span>      0t0     TCP *:6000 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
-frps    <span style="color:#cd00cd">4721</span>  wcl    9u     IPv6 <span style="color:#cd00cd">117334426</span>      0t0     TCP 139.129.11.120:7000-&gt;116.237.93.230:64898 <span style="color:#39c">(</span>ESTABLISHED<span style="color:#39c">)</span>
-frps    <span style="color:#cd00cd">4721</span>  wcl   10u     IPv6 <span style="color:#cd00cd">117053538</span>      0t0     TCP 139.129.11.120:7000-&gt;115.231.20.123:41297 <span style="color:#39c">(</span>ESTABLISHED<span style="color:#39c">)</span>
-frps    <span style="color:#cd00cd">4721</span>  wcl   11u     IPv6 <span style="color:#cd00cd">117053540</span>      0t0     TCP *:6005 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
-frps    <span style="color:#cd00cd">4721</span>  wcl   12u     IPv6 <span style="color:#cd00cd">117334428</span>      0t0     TCP *:6004 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
-</code></pre></div><p>从 <strong>lsof</strong> 的输出结果中可以清楚的看到 <strong>frps</strong> 进程监听了 5 个端口，并且在 7000 端口上建立了 3 个连接，连接两端的 ip 信息也都可以查到。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>frps    <span style="color:#cd00cd">4721</span>  wcl    4u     IPv6 <span style="color:#cd00cd">117051764</span>      0t0     TCP *:7000 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span>frps    <span style="color:#cd00cd">4721</span>  wcl    6u     IPv6 <span style="color:#cd00cd">117051765</span>      0t0     TCP *:7003 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span>frps    <span style="color:#cd00cd">4721</span>  wcl    7u     IPv6 <span style="color:#cd00cd">117092563</span>      0t0     TCP 139.129.11.120:7000-&gt;116.231.70.223:61545 <span style="color:#39c">(</span>ESTABLISHED<span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span>frps    <span style="color:#cd00cd">4721</span>  wcl    8u     IPv6 <span style="color:#cd00cd">117092565</span>      0t0     TCP *:6000 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span>frps    <span style="color:#cd00cd">4721</span>  wcl    9u     IPv6 <span style="color:#cd00cd">117334426</span>      0t0     TCP 139.129.11.120:7000-&gt;116.237.93.230:64898 <span style="color:#39c">(</span>ESTABLISHED<span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span>frps    <span style="color:#cd00cd">4721</span>  wcl   10u     IPv6 <span style="color:#cd00cd">117053538</span>      0t0     TCP 139.129.11.120:7000-&gt;115.231.20.123:41297 <span style="color:#39c">(</span>ESTABLISHED<span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span>frps    <span style="color:#cd00cd">4721</span>  wcl   11u     IPv6 <span style="color:#cd00cd">117053540</span>      0t0     TCP *:6005 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span>frps    <span style="color:#cd00cd">4721</span>  wcl   12u     IPv6 <span style="color:#cd00cd">117334428</span>      0t0     TCP *:6004 <span style="color:#39c">(</span>LISTEN<span style="color:#39c">)</span>
+</span></span></code></pre></div><p>从 <strong>lsof</strong> 的输出结果中可以清楚的看到 <strong>frps</strong> 进程监听了 5 个端口，并且在 7000 端口上建立了 3 个连接，连接两端的 ip 信息也都可以查到。</p>
 <p><strong>lsof</strong> 的 <strong>-nP</strong> 参数用于将 ip 地址和端口号显示为正常的数值类型，否则可能会用别名表示。</p>
             </div>
             

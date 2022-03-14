@@ -7,11 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Thu, 20 Aug 2015 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://blog.fatedier.com/tags/smtp/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Thu, 20 Aug 2015 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/smtp/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>go语言中使用smtp发送邮件及smtp协议的相关问题</title>
       <link>https://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</link>

@@ -84,84 +84,84 @@
 </li>
 </ul>
 <h3 id="代码">代码</h3>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;string.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;sys/types.h&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span>
-<span style="color:#000080">#define MAX 10001
-</span><span style="color:#000080"></span>
-<span style="color:#00cd00">int</span> has_num[<span style="color:#cd00cd">10</span>];    <span style="color:#000080">//0-9在这个数中出现的次数
-</span><span style="color:#000080"></span>
-<span style="color:#00cd00">bool</span> check()
-{
-    <span style="color:#00cd00">int</span> deal_num[<span style="color:#cd00cd">30</span>];   <span style="color:#000080">//0-9每个数最多可以用3次，只需要30的空间
-</span><span style="color:#000080"></span>    <span style="color:#00cd00">int</span> n <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
-    <span style="color:#000080">//将所有出现过数依次存放在deal_num数组中
-</span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">10</span>; i<span style="color:#39c">++</span>) {
-        <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> j<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; j<span style="color:#39c">&lt;</span>has_num[i]; j<span style="color:#39c">++</span>) {
-            deal_num[n] <span style="color:#39c">=</span> i;
-            n<span style="color:#39c">++</span>;
-        }
-    }
-
-    <span style="color:#000080">//排列任意三个数组成一个整数，其值能被8整除，返回true，否则false
-</span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span>n; i<span style="color:#39c">++</span>) {
-        <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> j<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; j<span style="color:#39c">&lt;</span>n; j<span style="color:#39c">++</span>) {
-            <span style="color:#cdcd00">if</span> (j <span style="color:#39c">==</span> i)
-                <span style="color:#cdcd00">continue</span>;
-            <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> k<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; k<span style="color:#39c">&lt;</span>n; k<span style="color:#39c">++</span>) {
-                <span style="color:#cdcd00">if</span> (k <span style="color:#39c">==</span> i <span style="color:#39c">||</span> k <span style="color:#39c">==</span> j) {
-                    <span style="color:#cdcd00">continue</span>;
-                }
-                <span style="color:#cdcd00">if</span> ((deal_num[i]<span style="color:#39c">*</span><span style="color:#cd00cd">100</span> <span style="color:#39c">+</span> deal_num[j]<span style="color:#39c">*</span><span style="color:#cd00cd">10</span> <span style="color:#39c">+</span> deal_num[k]) <span style="color:#39c">%</span> <span style="color:#cd00cd">8</span> <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>)
-                    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">true</span>;
-            }
-        }
-    }
-    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">false</span>;
-}
-
-<span style="color:#00cd00">int</span> main()
-{
-    <span style="color:#00cd00">char</span> str_num[MAX];  <span style="color:#000080">//用于保存不超过10000位的整数
-</span><span style="color:#000080"></span>    <span style="color:#00cd00">int</span> n;
-    <span style="color:#00cd00">long</span> <span style="color:#00cd00">long</span> temp <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; <span style="color:#000080">//如果位数小于等于19，直接转换为64位整型
-</span><span style="color:#000080"></span>
-    <span style="color:#cdcd00">for</span> (;;) {
-        memset(str_num, <span style="color:#cd00cd">0</span>, <span style="color:#cdcd00">sizeof</span>(str_num));
-        <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">10</span>; i<span style="color:#39c">++</span>) {
-            has_num[i] <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
-        }
-        <span style="color:#cdcd00">if</span> (scanf(<span style="color:#cd0000">&#34;%s&#34;</span>, <span style="color:#39c">&amp;</span>str_num) <span style="color:#39c">==</span> <span style="color:#cd00cd">1</span>) {
-            n <span style="color:#39c">=</span> strlen(str_num);
-            <span style="color:#000080">//转换为64位整型
-</span><span style="color:#000080"></span>            <span style="color:#cdcd00">if</span> (n <span style="color:#39c">&lt;=</span> <span style="color:#cd00cd">19</span>) {
-                sscanf(str_num, <span style="color:#cd0000">&#34;%lld&#34;</span>, <span style="color:#39c">&amp;</span>temp);
-                <span style="color:#cdcd00">if</span> ((temp <span style="color:#39c">%</span> <span style="color:#cd00cd">8</span>) <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>)
-                    printf(<span style="color:#cd0000">&#34;YES</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>);
-                <span style="color:#cdcd00">else</span>
-                    printf(<span style="color:#cd0000">&#34;NO</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>);
-                <span style="color:#cdcd00">continue</span>;
-            }
-            
-            <span style="color:#000080">//将0-9出现的次数保存在has_num数组中，最多3次
-</span><span style="color:#000080"></span>            <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span>n; i<span style="color:#39c">++</span>) {
-                <span style="color:#cdcd00">if</span> (has_num[(<span style="color:#00cd00">int</span>)str_num[i] <span style="color:#39c">-</span> <span style="color:#cd00cd">48</span>] <span style="color:#39c">&lt;</span> <span style="color:#cd00cd">3</span>)
-                    has_num[(<span style="color:#00cd00">int</span>)str_num[i] <span style="color:#39c">-</span> <span style="color:#cd00cd">48</span>]<span style="color:#39c">++</span>;
-            }
-            <span style="color:#cdcd00">if</span> (check())
-                printf(<span style="color:#cd0000">&#34;YES</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>);
-            <span style="color:#cdcd00">else</span>
-                printf(<span style="color:#cd0000">&#34;NO</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>);
-            <span style="color:#cdcd00">continue</span>;
-
-        } <span style="color:#cdcd00">else</span> {
-            <span style="color:#cdcd00">break</span>;
-        }
-    }
-    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
-}
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;stdio.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;string.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;sys/types.h&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">#define MAX 10001
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">int</span> has_num[<span style="color:#cd00cd">10</span>];    <span style="color:#000080">//0-9在这个数中出现的次数
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">bool</span> check()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">int</span> deal_num[<span style="color:#cd00cd">30</span>];   <span style="color:#000080">//0-9每个数最多可以用3次，只需要30的空间
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#00cd00">int</span> n <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">//将所有出现过数依次存放在deal_num数组中
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">10</span>; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> j<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; j<span style="color:#39c">&lt;</span>has_num[i]; j<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>            deal_num[n] <span style="color:#39c">=</span> i;
+</span></span><span style="display:flex;"><span>            n<span style="color:#39c">++</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">//排列任意三个数组成一个整数，其值能被8整除，返回true，否则false
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span>n; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> j<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; j<span style="color:#39c">&lt;</span>n; j<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> (j <span style="color:#39c">==</span> i)
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">continue</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> k<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; k<span style="color:#39c">&lt;</span>n; k<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">if</span> (k <span style="color:#39c">==</span> i <span style="color:#39c">||</span> k <span style="color:#39c">==</span> j) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#cdcd00">continue</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">if</span> ((deal_num[i]<span style="color:#39c">*</span><span style="color:#cd00cd">100</span> <span style="color:#39c">+</span> deal_num[j]<span style="color:#39c">*</span><span style="color:#cd00cd">10</span> <span style="color:#39c">+</span> deal_num[k]) <span style="color:#39c">%</span> <span style="color:#cd00cd">8</span> <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span>                    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">true</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">false</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">int</span> main()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">char</span> str_num[MAX];  <span style="color:#000080">//用于保存不超过10000位的整数
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#00cd00">int</span> n;
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">long</span> <span style="color:#00cd00">long</span> temp <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; <span style="color:#000080">//如果位数小于等于19，直接转换为64位整型
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> (;;) {
+</span></span><span style="display:flex;"><span>        memset(str_num, <span style="color:#cd00cd">0</span>, <span style="color:#cdcd00">sizeof</span>(str_num));
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span><span style="color:#cd00cd">10</span>; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>            has_num[i] <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> (scanf(<span style="color:#cd0000">&#34;%s&#34;</span>, <span style="color:#39c">&amp;</span>str_num) <span style="color:#39c">==</span> <span style="color:#cd00cd">1</span>) {
+</span></span><span style="display:flex;"><span>            n <span style="color:#39c">=</span> strlen(str_num);
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">//转换为64位整型
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#cdcd00">if</span> (n <span style="color:#39c">&lt;=</span> <span style="color:#cd00cd">19</span>) {
+</span></span><span style="display:flex;"><span>                sscanf(str_num, <span style="color:#cd0000">&#34;%lld&#34;</span>, <span style="color:#39c">&amp;</span>temp);
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">if</span> ((temp <span style="color:#39c">%</span> <span style="color:#cd00cd">8</span>) <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span>                    printf(<span style="color:#cd0000">&#34;YES</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">else</span>
+</span></span><span style="display:flex;"><span>                    printf(<span style="color:#cd0000">&#34;NO</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">continue</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">//将0-9出现的次数保存在has_num数组中，最多3次
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#cdcd00">for</span> (<span style="color:#00cd00">int</span> i<span style="color:#39c">=</span><span style="color:#cd00cd">0</span>; i<span style="color:#39c">&lt;</span>n; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">if</span> (has_num[(<span style="color:#00cd00">int</span>)str_num[i] <span style="color:#39c">-</span> <span style="color:#cd00cd">48</span>] <span style="color:#39c">&lt;</span> <span style="color:#cd00cd">3</span>)
+</span></span><span style="display:flex;"><span>                    has_num[(<span style="color:#00cd00">int</span>)str_num[i] <span style="color:#39c">-</span> <span style="color:#cd00cd">48</span>]<span style="color:#39c">++</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> (check())
+</span></span><span style="display:flex;"><span>                printf(<span style="color:#cd0000">&#34;YES</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">else</span>
+</span></span><span style="display:flex;"><span>                printf(<span style="color:#cd0000">&#34;NO</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">continue</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#cdcd00">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

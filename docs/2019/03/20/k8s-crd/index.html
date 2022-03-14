@@ -75,134 +75,134 @@
 <p>这篇文章通过一个简短的示例来演示如何创建自定义资源。</p>
 <h3 id="创建-crdcustomresourcedefinition">创建 CRD(CustomResourceDefinition)</h3>
 <p>这里以创建一个简单的弹性伸缩配置的 CRD 为例。将下面的内容保存在 <code>scaling_crd.yaml</code> 文件中。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: apiextensions.k8s.io/v1beta1
-<span style="color:#cdcd00">kind</span>: CustomResourceDefinition
-<span style="color:#cdcd00">metadata</span>:
-  <span style="color:#000080"># name must match the spec fields below, and be in the form: &lt;plural&gt;.&lt;group&gt;</span>
-  <span style="color:#cdcd00">name</span>: scalings.control.example.com
-<span style="color:#cdcd00">spec</span>:
-  <span style="color:#000080"># group name to use for REST API: /apis/&lt;group&gt;/&lt;version&gt;</span>
-  <span style="color:#cdcd00">group</span>: control.example.com
-  <span style="color:#000080"># list of versions supported by this CustomResourceDefinition</span>
-  <span style="color:#cdcd00">versions</span>:
-    - <span style="color:#cdcd00">name</span>: v1
-      <span style="color:#000080"># Each version can be enabled/disabled by Served flag.</span>
-      <span style="color:#cdcd00">served</span>: <span style="color:#cdcd00">true</span>
-      <span style="color:#000080"># One and only one version must be marked as the storage version.</span>
-      <span style="color:#cdcd00">storage</span>: <span style="color:#cdcd00">true</span>
-  <span style="color:#000080"># either Namespaced or Cluster</span>
-  <span style="color:#cdcd00">scope</span>: Namespaced
-  <span style="color:#cdcd00">names</span>:
-    <span style="color:#000080"># plural name to be used in the URL: /apis/&lt;group&gt;/&lt;version&gt;/&lt;plural&gt;</span>
-    <span style="color:#cdcd00">plural</span>: scalings
-    <span style="color:#000080"># singular name to be used as an alias on the CLI and for display</span>
-    <span style="color:#cdcd00">singular</span>: scaling
-    <span style="color:#000080"># kind is normally the CamelCased singular type. Your resource manifests use this.</span>
-    <span style="color:#cdcd00">kind</span>: Scaling
-    <span style="color:#000080"># shortNames allow shorter string to match your resource on the CLI</span>
-    <span style="color:#cdcd00">shortNames</span>:
-    - sc
-</code></pre></div><p>通过 kubectl 创建这个 CRD:</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: apiextensions.k8s.io/v1beta1
+</span></span><span style="display:flex;"><span>kind: CustomResourceDefinition
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  <span style="color:#000080"># name must match the spec fields below, and be in the form: &lt;plural&gt;.&lt;group&gt;</span>
+</span></span><span style="display:flex;"><span>  name: scalings.control.example.com
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  <span style="color:#000080"># group name to use for REST API: /apis/&lt;group&gt;/&lt;version&gt;</span>
+</span></span><span style="display:flex;"><span>  group: control.example.com
+</span></span><span style="display:flex;"><span>  <span style="color:#000080"># list of versions supported by this CustomResourceDefinition</span>
+</span></span><span style="display:flex;"><span>  versions:
+</span></span><span style="display:flex;"><span>    - name: v1
+</span></span><span style="display:flex;"><span>      <span style="color:#000080"># Each version can be enabled/disabled by Served flag.</span>
+</span></span><span style="display:flex;"><span>      served: <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#000080"># One and only one version must be marked as the storage version.</span>
+</span></span><span style="display:flex;"><span>      storage: <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#000080"># either Namespaced or Cluster</span>
+</span></span><span style="display:flex;"><span>  scope: Namespaced
+</span></span><span style="display:flex;"><span>  names:
+</span></span><span style="display:flex;"><span>    <span style="color:#000080"># plural name to be used in the URL: /apis/&lt;group&gt;/&lt;version&gt;/&lt;plural&gt;</span>
+</span></span><span style="display:flex;"><span>    plural: scalings
+</span></span><span style="display:flex;"><span>    <span style="color:#000080"># singular name to be used as an alias on the CLI and for display</span>
+</span></span><span style="display:flex;"><span>    singular: scaling
+</span></span><span style="display:flex;"><span>    <span style="color:#000080"># kind is normally the CamelCased singular type. Your resource manifests use this.</span>
+</span></span><span style="display:flex;"><span>    kind: Scaling
+</span></span><span style="display:flex;"><span>    <span style="color:#000080"># shortNames allow shorter string to match your resource on the CLI</span>
+</span></span><span style="display:flex;"><span>    shortNames:
+</span></span><span style="display:flex;"><span>    - sc
+</span></span></code></pre></div><p>通过 kubectl 创建这个 CRD:</p>
 <p><code>kubectl apply -f scaling_crd.yaml</code></p>
 <h3 id="创建自定义资源的对象">创建自定义资源的对象</h3>
 <p>我们编写一个 <code>test.yaml</code> 文件来创建一个自定义的 <code>Scaling</code> 对象。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: <span style="color:#cd0000">&#34;control.example.io/v1&#34;</span>
-<span style="color:#cdcd00">kind</span>: Scaling
-<span style="color:#cdcd00">metadata</span>:
-  <span style="color:#cdcd00">name</span>: test
-<span style="color:#cdcd00">spec</span>:
-  <span style="color:#cdcd00">targetDeployment</span>: test
-  <span style="color:#cdcd00">minReplicas</span>: <span style="color:#cd00cd">1</span>
-  <span style="color:#cdcd00">maxReplicas</span>: <span style="color:#cd00cd">5</span>
-  <span style="color:#cdcd00">metricType</span>: CPU
-  <span style="color:#cdcd00">step</span>: <span style="color:#cd00cd">1</span>
-  <span style="color:#cdcd00">scaleUp</span>: <span style="color:#cd00cd">80</span>
-  <span style="color:#cdcd00">scaleDown</span>: <span style="color:#cd00cd">40</span>
-</code></pre></div><p>通过 kubectl 创建:</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: <span style="color:#cd0000">&#34;control.example.io/v1&#34;</span>
+</span></span><span style="display:flex;"><span>kind: Scaling
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: test
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  targetDeployment: test
+</span></span><span style="display:flex;"><span>  minReplicas: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>  maxReplicas: <span style="color:#cd00cd">5</span>
+</span></span><span style="display:flex;"><span>  metricType: CPU
+</span></span><span style="display:flex;"><span>  step: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>  scaleUp: <span style="color:#cd00cd">80</span>
+</span></span><span style="display:flex;"><span>  scaleDown: <span style="color:#cd00cd">40</span>
+</span></span></code></pre></div><p>通过 kubectl 创建:</p>
 <p><code>kubectl apply -f test.yaml</code></p>
 <p>提示:</p>
 <p><code>scaling.control.example.io/test created</code></p>
 <p>你可以通过 kubectl 查看已经创建的名为 <code>test</code> 的 Scaling 对象。</p>
 <p><code>kubectl get scalings.control.example.io test -o yaml</code></p>
 <p>会输出类似如下的结果:</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: control.example.io/v1
-<span style="color:#cdcd00">kind</span>: Scaling
-<span style="color:#cdcd00">metadata</span>:
-  <span style="color:#cdcd00">annotations</span>:
-    <span style="color:#cdcd00">kubectl.kubernetes.io/last-applied-configuration</span>: <span style="color:#cd0000">|
-</span><span style="color:#cd0000">      {&#34;apiVersion&#34;:&#34;control.example.io/v1&#34;,&#34;kind&#34;:&#34;Scaling&#34;,&#34;metadata&#34;:{&#34;annotations&#34;:{},&#34;name&#34;:&#34;test&#34;,&#34;namespace&#34;:&#34;default&#34;},&#34;spec&#34;:{&#34;maxReplicas&#34;:5,&#34;metricType&#34;:&#34;CPU&#34;,&#34;minReplicas&#34;:1,&#34;scaleDown&#34;:40,&#34;scaleUp&#34;:80,&#34;step&#34;:1,&#34;targetDeployment&#34;:&#34;test&#34;}}</span>
-  <span style="color:#cdcd00">creationTimestamp</span>: <span style="color:#cd0000">&#34;2019-01-09T12:22:36Z&#34;</span>
-  <span style="color:#cdcd00">generation</span>: <span style="color:#cd00cd">1</span>
-  <span style="color:#cdcd00">name</span>: test
-  <span style="color:#cdcd00">namespace</span>: default
-  <span style="color:#cdcd00">resourceVersion</span>: <span style="color:#cd0000">&#34;1316610&#34;</span>
-  <span style="color:#cdcd00">selfLink</span>: /apis/control.example.io/v1/namespaces/default/scalings/test
-  <span style="color:#cdcd00">uid</span>: 28717b37-5ac2<span style="color:#cd00cd">-11e9</span>-89f8-080027a9fd96
-<span style="color:#cdcd00">spec</span>:
-  <span style="color:#cdcd00">maxReplicas</span>: <span style="color:#cd00cd">5</span>
-  <span style="color:#cdcd00">metricType</span>: CPU
-  <span style="color:#cdcd00">minReplicas</span>: <span style="color:#cd00cd">1</span>
-  <span style="color:#cdcd00">scaleDown</span>: <span style="color:#cd00cd">40</span>
-  <span style="color:#cdcd00">scaleUp</span>: <span style="color:#cd00cd">80</span>
-  <span style="color:#cdcd00">step</span>: <span style="color:#cd00cd">1</span>
-  <span style="color:#cdcd00">targetDeployment</span>: test
-</code></pre></div><p>我们可以像操作 k8s 内置的 Deployment 资源一样操作我们创建的 Scaling 资源，同样可以对它进行更新和删除的操作。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: control.example.io/v1
+</span></span><span style="display:flex;"><span>kind: Scaling
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  annotations:
+</span></span><span style="display:flex;"><span>    kubectl.kubernetes.io/last-applied-configuration: |<span style="color:#cd0000">
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">      </span>      {<span style="color:#cd0000">&#34;apiVersion&#34;</span>:<span style="color:#cd0000">&#34;control.example.io/v1&#34;</span>,<span style="color:#cd0000">&#34;kind&#34;</span>:<span style="color:#cd0000">&#34;Scaling&#34;</span>,<span style="color:#cd0000">&#34;metadata&#34;</span>:{<span style="color:#cd0000">&#34;annotations&#34;</span>:{},<span style="color:#cd0000">&#34;name&#34;</span>:<span style="color:#cd0000">&#34;test&#34;</span>,<span style="color:#cd0000">&#34;namespace&#34;</span>:<span style="color:#cd0000">&#34;default&#34;</span>},<span style="color:#cd0000">&#34;spec&#34;</span>:{<span style="color:#cd0000">&#34;maxReplicas&#34;</span>:<span style="color:#cd00cd">5</span>,<span style="color:#cd0000">&#34;metricType&#34;</span>:<span style="color:#cd0000">&#34;CPU&#34;</span>,<span style="color:#cd0000">&#34;minReplicas&#34;</span>:<span style="color:#cd00cd">1</span>,<span style="color:#cd0000">&#34;scaleDown&#34;</span>:<span style="color:#cd00cd">40</span>,<span style="color:#cd0000">&#34;scaleUp&#34;</span>:<span style="color:#cd00cd">80</span>,<span style="color:#cd0000">&#34;step&#34;</span>:<span style="color:#cd00cd">1</span>,<span style="color:#cd0000">&#34;targetDeployment&#34;</span>:<span style="color:#cd0000">&#34;test&#34;</span>}}
+</span></span><span style="display:flex;"><span>  creationTimestamp: <span style="color:#cd0000">&#34;2019-01-09T12:22:36Z&#34;</span>
+</span></span><span style="display:flex;"><span>  generation: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>  name: test
+</span></span><span style="display:flex;"><span>  namespace: default
+</span></span><span style="display:flex;"><span>  resourceVersion: <span style="color:#cd0000">&#34;1316610&#34;</span>
+</span></span><span style="display:flex;"><span>  selfLink: /apis/control.example.io/v1/namespaces/default/scalings/test
+</span></span><span style="display:flex;"><span>  uid: 28717b37-5ac2-11e9-89f8-080027a9fd96
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  maxReplicas: <span style="color:#cd00cd">5</span>
+</span></span><span style="display:flex;"><span>  metricType: CPU
+</span></span><span style="display:flex;"><span>  minReplicas: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>  scaleDown: <span style="color:#cd00cd">40</span>
+</span></span><span style="display:flex;"><span>  scaleUp: <span style="color:#cd00cd">80</span>
+</span></span><span style="display:flex;"><span>  step: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>  targetDeployment: test
+</span></span></code></pre></div><p>我们可以像操作 k8s 内置的 Deployment 资源一样操作我们创建的 Scaling 资源，同样可以对它进行更新和删除的操作。</p>
 <h3 id="参数校验">参数校验</h3>
 <p>上面的 CRD 配置中我们并没有指定这个资源的 Spec，也就是说用户可以使用任意的 Spec 创建这个 Scaling 资源，这并不符合我们的要求。我们希望在用户创建 Scaling 对象时，可以像 k8s 的原生资源一样进行参数校验，如果出错的情况下，就不会去创建或更新这个对象，而是给用户错误提示。</p>
 <p>k8s 目前提供了两种方式来实现参数校验，<code>OpenAPI v3 schema</code> 和 <code>validatingadmissionwebhook</code>。</p>
 <p>这里主要使用比较简单的 <code>OpenAPI v3 schema</code> 来实现。<code>validatingadmissionwebhook</code> 需要用户自己提供一个检查服务，通过创建 <code>ValidatingWebhookConfiguration</code> 让 APIServer 将指定的操作请求转发给这个检查服务，检查服务返回 true 或者 false，决定参数校验是否成功。</p>
 <p>我们将之前的 CRD 配置文件 <code>scaling_crd.yaml</code> 做一下修改，增加参数校验的部分:</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: apiextensions.k8s.io/v1beta1
-<span style="color:#cdcd00">kind</span>: CustomResourceDefinition
-<span style="color:#cdcd00">metadata</span>:
-  <span style="color:#cdcd00">name</span>: scalings.control.example.io
-<span style="color:#cdcd00">spec</span>:
-  <span style="color:#cdcd00">group</span>: control.example.io
-  <span style="color:#cdcd00">versions</span>:
-    - <span style="color:#cdcd00">name</span>: v1
-      <span style="color:#cdcd00">served</span>: <span style="color:#cdcd00">true</span>
-      <span style="color:#cdcd00">storage</span>: <span style="color:#cdcd00">true</span>
-  <span style="color:#cdcd00">scope</span>: Namespaced
-  <span style="color:#cdcd00">names</span>:
-    <span style="color:#cdcd00">plural</span>: scalings
-    <span style="color:#cdcd00">singular</span>: scaling
-    <span style="color:#cdcd00">kind</span>: Scaling
-  <span style="color:#cdcd00">validation</span>:
-    <span style="color:#cdcd00">openAPIV3Schema</span>:
-      <span style="color:#cdcd00">properties</span>:
-        <span style="color:#cdcd00">spec</span>:
-          <span style="color:#cdcd00">required</span>:
-          - targetDeployment
-          - minReplicas
-          - maxReplicas
-          - metricType
-          - step
-          - scaleUp
-          - scaleDown
-          <span style="color:#cdcd00">properties</span>:
-            <span style="color:#cdcd00">targetDeployment</span>:
-              <span style="color:#cdcd00">type</span>: string
-            <span style="color:#cdcd00">minReplicas</span>:
-              <span style="color:#cdcd00">type</span>: integer
-              <span style="color:#cdcd00">minimum</span>: <span style="color:#cd00cd">0</span>
-            <span style="color:#cdcd00">maxReplicas</span>:
-              <span style="color:#cdcd00">type</span>: integer
-              <span style="color:#cdcd00">minimum</span>: <span style="color:#cd00cd">0</span>
-            <span style="color:#cdcd00">metricType</span>:
-              <span style="color:#cdcd00">type</span>: string
-              <span style="color:#cdcd00">enum</span>:
-              - CPU
-              - MEMORY
-              - REQUESTS
-            <span style="color:#cdcd00">step</span>:
-              <span style="color:#cdcd00">type</span>: integer
-              <span style="color:#cdcd00">minimum</span>: <span style="color:#cd00cd">1</span>
-            <span style="color:#cdcd00">scaleUp</span>:
-              <span style="color:#cdcd00">type</span>: integer
-            <span style="color:#cdcd00">scaleDown</span>:
-              <span style="color:#cdcd00">type</span>: integer
-              <span style="color:#cdcd00">minimum</span>: <span style="color:#cd00cd">0</span>
-</code></pre></div><p>可以看到 spec 中增加了 validation 字段，其中定义了对各个参数的检验要求。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: apiextensions.k8s.io/v1beta1
+</span></span><span style="display:flex;"><span>kind: CustomResourceDefinition
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: scalings.control.example.io
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  group: control.example.io
+</span></span><span style="display:flex;"><span>  versions:
+</span></span><span style="display:flex;"><span>    - name: v1
+</span></span><span style="display:flex;"><span>      served: <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>      storage: <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>  scope: Namespaced
+</span></span><span style="display:flex;"><span>  names:
+</span></span><span style="display:flex;"><span>    plural: scalings
+</span></span><span style="display:flex;"><span>    singular: scaling
+</span></span><span style="display:flex;"><span>    kind: Scaling
+</span></span><span style="display:flex;"><span>  validation:
+</span></span><span style="display:flex;"><span>    openAPIV3Schema:
+</span></span><span style="display:flex;"><span>      properties:
+</span></span><span style="display:flex;"><span>        spec:
+</span></span><span style="display:flex;"><span>          required:
+</span></span><span style="display:flex;"><span>          - targetDeployment
+</span></span><span style="display:flex;"><span>          - minReplicas
+</span></span><span style="display:flex;"><span>          - maxReplicas
+</span></span><span style="display:flex;"><span>          - metricType
+</span></span><span style="display:flex;"><span>          - step
+</span></span><span style="display:flex;"><span>          - scaleUp
+</span></span><span style="display:flex;"><span>          - scaleDown
+</span></span><span style="display:flex;"><span>          properties:
+</span></span><span style="display:flex;"><span>            targetDeployment:
+</span></span><span style="display:flex;"><span>              type: string
+</span></span><span style="display:flex;"><span>            minReplicas:
+</span></span><span style="display:flex;"><span>              type: integer
+</span></span><span style="display:flex;"><span>              minimum: <span style="color:#cd00cd">0</span>
+</span></span><span style="display:flex;"><span>            maxReplicas:
+</span></span><span style="display:flex;"><span>              type: integer
+</span></span><span style="display:flex;"><span>              minimum: <span style="color:#cd00cd">0</span>
+</span></span><span style="display:flex;"><span>            metricType:
+</span></span><span style="display:flex;"><span>              type: string
+</span></span><span style="display:flex;"><span>              enum:
+</span></span><span style="display:flex;"><span>              - CPU
+</span></span><span style="display:flex;"><span>              - MEMORY
+</span></span><span style="display:flex;"><span>              - REQUESTS
+</span></span><span style="display:flex;"><span>            step:
+</span></span><span style="display:flex;"><span>              type: integer
+</span></span><span style="display:flex;"><span>              minimum: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>            scaleUp:
+</span></span><span style="display:flex;"><span>              type: integer
+</span></span><span style="display:flex;"><span>            scaleDown:
+</span></span><span style="display:flex;"><span>              type: integer
+</span></span><span style="display:flex;"><span>              minimum: <span style="color:#cd00cd">0</span>
+</span></span></code></pre></div><p>可以看到 spec 中增加了 validation 字段，其中定义了对各个参数的检验要求。</p>
 <ul>
 <li><code>required</code> 表示数组中的参数必须要设置。</li>
 <li><code>type string</code> 和 <code>type integer</code> 表示限制参数类型。</li>
@@ -216,7 +216,7 @@
 <p>更新 Name 为 test 的 Scaling 对象。</p>
 <p><code>kubectl apply -f test.yaml</code></p>
 <p>可以看到错误提示输出如下:</p>
-<pre><code>validation failure list:
+<pre tabindex="0"><code>validation failure list:
 spec.targetDeployment in body is required
 </code></pre><p>至此，不符合我们要求的 Scaling 对象将不被允许创建。</p>
             </div>

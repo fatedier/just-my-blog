@@ -88,10 +88,10 @@
 </ul>
 <h3 id="概念">概念</h3>
 <h4 id="数据格式-line-protocol">数据格式 Line Protocol</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">measurement<span style="color:#39c">[</span>,tag_key1<span style="color:#39c">=</span>tag_value1...<span style="color:#39c">]</span> <span style="color:#00cdcd">field_key</span><span style="color:#39c">=</span>field_value<span style="color:#39c">[</span>,field_key2<span style="color:#39c">=</span>field_value2<span style="color:#39c">]</span> <span style="color:#39c">[</span>timestamp<span style="color:#39c">]</span>
-
-cpu_load,host_id<span style="color:#39c">=</span><span style="color:#cd00cd">1</span> <span style="color:#00cdcd">value</span><span style="color:#39c">=</span>0.1 <span style="color:#cd00cd">1434055562000000000</span>
-</code></pre></div><p>相比于 JSON 格式，无需序列化，更加高效。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>measurement<span style="color:#39c">[</span>,tag_key1<span style="color:#39c">=</span>tag_value1...<span style="color:#39c">]</span> <span style="color:#00cdcd">field_key</span><span style="color:#39c">=</span>field_value<span style="color:#39c">[</span>,field_key2<span style="color:#39c">=</span>field_value2<span style="color:#39c">]</span> <span style="color:#39c">[</span>timestamp<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cpu_load,host_id<span style="color:#39c">=</span><span style="color:#cd00cd">1</span> <span style="color:#00cdcd">value</span><span style="color:#39c">=</span>0.1 <span style="color:#cd00cd">1434055562000000000</span>
+</span></span></code></pre></div><p>相比于 JSON 格式，无需序列化，更加高效。</p>
 <ul>
 <li>measurement: metric name，例如 cpu_load。</li>
 <li>field-key, field-value: 通常用来存储数据，类似 opentsdb 中的 value=0.6，但是支持各种类型，数据存储时不会进行索引，每条数据必须拥有一个 field-key，如果使用 field-key 进行过滤，需要遍历一遍所有数据。</li>
@@ -137,66 +137,66 @@ cpu_load,host_id<span style="color:#39c">=</span><span style="color:#cd00cd">1</
 <p>通过 HTTP 访问 influxdb。</p>
 <p>语法上是一种类似于 SQL 的命令，官方称为 InfluxQL。</p>
 <h4 id="创建数据库">创建数据库</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -POST http://localhost:8086/query --data-urlencode <span style="color:#cd0000">&#34;q=CREATE DATABASE mydb&#34;</span>
-</code></pre></div><h4 id="插入数据">插入数据</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -i -XPOST <span style="color:#cd0000">&#39;http://localhost:8086/write?db=mydb&#39;</span> --data-binary <span style="color:#cd0000">&#39;cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000&#39;</span>
-</code></pre></div><p>cpu_load_short 是 measurement，host 和 region 是 tags-key，value 是 field-key。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -POST http://localhost:8086/query --data-urlencode <span style="color:#cd0000">&#34;q=CREATE DATABASE mydb&#34;</span>
+</span></span></code></pre></div><h4 id="插入数据">插入数据</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -i -XPOST <span style="color:#cd0000">&#39;http://localhost:8086/write?db=mydb&#39;</span> --data-binary <span style="color:#cd0000">&#39;cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000&#39;</span>
+</span></span></code></pre></div><p>cpu_load_short 是 measurement，host 和 region 是 tags-key，value 是 field-key。</p>
 <p>多条数据时，用换行区分每条数据</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -i -XPOST <span style="color:#cd0000">&#39;http://localhost:8086/write?db=mydb&#39;</span> --data-binary <span style="color:#cd0000">&#39;cpu_load_short,host=server02 value=0.67
-</span><span style="color:#cd0000">cpu_load_short,host=server02,region=us-west value=0.55 1422568543702900257
-</span><span style="color:#cd0000">cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702900257&#39;</span>
-</code></pre></div><h4 id="读取数据">读取数据</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -GET <span style="color:#cd0000">&#39;http://localhost:8086/query&#39;</span> --data-urlencode <span style="color:#cd0000">&#34;db=mydb&#34;</span> --data-urlencode <span style="color:#cd0000">&#34;epoch=s&#34;</span> --data-urlencode <span style="color:#cd0000">&#34;q=SELECT value FROM cpu_load_short WHERE region=&#39;us-west&#39;&#34;</span>
-</code></pre></div><p>同时查询多条数据时，以分号分隔</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -G <span style="color:#cd0000">&#39;http://localhost:8086/query&#39;</span> --data-urlencode <span style="color:#cd0000">&#34;db=mydb&#34;</span> --data-urlencode <span style="color:#cd0000">&#34;epoch=s&#34;</span> --data-urlencode <span style="color:#cd0000">&#34;q=SELECT value FROM cpu_load_short WHERE region=&#39;us-west&#39;;SELECT count(value) FROM cpu_load_short WHERE region=&#39;us-west&#39;&#34;</span>
-</code></pre></div><p>这里 <code>--data-urlencode &quot;epoch=s&quot;</code> 会使返回的时间戳为 unix 时间戳格式。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -i -XPOST <span style="color:#cd0000">&#39;http://localhost:8086/write?db=mydb&#39;</span> --data-binary <span style="color:#cd0000">&#39;cpu_load_short,host=server02 value=0.67
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">cpu_load_short,host=server02,region=us-west value=0.55 1422568543702900257
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">cpu_load_short,direction=in,host=server01,region=us-west value=2.0 1422568543702900257&#39;</span>
+</span></span></code></pre></div><h4 id="读取数据">读取数据</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -GET <span style="color:#cd0000">&#39;http://localhost:8086/query&#39;</span> --data-urlencode <span style="color:#cd0000">&#34;db=mydb&#34;</span> --data-urlencode <span style="color:#cd0000">&#34;epoch=s&#34;</span> --data-urlencode <span style="color:#cd0000">&#34;q=SELECT value FROM cpu_load_short WHERE region=&#39;us-west&#39;&#34;</span>
+</span></span></code></pre></div><p>同时查询多条数据时，以分号分隔</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -G <span style="color:#cd0000">&#39;http://localhost:8086/query&#39;</span> --data-urlencode <span style="color:#cd0000">&#34;db=mydb&#34;</span> --data-urlencode <span style="color:#cd0000">&#34;epoch=s&#34;</span> --data-urlencode <span style="color:#cd0000">&#34;q=SELECT value FROM cpu_load_short WHERE region=&#39;us-west&#39;;SELECT count(value) FROM cpu_load_short WHERE region=&#39;us-west&#39;&#34;</span>
+</span></span></code></pre></div><p>这里 <code>--data-urlencode &quot;epoch=s&quot;</code> 会使返回的时间戳为 unix 时间戳格式。</p>
 <h4 id="创建-rp">创建 RP</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">CREATE RETENTION POLICY two_hours ON food_data DURATION 2h REPLICATION <span style="color:#cd00cd">1</span> DEFAULT
-</code></pre></div><p>这里将 <strong>two_hours</strong> 设置成了默认保存策略，存入 food_data 中的数据如果没有明确指定 RP 将会默认采用此策略，数据保存时间为 2 小时，副本数为 1。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>CREATE RETENTION POLICY two_hours ON food_data DURATION 2h REPLICATION <span style="color:#cd00cd">1</span> DEFAULT
+</span></span></code></pre></div><p>这里将 <strong>two_hours</strong> 设置成了默认保存策略，存入 food_data 中的数据如果没有明确指定 RP 将会默认采用此策略，数据保存时间为 2 小时，副本数为 1。</p>
 <h4 id="创建-cq">创建 CQ</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">CREATE CONTINUOUS QUERY cq_5m ON food_data BEGIN SELECT mean<span style="color:#39c">(</span>website<span style="color:#39c">)</span> AS mean_website,mean<span style="color:#39c">(</span>phone<span style="color:#39c">)</span> AS mean_phone INTO food_data.<span style="color:#cd0000">&#34;default&#34;</span>.downsampled_orders FROM orders GROUP BY time<span style="color:#39c">(</span>5m<span style="color:#39c">)</span> END
-</code></pre></div><p>这里创建了一个 CQ，每个5分钟将 two_hours.orders 中的数据计算5分钟的平均值后存入 default.downsampled_orders 中，default 这个 RP 中的数据是永久保存的。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>CREATE CONTINUOUS QUERY cq_5m ON food_data BEGIN SELECT mean<span style="color:#39c">(</span>website<span style="color:#39c">)</span> AS mean_website,mean<span style="color:#39c">(</span>phone<span style="color:#39c">)</span> AS mean_phone INTO food_data.<span style="color:#cd0000">&#34;default&#34;</span>.downsampled_orders FROM orders GROUP BY time<span style="color:#39c">(</span>5m<span style="color:#39c">)</span> END
+</span></span></code></pre></div><p>这里创建了一个 CQ，每个5分钟将 two_hours.orders 中的数据计算5分钟的平均值后存入 default.downsampled_orders 中，default 这个 RP 中的数据是永久保存的。</p>
 <h4 id="where">WHERE</h4>
 <p>查询时指定查询的限制条件，例如查询最近1小时内 host_id=1 的机器的 cpu 数据。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">SELECT value FROM cpu_load WHERE <span style="color:#cd00cd">time</span> &gt; now<span style="color:#39c">()</span> - 1h and <span style="color:#00cdcd">host_id</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span>
-</code></pre></div><h4 id="group-by">GROUP BY</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>SELECT value FROM cpu_load WHERE <span style="color:#cd00cd">time</span> &gt; now<span style="color:#39c">()</span> - 1h and <span style="color:#00cdcd">host_id</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span>
+</span></span></code></pre></div><h4 id="group-by">GROUP BY</h4>
 <p>类似于 SQL 中的语法，可以对细粒度数据进行聚合计算，例如查询最近1小时内 host_id=1 的机器的 cpu 的数据，并且采样为每5分钟的平均值。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">SELECT mean<span style="color:#39c">(</span>value<span style="color:#39c">)</span> FROM cpu_load WHERE <span style="color:#cd00cd">time</span> &gt; now<span style="color:#39c">()</span> - 1h and <span style="color:#00cdcd">host_id</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span> GROUP BY time<span style="color:#39c">(</span>5m<span style="color:#39c">)</span>
-</code></pre></div><h3 id="官方推荐硬件配置">官方推荐硬件配置</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>SELECT mean<span style="color:#39c">(</span>value<span style="color:#39c">)</span> FROM cpu_load WHERE <span style="color:#cd00cd">time</span> &gt; now<span style="color:#39c">()</span> - 1h and <span style="color:#00cdcd">host_id</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span> GROUP BY time<span style="color:#39c">(</span>5m<span style="color:#39c">)</span>
+</span></span></code></pre></div><h3 id="官方推荐硬件配置">官方推荐硬件配置</h3>
 <h4 id="单节点">单节点</h4>
 <table>
 <thead>
 <tr>
-<th align="left">Load</th>
-<th align="left">Writes per second</th>
-<th align="left">Queries per second</th>
-<th align="left">Unique series</th>
+<th style="text-align:left">Load</th>
+<th style="text-align:left">Writes per second</th>
+<th style="text-align:left">Queries per second</th>
+<th style="text-align:left">Unique series</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="left">Low</td>
-<td align="left">&lt; 5 thousand</td>
-<td align="left">&lt; 5</td>
-<td align="left">&lt; 100 thousand</td>
+<td style="text-align:left">Low</td>
+<td style="text-align:left">&lt; 5 thousand</td>
+<td style="text-align:left">&lt; 5</td>
+<td style="text-align:left">&lt; 100 thousand</td>
 </tr>
 <tr>
-<td align="left">Moderate</td>
-<td align="left">&lt; 100 thousand</td>
-<td align="left">&lt; 25</td>
-<td align="left">&lt; 1 million</td>
+<td style="text-align:left">Moderate</td>
+<td style="text-align:left">&lt; 100 thousand</td>
+<td style="text-align:left">&lt; 25</td>
+<td style="text-align:left">&lt; 1 million</td>
 </tr>
 <tr>
-<td align="left">High</td>
-<td align="left">&gt; 100 thousand</td>
-<td align="left">&gt; 25</td>
-<td align="left">&gt; 1 million</td>
+<td style="text-align:left">High</td>
+<td style="text-align:left">&gt; 100 thousand</td>
+<td style="text-align:left">&gt; 25</td>
+<td style="text-align:left">&gt; 1 million</td>
 </tr>
 <tr>
-<td align="left">Probably infeasible</td>
-<td align="left">&gt; 500 thousand</td>
-<td align="left">&gt; 100</td>
-<td align="left">&gt; 10 million</td>
+<td style="text-align:left">Probably infeasible</td>
+<td style="text-align:left">&gt; 500 thousand</td>
+<td style="text-align:left">&gt; 100</td>
+<td style="text-align:left">&gt; 10 million</td>
 </tr>
 </tbody>
 </table>

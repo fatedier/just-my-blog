@@ -89,26 +89,26 @@
 <h3 id="启动-gitlab">启动 gitlab</h3>
 <p>具体的官方说明文档：<a href="http://doc.gitlab.com/omnibus/docker/README.html">http://doc.gitlab.com/omnibus/docker/README.html</a></p>
 <p>启动 <code>gitlab</code> 就是启动相应的 <code>docker</code> 镜像，设置好相关配置参数，命令如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo docker run --detach <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --hostname x.x.x.x <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --publish 7000:443 --publish 80:80 --publish 7002:22 <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --name gitlab <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --restart always <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --volume /srv/gitlab/config:/etc/gitlab <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --volume /srv/gitlab/logs:/var/log/gitlab <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --volume /srv/gitlab/data:/var/opt/gitlab <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    gitlab/gitlab-ce:latest
-</code></pre></div><p>如果你的机器开启了 <code>SELINUX</code>，需要使用如下的命令</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo docker run --detach <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --hostname x.x.x.x <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --publish 7000:443 --publish 80:80 --publish 7002:22 <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --name gitlab <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --restart always <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --volume /srv/gitlab/config:/etc/gitlab:Z <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --volume /srv/gitlab/logs:/var/log/gitlab:Z <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    --volume /srv/gitlab/data:/var/opt/gitlab:Z <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    gitlab/gitlab-ce:latest
-</code></pre></div><p><code>hostname</code> 可以是gitlab服务器的ip，也可以是绑定的域名，80端口需要映射到宿主机的80端口，因为之后 <code>github-ci-runner</code> 会从这个端口下载测试源码。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo docker run --detach <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --hostname x.x.x.x <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --publish 7000:443 --publish 80:80 --publish 7002:22 <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --name gitlab <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --restart always <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --volume /srv/gitlab/config:/etc/gitlab <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --volume /srv/gitlab/logs:/var/log/gitlab <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --volume /srv/gitlab/data:/var/opt/gitlab <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    gitlab/gitlab-ce:latest
+</span></span></code></pre></div><p>如果你的机器开启了 <code>SELINUX</code>，需要使用如下的命令</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo docker run --detach <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --hostname x.x.x.x <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --publish 7000:443 --publish 80:80 --publish 7002:22 <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --name gitlab <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --restart always <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --volume /srv/gitlab/config:/etc/gitlab:Z <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --volume /srv/gitlab/logs:/var/log/gitlab:Z <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    --volume /srv/gitlab/data:/var/opt/gitlab:Z <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    gitlab/gitlab-ce:latest
+</span></span></code></pre></div><p><code>hostname</code> 可以是gitlab服务器的ip，也可以是绑定的域名，80端口需要映射到宿主机的80端口，因为之后 <code>github-ci-runner</code> 会从这个端口下载测试源码。</p>
 <p><code>/srv/gitlab</code> 是用于持久化 docker 容器中产生的数据，例如 <strong>redis</strong>，<strong>postgresql</strong> 等等，gitlab 的docker 镜像中已经内置了这些服务。</p>
 <p>启动成功后，可以通过浏览器访问80端口来使用 gitlab 了，可能是由于我的测试服务器配置较低，等待约2分钟后才能访问。</p>
 <p>初始帐号和密码为 <code>root</code>  <code>5iveL!fe</code>，第一次登录成功后需要修改密码。</p>
@@ -116,24 +116,24 @@
 <h3 id="创建测试项目">创建测试项目</h3>
 <p>简单创建一个 <code>test</code> 项目，先不要提交到 gitlab 仓库。</p>
 <p>包含一个 <code>a.go</code> 文件，文件内容如下</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#cd00cd">package</span> main
-
-<span style="color:#cd00cd">import</span> fmt 
-
-<span style="color:#00cd00">func</span> main() {
-    fmt.Printf(<span style="color:#cd0000">&#34;aaa\n&#34;</span>)
-}
-</code></pre></div><p><strong>可以看到 import 包名没有加双引号，显然编译时就会出错。</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#cd00cd">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">import</span> fmt 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> main() {
+</span></span><span style="display:flex;"><span>    fmt.Printf(<span style="color:#cd0000">&#34;aaa\n&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>可以看到 import 包名没有加双引号，显然编译时就会出错。</strong></p>
 <h4 id="添加gitlab-ciyml-文件">添加 .gitlab-ci.yml 文件</h4>
 <p>配置文件详细内容请参考 <a href="http://doc.gitlab.com/ce/ci/yaml/README.html">http://doc.gitlab.com/ce/ci/yaml/README.html</a></p>
 <p>这里简单写一下，仅仅用于测试：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">image</span>: golang:<span style="color:#cd00cd">1.5</span>
-
-<span style="color:#cdcd00">job1</span>:
-    <span style="color:#cdcd00">script</span>:
-        - go build a.go
-        - ./a
-</code></pre></div><p><code>image</code> 表示使用 <code>golang:1.5</code> 的 docker 镜像来部署编译和测试代码，我们之前已经下好了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>image: golang:1.5
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>job1:
+</span></span><span style="display:flex;"><span>    script:
+</span></span><span style="display:flex;"><span>        - go build a.go
+</span></span><span style="display:flex;"><span>        - ./a
+</span></span></code></pre></div><p><code>image</code> 表示使用 <code>golang:1.5</code> 的 docker 镜像来部署编译和测试代码，我们之前已经下好了。</p>
 <p>测试命令有两条，<code>go build a.go</code> 编译源码， <code>./a</code> 执行编译后的程序。</p>
 <h3 id="获取runnerregistration-token">获取 Runner registration token</h3>
 <p><img src="https://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-registration-token.png" alt="registration-token"></p>
@@ -142,37 +142,37 @@
 <h3 id="启动-runner">启动 Runner</h3>
 <p>Runner 官方详细说明文档： <a href="https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/docs/install/docker.md">https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/blob/master/docs/install/docker.md</a></p>
 <p><code>Runner</code>其实就是用于编译和管理测试环境的服务，当 <code>gitlab</code> 上的项目有 <code>commit</code> 或 <code>merge</code> 的时候，<code>Runner</code> 可以 hook 到相关信息，然后从 <code>gitlab</code> 上拉取代码，利用 <code>docker</code> 创建一个新的测试环境，之后执行 <code>.gitlab-ci.yml</code> 文件中预先配置好的命令。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run -d --name gitlab-runner --restart always <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>      -v /var/run/docker.sock:/var/run/docker.sock <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>      -v /srv/gitlab-runner/config:/etc/gitlab-runner <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>      gitlab/gitlab-runner:latest
-</code></pre></div><p>如果你的机器开启了 SELINUX，需要使用如下的命令：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run -d --name gitlab-runner --restart always <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>      -v /var/run/docker.sock:/var/run/docker.sock <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>      -v /srv/gitlab-runner/config:/etc/gitlab-runner:Z <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>      gitlab/gitlab-runner:latest
-</code></pre></div><h4 id="关联-gitlab">关联 gitlab</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run -d --name gitlab-runner --restart always <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>      -v /var/run/docker.sock:/var/run/docker.sock <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>      -v /srv/gitlab-runner/config:/etc/gitlab-runner <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>      gitlab/gitlab-runner:latest
+</span></span></code></pre></div><p>如果你的机器开启了 SELINUX，需要使用如下的命令：</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run -d --name gitlab-runner --restart always <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>      -v /var/run/docker.sock:/var/run/docker.sock <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>      -v /srv/gitlab-runner/config:/etc/gitlab-runner:Z <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>      gitlab/gitlab-runner:latest
+</span></span></code></pre></div><h4 id="关联-gitlab">关联 gitlab</h4>
 <p>启动成功后的 <code>Runner</code> 需要在 <code>gitlab</code> 上注册，通过在 <code>Runner</code> 上执行注册命令，会调用 <code>gitlab</code> 的相关接口注册。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker <span style="color:#cd00cd">exec</span> -it gitlab-runner gitlab-runner register
-
-Please enter the gitlab-ci coordinator URL <span style="color:#39c">(</span>e.g. <span style="color:#39c">[</span>https://gitlab.com/ci<span style="color:#39c">](</span>https://gitlab.com/ci<span style="color:#39c">)</span> <span style="color:#39c">)</span>
-<span style="color:#39c">[</span>https://gitlab.com/ci<span style="color:#39c">](</span>https://gitlab.com/ci<span style="color:#39c">)</span>（这里的gitlab.com替换成之前启动gitlab时填写的 hostname）
-
-Please enter the gitlab-ci token <span style="color:#cdcd00">for</span> this runner
-xxx（填写获取到的 runner registration token）
-
-Please enter the gitlab-ci description <span style="color:#cdcd00">for</span> this runner
-my
-INFO<span style="color:#39c">[</span>0034<span style="color:#39c">]</span> fcf5c619 Registering runner... succeeded
-
-Please enter the executor: shell, docker, docker-ssh, ssh?
-docker
-
-Please enter the Docker image <span style="color:#39c">(</span>eg. ruby:2.1<span style="color:#39c">)</span>:
-golang:1.5
-INFO<span style="color:#39c">[</span>0037<span style="color:#39c">]</span> Runner registered successfully. Feel free to start it, but <span style="color:#cdcd00">if</span> it<span style="">&#39;</span>s
-running already the config should be automatically reloaded!
-</code></pre></div><h3 id="测试">测试</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker <span style="color:#cd00cd">exec</span> -it gitlab-runner gitlab-runner register
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please enter the gitlab-ci coordinator URL <span style="color:#39c">(</span>e.g. <span style="color:#39c">[</span>https://gitlab.com/ci<span style="color:#39c">](</span>https://gitlab.com/ci<span style="color:#39c">)</span> <span style="color:#39c">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>https://gitlab.com/ci<span style="color:#39c">](</span>https://gitlab.com/ci<span style="color:#39c">)</span>（这里的gitlab.com替换成之前启动gitlab时填写的 hostname）
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please enter the gitlab-ci token <span style="color:#cdcd00">for</span> this runner
+</span></span><span style="display:flex;"><span>xxx（填写获取到的 runner registration token）
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please enter the gitlab-ci description <span style="color:#cdcd00">for</span> this runner
+</span></span><span style="display:flex;"><span>my
+</span></span><span style="display:flex;"><span>INFO<span style="color:#39c">[</span>0034<span style="color:#39c">]</span> fcf5c619 Registering runner... succeeded
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please enter the executor: shell, docker, docker-ssh, ssh?
+</span></span><span style="display:flex;"><span>docker
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Please enter the Docker image <span style="color:#39c">(</span>eg. ruby:2.1<span style="color:#39c">)</span>:
+</span></span><span style="display:flex;"><span>golang:1.5
+</span></span><span style="display:flex;"><span>INFO<span style="color:#39c">[</span>0037<span style="color:#39c">]</span> Runner registered successfully. Feel free to start it, but <span style="color:#cdcd00">if</span> it<span style="">&#39;</span>s
+</span></span><span style="display:flex;"><span>running already the config should be automatically reloaded!
+</span></span></code></pre></div><h3 id="测试">测试</h3>
 <p>利用 <code>docker</code> 来搭建这套环境还是非常简单的。</p>
 <p>接着提交我们之前创建的两个文件，<code>a.go</code> 和 <code>.gitlab-ci.yml</code>。</p>
 <p>访问 <code>gitlab</code> 查看 <code>build</code> 的结果。</p>
@@ -183,16 +183,16 @@ running already the config should be automatically reloaded!
 <p><img src="https://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-deatil.png" alt="test-deatil"></p>
 <p>从 <code>Runner</code> 测试过程的输出信息可以看出来，<code>Runner</code> 先 <code>pull</code> 我们指定的 <code>docker</code> 镜像，这里是 <code>golang:1.5</code>，之后 <code>git clone</code> 代码到测试环境，然后开始执行测试命令，在执行 <code>go build a.go</code> 的时候出现了错误，并且显示了错误信息。</p>
 <p>将错误的代码修改后再次提交</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#cd00cd">package</span> main
-
-<span style="color:#cd00cd">import</span> (
-    <span style="color:#cd0000">&#34;fmt&#34;</span>
-)
-
-<span style="color:#00cd00">func</span> main() {
-    fmt.Printf(<span style="color:#cd0000">&#34;aaa\n&#34;</span>)
-}
-</code></pre></div><p>可以看到能够通过测试了，执行程序后的输出 <code>aaa</code> 也能够看到。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#cd00cd">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#cd0000">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> main() {
+</span></span><span style="display:flex;"><span>    fmt.Printf(<span style="color:#cd0000">&#34;aaa\n&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>可以看到能够通过测试了，执行程序后的输出 <code>aaa</code> 也能够看到。</p>
 <p><img src="https://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-commit-all.png" alt="test-commit-all"></p>
 <p><img src="https://image.fatedier.com/pic/2016/2016-04-05-install-gitlab-supporting-ci-with-docker-test-succ-detail.png" alt="test-succ-detail"></p>
             </div>

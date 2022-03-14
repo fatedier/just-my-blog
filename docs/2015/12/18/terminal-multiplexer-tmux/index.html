@@ -103,11 +103,11 @@
 <p><strong>切换 session</strong></p>
 <p><code>Ctrl-b + s，之后按序号切换，或者通过方向键选择后按 Enter 键切换</code></p>
 <p><strong>切换 window</strong></p>
-<pre><code>Ctrl-b + &lt;窗口号&gt;
+<pre tabindex="0"><code>Ctrl-b + &lt;窗口号&gt;
 Ctrl-b + n  // 切换到下一个窗口
 Ctrl-b + p  // 切换到上一个窗口
 </code></pre><p><strong>切换 pane</strong></p>
-<pre><code>这个我在配置文件中修改过，修改成了 vim 的使用习惯，具体配置见下节
+<pre tabindex="0"><code>这个我在配置文件中修改过，修改成了 vim 的使用习惯，具体配置见下节
 Ctrl-b + h  // 左
 Ctrl-b + j  // 下
 Ctrl-b + k  // 上
@@ -117,11 +117,11 @@ Ctrl-b + l  // 右
 <p><strong>关闭 window</strong></p>
 <p><code>Ctrl-b + &amp; // 焦点在要关闭的 window 内</code></p>
 <p><strong>分割 window 成多个 pane</strong></p>
-<pre><code>这个为了记忆方便也修改了原有的配置
+<pre tabindex="0"><code>这个为了记忆方便也修改了原有的配置
 Ctrl-b + _  // 竖直分割
 Ctrl-b + |  // 水平分割
 </code></pre><p><strong>重新加载配置文件</strong></p>
-<pre><code>这个被我映射到了 r 键，修改完配置文件后不用关闭所有 session 重新打开，直接重新加载即可
+<pre tabindex="0"><code>这个被我映射到了 r 键，修改完配置文件后不用关闭所有 session 重新打开，直接重新加载即可
 Ctrl-b + r
 </code></pre><h3 id="小技巧">小技巧</h3>
 <h4 id="复制模式">复制模式</h4>
@@ -139,7 +139,7 @@ Ctrl-b + r
 <p>这个是设置批量操作的开关，如果原来功能是关闭的，则打开，反之亦然，可以将其映射到一个快捷键方便操作。开启这个功能后，在当前 window 任意一个 pane 输入的命令，都会同时作用于该 window 中的其他 pane。</p>
 <h3 id="配置文件">配置文件</h3>
 <p>配置文件需要自己在 $HOME 目录下创建，命名为 .tmux.conf，具体内容如下</p>
-<pre><code># Use something easier to type as the prefix.
+<pre tabindex="0"><code># Use something easier to type as the prefix.
 set -g prefix C-x
 unbind C-b
 bind C-x send-prefix
@@ -162,9 +162,9 @@ setw -g allow-rename off
 setw -g automatic-rename off 
 
 # bind a reload key
-bind r source-file ~/.tmux.conf \; display-message &quot;Config reloaded...&quot;
+bind r source-file ~/.tmux.conf \; display-message &#34;Config reloaded...&#34;
 
-# I personally rebind the keys so &quot;|&quot; splits the current window vertically, and &quot;-&quot; splits it horizontally. Not the easiest things to type, though easy to remember.
+# I personally rebind the keys so &#34;|&#34; splits the current window vertically, and &#34;-&#34; splits it horizontally. Not the easiest things to type, though easy to remember.
 bind | split-window -h
 bind _ split-window -v
 
@@ -192,16 +192,15 @@ set -g status-fg white
 set-option -g status-justify centre
 
 # 左下角
-set-option -g status-left '#[bg=black,fg=green][#[fg=cyan]#S#[fg=green]]'
+set-option -g status-left &#39;#[bg=black,fg=green][#[fg=cyan]#S#[fg=green]]&#39;
 set-option -g status-left-length 20
 
 # 窗口列表
-set-window-option -g window-status-format '#[dim]#I:#[default]#W#[fg=grey,dim]'
-set-window-option -g window-status-current-format '#[fg=cyan,bold]#I#[fg=blue]:#[fg=cyan]#W#[fg=dim]'
+set-window-option -g window-status-format &#39;#[dim]#I:#[default]#W#[fg=grey,dim]&#39;
+set-window-option -g window-status-current-format &#39;#[fg=cyan,bold]#I#[fg=blue]:#[fg=cyan]#W#[fg=dim]&#39;
 
 # 右下角
-set -g status-right '#[fg=green][#[fg=cyan]%H:%M#[fg=green]]'
-
+set -g status-right &#39;#[fg=green][#[fg=cyan]%H:%M#[fg=green]]&#39;
 </code></pre><h3 id="配套工具">配套工具</h3>
 <h4 id="tmuxinator">tmuxinator</h4>
 <p>使用 tmux 可以让我们不管在什么时候，什么地点登录服务器都能得到同样的工作界面，不用因为担心网络暂时中断而需要重新打开一大堆的 tab 页。</p>
@@ -210,7 +209,7 @@ set -g status-right '#[fg=green][#[fg=cyan]%H:%M#[fg=green]]'
 <h5 id="安装-1">安装</h5>
 <p>先安装 gem， <code>yum install -y rubygems</code></p>
 <p><strong>由于天朝特殊的网络环境，gem的第三方包可能安装不了，可以替换成阿里提供的镜像源。</strong></p>
-<pre><code>gem sources --add [https://ruby.taobao.org/](https://ruby.taobao.org/) --remove [https://rubygems.org/](https://rubygems.org/)
+<pre tabindex="0"><code>gem sources --add [https://ruby.taobao.org/](https://ruby.taobao.org/) --remove [https://rubygems.org/](https://rubygems.org/)
 </code></pre><h5 id="使用">使用</h5>
 <p>创建一个 tmuxinator 的 project： <code>tmuxinator new [project]</code></p>
 <p>之后编写项目的配置文件，以后重新打开这个项目所显示的界面就是根据这个配置文件来生成。具体用法可以参考项目文档： <a href="https://github.com/tmuxinator/tmuxinator">https://github.com/tmuxinator/tmuxinator</a>。</p>

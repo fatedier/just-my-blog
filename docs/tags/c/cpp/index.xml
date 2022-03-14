@@ -6,11 +6,7 @@
     <description>Recent content in c/cpp on fatedier blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    
-	<atom:link href="https://blog.fatedier.com/tags/c/cpp/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <copyright>Copyright (c) 2020. All rights reserved.</copyright><atom:link href="https://blog.fatedier.com/tags/c/cpp/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>为 mtcp 项目添加 udp 支持</title>
       <link>https://blog.fatedier.com/2017/03/03/support-udp-in-mtcp/</link>

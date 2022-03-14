@@ -79,10 +79,10 @@
 <h3 id="编译">编译</h3>
 <p>直接写一个Makefile编译下源码，我的Github的拷贝里有写好的Makefile，直接用gmake命令编译一下就可以用了。</p>
 <h3 id="示例">示例</h3>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./astyle --style<span style="color:#39c">=</span>ansi test.cpp
-</code></pre></div><p>执行之后会提示</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Formatted  xxx/test.cpp
-</code></pre></div><p><strong>astyle</strong> 会在当前目录下生成一个备份文件，以 <strong>.orig</strong> 结尾，例如 &ldquo;test.cpp.orig&rdquo;。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./astyle --style<span style="color:#39c">=</span>ansi test.cpp
+</span></span></code></pre></div><p>执行之后会提示</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Formatted  xxx/test.cpp
+</span></span></code></pre></div><p><strong>astyle</strong> 会在当前目录下生成一个备份文件，以 <strong>.orig</strong> 结尾，例如 &ldquo;test.cpp.orig&rdquo;。</p>
 <p>而 <strong>test.cpp</strong> 就已经转换为了 <strong>ansi</strong> 代码风格了。</p>
 <h3 id="常用选项">常用选项</h3>
 <p><strong>注：使用 &ndash;help 选项可以查看astyle的帮助文档</strong></p>
@@ -91,42 +91,42 @@
 <ol>
 <li>
 <p>&ndash;style=allman  OR &ndash;style=ansi OR &ndash;style=bsd OR &ndash;style=break OR -A1</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">int</span> Foo()
-{
-   <span style="color:#cdcd00">if</span> (isBar)
-    {
-       bar();
-       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span>;
-    }
-   <span style="color:#cdcd00">else</span>
-    {
-       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
-    }
-}
-</code></pre></div></li>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00cd00">int</span> Foo()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>   <span style="color:#cdcd00">if</span> (isBar)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>       bar();
+</span></span><span style="display:flex;"><span>       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>   <span style="color:#cdcd00">else</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
 <li>
 <p>&ndash;style=kr OR &ndash;style=k&amp;r OR &ndash;style=k/r OR -A3</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">int</span> Foo()
-{
-   <span style="color:#cdcd00">if</span> (isBar) {
-       bar();
-       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span>;
-    }<span style="color:#cdcd00">else</span> {
-       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
-    }
-}
-</code></pre></div></li>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00cd00">int</span> Foo()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>   <span style="color:#cdcd00">if</span> (isBar) {
+</span></span><span style="display:flex;"><span>       bar();
+</span></span><span style="display:flex;"><span>       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>    }<span style="color:#cdcd00">else</span> {
+</span></span><span style="display:flex;"><span>       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
 <li>
 <p>&ndash;style=java OR &ndash;style=attach OR -A2</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">int</span> Foo() {
-   <span style="color:#cdcd00">if</span> (isBar) {
-       bar();
-       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span>;
-    }<span style="color:#cdcd00">else</span> {
-       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
-    }
-}
-</code></pre></div></li>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00cd00">int</span> Foo() {
+</span></span><span style="display:flex;"><span>   <span style="color:#cdcd00">if</span> (isBar) {
+</span></span><span style="display:flex;"><span>       bar();
+</span></span><span style="display:flex;"><span>       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>    }<span style="color:#cdcd00">else</span> {
+</span></span><span style="display:flex;"><span>       <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
 </ol>
 <h4 id="tab选项">Tab选项</h4>
 <p>默认是使用4个空格替换一个tab。</p>

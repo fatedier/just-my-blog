@@ -77,35 +77,35 @@
 <p><code>\033[31m</code> 表示将字符的显示颜色改为红色</p>
 <p><code>\033[0m</code> 表示将字符的显示颜色改为正常值</p>
 <p>可以看到 <code>\033[</code> 以及最后的 <code>m</code> 都是一样的，就是中间的数字有区别，这个数字就代表了要显示的颜色，含义如下</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">30</span>        黑色 
-<span style="color:#cd00cd">31</span>        红色 
-<span style="color:#cd00cd">32</span>        绿色 
-<span style="color:#cd00cd">33</span>        淡红色 
-<span style="color:#cd00cd">34</span>        蓝色 
-<span style="color:#cd00cd">35</span>        紫色 
-<span style="color:#cd00cd">36</span>        淡蓝色 
-<span style="color:#cd00cd">37</span>        灰色 
-</code></pre></div><h3 id="背景色">背景色</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#cd00cd">30</span>        黑色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">31</span>        红色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">32</span>        绿色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">33</span>        淡红色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">34</span>        蓝色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">35</span>        紫色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">36</span>        淡蓝色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">37</span>        灰色 
+</span></span></code></pre></div><h3 id="背景色">背景色</h3>
 <p>背景色和前景色设置的方法一样，只是使用的数字不同</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">40</span>        黑色 
-<span style="color:#cd00cd">41</span>        红色 
-<span style="color:#cd00cd">42</span>        绿色 
-<span style="color:#cd00cd">43</span>        淡红色 
-<span style="color:#cd00cd">44</span>        蓝色 
-<span style="color:#cd00cd">45</span>        紫色 
-<span style="color:#cd00cd">46</span>        淡蓝色 
-<span style="color:#cd00cd">47</span>        灰色 
-</code></pre></div><p>如果需要同时设置前景色和背景色，例如输出文本颜色为红色，背景色为绿色的字符串，需要以分号分隔两个数字，示例如下</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#cd00cd">40</span>        黑色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">41</span>        红色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">42</span>        绿色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">43</span>        淡红色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">44</span>        蓝色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">45</span>        紫色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">46</span>        淡蓝色 
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">47</span>        灰色 
+</span></span></code></pre></div><p>如果需要同时设置前景色和背景色，例如输出文本颜色为红色，背景色为绿色的字符串，需要以分号分隔两个数字，示例如下</p>
 <p><code>echo -e &quot;\033[31;42mhello\033[0m&quot;</code></p>
 <h3 id="简化">简化</h3>
 <p>从上面的示例可以看到这样写起来很麻烦，可以简单的将重复的内容定义为一个变量</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#00cdcd">lc</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;\033[&#39;</span>
-<span style="color:#00cdcd">rc</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;\033[0m&#39;</span>
-<span style="color:#00cdcd">cred</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;31m&#39;</span>        <span style="color:#000080"># red</span>
-<span style="color:#00cdcd">cgreen</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;32m&#39;</span>      <span style="color:#000080"># green</span>
-
-<span style="color:#cd00cd">echo</span> -e <span style="color:#cd0000">&#34;</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">lc</span><span style="color:#cd0000">}${</span><span style="color:#00cdcd">cred</span><span style="color:#cd0000">}</span><span style="color:#cd0000">hello</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">rc</span><span style="color:#cd0000">}</span><span style="color:#cd0000">&#34;</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#00cdcd">lc</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;\033[&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">rc</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;\033[0m&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">cred</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;31m&#39;</span>        <span style="color:#000080"># red</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">cgreen</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;32m&#39;</span>      <span style="color:#000080"># green</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">echo</span> -e <span style="color:#cd0000">&#34;</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">lc</span><span style="color:#cd0000">}${</span><span style="color:#00cdcd">cred</span><span style="color:#cd0000">}</span><span style="color:#cd0000">hello</span><span style="color:#cd0000">${</span><span style="color:#00cdcd">rc</span><span style="color:#cd0000">}</span><span style="color:#cd0000">&#34;</span>
+</span></span></code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

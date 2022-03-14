@@ -87,18 +87,18 @@
 <p><code>vimgrep /匹配模式/[g][j]</code> 要搜索的文件/范围</p>
 <p><code>g</code> 表示是否把每一行的多个匹配结果都加入</p>
 <p><code>j</code> 表示是否搜索完后定位到第一个匹配位置</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vimgrep /pattern/ %           // 在当前打开文件中查找
-vimgrep /pattern/ *           // 在当前目录下查找所有
-vimgrep /pattern/ **          // 在当前目录及子目录下查找所有
-vimgrep /pattern/ *.c         // 查找当前目录下所有.c文件
-vimgrep /pattern/ **/*        // 只查找子目录
-cn                            // 查找下一个
-cp                            // 查找上一个
-copen                         // 打开quickfix
-cw                            // 打开quickfix
-cclose                        // 关闭qucikfix
-<span style="color:#cd00cd">help</span> vimgrep                  // 查看vimgrep帮助
-</code></pre></div><h3 id="从vim正文复制单词到vim命令行">从vim正文复制单词到vim命令行</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vimgrep /pattern/ %           // 在当前打开文件中查找
+</span></span><span style="display:flex;"><span>vimgrep /pattern/ *           // 在当前目录下查找所有
+</span></span><span style="display:flex;"><span>vimgrep /pattern/ **          // 在当前目录及子目录下查找所有
+</span></span><span style="display:flex;"><span>vimgrep /pattern/ *.c         // 查找当前目录下所有.c文件
+</span></span><span style="display:flex;"><span>vimgrep /pattern/ **/*        // 只查找子目录
+</span></span><span style="display:flex;"><span>cn                            // 查找下一个
+</span></span><span style="display:flex;"><span>cp                            // 查找上一个
+</span></span><span style="display:flex;"><span>copen                         // 打开quickfix
+</span></span><span style="display:flex;"><span>cw                            // 打开quickfix
+</span></span><span style="display:flex;"><span>cclose                        // 关闭qucikfix
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">help</span> vimgrep                  // 查看vimgrep帮助
+</span></span></code></pre></div><h3 id="从vim正文复制单词到vim命令行">从vim正文复制单词到vim命令行</h3>
 <p>例如使用 <code>vimgrep</code> 搜索时，光标先移动到要复制的单词的起始位置，之后切到命令模式， 先按 <code>ctrl + r</code> ，之后再按 <code>ctrl + w</code> 即可。</p>
             </div>
             

@@ -7,11 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Mon, 04 Jul 2016 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://blog.fatedier.com/tags/opentsdb/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Mon, 04 Jul 2016 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/opentsdb/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>时间序列数据库调研之OpenTSDB</title>
       <link>https://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</link>

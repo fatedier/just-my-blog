@@ -74,13 +74,13 @@
 <h3 id="现象">现象</h3>
 <p>正常升级某个服务的 Deployment。</p>
 <p>升级策略，先起一个新实例，再停一个旧实例：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">type</span>: RollingUpdate
-<span style="color:#cdcd00">rollingUpdate</span>:
-  <span style="color:#cdcd00">maxSurge</span>: <span style="color:#cd00cd">1</span>
-  <span style="color:#cdcd00">maxUnavailable</span>: <span style="color:#cd00cd">0</span>
-</code></pre></div><p>实例停止前如果没有请求会立即退出，如果有请求则等待最多 60 秒，仍然没有结束时会被强制杀掉。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">terminationGracePeriodSeconds</span>: <span style="color:#cd00cd">60</span>
-</code></pre></div><p>升级过程中，发现服务响应时间的 98 值增长很多，95 值没有太大变化，看起来有少量请求被升级操作影响到了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>type: RollingUpdate
+</span></span><span style="display:flex;"><span>rollingUpdate:
+</span></span><span style="display:flex;"><span>  maxSurge: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>  maxUnavailable: <span style="color:#cd00cd">0</span>
+</span></span></code></pre></div><p>实例停止前如果没有请求会立即退出，如果有请求则等待最多 60 秒，仍然没有结束时会被强制杀掉。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>terminationGracePeriodSeconds: <span style="color:#cd00cd">60</span>
+</span></span></code></pre></div><p>升级过程中，发现服务响应时间的 98 值增长很多，95 值没有太大变化，看起来有少量请求被升级操作影响到了。</p>
 <h3 id="原因">原因</h3>
 <p>排查后，确认部分请求变慢的原因是因为和后端实例建立连接超时，由于使用的是 Go 的 DefaultTransport，所以连接超时时间为 30s，部分请求在超时 30s 后才被重试，从而导致响应时间的 98 值变慢。</p>
 <p>为什么建立连接会超时？</p>
@@ -108,33 +108,33 @@
 <h4 id="确保实例被服务发现摘除后再停止">确保实例被服务发现摘除后再停止</h4>
 <p>思考了问题发生的原因，首先想到的就是能不能让实例先从服务发现中摘除，确认服务发现数据被同步到了各网关后，再杀实例。搜索了 k8s 的相关文档，发现通过 <strong>preStop</strong> 的 hook 机制，可以实现该功能。</p>
 <p>示例配置如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: apps/v1
-<span style="color:#cdcd00">kind</span>: Deployment
-<span style="color:#cdcd00">metadata</span>:
-  <span style="color:#cdcd00">name</span>: nginx-deployment
-  <span style="color:#cdcd00">labels</span>:
-    <span style="color:#cdcd00">app</span>: nginx
-<span style="color:#cdcd00">spec</span>:
-  <span style="color:#cdcd00">replicas</span>: <span style="color:#cd00cd">3</span>
-  <span style="color:#cdcd00">selector</span>:
-    <span style="color:#cdcd00">matchLabels</span>:
-      <span style="color:#cdcd00">app</span>: nginx
-  <span style="color:#cdcd00">template</span>:
-    <span style="color:#cdcd00">metadata</span>:
-      <span style="color:#cdcd00">labels</span>:
-        <span style="color:#cdcd00">app</span>: nginx
-    <span style="color:#cdcd00">spec</span>:
-      <span style="color:#cdcd00">terminationGracePeriodSeconds</span>: <span style="color:#cd00cd">90</span>
-      <span style="color:#cdcd00">containers</span>:
-      - <span style="color:#cdcd00">name</span>: nginx
-        <span style="color:#cdcd00">image</span>: my-nginx:xxx
-        <span style="color:#cdcd00">lifecycle</span>:
-          <span style="color:#cdcd00">preStop</span>:
-            <span style="color:#cdcd00">exec</span>:
-              <span style="color:#cdcd00">command</span>: [<span style="color:#cd0000">&#34;/bin/sh&#34;</span>, <span style="color:#cd0000">&#34;-c&#34;</span>, <span style="color:#cd0000">&#34;sleep 30&#34;</span>]
-        <span style="color:#cdcd00">ports</span>:
-        - <span style="color:#cdcd00">containerPort</span>: <span style="color:#cd00cd">80</span>
-</code></pre></div><p>重点就在于 <strong>lifecycle</strong> 的配置。对应实例停止时，会先将该实例的服务发现地址从 <strong>service</strong> 中移除，之后会调用我们给定的命令 <code>sleep 30</code>，等待 30s 后，再给实例发送 SIGTERM 信号，如果实例超过 <strong>terminationGracePeriodSeconds</strong> 配置的时间后，会再给实例发送 SIGKILL 信号，强行杀掉实例。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: apps/v1
+</span></span><span style="display:flex;"><span>kind: Deployment
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: nginx-deployment
+</span></span><span style="display:flex;"><span>  labels:
+</span></span><span style="display:flex;"><span>    app: nginx
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  replicas: <span style="color:#cd00cd">3</span>
+</span></span><span style="display:flex;"><span>  selector:
+</span></span><span style="display:flex;"><span>    matchLabels:
+</span></span><span style="display:flex;"><span>      app: nginx
+</span></span><span style="display:flex;"><span>  template:
+</span></span><span style="display:flex;"><span>    metadata:
+</span></span><span style="display:flex;"><span>      labels:
+</span></span><span style="display:flex;"><span>        app: nginx
+</span></span><span style="display:flex;"><span>    spec:
+</span></span><span style="display:flex;"><span>      terminationGracePeriodSeconds: <span style="color:#cd00cd">90</span>
+</span></span><span style="display:flex;"><span>      containers:
+</span></span><span style="display:flex;"><span>      - name: nginx
+</span></span><span style="display:flex;"><span>        image: my-nginx:xxx
+</span></span><span style="display:flex;"><span>        lifecycle:
+</span></span><span style="display:flex;"><span>          preStop:
+</span></span><span style="display:flex;"><span>            exec:
+</span></span><span style="display:flex;"><span>              command: [<span style="color:#cd0000">&#34;/bin/sh&#34;</span>, <span style="color:#cd0000">&#34;-c&#34;</span>, <span style="color:#cd0000">&#34;sleep 30&#34;</span>]
+</span></span><span style="display:flex;"><span>        ports:
+</span></span><span style="display:flex;"><span>        - containerPort: <span style="color:#cd00cd">80</span>
+</span></span></code></pre></div><p>重点就在于 <strong>lifecycle</strong> 的配置。对应实例停止时，会先将该实例的服务发现地址从 <strong>service</strong> 中移除，之后会调用我们给定的命令 <code>sleep 30</code>，等待 30s 后，再给实例发送 SIGTERM 信号，如果实例超过 <strong>terminationGracePeriodSeconds</strong> 配置的时间后，会再给实例发送 SIGKILL 信号，强行杀掉实例。</p>
 <p>我们服务发现数据同步间隔是 10s，留出 30s 的时间，所有网关的服务发现数据正常情况下已经全部同步完成，不会再有新的流量被路由到该实例上，也就不会出现新建连接超时的问题。</p>
 <p>需要注意的是，由于我们延迟了 30s 停止实例，所以保险起见 <strong>terminationGracePeriodSeconds</strong> 也可以相应的增加 30s。</p>
 <h3 id="猜想其他的解决方法">猜想其他的解决方法</h3>

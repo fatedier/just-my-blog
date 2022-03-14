@@ -82,23 +82,23 @@
 <h4 id="1单个文件的编译">1、单个文件的编译</h4>
 <p>为了便于大家学习，这篇文章是以常见的Linux平台为基础的，系统为Centos6.5，使用GNU make工具进行编译，项目文件为C++格式。这里假定看到这篇文章的都是已经对C++程序的编译等基础知识和相关命令有了一定的了解的，鉴于篇幅限制，如果还有不清楚的就请自行查阅相关资料啦。</p>
 <p>假设我们在src目录下有一个test.cpp文件，我们是如何编译它的呢？</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">g++ -o <span style="color:#cd00cd">test</span> test.cpp
-</code></pre></div><p>在shell界面执行这句命令，当前目录下会生成一个名为test的可执行程序，使用./test就可以执行该程序，看到输出结果。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>g++ -o <span style="color:#cd00cd">test</span> test.cpp
+</span></span></code></pre></div><p>在shell界面执行这句命令，当前目录下会生成一个名为test的可执行程序，使用./test就可以执行该程序，看到输出结果。</p>
 <p>现在我们尝试使用编写Makefile的方式来实现这一编译过程。 首先在当前目录下新建文件并命名为“Makefile”，这样编译的时候直接使用gmake命令即可，默认使用“Makefile”文件进行编译，也可以是其他名字，那样的话需要使用“gmake -f 文件名”的格式来指定Makefile文件。</p>
 <p>Makefile文件内容如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">test:test.cpp
-    g++-o <span style="color:#cd00cd">test</span> test.cpp
-</code></pre></div><p>在shell界面下执行gmake命令，敲下回车，OK。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>test:test.cpp
+</span></span><span style="display:flex;"><span>    g++-o <span style="color:#cd00cd">test</span> test.cpp
+</span></span></code></pre></div><p>在shell界面下执行gmake命令，敲下回车，OK。</p>
 <p>可以发现，g++ -o test test.cpp 这条命令已经被自动执行了，生成了名为test的程序。</p>
 <h4 id="2makefile的描述规则">2、Makefile的描述规则</h4>
 <p>至此，我们已经完成了一个最简单的Makefile文件，向我们的最终目标迈出了一大步！</p>
 <p>有的人会问，传说中的自动化编译呢？难道每一个文件都要自己去写文件名和命令？</p>
 <p>不用急，我们先来分析一下这个Makefile文件。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">TARGET... :PREREQUISITES...
-    COMMAND
-    ...
-    ...
-</code></pre></div><p>这是最简单的Makefile文件的描述规则，可以说，这也是Makefile中最精华的部分，其他部分都是围绕着这个最基本的描述规则的。先来解释一下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>TARGET... :PREREQUISITES...
+</span></span><span style="display:flex;"><span>    COMMAND
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    ...
+</span></span></code></pre></div><p>这是最简单的Makefile文件的描述规则，可以说，这也是Makefile中最精华的部分，其他部分都是围绕着这个最基本的描述规则的。先来解释一下：</p>
 <ul>
 <li>TARGET：规则生成的目标文件，通常是需要生成的程序名（例如前面出现的程序名test）或者过程文件（类似.o文件）。</li>
 <li>PREREQUISITES：规则的依赖项，比如前面的Makefile文件中我们生成test程序所依赖的就是test.cpp。</li>
@@ -120,61 +120,61 @@
 <p>一个项目不可能只有一个文件，学会了单个文件的编译，自然而然就要考虑如何去编译多个文件呢？</p>
 <p>同样，假设当前目录下有如下7个文件，test.cpp、w1.h、w1.cpp、w2.h、w2.cpp、w3.h、w3.cpp。其中test.cpp包含main函数，并且引用了w1.h、w2.h以及w3.h。我们需要生成的程序名为test。</p>
 <p>在shell界面下，为了正确编译我们的项目，我们需要敲下如下的命令：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">g++ -c -o w1.ow1.cpp
-g++ -c -o w2.o w2.cpp
-g++ -c -o w3.o w3.cpp
-</code></pre></div><p>这时当前目录下会生成w1.o、w2.o、w3.o三个.o文件。这里需要注意的是，“-c”命令是只编译，不链接，通常生成.o文件的时候使用。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">g++ -o testtest.cpp w1.o w2.o w3.o
-</code></pre></div><p>执行完这条命令后，编译成功，得到了我们想要的test文件。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>g++ -c -o w1.ow1.cpp
+</span></span><span style="display:flex;"><span>g++ -c -o w2.o w2.cpp
+</span></span><span style="display:flex;"><span>g++ -c -o w3.o w3.cpp
+</span></span></code></pre></div><p>这时当前目录下会生成w1.o、w2.o、w3.o三个.o文件。这里需要注意的是，“-c”命令是只编译，不链接，通常生成.o文件的时候使用。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>g++ -o testtest.cpp w1.o w2.o w3.o
+</span></span></code></pre></div><p>执行完这条命令后，编译成功，得到了我们想要的test文件。</p>
 <h4 id="2使用makefile编译多个文件">2、使用Makefile编译多个文件</h4>
 <p>既然单个文件的Makefile会写了，相信多个文件举一反三也不是问题了。</p>
 <p>Makefile具体内容如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">test:test.cppw1.o w2.o w3.o
-    g++ -o <span style="color:#cd00cd">test</span> test.cpp w1.o w2.o w3.o
-w1.o:w1.cpp
-    g++ -c -o w1.o w1.cpp
-w2.o:w2.cpp
-    g++ -c -o w2.o w2.cpp
-w3.o:w3.cpp
-    g++ -c -o w3.o w3.cpp
-</code></pre></div><p>这里需要注意的是，我们写的第一个规则的目标，将会成为“终极目标”，也就是我们最终希望生成的程序，这里是“test”文件。根据我们的“终极目标”，make会进行自动推导，例如“终极目标”依赖于的.o文件，make就会寻找生成这些.o文件的规则，然后执行相应的命令去生成这些文件，这样一层一层递归地进行下去，直到最终生成了“终极目标”。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>test:test.cppw1.o w2.o w3.o
+</span></span><span style="display:flex;"><span>    g++ -o <span style="color:#cd00cd">test</span> test.cpp w1.o w2.o w3.o
+</span></span><span style="display:flex;"><span>w1.o:w1.cpp
+</span></span><span style="display:flex;"><span>    g++ -c -o w1.o w1.cpp
+</span></span><span style="display:flex;"><span>w2.o:w2.cpp
+</span></span><span style="display:flex;"><span>    g++ -c -o w2.o w2.cpp
+</span></span><span style="display:flex;"><span>w3.o:w3.cpp
+</span></span><span style="display:flex;"><span>    g++ -c -o w3.o w3.cpp
+</span></span></code></pre></div><p>这里需要注意的是，我们写的第一个规则的目标，将会成为“终极目标”，也就是我们最终希望生成的程序，这里是“test”文件。根据我们的“终极目标”，make会进行自动推导，例如“终极目标”依赖于的.o文件，make就会寻找生成这些.o文件的规则，然后执行相应的命令去生成这些文件，这样一层一层递归地进行下去，直到最终生成了“终极目标”。</p>
 <p><img src="https://image.fatedier.com/pic/2014/2014-09-08-learn-to-write-makefile-01-gmake-target.jpg" alt="gmake-target"></p>
 <p>如上图所示，虽然生成test文件的规则写在最前面，但是由于依赖于w1.o、w2.o、w3.o，make会先执行生成w1.o、w2.o、w3.o所需的命令，然后才会执行g++ -o test test.cpp w1.o w2.o w3.o 来生成test文件。</p>
 <h4 id="3使用伪目标来清除过程文件">3、使用伪目标来清除过程文件</h4>
 <p>我们现在已经可以自动编译多个文件的项目了，但是当我们需要全部重新编译的时候，难道还要手动地一个一个去删除那些生成的.o文件吗？</p>
 <p>既然已经使用了Makefile，我们的目标就是实现自动化编译，那么这些清除过程文件这点小事必须得能够用一个命令搞定啦。</p>
 <p>我们只需要在Makefile文件的最后加上如下几行：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">clean:
-    -rm–f <span style="color:#cd00cd">test</span> *.o
-</code></pre></div><p>OK，轻松搞定，然后在shell界面下执行gmakeclean。仔细看看，是不是所有的.o文件和最后生成的程序文件已经被清除了？</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>clean:
+</span></span><span style="display:flex;"><span>    -rm–f <span style="color:#cd00cd">test</span> *.o
+</span></span></code></pre></div><p>OK，轻松搞定，然后在shell界面下执行gmakeclean。仔细看看，是不是所有的.o文件和最后生成的程序文件已经被清除了？</p>
 <p>这里说明一下，rm是Linux下删除文件或目录的命令，前面加上“-”符号意思是忽略执行rm产生的错误。“-f”参数是指强制删除，忽略不存在的文件。</p>
 <p>这样的目标叫做“伪目标”，通过“gmake 目标名”来指定这个目标，然后执行这个目标规则下的命令。</p>
 <h3 id="使用变量简化makefile">使用变量简化Makefile</h3>
 <p>作为一个“懒惰”的程序员，现在问题又来了。如果按照上面的写法，在文件数量和名称不变的情况的下确实是没有问题，但是如果我们新增一个文件的话，岂不是又要去修改Makefile了，一个项目多的可能有成百上千的文件，这样管理起来得有多麻烦呀！</p>
 <p>还记得我们在Linux下如果要查看当前目录下所有的cpp文件的时候，使用的命令吗？</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ls *.cpp
-</code></pre></div><p>通过这个命令，我们就可以将所有的cpp文件名称显示在界面上。而在Makefile中我们同样可以使用类似的规则来做简化，进一步减少后续开发过程中对Makefile文件的修改。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ls *.cpp
+</span></span></code></pre></div><p>通过这个命令，我们就可以将所有的cpp文件名称显示在界面上。而在Makefile中我们同样可以使用类似的规则来做简化，进一步减少后续开发过程中对Makefile文件的修改。</p>
 <p>修改后的Makefile文件如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#00cdcd">TARGET</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">test</span>
-
-<span style="color:#00cdcd">CPP_FILES</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>shell ls *.cpp<span style="color:#cdcd00">)</span>
-<span style="color:#00cdcd">BASE</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>basename <span style="color:#cdcd00">$(</span>CPP_FILES<span style="color:#cdcd00">))</span>
-<span style="color:#00cdcd">OBJS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>addsuffix .o, <span style="color:#cdcd00">$(</span>addprefix obj/,<span style="color:#cdcd00">$(</span>BASE<span style="color:#cdcd00">)))</span>
- 
-<span style="color:#cdcd00">$(</span>TARGET<span style="color:#cdcd00">)</span>:<span style="color:#cdcd00">$(</span>OBJS<span style="color:#cdcd00">)</span>
-    -rm -f <span style="color:#00cdcd">$@</span>
-    g++ -o <span style="color:#cdcd00">$(</span>TARGET<span style="color:#cdcd00">)$(</span>OBJS<span style="color:#cdcd00">)</span>
- 
-obj/%.o:%.cpp
-    @if <span style="color:#cd00cd">test</span> ! -d<span style="color:#cd0000">&#34;obj&#34;</span>; <span style="color:#cdcd00">then</span><span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    mkdir -pobj;<span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    <span style="color:#cdcd00">fi</span>;
-    g++ -c -o <span style="color:#00cdcd">$@</span> $&lt;
- 
-clean:
-    -rm -f <span style="color:#cd00cd">test</span>
-    -rm -f obj/*.o
-</code></pre></div><p>是不是瞬间有种摸不着头脑的感觉？别急，这是因为我们用到了一些新的语法和命令，其实，本质上和我们之前所写的Makefile文件是一个意思，下面我们就逐条来进行分析。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#00cdcd">TARGET</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">test</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">CPP_FILES</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>shell ls *.cpp<span style="color:#cdcd00">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">BASE</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>basename <span style="color:#cdcd00">$(</span>CPP_FILES<span style="color:#cdcd00">))</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">OBJS</span> <span style="color:#39c">=</span> <span style="color:#cdcd00">$(</span>addsuffix .o, <span style="color:#cdcd00">$(</span>addprefix obj/,<span style="color:#cdcd00">$(</span>BASE<span style="color:#cdcd00">)))</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">$(</span>TARGET<span style="color:#cdcd00">)</span>:<span style="color:#cdcd00">$(</span>OBJS<span style="color:#cdcd00">)</span>
+</span></span><span style="display:flex;"><span>    -rm -f <span style="color:#00cdcd">$@</span>
+</span></span><span style="display:flex;"><span>    g++ -o <span style="color:#cdcd00">$(</span>TARGET<span style="color:#cdcd00">)$(</span>OBJS<span style="color:#cdcd00">)</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>obj/%.o:%.cpp
+</span></span><span style="display:flex;"><span>    @if <span style="color:#cd00cd">test</span> ! -d<span style="color:#cd0000">&#34;obj&#34;</span>; <span style="color:#cdcd00">then</span><span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    mkdir -pobj;<span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    <span style="color:#cdcd00">fi</span>;
+</span></span><span style="display:flex;"><span>    g++ -c -o <span style="color:#00cdcd">$@</span> $&lt;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>clean:
+</span></span><span style="display:flex;"><span>    -rm -f <span style="color:#cd00cd">test</span>
+</span></span><span style="display:flex;"><span>    -rm -f obj/*.o
+</span></span></code></pre></div><p>是不是瞬间有种摸不着头脑的感觉？别急，这是因为我们用到了一些新的语法和命令，其实，本质上和我们之前所写的Makefile文件是一个意思，下面我们就逐条来进行分析。</p>
 <h5 id="target--test">TARGET = test</h5>
 <p>定义一个变量，保存目标文件名，这里我们需要生成的程序名就叫test。</p>
 <h5 id="cpp_files--shell-ls-cpp">CPP_FILES = $(shell ls *.cpp)</h5>
@@ -189,32 +189,32 @@ clean:
 <p>为什么要在文件名前加上“obj/”？</p>
 <p>这个不是必须的，只是我自己觉得将所有的.o文件放在一个obj目录下统一管理会让目录结构显得更加清晰，包括以后的.d文件会统一放在dep目录下一样。当然，你也可以选择不这样做，而是全部放在当前目录下。</p>
 <h5 id="targetobjs">$(TARGET):$(OBJS)</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cdcd00">$(</span>TARGET<span style="color:#cdcd00">)</span>:<span style="color:#cdcd00">$(</span>OBJS<span style="color:#cdcd00">)</span>
-    -rm -f <span style="color:#00cdcd">$@</span>
-    g++ -o <span style="color:#cdcd00">$(</span>TARGET<span style="color:#cdcd00">)</span> <span style="color:#cdcd00">$(</span>OBJS<span style="color:#cdcd00">)</span>
-</code></pre></div><p>这个描述规则和我们之前写过的很像，只不过，使用了变量进行替换。其中需要注意的是$@这个奇怪的符号，它的含义是这个规则的目标文件的名称，在这里就相当于是$(TARGET)。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#cdcd00">$(</span>TARGET<span style="color:#cdcd00">)</span>:<span style="color:#cdcd00">$(</span>OBJS<span style="color:#cdcd00">)</span>
+</span></span><span style="display:flex;"><span>    -rm -f <span style="color:#00cdcd">$@</span>
+</span></span><span style="display:flex;"><span>    g++ -o <span style="color:#cdcd00">$(</span>TARGET<span style="color:#cdcd00">)</span> <span style="color:#cdcd00">$(</span>OBJS<span style="color:#cdcd00">)</span>
+</span></span></code></pre></div><p>这个描述规则和我们之前写过的很像，只不过，使用了变量进行替换。其中需要注意的是$@这个奇怪的符号，它的含义是这个规则的目标文件的名称，在这里就相当于是$(TARGET)。</p>
 <p>把这里的变量替换成我们之前项目中的实际值，就相当于：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">test:test.ow1.o w2.o w3.o
-    -rm-f <span style="color:#cd00cd">test</span>
-    g++ -o <span style="color:#cd00cd">test</span> test.o w1.o w2.o w3.o
-</code></pre></div><p>如果按照这种写法，当我们新增了一个w4.cpp文件的时候，就需要对Makefile进行修改，而如果我们使用了变量进行替换，那么我们就什么都不用做，直接再执行一遍gmake命令即可。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>test:test.ow1.o w2.o w3.o
+</span></span><span style="display:flex;"><span>    -rm-f <span style="color:#cd00cd">test</span>
+</span></span><span style="display:flex;"><span>    g++ -o <span style="color:#cd00cd">test</span> test.o w1.o w2.o w3.o
+</span></span></code></pre></div><p>如果按照这种写法，当我们新增了一个w4.cpp文件的时候，就需要对Makefile进行修改，而如果我们使用了变量进行替换，那么我们就什么都不用做，直接再执行一遍gmake命令即可。</p>
 <h5 id="objocpp">obj/%.o:%.cpp</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">obj/%.o:%.cpp
-    @if <span style="color:#cd00cd">test</span> ! -d<span style="color:#cd0000">&#34;obj&#34;</span>; <span style="color:#cdcd00">then</span><span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>        mkdir -p obj;<span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    <span style="color:#cdcd00">fi</span>;
-    g++ -c -o <span style="color:#00cdcd">$@</span> $&lt;
-</code></pre></div><p>这是依次生成所有cpp文件所对应的.o文件的规则。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>obj/%.o:%.cpp
+</span></span><span style="display:flex;"><span>    @if <span style="color:#cd00cd">test</span> ! -d<span style="color:#cd0000">&#34;obj&#34;</span>; <span style="color:#cdcd00">then</span><span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>        mkdir -p obj;<span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    <span style="color:#cdcd00">fi</span>;
+</span></span><span style="display:flex;"><span>    g++ -c -o <span style="color:#00cdcd">$@</span> $&lt;
+</span></span></code></pre></div><p>这是依次生成所有cpp文件所对应的.o文件的规则。</p>
 <p>%.o和%.c表示以.o和.c结尾的文件名。因为我们准备把所有的.o文件放在obj目录下，所以这里在“%.o”前面加上前缀“obj/”。</p>
 <p>下面命令行的前三行，具体的作用是检查当前目录下是否有名为“obj”的目录，如果没有，则使用mkdir命令创建这个目录。如果不了解的同学不如先去看一下shell编程的相关知识吧。</p>
 <p>最后一句中的$@前面已经解释过了，是代表规则的目标文件名称，而$&lt;与之对应的，则是代表规则的依赖项中第一个依赖文件的名称。</p>
 <p>例如obj/test.o:test.cpp</p>
 <p>那么$@的值为“test.o”，$&lt;的值为“test.cpp”</p>
 <h5 id="clean">clean:</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">clean:
-    -rm -f <span style="color:#cd00cd">test</span>
-    -rm -f obj/*.o
-</code></pre></div><p>这个就没什么好说的啦，这里只是修改了一下.o文件的路径。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>clean:
+</span></span><span style="display:flex;"><span>    -rm -f <span style="color:#cd00cd">test</span>
+</span></span><span style="display:flex;"><span>    -rm -f obj/*.o
+</span></span></code></pre></div><p>这个就没什么好说的啦，这里只是修改了一下.o文件的路径。</p>
 <p>到这里，相信你对如何使用Makefile来编译一个小的项目已经颇有些眉目了吧。使用这个Makefile文件，不管你往这个目录下加多少文件，轻轻松松一个gmake命令搞定，不需要再因为加了一个新的文件而去修改Makefile了。</p>
 <p>但是，你难道没有觉得仍然存在着很多问题吗？</p>
 <p>如果文件间存在着相互之间的引用关系该怎么办？</p>

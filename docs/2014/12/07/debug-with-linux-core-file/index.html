@@ -78,27 +78,27 @@
 <p>bug和操作系统或硬件的保护机制都会导致程序异常终止，操作系统会kill掉这些进程并产生core文件，比如常见的段错误等。</p>
 <h3 id="为什么我的linux不会生成core文件">为什么我的linux不会生成core文件</h3>
 <p>使用 <code>ulimit -a</code> 命令可以查看当前系统资源的一些限制信息，如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-t: cpu <span style="color:#cd00cd">time</span> <span style="color:#39c">(</span>seconds<span style="color:#39c">)</span>              unlimited
--f: file size <span style="color:#39c">(</span>blocks<span style="color:#39c">)</span>              unlimited
--d: data seg size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>          unlimited
--s: stack size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>             <span style="color:#cd00cd">8192</span>
--c: core file size <span style="color:#39c">(</span>blocks<span style="color:#39c">)</span>         <span style="color:#cd00cd">0</span>
--m: resident <span style="color:#cd00cd">set</span> size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>      unlimited
--u: processes                       <span style="color:#cd00cd">3847</span>
--n: file descriptors                <span style="color:#cd00cd">1024</span>
--l: locked-in-memory size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>  <span style="color:#cd00cd">64</span>
--v: address space <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>          unlimited
--x: file locks                      unlimited
--i: pending signals                 <span style="color:#cd00cd">3847</span>
--q: bytes in POSIX msg queues       <span style="color:#cd00cd">819200</span>
--e: max nice                        <span style="color:#cd00cd">0</span>
--r: max rt priority                 <span style="color:#cd00cd">0</span>
--N 15:                              unlimited
-</code></pre></div><p>其中的 <strong>-c: core file size</strong> 如果设置为0的话，当程序崩溃的时候就不会产生core文件。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">ulimit</span> -c unlimited
-</code></pre></div><p>设置core文件大小为无限</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">ulimit</span> -c <span style="color:#cd00cd">0</span>
-</code></pre></div><p>阻止系统生成core文件</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>-t: cpu <span style="color:#cd00cd">time</span> <span style="color:#39c">(</span>seconds<span style="color:#39c">)</span>              unlimited
+</span></span><span style="display:flex;"><span>-f: file size <span style="color:#39c">(</span>blocks<span style="color:#39c">)</span>              unlimited
+</span></span><span style="display:flex;"><span>-d: data seg size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>          unlimited
+</span></span><span style="display:flex;"><span>-s: stack size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>             <span style="color:#cd00cd">8192</span>
+</span></span><span style="display:flex;"><span>-c: core file size <span style="color:#39c">(</span>blocks<span style="color:#39c">)</span>         <span style="color:#cd00cd">0</span>
+</span></span><span style="display:flex;"><span>-m: resident <span style="color:#cd00cd">set</span> size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>      unlimited
+</span></span><span style="display:flex;"><span>-u: processes                       <span style="color:#cd00cd">3847</span>
+</span></span><span style="display:flex;"><span>-n: file descriptors                <span style="color:#cd00cd">1024</span>
+</span></span><span style="display:flex;"><span>-l: locked-in-memory size <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>  <span style="color:#cd00cd">64</span>
+</span></span><span style="display:flex;"><span>-v: address space <span style="color:#39c">(</span>kbytes<span style="color:#39c">)</span>          unlimited
+</span></span><span style="display:flex;"><span>-x: file locks                      unlimited
+</span></span><span style="display:flex;"><span>-i: pending signals                 <span style="color:#cd00cd">3847</span>
+</span></span><span style="display:flex;"><span>-q: bytes in POSIX msg queues       <span style="color:#cd00cd">819200</span>
+</span></span><span style="display:flex;"><span>-e: max nice                        <span style="color:#cd00cd">0</span>
+</span></span><span style="display:flex;"><span>-r: max rt priority                 <span style="color:#cd00cd">0</span>
+</span></span><span style="display:flex;"><span>-N 15:                              unlimited
+</span></span></code></pre></div><p>其中的 <strong>-c: core file size</strong> 如果设置为0的话，当程序崩溃的时候就不会产生core文件。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#cd00cd">ulimit</span> -c unlimited
+</span></span></code></pre></div><p>设置core文件大小为无限</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#cd00cd">ulimit</span> -c <span style="color:#cd00cd">0</span>
+</span></span></code></pre></div><p>阻止系统生成core文件</p>
 <p><strong>注：这条命令只在当前生效，如果希望永久生效，就需要在 .bash_profile 或者类似文件中加上这条命令。</strong></p>
 <h3 id="设置core-dump的核心转储文件目录和命名规则">设置Core Dump的核心转储文件目录和命名规则</h3>
 <p><strong>/proc/sys/kernel/core_uses_pid</strong> 可以控制产生的core文件的文件名中是否添加pid作为扩展，如果添加则文件内容为1，否则为0。需要有超级用户的权限才能进行修改。</p>
@@ -106,97 +106,97 @@
 <p>需要修改的话，可以使用这条命令：<code>echo &quot;/corefile/core-%e-%p-%t&quot;&gt; /proc/sys/kernel/core_pattern</code></p>
 <p>将会控制所产生的core文件会存放到 /corefile 目录下，产生的文件名为 <strong>core-命令名-pid-时间戳</strong></p>
 <p>以下是参数列表：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">%p - insert pid into filename 添加pid
-%u - insert current uid into filename 添加当前uid
-%g - insert current gid into filename 添加当前gid
-%s - insert signal that caused the coredump into the filename 添加导致产生core的信号
-%t - insert UNIX <span style="color:#cd00cd">time</span> that the coredump occurred into filename 添加core文件生成时的unix时间
-%h - insert hostname where the coredump happened into filename 添加主机名
-%e - insertcoredumping executable name into filename 添加命令名
-</code></pre></div><h3 id="使用core文件">使用core文件</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>%p - insert pid into filename 添加pid
+</span></span><span style="display:flex;"><span>%u - insert current uid into filename 添加当前uid
+</span></span><span style="display:flex;"><span>%g - insert current gid into filename 添加当前gid
+</span></span><span style="display:flex;"><span>%s - insert signal that caused the coredump into the filename 添加导致产生core的信号
+</span></span><span style="display:flex;"><span>%t - insert UNIX <span style="color:#cd00cd">time</span> that the coredump occurred into filename 添加core文件生成时的unix时间
+</span></span><span style="display:flex;"><span>%h - insert hostname where the coredump happened into filename 添加主机名
+</span></span><span style="display:flex;"><span>%e - insertcoredumping executable name into filename 添加命令名
+</span></span></code></pre></div><h3 id="使用core文件">使用core文件</h3>
 <p>在linux上可以使用gdb来调试core文件，格式为：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gdb <span style="color:#39c">[</span>程序名<span style="color:#39c">]</span> <span style="color:#39c">[</span>core文件名<span style="color:#39c">]</span>
-</code></pre></div><p>如果你不知道这个core文件到底是哪个程序生成的，可以使用</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gdb -c<span style="color:#39c">[</span>core 文件名<span style="color:#39c">]</span> 来查看生成此core文件的程序名。
-</code></pre></div><p>显示结果中可以看出程序名，可能像下面这样</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Core wasgenerated by <span style="color:#cd0000">`</span>./test<span style="">&#39;</span>.
-</code></pre></div><p>之后进入gdb调试状态，输入 where 就可以看到程序崩溃时堆栈信息（当前函数之前的所有已调用函数的列表（包括当前函数），我们可以借此找出是程序中的哪个部分导致了程序崩溃。注意：在编译程序的时候要加入选项-g。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gdb <span style="color:#39c">[</span>程序名<span style="color:#39c">]</span> <span style="color:#39c">[</span>core文件名<span style="color:#39c">]</span>
+</span></span></code></pre></div><p>如果你不知道这个core文件到底是哪个程序生成的，可以使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gdb -c<span style="color:#39c">[</span>core 文件名<span style="color:#39c">]</span> 来查看生成此core文件的程序名。
+</span></span></code></pre></div><p>显示结果中可以看出程序名，可能像下面这样</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Core wasgenerated by <span style="color:#cd0000">`</span>./test<span style="">&#39;</span>.
+</span></span></code></pre></div><p>之后进入gdb调试状态，输入 where 就可以看到程序崩溃时堆栈信息（当前函数之前的所有已调用函数的列表（包括当前函数），我们可以借此找出是程序中的哪个部分导致了程序崩溃。注意：在编译程序的时候要加入选项-g。</p>
 <h3 id="一个简单的例子">一个简单的例子</h3>
 <p>编译如下的程序</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#000080">#include</span> <span style="color:#000080">&lt;iostream&gt;</span><span style="color:#000080">
-</span><span style="color:#000080"></span><span style="color:#cdcd00">using</span> <span style="color:#cdcd00">namespace</span> std;
- 
-<span style="color:#cdcd00">class</span> <span style="color:#00cdcd">A</span>
-{
-<span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
-    <span style="color:#00cd00">int</span> a;
-};
- 
-<span style="color:#00cd00">void</span> fun()
-{
-    A<span style="color:#39c">*</span>t <span style="color:#39c">=</span> <span style="color:#cdcd00">new</span> A();
-    t<span style="color:#39c">-&gt;</span>a <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span>;
-    cout <span style="color:#39c">&lt;&lt;</span> t<span style="color:#39c">-&gt;</span>a <span style="color:#39c">&lt;&lt;</span> endl;
-    <span style="color:#cdcd00">delete</span> t;
-    <span style="color:#cdcd00">delete</span> t;
-}
- 
-<span style="color:#00cd00">int</span> main()
-{
-    fun();
-    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
-}
-</code></pre></div><p>执行</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./test
-</code></pre></div><p>结果为</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd00cd">1</span>
-*** glibc detected *** ./test: double freeor corruption <span style="color:#39c">(</span>fasttop<span style="color:#39c">)</span>: 0x09fd7008 ***
-<span style="color:#39c">=======</span> Backtrace: <span style="color:#39c">=========</span>
-/lib/libc.so.6<span style="color:#39c">[</span>0x3ebe31<span style="color:#39c">]</span>
-/usr/lib/libstdc++.so.6<span style="color:#39c">(</span>_ZdlPv+0x22<span style="color:#39c">)[</span>0x43fc552<span style="color:#39c">]</span>
-./test<span style="color:#39c">[</span>0x8048705<span style="color:#39c">]</span>
-./test<span style="color:#39c">[</span>0x8048712<span style="color:#39c">]</span>
-/lib/libc.so.6<span style="color:#39c">(</span>__libc_start_main+0xe6<span style="color:#39c">)[</span>0x391d26<span style="color:#39c">]</span>
-./test<span style="color:#39c">[</span>0x8048611<span style="color:#39c">]</span>
-<span style="color:#39c">=======</span> Memory map: <span style="color:#39c">========</span>
-00327000-00328000 r-xp <span style="color:#cd00cd">00000000</span> 00:000          <span style="color:#39c">[</span>vdso<span style="color:#39c">]</span>
-00334000-00351000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926955    /lib/libgcc_s-4.4.7-20120601.so.1
-00351000-00352000 rw-p 0001d000 08:02926955    /lib/libgcc_s-4.4.7-20120601.so.1
-00355000-00373000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926876     /lib/ld-2.12.so
-00373000-00374000 r--p 0001d000 08:02926876     /lib/ld-2.12.so
-00374000-00375000 rw-p 0001e000 08:02926876     /lib/ld-2.12.so
-0037b000-0050c000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926877     /lib/libc-2.12.so
-0050c000-0050e000 r--p <span style="color:#cd00cd">00191000</span> 08:02926877     /lib/libc-2.12.so
-0050e000-0050f000 rw-p <span style="color:#cd00cd">00193000</span> 08:02926877     /lib/libc-2.12.so
-0050f000-00512000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
-00543000-0056b000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926889     /lib/libm-2.12.so
-0056b000-0056c000 r--p <span style="color:#cd00cd">00027000</span> 08:02926889     /lib/libm-2.12.so
-0056c000-0056d000 rw-p <span style="color:#cd00cd">00028000</span> 08:02926889     /lib/libm-2.12.so
-0434d000-0442e000 r-xp <span style="color:#cd00cd">00000000</span> 08:02155001     /usr/lib/libstdc++.so.6.0.13
-0442e000-04432000 r--p 000e0000 08:02155001     /usr/lib/libstdc++.so.6.0.13
-04432000-04434000 rw-p 000e4000 08:02155001     /usr/lib/libstdc++.so.6.0.13
-04434000-0443a000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
-08048000-08049000 r-xp <span style="color:#cd00cd">00000000</span> 08:02419326    /home/wcl/fate/src/app/test/test
-08049000-0804a000 rw-p <span style="color:#cd00cd">00000000</span> 08:02419326    /home/wcl/fate/src/app/test/test
-09fd7000-09ff8000 rw-p <span style="color:#cd00cd">00000000</span> 00:000          <span style="color:#39c">[</span>heap<span style="color:#39c">]</span>
-b7719000-b771c000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
-b7727000-b772a000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
-bfd2a000-bfd3f000 rw-p <span style="color:#cd00cd">00000000</span> 00:000          <span style="color:#39c">[</span>stack<span style="color:#39c">]</span>
-Aborted <span style="color:#39c">(</span>core dumped<span style="color:#39c">)</span>
-</code></pre></div><p>因为我们对一个已经delete过了的指针再次delete，所以程序down掉了，可以看到在当前目录下已经生成了一个core.4377的文件，4377就是之前程序启动的PID。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#000080">#include</span> <span style="color:#000080">&lt;iostream&gt;</span><span style="color:#000080">
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#cdcd00">using</span> <span style="color:#cdcd00">namespace</span> std;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">class</span> <span style="color:#00cdcd">A</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">int</span> a;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">void</span> fun()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    A<span style="color:#39c">*</span>t <span style="color:#39c">=</span> <span style="color:#cdcd00">new</span> A();
+</span></span><span style="display:flex;"><span>    t<span style="color:#39c">-&gt;</span>a <span style="color:#39c">=</span> <span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>    cout <span style="color:#39c">&lt;&lt;</span> t<span style="color:#39c">-&gt;</span>a <span style="color:#39c">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">delete</span> t;
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">delete</span> t;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">int</span> main()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    fun();
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>执行</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./test
+</span></span></code></pre></div><p>结果为</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>*** glibc detected *** ./test: double freeor corruption <span style="color:#39c">(</span>fasttop<span style="color:#39c">)</span>: 0x09fd7008 ***
+</span></span><span style="display:flex;"><span><span style="color:#39c">=======</span> Backtrace: <span style="color:#39c">=========</span>
+</span></span><span style="display:flex;"><span>/lib/libc.so.6<span style="color:#39c">[</span>0x3ebe31<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>/usr/lib/libstdc++.so.6<span style="color:#39c">(</span>_ZdlPv+0x22<span style="color:#39c">)[</span>0x43fc552<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>./test<span style="color:#39c">[</span>0x8048705<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>./test<span style="color:#39c">[</span>0x8048712<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>/lib/libc.so.6<span style="color:#39c">(</span>__libc_start_main+0xe6<span style="color:#39c">)[</span>0x391d26<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>./test<span style="color:#39c">[</span>0x8048611<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">=======</span> Memory map: <span style="color:#39c">========</span>
+</span></span><span style="display:flex;"><span>00327000-00328000 r-xp <span style="color:#cd00cd">00000000</span> 00:000          <span style="color:#39c">[</span>vdso<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>00334000-00351000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926955    /lib/libgcc_s-4.4.7-20120601.so.1
+</span></span><span style="display:flex;"><span>00351000-00352000 rw-p 0001d000 08:02926955    /lib/libgcc_s-4.4.7-20120601.so.1
+</span></span><span style="display:flex;"><span>00355000-00373000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926876     /lib/ld-2.12.so
+</span></span><span style="display:flex;"><span>00373000-00374000 r--p 0001d000 08:02926876     /lib/ld-2.12.so
+</span></span><span style="display:flex;"><span>00374000-00375000 rw-p 0001e000 08:02926876     /lib/ld-2.12.so
+</span></span><span style="display:flex;"><span>0037b000-0050c000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926877     /lib/libc-2.12.so
+</span></span><span style="display:flex;"><span>0050c000-0050e000 r--p <span style="color:#cd00cd">00191000</span> 08:02926877     /lib/libc-2.12.so
+</span></span><span style="display:flex;"><span>0050e000-0050f000 rw-p <span style="color:#cd00cd">00193000</span> 08:02926877     /lib/libc-2.12.so
+</span></span><span style="display:flex;"><span>0050f000-00512000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
+</span></span><span style="display:flex;"><span>00543000-0056b000 r-xp <span style="color:#cd00cd">00000000</span> 08:02926889     /lib/libm-2.12.so
+</span></span><span style="display:flex;"><span>0056b000-0056c000 r--p <span style="color:#cd00cd">00027000</span> 08:02926889     /lib/libm-2.12.so
+</span></span><span style="display:flex;"><span>0056c000-0056d000 rw-p <span style="color:#cd00cd">00028000</span> 08:02926889     /lib/libm-2.12.so
+</span></span><span style="display:flex;"><span>0434d000-0442e000 r-xp <span style="color:#cd00cd">00000000</span> 08:02155001     /usr/lib/libstdc++.so.6.0.13
+</span></span><span style="display:flex;"><span>0442e000-04432000 r--p 000e0000 08:02155001     /usr/lib/libstdc++.so.6.0.13
+</span></span><span style="display:flex;"><span>04432000-04434000 rw-p 000e4000 08:02155001     /usr/lib/libstdc++.so.6.0.13
+</span></span><span style="display:flex;"><span>04434000-0443a000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
+</span></span><span style="display:flex;"><span>08048000-08049000 r-xp <span style="color:#cd00cd">00000000</span> 08:02419326    /home/wcl/fate/src/app/test/test
+</span></span><span style="display:flex;"><span>08049000-0804a000 rw-p <span style="color:#cd00cd">00000000</span> 08:02419326    /home/wcl/fate/src/app/test/test
+</span></span><span style="display:flex;"><span>09fd7000-09ff8000 rw-p <span style="color:#cd00cd">00000000</span> 00:000          <span style="color:#39c">[</span>heap<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>b7719000-b771c000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
+</span></span><span style="display:flex;"><span>b7727000-b772a000 rw-p <span style="color:#cd00cd">00000000</span> 00:00 <span style="color:#cd00cd">0</span>
+</span></span><span style="display:flex;"><span>bfd2a000-bfd3f000 rw-p <span style="color:#cd00cd">00000000</span> 00:000          <span style="color:#39c">[</span>stack<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>Aborted <span style="color:#39c">(</span>core dumped<span style="color:#39c">)</span>
+</span></span></code></pre></div><p>因为我们对一个已经delete过了的指针再次delete，所以程序down掉了，可以看到在当前目录下已经生成了一个core.4377的文件，4377就是之前程序启动的PID。</p>
 <p>调试core文件</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">gdb <span style="color:#cd00cd">test</span> core.4377
-</code></pre></div><p>进入gdb调试后，键入where命令</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">(</span>gdb<span style="color:#39c">)</span> where
-<span style="color:#000080">#0 0x00327424 in __kernel_vsyscall ()</span>
-<span style="color:#000080">#1 0x003a5b11 in raise () from /lib/libc.so.6</span>
-<span style="color:#000080">#2 0x003a73ea in abort () from /lib/libc.so.6</span>
-<span style="color:#000080">#3 0x003e59d5 in __libc_message () from /lib/libc.so.6</span>
-<span style="color:#000080">#4 0x003ebe31 in malloc_printerr () from /lib/libc.so.6</span>
-<span style="color:#000080">#5 0x043fc552 in operator delete(void*) () from/usr/lib/libstdc++.so.6</span>
-<span style="color:#000080">#6 0x08048705 in fun() ()</span>
-<span style="color:#000080">#7 0x08048712 in main ()</span>
-</code></pre></div><p>可以很明显的看出是在main函数中调用fun函数，之后delete指针的时候出错了，后面的函数调用栈就是程序输出错误信息的部分了，和我们的用户代码无关。到这一步，我们就能推断是是fun()这个函数中delete某个指针的时候出现了错误，就可以有的放矢地查找具体的问题了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>gdb <span style="color:#cd00cd">test</span> core.4377
+</span></span></code></pre></div><p>进入gdb调试后，键入where命令</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#39c">(</span>gdb<span style="color:#39c">)</span> where
+</span></span><span style="display:flex;"><span><span style="color:#000080">#0 0x00327424 in __kernel_vsyscall ()</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">#1 0x003a5b11 in raise () from /lib/libc.so.6</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">#2 0x003a73ea in abort () from /lib/libc.so.6</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">#3 0x003e59d5 in __libc_message () from /lib/libc.so.6</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">#4 0x003ebe31 in malloc_printerr () from /lib/libc.so.6</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">#5 0x043fc552 in operator delete(void*) () from/usr/lib/libstdc++.so.6</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">#6 0x08048705 in fun() ()</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">#7 0x08048712 in main ()</span>
+</span></span></code></pre></div><p>可以很明显的看出是在main函数中调用fun函数，之后delete指针的时候出错了，后面的函数调用栈就是程序输出错误信息的部分了，和我们的用户代码无关。到这一步，我们就能推断是是fun()这个函数中delete某个指针的时候出现了错误，就可以有的放矢地查找具体的问题了。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

@@ -78,329 +78,329 @@
 <p>后续的安装步骤需要在三台机器上全部执行一遍，下文中的 <code>user:user</code> 根据需要修改为自己机器上的用户。</p>
 <p>整个步骤参考了官方的文档： <a href="http://docs.openstack.org/developer/swift/development_saio.html">http://docs.openstack.org/developer/swift/development_saio.html</a></p>
 <h3 id="安装各种依赖">安装各种依赖</h3>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo yum install curl gcc memcached rsync sqlite xfsprogs git-core <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    libffi-devel xinetd liberasurecode-devel <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    python-setuptools <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    python-coverage python-devel python-nose <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    pyxattr python-eventlet <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    python-greenlet python-paste-deploy <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    python-netifaces python-pip python-dns <span style="color:#cd0000">\
-</span><span style="color:#cd0000"></span>    python-mock
-</code></pre></div><h3 id="创建磁盘设备">创建磁盘设备</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo yum install curl gcc memcached rsync sqlite xfsprogs git-core <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    libffi-devel xinetd liberasurecode-devel <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    python-setuptools <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    python-coverage python-devel python-nose <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    pyxattr python-eventlet <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    python-greenlet python-paste-deploy <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    python-netifaces python-pip python-dns <span style="color:#cd0000">\
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>    python-mock
+</span></span></code></pre></div><h3 id="创建磁盘设备">创建磁盘设备</h3>
 <p>由于 swift 需要使用 xfs 格式的磁盘，这里我们使用回环设备。</p>
 <h4 id="创建一个用于回环设备的2gb大小的文件">创建一个用于回环设备的2GB大小的文件</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mkdir /srv
-sudo truncate -s 1GB /srv/swift-disk
-sudo mkfs.xfs /srv/swift-disk
-</code></pre></div><h4 id="修改etcfstab">修改 /etc/fstab</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/srv/swift-disk /srv/node/sdb1 xfs loop,noatime,nodiratime,nobarrier,logbufs<span style="color:#39c">=</span><span style="color:#cd00cd">8</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
-</code></pre></div><h4 id="创建挂载点并进行挂载">创建挂载点并进行挂载</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mkdir -p /srv/node/sdb1
-sudo mount /srv/node/sdb1
-sudo chown -R user:user /srv/node
-</code></pre></div><h4 id="下载安装-swift-和-swift-client">下载安装 swift 和 swift-client</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir /srv
+</span></span><span style="display:flex;"><span>sudo truncate -s 1GB /srv/swift-disk
+</span></span><span style="display:flex;"><span>sudo mkfs.xfs /srv/swift-disk
+</span></span></code></pre></div><h4 id="修改etcfstab">修改 /etc/fstab</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>/srv/swift-disk /srv/node/sdb1 xfs loop,noatime,nodiratime,nobarrier,logbufs<span style="color:#39c">=</span><span style="color:#cd00cd">8</span> <span style="color:#cd00cd">0</span> <span style="color:#cd00cd">0</span>
+</span></span></code></pre></div><h4 id="创建挂载点并进行挂载">创建挂载点并进行挂载</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /srv/node/sdb1
+</span></span><span style="display:flex;"><span>sudo mount /srv/node/sdb1
+</span></span><span style="display:flex;"><span>sudo chown -R user:user /srv/node
+</span></span></code></pre></div><h4 id="下载安装-swift-和-swift-client">下载安装 swift 和 swift-client</h4>
 <p>从 git 下载这两个项目之后切换到 2.4.0 版本，安装 python 依赖以后使用 <code>python setup.py</code> 安装。</p>
 <p>直接通过 yum 安装的 pip 可能版本不是最新的，需要升级，使用 <code>pip install --upgrade pip</code> 升级。</p>
 <h5 id="swift-client">swift-client</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/openstack/python-swiftclient.git
-git checkout 2.4.0
-<span style="color:#cd00cd">cd</span> ./python-swiftclient; sudo python setup.py develop; <span style="color:#cd00cd">cd</span> -
-</code></pre></div><h5 id="swift">swift</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/openstack/swift.git
-git checkout 2.4.0
-<span style="color:#cd00cd">cd</span> ./swift; sudo pip install -r requirements.txt; sudo python setup.py develop; <span style="color:#cd00cd">cd</span> -
-</code></pre></div><h5 id="配置-etcrclocal">配置 /etc/rc.local</h5>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/openstack/python-swiftclient.git
+</span></span><span style="display:flex;"><span>git checkout 2.4.0
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">cd</span> ./python-swiftclient; sudo python setup.py develop; <span style="color:#cd00cd">cd</span> -
+</span></span></code></pre></div><h5 id="swift">swift</h5>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/openstack/swift.git
+</span></span><span style="display:flex;"><span>git checkout 2.4.0
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">cd</span> ./swift; sudo pip install -r requirements.txt; sudo python setup.py develop; <span style="color:#cd00cd">cd</span> -
+</span></span></code></pre></div><h5 id="配置-etcrclocal">配置 /etc/rc.local</h5>
 <p>需要在每次开机时都创建一些需要的目录。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mkdir -p /var/run/swift
-sudo chown user:user /var/run/swift
-sudo mkdir -p /var/cache/swift
-sudo chown user:user /var/cache/swift
-</code></pre></div><h3 id="配置-rsync">配置 rsync</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /var/run/swift
+</span></span><span style="display:flex;"><span>sudo chown user:user /var/run/swift
+</span></span><span style="display:flex;"><span>sudo mkdir -p /var/cache/swift
+</span></span><span style="display:flex;"><span>sudo chown user:user /var/cache/swift
+</span></span></code></pre></div><h3 id="配置-rsync">配置 rsync</h3>
 <h4 id="修改-etcrsyncdconf">修改 /etc/rsyncd.conf</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080"># /etc/rsyncd: configuration file for rsync daemon mode</span>
-<span style="color:#00cdcd">uid</span> <span style="color:#39c">=</span> user
-<span style="color:#00cdcd">gid</span> <span style="color:#39c">=</span> user
-log <span style="color:#00cdcd">file</span> <span style="color:#39c">=</span> /var/log/rsyncd.log
-pid <span style="color:#00cdcd">file</span> <span style="color:#39c">=</span> /var/run/rsyncd.pid
-<span style="color:#00cdcd">address</span> <span style="color:#39c">=</span> 0.0.0.0
-
-<span style="color:#39c">[</span>account<span style="color:#39c">]</span>
-max <span style="color:#00cdcd">connections</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">25</span>
-<span style="color:#00cdcd">path</span> <span style="color:#39c">=</span> /srv/node/
-<span style="color:#cd00cd">read</span> <span style="color:#00cdcd">only</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
-lock <span style="color:#00cdcd">file</span> <span style="color:#39c">=</span> /var/lock/account.lock
-
-<span style="color:#39c">[</span>container<span style="color:#39c">]</span>
-max <span style="color:#00cdcd">connections</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">25</span>
-<span style="color:#00cdcd">path</span> <span style="color:#39c">=</span> /srv/node/
-<span style="color:#cd00cd">read</span> <span style="color:#00cdcd">only</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
-lock <span style="color:#00cdcd">file</span> <span style="color:#39c">=</span> /var/lock/container.lock
-
-<span style="color:#39c">[</span>object<span style="color:#39c">]</span>
-max <span style="color:#00cdcd">connections</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">25</span>
-<span style="color:#00cdcd">path</span> <span style="color:#39c">=</span> /srv/node/
-<span style="color:#cd00cd">read</span> <span style="color:#00cdcd">only</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
-lock <span style="color:#00cdcd">file</span> <span style="color:#39c">=</span> /var/lock/object.lock
-</code></pre></div><h4 id="启动-rsync-并设置开机启动">启动 rsync 并设置开机启动</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo chkconfig rsyncd on
-sudo service rsyncd start
-</code></pre></div><h3 id="配置rsyslog让每个程序输出独立的日志可选">配置rsyslog让每个程序输出独立的日志（可选）</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000080"># /etc/rsyncd: configuration file for rsync daemon mode</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">uid</span> <span style="color:#39c">=</span> user
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">gid</span> <span style="color:#39c">=</span> user
+</span></span><span style="display:flex;"><span>log <span style="color:#00cdcd">file</span> <span style="color:#39c">=</span> /var/log/rsyncd.log
+</span></span><span style="display:flex;"><span>pid <span style="color:#00cdcd">file</span> <span style="color:#39c">=</span> /var/run/rsyncd.pid
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">address</span> <span style="color:#39c">=</span> 0.0.0.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>account<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>max <span style="color:#00cdcd">connections</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">25</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">path</span> <span style="color:#39c">=</span> /srv/node/
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">read</span> <span style="color:#00cdcd">only</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
+</span></span><span style="display:flex;"><span>lock <span style="color:#00cdcd">file</span> <span style="color:#39c">=</span> /var/lock/account.lock
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>container<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>max <span style="color:#00cdcd">connections</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">25</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">path</span> <span style="color:#39c">=</span> /srv/node/
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">read</span> <span style="color:#00cdcd">only</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
+</span></span><span style="display:flex;"><span>lock <span style="color:#00cdcd">file</span> <span style="color:#39c">=</span> /var/lock/container.lock
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>object<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>max <span style="color:#00cdcd">connections</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">25</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">path</span> <span style="color:#39c">=</span> /srv/node/
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">read</span> <span style="color:#00cdcd">only</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
+</span></span><span style="display:flex;"><span>lock <span style="color:#00cdcd">file</span> <span style="color:#39c">=</span> /var/lock/object.lock
+</span></span></code></pre></div><h4 id="启动-rsync-并设置开机启动">启动 rsync 并设置开机启动</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo chkconfig rsyncd on
+</span></span><span style="display:flex;"><span>sudo service rsyncd start
+</span></span></code></pre></div><h3 id="配置rsyslog让每个程序输出独立的日志可选">配置rsyslog让每个程序输出独立的日志（可选）</h3>
 <p>swift 默认将日志信息输出到文件 /var/log/syslog 中。如果要按照个人需求设置 rsyslog，生成另外单独的 swift日志文件，就需要另外配置。</p>
 <h4 id="创建日志配置文件-etcrsyslogd10-swiftconf">创建日志配置文件 /etc/rsyslog.d/10-swift.conf</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080"># Uncomment the following to have a log containing all logs together</span>
-<span style="color:#000080">#local1,local2,local3,local4,local5.*   /var/log/swift/all.log</span>
-
-<span style="color:#000080"># Uncomment the following to have hourly proxy logs for stats processing</span>
-<span style="color:#00cdcd">$template</span> HourlyProxyLog,<span style="color:#cd0000">&#34;/var/log/swift/hourly/%</span><span style="color:#00cdcd">$YEAR</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$MONTH</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$DAY</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$HOUR</span><span style="color:#cd0000">%&#34;</span>
-<span style="color:#000080">#local1.*;local1.!notice ?HourlyProxyLog</span>
-
-local1.*;local1.!notice /var/log/swift/proxy.log
-local1.notice           /var/log/swift/ proxy.error
-local1.*                ~
-
-local2.*;local2.!notice /var/log/swift/object.log
-local2.notice           /var/log/swift/ object.error
-local2.*                ~
-
-local3.*;local3.!notice /var/log/swift/container.log
-local3.notice           /var/log/swift/ container.error
-local3.*                ~
-
-local4.*;local4.!notice /var/log/swift/account.log
-local4.notice           /var/log/swift/ account.error
-local4.*                ~
-</code></pre></div><h4 id="编辑文件-etcrsyslogconf更改参数-privdroptogroup-为-adm">编辑文件 /etc/rsyslog.conf，更改参数 $PrivDropToGroup 为 adm</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#00cdcd">$PrivDropToGroup</span> adm
-</code></pre></div><h4 id="创建-varlogswift-目录用于存放独立日志">创建 /var/log/swift 目录，用于存放独立日志</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000080"># Uncomment the following to have a log containing all logs together</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">#local1,local2,local3,local4,local5.*   /var/log/swift/all.log</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080"># Uncomment the following to have hourly proxy logs for stats processing</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">$template</span> HourlyProxyLog,<span style="color:#cd0000">&#34;/var/log/swift/hourly/%</span><span style="color:#00cdcd">$YEAR</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$MONTH</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$DAY</span><span style="color:#cd0000">%%</span><span style="color:#00cdcd">$HOUR</span><span style="color:#cd0000">%&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">#local1.*;local1.!notice ?HourlyProxyLog</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>local1.*;local1.!notice /var/log/swift/proxy.log
+</span></span><span style="display:flex;"><span>local1.notice           /var/log/swift/ proxy.error
+</span></span><span style="display:flex;"><span>local1.*                ~
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>local2.*;local2.!notice /var/log/swift/object.log
+</span></span><span style="display:flex;"><span>local2.notice           /var/log/swift/ object.error
+</span></span><span style="display:flex;"><span>local2.*                ~
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>local3.*;local3.!notice /var/log/swift/container.log
+</span></span><span style="display:flex;"><span>local3.notice           /var/log/swift/ container.error
+</span></span><span style="display:flex;"><span>local3.*                ~
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>local4.*;local4.!notice /var/log/swift/account.log
+</span></span><span style="display:flex;"><span>local4.notice           /var/log/swift/ account.error
+</span></span><span style="display:flex;"><span>local4.*                ~
+</span></span></code></pre></div><h4 id="编辑文件-etcrsyslogconf更改参数-privdroptogroup-为-adm">编辑文件 /etc/rsyslog.conf，更改参数 $PrivDropToGroup 为 adm</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#00cdcd">$PrivDropToGroup</span> adm
+</span></span></code></pre></div><h4 id="创建-varlogswift-目录用于存放独立日志">创建 /var/log/swift 目录，用于存放独立日志</h4>
 <p>此外，上面的 <code>10-swift.conf</code> 文件中设置了输出 Swift Proxy Server 每小时的 stats 日志信息，于是也要创建 <code>/var/log/swift/hourly</code> 目录。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mkdir -p /var/log/swift/hourly
-</code></pre></div><h4 id="更改-swift-独立日志目录的权限">更改 swift 独立日志目录的权限</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">chown -R root.adm /var/log/swift
-</code></pre></div><h4 id="重启-rsyslog-服务">重启 rsyslog 服务</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo service rsyslog restart
-</code></pre></div><h3 id="启动-memcached-并设置开机启动">启动 memcached 并设置开机启动</h3>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo service memcached start
-sudo chkconfig memcached on
-</code></pre></div><h3 id="配置swift相关的配置文件">配置swift相关的配置文件</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /var/log/swift/hourly
+</span></span></code></pre></div><h4 id="更改-swift-独立日志目录的权限">更改 swift 独立日志目录的权限</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>chown -R root.adm /var/log/swift
+</span></span></code></pre></div><h4 id="重启-rsyslog-服务">重启 rsyslog 服务</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo service rsyslog restart
+</span></span></code></pre></div><h3 id="启动-memcached-并设置开机启动">启动 memcached 并设置开机启动</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo service memcached start
+</span></span><span style="display:flex;"><span>sudo chkconfig memcached on
+</span></span></code></pre></div><h3 id="配置swift相关的配置文件">配置swift相关的配置文件</h3>
 <h4 id="创建存储-swift-配置文件的目录">创建存储 swift 配置文件的目录</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo mkdir /etc/swift
-sudo chown -R user:user /etc/swift
-</code></pre></div><h4 id="创建-swift-配置文件-etcswiftswiftconf">创建 swift 配置文件 /etc/swift/swift.conf</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">[</span>swift-hash<span style="color:#39c">]</span>
-
-<span style="color:#000080"># random unique string that can never change (DO NOT LOSE)</span>
-<span style="color:#00cdcd">swift_hash_path_suffix</span> <span style="color:#39c">=</span> jtangfs
-</code></pre></div><h4 id="配置-account-服务etcswiftaccount-serverconf">配置 account 服务 /etc/swift/account-server.conf</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
-<span style="color:#00cdcd">devices</span> <span style="color:#39c">=</span> /srv/node
-<span style="color:#00cdcd">mount_check</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
-<span style="color:#00cdcd">bind_ip</span> <span style="color:#39c">=</span> 0.0.0.0
-<span style="color:#00cdcd">bind_port</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">6002</span>
-<span style="color:#00cdcd">workers</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">4</span>
-<span style="color:#00cdcd">user</span> <span style="color:#39c">=</span> wcl
-<span style="color:#00cdcd">log_facility</span> <span style="color:#39c">=</span> LOG_LOCAL4
-
-<span style="color:#39c">[</span>pipeline:main<span style="color:#39c">]</span>
-<span style="color:#00cdcd">pipeline</span> <span style="color:#39c">=</span> account-server
-
-<span style="color:#39c">[</span>app:account-server<span style="color:#39c">]</span>
-<span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#account
-
-<span style="color:#39c">[</span>account-replicator<span style="color:#39c">]</span>
-<span style="color:#39c">[</span>account-auditor<span style="color:#39c">]</span>
-<span style="color:#39c">[</span>account-reaper<span style="color:#39c">]</span>
-</code></pre></div><h4 id="配置-container-服务etcswiftcontainer-serverconf">配置 container 服务 /etc/swift/container-server.conf</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
-<span style="color:#00cdcd">devices</span> <span style="color:#39c">=</span> /srv/node
-<span style="color:#00cdcd">mount_check</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
-<span style="color:#00cdcd">bind_ip</span> <span style="color:#39c">=</span> 0.0.0.0
-<span style="color:#00cdcd">bind_port</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">6001</span>
-<span style="color:#00cdcd">workers</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">4</span>
-<span style="color:#00cdcd">user</span> <span style="color:#39c">=</span> wcl
-<span style="color:#00cdcd">log_facility</span> <span style="color:#39c">=</span> LOG_LOCAL3
-
-<span style="color:#39c">[</span>pipeline:main<span style="color:#39c">]</span>
-<span style="color:#00cdcd">pipeline</span> <span style="color:#39c">=</span> container-server
-
-<span style="color:#39c">[</span>app:container-server<span style="color:#39c">]</span>
-<span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#container
-
-<span style="color:#39c">[</span>container-replicator<span style="color:#39c">]</span>
-
-<span style="color:#39c">[</span>container-updater<span style="color:#39c">]</span>
-
-<span style="color:#39c">[</span>container-auditor<span style="color:#39c">]</span>
-
-<span style="color:#39c">[</span>container-sync<span style="color:#39c">]</span>
-</code></pre></div><h4 id="配置-object-服务etcswiftobject-serverconf">配置 object 服务 /etc/swift/object-server.conf</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
-<span style="color:#00cdcd">devices</span> <span style="color:#39c">=</span> /srv/node
-<span style="color:#00cdcd">mount_check</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
-<span style="color:#00cdcd">bind_ip</span> <span style="color:#39c">=</span> 0.0.0.0
-<span style="color:#00cdcd">bind_port</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">6000</span>
-<span style="color:#00cdcd">workers</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">4</span>
-<span style="color:#00cdcd">user</span> <span style="color:#39c">=</span> wcl
-<span style="color:#00cdcd">log_facility</span> <span style="color:#39c">=</span> LOG_LOCAL2
-
-<span style="color:#39c">[</span>pipeline:main<span style="color:#39c">]</span>
-<span style="color:#00cdcd">pipeline</span> <span style="color:#39c">=</span> object-server
-
-<span style="color:#39c">[</span>app:object-server<span style="color:#39c">]</span>
-<span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#object
-
-<span style="color:#39c">[</span>object-replicator<span style="color:#39c">]</span>
-
-<span style="color:#39c">[</span>object-updater<span style="color:#39c">]</span>
-
-<span style="color:#39c">[</span>object-auditor<span style="color:#39c">]</span>
-</code></pre></div><h4 id="配置-proxy-服务etcswiftproxy-serverconf">配置 proxy 服务 /etc/swift/proxy-server.conf</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
-<span style="color:#00cdcd">bind_port</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">8080</span>
-<span style="color:#00cdcd">user</span> <span style="color:#39c">=</span> wcl
-<span style="color:#00cdcd">workers</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">2</span>
-<span style="color:#00cdcd">log_facility</span> <span style="color:#39c">=</span> LOG_LOCAL1
-
-<span style="color:#39c">[</span>pipeline:main<span style="color:#39c">]</span>
-<span style="color:#00cdcd">pipeline</span> <span style="color:#39c">=</span> healthcheck cache tempauth proxy-logging proxy-server
-
-<span style="color:#39c">[</span>app:proxy-server<span style="color:#39c">]</span>
-<span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#proxy
-<span style="color:#00cdcd">allow_account_management</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">true</span>
-<span style="color:#00cdcd">account_autocreate</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">true</span>
-
-<span style="color:#39c">[</span>filter:tempauth<span style="color:#39c">]</span>
-<span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#tempauth
-<span style="color:#00cdcd">user_admin_admin</span> <span style="color:#39c">=</span> admin .admin .reseller_admin
-<span style="color:#00cdcd">user_test_tester</span> <span style="color:#39c">=</span> testing .admin
-<span style="color:#00cdcd">user_test2_tester2</span> <span style="color:#39c">=</span> testing2 .admin
-<span style="color:#00cdcd">user_test_tester3</span> <span style="color:#39c">=</span> testing3
-<span style="color:#00cdcd">reseller_prefix</span> <span style="color:#39c">=</span> AUTH
-<span style="color:#00cdcd">token_life</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">86400</span>
-<span style="color:#000080"># account和token的命名前缀，注意此处不可以加&#34;_&#34;。</span>
-<span style="color:#000080"># 例如X-Storage-Ur可能l为http://127.0.0.1:8080/v1/AUTH_test</span>
-<span style="color:#000080"># 例如X-Auth-Token为AUTH_tk440e9bd9a9cb46d6be07a5b6a585f7d1# token的有效期，单位：秒。</span>
-
-<span style="color:#39c">[</span>filter:healthcheck<span style="color:#39c">]</span>
-<span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#healthcheck
-
-<span style="color:#39c">[</span>filter:cache<span style="color:#39c">]</span>
-<span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#memcache
-
-<span style="color:#000080"># 这里可以是多个memcache server，proxy会自动当作一个集群来使用# 例如 memcache_servers = 192.168.2.129:11211,192.168.2.130:11211,192.168.2.131</span>
-
-<span style="color:#39c">[</span>filter:proxy-logging<span style="color:#39c">]</span>
-<span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#proxy_logging
-</code></pre></div><p><strong>注：<code>user_admin_admin = admin .admin .reseller_admin</code> 后面还可以增加一项 <code>&lt;storage-url&gt;</code>，显示地指定 swift 为该用户提供的存储服务入口，admin 用户通过认证后，swift 会把 Token 和该 <code>&lt;storage-url&gt;</code>  返回给用户，此后 admin 用户可以使用该 <code>&lt;storage-url&gt;</code> 访问 swift 来请求存储服务。特别值得说明的是，如果在 Proxy Server 前面增加了负载均衡器（如 nginx），那么该 <code>&lt;storage-url&gt;</code> 应该指向负载均衡器，使得用户在通过认证后，向负载均衡器发起存储请求，再由负载均衡器将请求均衡地分发给 Proxy Server 集群。此时的 <code>&lt;storage-url&gt;</code> 形如 <code>http://&lt;LOAD_BALANCER_HOSTNAME&gt;:&lt;PORT&gt;/v1/AUTH_admin</code>。</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir /etc/swift
+</span></span><span style="display:flex;"><span>sudo chown -R user:user /etc/swift
+</span></span></code></pre></div><h4 id="创建-swift-配置文件-etcswiftswiftconf">创建 swift 配置文件 /etc/swift/swift.conf</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#39c">[</span>swift-hash<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080"># random unique string that can never change (DO NOT LOSE)</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">swift_hash_path_suffix</span> <span style="color:#39c">=</span> jtangfs
+</span></span></code></pre></div><h4 id="配置-account-服务etcswiftaccount-serverconf">配置 account 服务 /etc/swift/account-server.conf</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">devices</span> <span style="color:#39c">=</span> /srv/node
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">mount_check</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">bind_ip</span> <span style="color:#39c">=</span> 0.0.0.0
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">bind_port</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">6002</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">workers</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">4</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">user</span> <span style="color:#39c">=</span> wcl
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">log_facility</span> <span style="color:#39c">=</span> LOG_LOCAL4
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>pipeline:main<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">pipeline</span> <span style="color:#39c">=</span> account-server
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>app:account-server<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#account
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>account-replicator<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>account-auditor<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>account-reaper<span style="color:#39c">]</span>
+</span></span></code></pre></div><h4 id="配置-container-服务etcswiftcontainer-serverconf">配置 container 服务 /etc/swift/container-server.conf</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">devices</span> <span style="color:#39c">=</span> /srv/node
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">mount_check</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">bind_ip</span> <span style="color:#39c">=</span> 0.0.0.0
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">bind_port</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">6001</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">workers</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">4</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">user</span> <span style="color:#39c">=</span> wcl
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">log_facility</span> <span style="color:#39c">=</span> LOG_LOCAL3
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>pipeline:main<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">pipeline</span> <span style="color:#39c">=</span> container-server
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>app:container-server<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#container
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>container-replicator<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>container-updater<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>container-auditor<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>container-sync<span style="color:#39c">]</span>
+</span></span></code></pre></div><h4 id="配置-object-服务etcswiftobject-serverconf">配置 object 服务 /etc/swift/object-server.conf</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">devices</span> <span style="color:#39c">=</span> /srv/node
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">mount_check</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">bind_ip</span> <span style="color:#39c">=</span> 0.0.0.0
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">bind_port</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">6000</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">workers</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">4</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">user</span> <span style="color:#39c">=</span> wcl
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">log_facility</span> <span style="color:#39c">=</span> LOG_LOCAL2
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>pipeline:main<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">pipeline</span> <span style="color:#39c">=</span> object-server
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>app:object-server<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#object
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>object-replicator<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>object-updater<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>object-auditor<span style="color:#39c">]</span>
+</span></span></code></pre></div><h4 id="配置-proxy-服务etcswiftproxy-serverconf">配置 proxy 服务 /etc/swift/proxy-server.conf</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#39c">[</span>DEFAULT<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">bind_port</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">8080</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">user</span> <span style="color:#39c">=</span> wcl
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">workers</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">2</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">log_facility</span> <span style="color:#39c">=</span> LOG_LOCAL1
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>pipeline:main<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">pipeline</span> <span style="color:#39c">=</span> healthcheck cache tempauth proxy-logging proxy-server
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>app:proxy-server<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#proxy
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">allow_account_management</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">true</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">account_autocreate</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>filter:tempauth<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#tempauth
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">user_admin_admin</span> <span style="color:#39c">=</span> admin .admin .reseller_admin
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">user_test_tester</span> <span style="color:#39c">=</span> testing .admin
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">user_test2_tester2</span> <span style="color:#39c">=</span> testing2 .admin
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">user_test_tester3</span> <span style="color:#39c">=</span> testing3
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">reseller_prefix</span> <span style="color:#39c">=</span> AUTH
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">token_life</span> <span style="color:#39c">=</span> <span style="color:#cd00cd">86400</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080"># account和token的命名前缀，注意此处不可以加&#34;_&#34;。</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080"># 例如X-Storage-Ur可能l为http://127.0.0.1:8080/v1/AUTH_test</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080"># 例如X-Auth-Token为AUTH_tk440e9bd9a9cb46d6be07a5b6a585f7d1# token的有效期，单位：秒。</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>filter:healthcheck<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#healthcheck
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>filter:cache<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#memcache
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080"># 这里可以是多个memcache server，proxy会自动当作一个集群来使用# 例如 memcache_servers = 192.168.2.129:11211,192.168.2.130:11211,192.168.2.131</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#39c">[</span>filter:proxy-logging<span style="color:#39c">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cdcd">use</span> <span style="color:#39c">=</span> egg:swift#proxy_logging
+</span></span></code></pre></div><p><strong>注：<code>user_admin_admin = admin .admin .reseller_admin</code> 后面还可以增加一项 <code>&lt;storage-url&gt;</code>，显示地指定 swift 为该用户提供的存储服务入口，admin 用户通过认证后，swift 会把 Token 和该 <code>&lt;storage-url&gt;</code>  返回给用户，此后 admin 用户可以使用该 <code>&lt;storage-url&gt;</code> 访问 swift 来请求存储服务。特别值得说明的是，如果在 Proxy Server 前面增加了负载均衡器（如 nginx），那么该 <code>&lt;storage-url&gt;</code> 应该指向负载均衡器，使得用户在通过认证后，向负载均衡器发起存储请求，再由负载均衡器将请求均衡地分发给 Proxy Server 集群。此时的 <code>&lt;storage-url&gt;</code> 形如 <code>http://&lt;LOAD_BALANCER_HOSTNAME&gt;:&lt;PORT&gt;/v1/AUTH_admin</code>。</strong></p>
 <h3 id="创建-ring-文件">创建 ring 文件</h3>
 <p><strong>swift</strong> 安装完成后会有一个 <strong>swift-ring-builder</strong> 程序用于对 ring 的相关操作。</p>
 <h4 id="生成-ring">生成 ring</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift-ring-builder account.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
-swift-ring-builder container.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
-swift-ring-builder object.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
-</code></pre></div><p>需要事先创建好3个 ring，18 表示 partition 数为2的18次方，3表示 replication 数为3，1 表示分区数据的最短迁移间隔时间为1小时。（官网说明里如果移除设备的话不在这个限制内）</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swift-ring-builder account.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
+</span></span></code></pre></div><p>需要事先创建好3个 ring，18 表示 partition 数为2的18次方，3表示 replication 数为3，1 表示分区数据的最短迁移间隔时间为1小时。（官网说明里如果移除设备的话不在这个限制内）</p>
 <h3 id="向-ring-中加入设备">向 ring 中加入设备</h3>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift-ring-builder account.builder add z1-192.168.2.129:6002/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder container.builder add z1-192.168.2.129:6001/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder object.builder add z1-192.168.2.129:6000/sdb1 <span style="color:#cd00cd">100</span>
-
-swift-ring-builder account.builder add z2-192.168.2.130:6002/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder container.builder add z2-192.168.2.130:6001/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder object.builder add z2-192.168.2.130:6000/sdb1 <span style="color:#cd00cd">100</span>
-
-swift-ring-builder account.builder add z2-192.168.2.131:6002/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder container.builder add z2-192.168.2.131:6001/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder object.builder add z2-192.168.2.131:6000/sdb1 <span style="color:#cd00cd">100</span>
-</code></pre></div><p><strong>z1</strong> 和 <strong>z2</strong> 表示 <strong>zone1</strong> 和 <strong>zone2</strong>（<strong>zone</strong> 这个概念是虚拟的，可以将一个 <strong>device</strong> 划定到一个 <strong>zone</strong>，在分配 <strong>partition</strong> 的时候会考虑到这个因素，尽量划分到不同的 <strong>zone</strong> 中）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swift-ring-builder account.builder add z1-192.168.2.129:6002/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z1-192.168.2.129:6001/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z1-192.168.2.129:6000/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>swift-ring-builder account.builder add z2-192.168.2.130:6002/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z2-192.168.2.130:6001/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z2-192.168.2.130:6000/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>swift-ring-builder account.builder add z2-192.168.2.131:6002/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z2-192.168.2.131:6001/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z2-192.168.2.131:6000/sdb1 <span style="color:#cd00cd">100</span>
+</span></span></code></pre></div><p><strong>z1</strong> 和 <strong>z2</strong> 表示 <strong>zone1</strong> 和 <strong>zone2</strong>（<strong>zone</strong> 这个概念是虚拟的，可以将一个 <strong>device</strong> 划定到一个 <strong>zone</strong>，在分配 <strong>partition</strong> 的时候会考虑到这个因素，尽量划分到不同的 <strong>zone</strong> 中）。</p>
 <p><strong>sdb1</strong> 为 <strong>swift</strong> 所使用的存储空间。</p>
 <p><strong>100</strong> 代表设备的权重，也是在分配 <strong>partition</strong> 的时候会考虑的因素。</p>
 <h4 id="rebalance">rebalance</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift-ring-builder account.builder rebalance
-swift-ring-builder container.builder rebalance
-swift-ring-builder object.builder rebalance
-</code></pre></div><h4 id="将-ring-文件传输到其他机器的-etcswift-目录下">将 ring 文件传输到其他机器的 /etc/swift 目录下</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swift-ring-builder account.builder rebalance
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder rebalance
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder rebalance
+</span></span></code></pre></div><h4 id="将-ring-文件传输到其他机器的-etcswift-目录下">将 ring 文件传输到其他机器的 /etc/swift 目录下</h4>
 <p>最终生成的 ring 文件以 <code>.gz</code> 结尾。</p>
 <h3 id="创建初始化起停等脚本">创建初始化、起停等脚本</h3>
 <p>由于 swift 涉及的组件较多，起停都比较麻烦，所以最好先写好起停脚本。</p>
 <h4 id="remake_ringssh-脚本文件用于完成-ring-的重新创建">remake_rings.sh 脚本文件，用于完成 ring 的重新创建</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
-</span><span style="color:#000080"></span><span style="color:#cd00cd">cd</span> /etc/swift
-
-rm -f *.builder *.ring.gz backups/*.builder backups/*.ring.gz
-
-swift-ring-builder account.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
-swift-ring-builder container.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
-swift-ring-builder object.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
-
-swift-ring-builder account.builder add z1-192.168.2.129:6002/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder container.builder add z1-192.168.2.129:6001/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder object.builder add z1-192.168.2.129:6000/sdb1 <span style="color:#cd00cd">100</span>
-
-swift-ring-builder account.builder add z1-192.168.2.130:6002/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder container.builder add z1-192.168.2.130:6001/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder object.builder add z1-192.168.2.130:6000/sdb1 <span style="color:#cd00cd">100</span>
-
-swift-ring-builder account.builder add z1-192.168.2.131:6002/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder container.builder add z1-192.168.2.131:6001/sdb1 <span style="color:#cd00cd">100</span>
-swift-ring-builder object.builder add z1-192.168.2.131:6000/sdb1 <span style="color:#cd00cd">100</span>
-
-swift-ring-builder account.builder rebalance
-swift-ring-builder container.builder rebalance
-swift-ring-builder object.builder rebalance
-</code></pre></div><h4 id="reset_swiftsh-脚本文件用于一键清空-swift-的对象数据和日志完全重置">reset_swift.sh 脚本文件，用于一键清空 swift 的对象数据和日志，完全重置</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
-</span><span style="color:#000080"></span>swift-init all stop
-
-find /var/log/swift -type f -exec rm -f <span style="color:#39c">{}</span> <span style="color:#cd0000">\;</span>
-
-sudo umount /srv/node/sdb1
-sudo mkfs.xfs -f -i <span style="color:#00cdcd">size</span><span style="color:#39c">=</span><span style="color:#cd00cd">1024</span> /srv/swift-disk
-sudo mount /srv/node/sdb1
-
-sudo chown wcl:wcl /srv/node/sdb1
-
-sudo rm -f /var/log/debug /var/log/messages /var/log/rsyncd.log /var/log/syslog
-sudo service rsyslog restart
-sudo service rsyncd restart
-sudo service memcached restart
-</code></pre></div><h4 id="start_mainsh-脚本文件用于启动-swift-所有基础服务">start_main.sh 脚本文件，用于启动 swift 所有基础服务</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
-</span><span style="color:#000080"></span>swift-init main start
-</code></pre></div><h4 id="stop_mainsh-脚本文件用于关闭-swift-所有基础服务">stop_main.sh 脚本文件，用于关闭 swift 所有基础服务</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
-</span><span style="color:#000080"></span>swift-init main stop
-</code></pre></div><h4 id="start_allsh-脚本文件">start_all.sh 脚本文件</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000080">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#cd00cd">cd</span> /etc/swift
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>rm -f *.builder *.ring.gz backups/*.builder backups/*.ring.gz
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>swift-ring-builder account.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>swift-ring-builder account.builder add z1-192.168.2.129:6002/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z1-192.168.2.129:6001/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z1-192.168.2.129:6000/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>swift-ring-builder account.builder add z1-192.168.2.130:6002/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z1-192.168.2.130:6001/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z1-192.168.2.130:6000/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>swift-ring-builder account.builder add z1-192.168.2.131:6002/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z1-192.168.2.131:6001/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z1-192.168.2.131:6000/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>swift-ring-builder account.builder rebalance
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder rebalance
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder rebalance
+</span></span></code></pre></div><h4 id="reset_swiftsh-脚本文件用于一键清空-swift-的对象数据和日志完全重置">reset_swift.sh 脚本文件，用于一键清空 swift 的对象数据和日志，完全重置</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000080">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>swift-init all stop
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>find /var/log/swift -type f -exec rm -f <span style="color:#39c">{}</span> <span style="color:#cd0000">\;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sudo umount /srv/node/sdb1
+</span></span><span style="display:flex;"><span>sudo mkfs.xfs -f -i <span style="color:#00cdcd">size</span><span style="color:#39c">=</span><span style="color:#cd00cd">1024</span> /srv/swift-disk
+</span></span><span style="display:flex;"><span>sudo mount /srv/node/sdb1
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sudo chown wcl:wcl /srv/node/sdb1
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sudo rm -f /var/log/debug /var/log/messages /var/log/rsyncd.log /var/log/syslog
+</span></span><span style="display:flex;"><span>sudo service rsyslog restart
+</span></span><span style="display:flex;"><span>sudo service rsyncd restart
+</span></span><span style="display:flex;"><span>sudo service memcached restart
+</span></span></code></pre></div><h4 id="start_mainsh-脚本文件用于启动-swift-所有基础服务">start_main.sh 脚本文件，用于启动 swift 所有基础服务</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000080">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>swift-init main start
+</span></span></code></pre></div><h4 id="stop_mainsh-脚本文件用于关闭-swift-所有基础服务">stop_main.sh 脚本文件，用于关闭 swift 所有基础服务</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000080">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>swift-init main stop
+</span></span></code></pre></div><h4 id="start_allsh-脚本文件">start_all.sh 脚本文件</h4>
 <p>一键启动 swift 的所有服务。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
-</span><span style="color:#000080"></span>swift-init proxy start
-swift-init account-server start
-swift-init account-replicator start
-swift-init account-auditor start
-swift-init container-server start
-swift-init container-replicator start
-swift-init container-updater start
-swift-init container-auditor start
-swift-init object-server start
-swift-init object-replicator start
-swift-init object-updater start
-swift-init object-auditor start
-</code></pre></div><h4 id="stop_allsh-脚本文件">stop_all.sh 脚本文件</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000080">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>swift-init proxy start
+</span></span><span style="display:flex;"><span>swift-init account-server start
+</span></span><span style="display:flex;"><span>swift-init account-replicator start
+</span></span><span style="display:flex;"><span>swift-init account-auditor start
+</span></span><span style="display:flex;"><span>swift-init container-server start
+</span></span><span style="display:flex;"><span>swift-init container-replicator start
+</span></span><span style="display:flex;"><span>swift-init container-updater start
+</span></span><span style="display:flex;"><span>swift-init container-auditor start
+</span></span><span style="display:flex;"><span>swift-init object-server start
+</span></span><span style="display:flex;"><span>swift-init object-replicator start
+</span></span><span style="display:flex;"><span>swift-init object-updater start
+</span></span><span style="display:flex;"><span>swift-init object-auditor start
+</span></span></code></pre></div><h4 id="stop_allsh-脚本文件">stop_all.sh 脚本文件</h4>
 <p>一键关闭 swift的所有服务。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#000080">#!/bin/bash
-</span><span style="color:#000080"></span>swift-init proxy stop
-swift-init account-server stop
-swift-init account-replicator stop
-swift-init account-auditor stop
-swift-init container-server stop
-swift-init container-replicator stop
-swift-init container-updater stop
-swift-init container-auditor stop
-swift-init object-server stop
-swift-init object-replicator stop
-swift-init object-updater stop
-swift-init object-auditor stop
-</code></pre></div><h4 id="启动-swift-服务">启动 swift 服务</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./start_all.sh
-</code></pre></div><h3 id="动态扩容">动态扩容</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#000080">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>swift-init proxy stop
+</span></span><span style="display:flex;"><span>swift-init account-server stop
+</span></span><span style="display:flex;"><span>swift-init account-replicator stop
+</span></span><span style="display:flex;"><span>swift-init account-auditor stop
+</span></span><span style="display:flex;"><span>swift-init container-server stop
+</span></span><span style="display:flex;"><span>swift-init container-replicator stop
+</span></span><span style="display:flex;"><span>swift-init container-updater stop
+</span></span><span style="display:flex;"><span>swift-init container-auditor stop
+</span></span><span style="display:flex;"><span>swift-init object-server stop
+</span></span><span style="display:flex;"><span>swift-init object-replicator stop
+</span></span><span style="display:flex;"><span>swift-init object-updater stop
+</span></span><span style="display:flex;"><span>swift-init object-auditor stop
+</span></span></code></pre></div><h4 id="启动-swift-服务">启动 swift 服务</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./start_all.sh
+</span></span></code></pre></div><h3 id="动态扩容">动态扩容</h3>
 <p>重新编写 <strong>remake_rings.sh</strong> 脚本中的内容，加上需要添加的机器信息，重新生成 ring 文件。</p>
 <p>将新生成的 ring 文件放到每一个服务器的 <code>/etc/swift</code> 目录下。</p>
 <p>swift 的各个组件程序会定期重新读取 rings 文件。</p>
@@ -413,94 +413,94 @@ swift-init object-auditor stop
 <p>另外一种方法就是使用 <code>swift</code> 程序来进行增删查改的操作，可以实现和 RESTful API 相同的功能。</p>
 <p><strong>所有的操作都需要先获取一个 auth-token，之后的所有操作都需要在 header 中附加上 X-Auth-Token 字段的信息进行权限认证。有一定时效性，过期后需要再次获取。</strong></p>
 <h4 id="获取-x-storage-url-和-x-auth-token">获取 X-Storage-Url 和 X-Auth-Token</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://127.0.0.1:8080/auth/v1.0 -v -H <span style="color:#cd0000">&#39;X-Storage-User: test:tester&#39;</span> -H <span style="color:#cd0000">&#39;X-Storage-Pass: testing&#39;</span>
-</code></pre></div><p>这里的用户和密码是在 <code>proxy-server.conf</code> 中配置的。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl http://127.0.0.1:8080/auth/v1.0 -v -H <span style="color:#cd0000">&#39;X-Storage-User: test:tester&#39;</span> -H <span style="color:#cd0000">&#39;X-Storage-Pass: testing&#39;</span>
+</span></span></code></pre></div><p>这里的用户和密码是在 <code>proxy-server.conf</code> 中配置的。</p>
 <p>返回结果</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&lt; HTTP/1.1 <span style="color:#cd00cd">200</span> OK
-&lt; X-Storage-Url: http://127.0.0.1:8080/v1/AUTH_test
-&lt; X-Auth-Token: AUTH_tk039a65cb62594b319faea9dc492039a2
-&lt; Content-Type: text/html; <span style="color:#00cdcd">charset</span><span style="color:#39c">=</span>UTF-8
-&lt; X-Storage-Token: AUTH_tk039a65cb62594b319faea9dc492039a2
-&lt; X-Trans-Id: tx7bcd450378d84b56b1482-005745b5c8
-&lt; Content-Length: <span style="color:#cd00cd">0</span>
-&lt; Date: Wed, <span style="color:#cd00cd">25</span> May <span style="color:#cd00cd">2016</span> 14:25:12 GMT
-</code></pre></div><h4 id="查看账户信息">查看账户信息</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://127.0.0.1:8080/v1/AUTH_test -v -H <span style="color:#cd0000">&#39;X-Auth-Token: AUTH_tk039a65cb62594b319faea9dc492039a2&#39;</span>
-</code></pre></div><p>返回结果</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&lt; HTTP/1.1 <span style="color:#cd00cd">200</span> OK
-&lt; Content-Length: <span style="color:#cd00cd">5</span>
-&lt; X-Account-Object-Count: <span style="color:#cd00cd">1</span>
-&lt; X-Account-Storage-Policy-Policy-0-Bytes-Used: <span style="color:#cd00cd">4</span>
-&lt; X-Account-Storage-Policy-Policy-0-Container-Count: <span style="color:#cd00cd">1</span>
-&lt; X-Timestamp: 1464106581.68979
-&lt; X-Account-Storage-Policy-Policy-0-Object-Count: <span style="color:#cd00cd">1</span>
-&lt; X-Account-Bytes-Used: <span style="color:#cd00cd">4</span>
-&lt; X-Account-Container-Count: <span style="color:#cd00cd">1</span>
-&lt; Content-Type: text/plain; <span style="color:#00cdcd">charset</span><span style="color:#39c">=</span>utf-8
-&lt; Accept-Ranges: bytes
-&lt; X-Trans-Id: tx59e9c2f1772349d684d04-005745b713
-&lt; Date: Wed, <span style="color:#cd00cd">25</span> May <span style="color:#cd00cd">2016</span> 14:30:43 GMT
-</code></pre></div><h4 id="创建-container">创建 container</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://127.0.0.1:8080/v1/AUTH_test/default -X PUT -H <span style="color:#cd0000">&#34;X-Auth_Token: AUTH_tk039a65cb62594b319faea9dc492039a2&#34;</span>
-</code></pre></div><p>在 test 用户下创建了一个名为 default 的 container。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&lt; HTTP/1.1 <span style="color:#cd00cd">200</span> OK
+</span></span><span style="display:flex;"><span>&lt; X-Storage-Url: http://127.0.0.1:8080/v1/AUTH_test
+</span></span><span style="display:flex;"><span>&lt; X-Auth-Token: AUTH_tk039a65cb62594b319faea9dc492039a2
+</span></span><span style="display:flex;"><span>&lt; Content-Type: text/html; <span style="color:#00cdcd">charset</span><span style="color:#39c">=</span>UTF-8
+</span></span><span style="display:flex;"><span>&lt; X-Storage-Token: AUTH_tk039a65cb62594b319faea9dc492039a2
+</span></span><span style="display:flex;"><span>&lt; X-Trans-Id: tx7bcd450378d84b56b1482-005745b5c8
+</span></span><span style="display:flex;"><span>&lt; Content-Length: <span style="color:#cd00cd">0</span>
+</span></span><span style="display:flex;"><span>&lt; Date: Wed, <span style="color:#cd00cd">25</span> May <span style="color:#cd00cd">2016</span> 14:25:12 GMT
+</span></span></code></pre></div><h4 id="查看账户信息">查看账户信息</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl http://127.0.0.1:8080/v1/AUTH_test -v -H <span style="color:#cd0000">&#39;X-Auth-Token: AUTH_tk039a65cb62594b319faea9dc492039a2&#39;</span>
+</span></span></code></pre></div><p>返回结果</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&lt; HTTP/1.1 <span style="color:#cd00cd">200</span> OK
+</span></span><span style="display:flex;"><span>&lt; Content-Length: <span style="color:#cd00cd">5</span>
+</span></span><span style="display:flex;"><span>&lt; X-Account-Object-Count: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>&lt; X-Account-Storage-Policy-Policy-0-Bytes-Used: <span style="color:#cd00cd">4</span>
+</span></span><span style="display:flex;"><span>&lt; X-Account-Storage-Policy-Policy-0-Container-Count: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>&lt; X-Timestamp: 1464106581.68979
+</span></span><span style="display:flex;"><span>&lt; X-Account-Storage-Policy-Policy-0-Object-Count: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>&lt; X-Account-Bytes-Used: <span style="color:#cd00cd">4</span>
+</span></span><span style="display:flex;"><span>&lt; X-Account-Container-Count: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>&lt; Content-Type: text/plain; <span style="color:#00cdcd">charset</span><span style="color:#39c">=</span>utf-8
+</span></span><span style="display:flex;"><span>&lt; Accept-Ranges: bytes
+</span></span><span style="display:flex;"><span>&lt; X-Trans-Id: tx59e9c2f1772349d684d04-005745b713
+</span></span><span style="display:flex;"><span>&lt; Date: Wed, <span style="color:#cd00cd">25</span> May <span style="color:#cd00cd">2016</span> 14:30:43 GMT
+</span></span></code></pre></div><h4 id="创建-container">创建 container</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl http://127.0.0.1:8080/v1/AUTH_test/default -X PUT -H <span style="color:#cd0000">&#34;X-Auth_Token: AUTH_tk039a65cb62594b319faea9dc492039a2&#34;</span>
+</span></span></code></pre></div><p>在 test 用户下创建了一个名为 default 的 container。</p>
 <h4 id="restful-api-总结">RESTful API 总结</h4>
 <table>
 <thead>
 <tr>
-<th align="left">资源类型</th>
-<th align="left">URL</th>
-<th align="left">GET</th>
-<th align="left">PUT</th>
-<th align="left">POST</th>
-<th align="left">DELETE</th>
-<th align="left">HEAD</th>
+<th style="text-align:left">资源类型</th>
+<th style="text-align:left">URL</th>
+<th style="text-align:left">GET</th>
+<th style="text-align:left">PUT</th>
+<th style="text-align:left">POST</th>
+<th style="text-align:left">DELETE</th>
+<th style="text-align:left">HEAD</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="left">账户</td>
-<td align="left">/account/</td>
-<td align="left">获取容器列表</td>
-<td align="left">-</td>
-<td align="left">-</td>
-<td align="left">-</td>
-<td align="left">获取账户元数据</td>
+<td style="text-align:left">账户</td>
+<td style="text-align:left">/account/</td>
+<td style="text-align:left">获取容器列表</td>
+<td style="text-align:left">-</td>
+<td style="text-align:left">-</td>
+<td style="text-align:left">-</td>
+<td style="text-align:left">获取账户元数据</td>
 </tr>
 <tr>
-<td align="left">容器</td>
-<td align="left">/account/container</td>
-<td align="left">获取对象列表</td>
-<td align="left">创建容器</td>
-<td align="left">更新容器元数据</td>
-<td align="left">删除容器</td>
-<td align="left">获取容器元数据</td>
+<td style="text-align:left">容器</td>
+<td style="text-align:left">/account/container</td>
+<td style="text-align:left">获取对象列表</td>
+<td style="text-align:left">创建容器</td>
+<td style="text-align:left">更新容器元数据</td>
+<td style="text-align:left">删除容器</td>
+<td style="text-align:left">获取容器元数据</td>
 </tr>
 <tr>
-<td align="left">对象</td>
-<td align="left">/account/container/object</td>
-<td align="left">获取对象内容和元数据</td>
-<td align="left">创建、更新或拷贝对象</td>
-<td align="left">更新对象元数据</td>
-<td align="left">删除对象</td>
-<td align="left">获取对象元数据</td>
+<td style="text-align:left">对象</td>
+<td style="text-align:left">/account/container/object</td>
+<td style="text-align:left">获取对象内容和元数据</td>
+<td style="text-align:left">创建、更新或拷贝对象</td>
+<td style="text-align:left">更新对象元数据</td>
+<td style="text-align:left">删除对象</td>
+<td style="text-align:left">获取对象元数据</td>
 </tr>
 </tbody>
 </table>
 <h4 id="直接使用-swift-客户端程序进行操作">直接使用 swift 客户端程序进行操作</h4>
 <p><strong>-A</strong> 参数指定 url，<strong>-U</strong> 参数指定用户，<strong>-K</strong> 参数指定密码。</p>
 <h5 id="查看指定账户的-swift-存储信息">查看指定账户的 swift 存储信息</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing stat
-</code></pre></div><h5 id="创建-container-1">创建 container</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing post default
-</code></pre></div><h5 id="查看-test-用户的-container-列表">查看 test 用户的 container 列表</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing list
-</code></pre></div><h5 id="上传object文件上传-testcpp-文件到-default-容器中">上传Object（文件），上传 test.cpp 文件到 default 容器中</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing upload default ./dd.cpp
-</code></pre></div><h5 id="查看容器中的内容">查看容器中的内容</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing list default
-</code></pre></div><h5 id="下载object文件">下载Object（文件）</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing download default dd.cpp
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing stat
+</span></span></code></pre></div><h5 id="创建-container-1">创建 container</h5>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing post default
+</span></span></code></pre></div><h5 id="查看-test-用户的-container-列表">查看 test 用户的 container 列表</h5>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing list
+</span></span></code></pre></div><h5 id="上传object文件上传-testcpp-文件到-default-容器中">上传Object（文件），上传 test.cpp 文件到 default 容器中</h5>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing upload default ./dd.cpp
+</span></span></code></pre></div><h5 id="查看容器中的内容">查看容器中的内容</h5>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing list default
+</span></span></code></pre></div><h5 id="下载object文件">下载Object（文件）</h5>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swift -A http://127.0.0.1:8080/auth/v1.0 -U test:tester -K testing download default dd.cpp
+</span></span></code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

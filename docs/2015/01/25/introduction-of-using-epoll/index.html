@@ -109,33 +109,33 @@
 <p><strong>event</strong></p>
 <p>event 是与指定fd关联的epoll_event结构，包含了监听事件，附加数据</p>
 <p><strong>struct epoll_event</strong> 的结构如下</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#cdcd00">typedef</span> <span style="color:#cdcd00">union</span> <span style="color:#00cdcd">epoll_data</span> {
-    <span style="color:#00cd00">void</span>        <span style="color:#39c">*</span>ptr;
-    <span style="color:#00cd00">int</span>          fd;
-    __uint32_t   u32;
-    __uint64_t   u64;
-}epoll_data_t;
- 
-<span style="color:#cdcd00">struct</span> <span style="color:#00cdcd">epoll_event</span> {
-    __uint32_t  events;      <span style="color:#000080">/* Epoll events */</span>
-    epoll_data_t data;       <span style="color:#000080">/* User data variable */</span>
-};
-</code></pre></div><p>*<em>这里需要特别注意的是epoll_data_t是一个union结构，fd和ptr指针只能使用一个，通常我们使用void <em>ptr存储需要附加的用户数据结构，然后在用户数据结构中存储int型的fd，这样在epoll_wait调用后就仍然能获得该注册事件对应的文件描述符。</em></em></p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#cdcd00">typedef</span> <span style="color:#cdcd00">union</span> <span style="color:#00cdcd">epoll_data</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">void</span>        <span style="color:#39c">*</span>ptr;
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">int</span>          fd;
+</span></span><span style="display:flex;"><span>    __uint32_t   u32;
+</span></span><span style="display:flex;"><span>    __uint64_t   u64;
+</span></span><span style="display:flex;"><span>}epoll_data_t;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">struct</span> <span style="color:#00cdcd">epoll_event</span> {
+</span></span><span style="display:flex;"><span>    __uint32_t  events;      <span style="color:#000080">/* Epoll events */</span>
+</span></span><span style="display:flex;"><span>    epoll_data_t data;       <span style="color:#000080">/* User data variable */</span>
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>*<em>这里需要特别注意的是epoll_data_t是一个union结构，fd和ptr指针只能使用一个，通常我们使用void <em>ptr存储需要附加的用户数据结构，然后在用户数据结构中存储int型的fd，这样在epoll_wait调用后就仍然能获得该注册事件对应的文件描述符。</em></em></p>
 <p>events可以是如下值的集合</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）
-EPOLLOUT：表示对应的文件描述符可以写
-EPOLLPRI：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）
-EPOLLERR：表示对应的文件描述符发生错误
-EPOLLHUP：表示对应的文件描述符被挂断
-EPOLLET： 将EPOLL设为边缘触发<span style="color:#39c">(</span>EdgeTriggered<span style="color:#39c">)</span>模式，这是相对于水平触发<span style="color:#39c">(</span>Level Triggered<span style="color:#39c">)</span>来说的
-EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里
-</code></pre></div><h4 id="int-epoll_waitint-epfd-struct-epoll_event--events-int-maxeventsint-timeout">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）
+</span></span><span style="display:flex;"><span>EPOLLOUT：表示对应的文件描述符可以写
+</span></span><span style="display:flex;"><span>EPOLLPRI：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）
+</span></span><span style="display:flex;"><span>EPOLLERR：表示对应的文件描述符发生错误
+</span></span><span style="display:flex;"><span>EPOLLHUP：表示对应的文件描述符被挂断
+</span></span><span style="display:flex;"><span>EPOLLET： 将EPOLL设为边缘触发<span style="color:#39c">(</span>EdgeTriggered<span style="color:#39c">)</span>模式，这是相对于水平触发<span style="color:#39c">(</span>Level Triggered<span style="color:#39c">)</span>来说的
+</span></span><span style="display:flex;"><span>EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里
+</span></span></code></pre></div><h4 id="int-epoll_waitint-epfd-struct-epoll_event--events-int-maxeventsint-timeout">int epoll_wait(int epfd, struct epoll_event * events, int maxevents,int timeout)</h4>
 <p>该函数等待epoll实例中的fd集合有就绪事件。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">epfd：使用epoll_create<span style="color:#39c">()</span>返回的文件描述符
-events：指向处于就绪状态的事件集合
-maxevents：最多maxevents数量的事件集合会被返回
-timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指定为0则立即返回并返回0
-</code></pre></div><p>如果成功，返回已就绪的事件的个数；如果达到超时时间仍然没有就绪事件，返回0；如果出现错误，返回-1并置errno值</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>epfd：使用epoll_create<span style="color:#39c">()</span>返回的文件描述符
+</span></span><span style="display:flex;"><span>events：指向处于就绪状态的事件集合
+</span></span><span style="display:flex;"><span>maxevents：最多maxevents数量的事件集合会被返回
+</span></span><span style="display:flex;"><span>timeout：超时时间，单位为毫秒；指定为-1没有超时时间，指定为0则立即返回并返回0
+</span></span></code></pre></div><p>如果成功，返回已就绪的事件的个数；如果达到超时时间仍然没有就绪事件，返回0；如果出现错误，返回-1并置errno值</p>
 <h3 id="lt和et两种工作方式">LT和ET两种工作方式</h3>
 <p>epoll 默认使用LT的工作方式，当指定事件就绪时，内核通知用户进行操作，如果你只处理了部分数据，只要对应的套接字缓冲区中还有剩余数据，下一次内核仍然还会继续通知用户去进行处理，所以使用这种模式来写程序较为简单。</p>
 <p>ET工作方式是一种高速工作方式，只能使用非阻塞socket，它的效率要比LT方式高。当一个新事件就绪时，内核通知用户进行操作，如果这时用户没有处理完缓冲区的数据，缓冲区中剩余的数据就会丢失，用户无法从下一次epoll_wait调用中获取到这个事件。</p>

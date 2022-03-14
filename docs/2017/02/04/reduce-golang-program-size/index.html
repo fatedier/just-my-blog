@@ -76,10 +76,10 @@
 <p><strong>-s</strong> 的作用是去掉符号信息。
 <strong>-w</strong> 的作用是去掉调试信息。</p>
 <p>测试加与不加 <code>-ldflags</code> 编译出的应用大小。</p>
-<pre><code>go build -o tmp/frpc ./cmd/frpc
+<pre tabindex="0"><code>go build -o tmp/frpc ./cmd/frpc
 -rwxr-xr-x  1 fate  staff  12056092 Dec 10 15:49 frpc
 
-go build -ldflags &quot;-s -w&quot; -o tmp/frpc2 ./cmd/frpc
+go build -ldflags &#34;-s -w&#34; -o tmp/frpc2 ./cmd/frpc
 -rwxr-xr-x  1 fate  staff   8353308 Dec 10 15:49 frpc2
 </code></pre><p>减小了接近 4MB 的体积。</p>
 <h3 id="upx-压缩">UPX 压缩</h3>
@@ -92,7 +92,7 @@ macos 上通过 brew 安装 <code>brew install upx</code>。</p>
 <p><strong>-o</strong> 指定压缩后的文件名。
 <strong>-9</strong> 指定压缩级别，1-9。</p>
 <p>压缩后的文件体积</p>
-<pre><code>-rwxr-xr-x  1 fate  staff   2998928 Dec 10 15:49 frpc2_upx
+<pre tabindex="0"><code>-rwxr-xr-x  1 fate  staff   2998928 Dec 10 15:49 frpc2_upx
 </code></pre><p>可以看到缩小了接近 5MB，效果显著。</p>
 <p>需要注意的是，UPX 可能并不能正确的压缩所有平台的程序，压缩完成后最好自行在对应平台运行测试一下。</p>
             </div>

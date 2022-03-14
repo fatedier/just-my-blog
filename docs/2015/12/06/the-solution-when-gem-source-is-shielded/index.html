@@ -73,15 +73,15 @@
                 <p>由于国内的网络环境比较特殊，使用 gem install 安装 ruby 包的时候，往往不能成功，我们可以手动替换成阿里提供的镜像源来进行下载。</p>
 <p>官方原先的源地址是 <a href="https://rubygems.org/">https://rubygems.org/</a></p>
 <p>可以使用 <code>gem sources</code> 命令来查看源地址。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">*** CURRENT SOURCES ***
-
-https://rubygems.org/
-</code></pre></div><p>通过 <code>gem sources --add https://ruby.taobao.org/ --remove https://rubygems.org/</code> 替换成阿里的源。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>*** CURRENT SOURCES ***
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>https://rubygems.org/
+</span></span></code></pre></div><p>通过 <code>gem sources --add https://ruby.taobao.org/ --remove https://rubygems.org/</code> 替换成阿里的源。</p>
 <p>再次查看源地址列表。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">*** CURRENT SOURCES ***
-
-https://ruby.taobao.org/
-</code></pre></div><p>之后就可以使用 <code>gem install xxx -V</code> 安装第三方包或应用并且显示详细过程。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>*** CURRENT SOURCES ***
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>https://ruby.taobao.org/
+</span></span></code></pre></div><p>之后就可以使用 <code>gem install xxx -V</code> 安装第三方包或应用并且显示详细过程。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

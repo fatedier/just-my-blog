@@ -108,11 +108,11 @@
 <p><code>etcdctl mk /coreos.com/network/config '{&quot;Network&quot;:&quot;172.17.0.0/16&quot;, &quot;SubnetMin&quot;: &quot;172.17.1.0&quot;, &quot;SubnetMax&quot;: &quot;172.17.254.0&quot;}'</code></p>
 <h5 id="启动参数">启动参数</h5>
 <p><code>flanneld -etcd-endpoints=http://192.168.2.129:2379 -etcd-prefix=/coreos.com/network --log_dir=./ --logtostderr=false</code></p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">-etcd-endpoints: etcd 集群的地址
--etcd-prefix: etcd 中存储 flannel 信息的前缀
---log_dir: 设置日志文件存储目录
---logtostderr: 设置错误信息是否存储到标准输出中
-</code></pre></div><h5 id="修改-docker0-网卡的-ip-地址">修改 docker0 网卡的 IP 地址</h5>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>-etcd-endpoints: etcd 集群的地址
+</span></span><span style="display:flex;"><span>-etcd-prefix: etcd 中存储 flannel 信息的前缀
+</span></span><span style="display:flex;"><span>--log_dir: 设置日志文件存储目录
+</span></span><span style="display:flex;"><span>--logtostderr: 设置错误信息是否存储到标准输出中
+</span></span></code></pre></div><h5 id="修改-docker0-网卡的-ip-地址">修改 docker0 网卡的 IP 地址</h5>
 <p>默认情况下启动 docker 后会有一个 docker0 的虚拟网卡，每一台机器的 docker0 网卡对应的 ip 地址都是相同的。</p>
 <p>修改启动 docker 的参数，centos7 下可以修改 <code>/usr/lib/systemd/system/docker.service</code> 文件。</p>
 <p>增加 <code>EnvironmentFile=-/run/flannel/subnet.env</code>。</p>
@@ -155,25 +155,25 @@
 <h3 id="测试-nginx-容器">测试 nginx 容器</h3>
 <h4 id="创建并启动-replicationcontroller">创建并启动 replicationController</h4>
 <p>创建配置文件 <code>nginx-rc.yaml</code>。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: v1 
-<span style="color:#cdcd00">kind</span>: ReplicationController 
-<span style="color:#cdcd00">metadata</span>: 
-  <span style="color:#cdcd00">name</span>: nginx-controller 
-<span style="color:#cdcd00">spec</span>: 
-  <span style="color:#cdcd00">replicas</span>: <span style="color:#cd00cd">2</span> 
-  <span style="color:#cdcd00">selector</span>: 
-    <span style="color:#cdcd00">name</span>: nginx 
-  <span style="color:#cdcd00">template</span>: 
-    <span style="color:#cdcd00">metadata</span>: 
-      <span style="color:#cdcd00">labels</span>: 
-        <span style="color:#cdcd00">name</span>: nginx 
-    <span style="color:#cdcd00">spec</span>: 
-      <span style="color:#cdcd00">containers</span>: 
-        - <span style="color:#cdcd00">name</span>: nginx
-          <span style="color:#cdcd00">image</span>: nginx
-          <span style="color:#cdcd00">ports</span>: 
-            - <span style="color:#cdcd00">containerPort</span>: <span style="color:#cd00cd">80</span>
-</code></pre></div><p>这里定义了一个 nginx pod 的复制器，复制份数为2。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: v1 
+</span></span><span style="display:flex;"><span>kind: ReplicationController 
+</span></span><span style="display:flex;"><span>metadata: 
+</span></span><span style="display:flex;"><span>  name: nginx-controller 
+</span></span><span style="display:flex;"><span>spec: 
+</span></span><span style="display:flex;"><span>  replicas: <span style="color:#cd00cd">2</span> 
+</span></span><span style="display:flex;"><span>  selector: 
+</span></span><span style="display:flex;"><span>    name: nginx 
+</span></span><span style="display:flex;"><span>  template: 
+</span></span><span style="display:flex;"><span>    metadata: 
+</span></span><span style="display:flex;"><span>      labels: 
+</span></span><span style="display:flex;"><span>        name: nginx 
+</span></span><span style="display:flex;"><span>    spec: 
+</span></span><span style="display:flex;"><span>      containers: 
+</span></span><span style="display:flex;"><span>        - name: nginx
+</span></span><span style="display:flex;"><span>          image: nginx
+</span></span><span style="display:flex;"><span>          ports: 
+</span></span><span style="display:flex;"><span>            - containerPort: <span style="color:#cd00cd">80</span>
+</span></span></code></pre></div><p>这里定义了一个 nginx pod 的复制器，复制份数为2。</p>
 <p>执行下面的操作创建nginx pod复制器：</p>
 <p><code>kubectl -s http://192.168.2.129:8080 create -f nginx-rc.yaml</code></p>
 <p>查看创建 pod 的状态：</p>
@@ -181,18 +181,18 @@
 <h4 id="创建并启动-service">创建并启动 service</h4>
 <p>Service 的 type 有 ClusterIP 和 NodePort 之分，缺省是 ClusterIP，这种类型的 Service 只能在集群内部访问，而 NodePort 可以在集群外部访问，但是它的原理就是在所有节点上都绑定这个端口，之后将所有的流量转发到正确的节点上。</p>
 <p>创建配置文件 <code>nginx-service-clusterip.yaml</code></p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: v1 
-<span style="color:#cdcd00">kind</span>: Service 
-<span style="color:#cdcd00">metadata</span>: 
-  <span style="color:#cdcd00">name</span>: nginx-service-clusterip 
-<span style="color:#cdcd00">spec</span>: 
-  <span style="color:#cdcd00">ports</span>: 
-    - <span style="color:#cdcd00">port</span>: <span style="color:#cd00cd">8001</span> 
-      <span style="color:#cdcd00">targetPort</span>: <span style="color:#cd00cd">80</span> 
-      <span style="color:#cdcd00">protocol</span>: TCP 
-  <span style="color:#cdcd00">selector</span>: 
-    <span style="color:#cdcd00">name</span>: nginx
-</code></pre></div><p>执行下面的命令创建 service：</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: v1 
+</span></span><span style="display:flex;"><span>kind: Service 
+</span></span><span style="display:flex;"><span>metadata: 
+</span></span><span style="display:flex;"><span>  name: nginx-service-clusterip 
+</span></span><span style="display:flex;"><span>spec: 
+</span></span><span style="display:flex;"><span>  ports: 
+</span></span><span style="display:flex;"><span>    - port: <span style="color:#cd00cd">8001</span> 
+</span></span><span style="display:flex;"><span>      targetPort: <span style="color:#cd00cd">80</span> 
+</span></span><span style="display:flex;"><span>      protocol: TCP 
+</span></span><span style="display:flex;"><span>  selector: 
+</span></span><span style="display:flex;"><span>    name: nginx
+</span></span></code></pre></div><p>执行下面的命令创建 service：</p>
 <p><code>kubectl -s http://192.168.2.129:8080 create -f ./nginx-service-clusterip.yaml</code></p>
 <p>查看 service 提供的 IP 地址和端口：</p>
 <p><code>kubectl -s http://192.168.2.129:8080 get service</code></p>

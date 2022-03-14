@@ -80,26 +80,26 @@
 <p><code>db.getCollectionNames()</code></p>
 <h4 id="查看指定集合的状态信息">查看指定集合的状态信息</h4>
 <p><code>db.&lt;collection_name&gt;.stats()</code></p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    &#34;ns&#34; : <span style="color:#cd0000">&#34;&lt;db_name&gt;.&lt;collection_name&gt;&#34;</span>,
-    &#34;count&#34; : <span style="color:#cd00cd">1</span>,
-    &#34;size&#34; : <span style="color:#cd00cd">4080</span>,
-    &#34;avgObjSize&#34; : <span style="color:#cd00cd">4080</span>,
-    &#34;numExtents&#34; : <span style="color:#cd00cd">1</span>,
-    &#34;storageSize&#34; : <span style="color:#cd00cd">8192</span>,
-    &#34;lastExtentSize&#34; : <span style="color:#cd00cd">8192</span>,
-    &#34;paddingFactor&#34; : <span style="color:#cd00cd">1</span>,
-    &#34;paddingFactorNote&#34; : <span style="color:#cd0000">&#34;paddingFactor is unused and unmaintained in 3.0. It remains hard coded to 1.0 for compatibility only.&#34;</span>,
-    &#34;userFlags&#34; : <span style="color:#cd00cd">1</span>,
-    &#34;capped&#34; : <span style="color:#cdcd00">false</span>,
-    &#34;nindexes&#34; : <span style="color:#cd00cd">1</span>,
-    &#34;totalIndexSize&#34; : <span style="color:#cd00cd">8176</span>,
-    &#34;indexSizes&#34; : {
-        &#34;_id_&#34; : <span style="color:#cd00cd">8176</span>
-    },
-    &#34;ok&#34; : <span style="color:#cd00cd">1</span>
-}
-</code></pre></div><h4 id="查看当前数据库中的所有的索引">查看当前数据库中的所有的索引</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    &#34;ns&#34; : <span style="color:#cd0000">&#34;&lt;db_name&gt;.&lt;collection_name&gt;&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;count&#34; : <span style="color:#cd00cd">1</span>,
+</span></span><span style="display:flex;"><span>    &#34;size&#34; : <span style="color:#cd00cd">4080</span>,
+</span></span><span style="display:flex;"><span>    &#34;avgObjSize&#34; : <span style="color:#cd00cd">4080</span>,
+</span></span><span style="display:flex;"><span>    &#34;numExtents&#34; : <span style="color:#cd00cd">1</span>,
+</span></span><span style="display:flex;"><span>    &#34;storageSize&#34; : <span style="color:#cd00cd">8192</span>,
+</span></span><span style="display:flex;"><span>    &#34;lastExtentSize&#34; : <span style="color:#cd00cd">8192</span>,
+</span></span><span style="display:flex;"><span>    &#34;paddingFactor&#34; : <span style="color:#cd00cd">1</span>,
+</span></span><span style="display:flex;"><span>    &#34;paddingFactorNote&#34; : <span style="color:#cd0000">&#34;paddingFactor is unused and unmaintained in 3.0. It remains hard coded to 1.0 for compatibility only.&#34;</span>,
+</span></span><span style="display:flex;"><span>    &#34;userFlags&#34; : <span style="color:#cd00cd">1</span>,
+</span></span><span style="display:flex;"><span>    &#34;capped&#34; : <span style="color:#cdcd00">false</span>,
+</span></span><span style="display:flex;"><span>    &#34;nindexes&#34; : <span style="color:#cd00cd">1</span>,
+</span></span><span style="display:flex;"><span>    &#34;totalIndexSize&#34; : <span style="color:#cd00cd">8176</span>,
+</span></span><span style="display:flex;"><span>    &#34;indexSizes&#34; : {
+</span></span><span style="display:flex;"><span>        &#34;_id_&#34; : <span style="color:#cd00cd">8176</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    &#34;ok&#34; : <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="查看当前数据库中的所有的索引">查看当前数据库中的所有的索引</h4>
 <p><code>db.system.indexes.find()</code></p>
 <h4 id="查看指定集合中的索引">查看指定集合中的索引</h4>
 <p><code>db.col.getIndexes()</code></p>
@@ -120,41 +120,41 @@
 <table>
 <thead>
 <tr>
-<th align="left">操作</th>
-<th align="left">范例</th>
-<th align="left">RDBMS中的类似语句</th>
+<th style="text-align:left">操作</th>
+<th style="text-align:left">范例</th>
+<th style="text-align:left">RDBMS中的类似语句</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="left">等于</td>
-<td align="left">db.col.find({&ldquo;key&rdquo;:&ldquo;value&rdquo;}).pretty()</td>
-<td align="left">where key = &lsquo;value&rsquo;</td>
+<td style="text-align:left">等于</td>
+<td style="text-align:left">db.col.find({&ldquo;key&rdquo;:&ldquo;value&rdquo;}).pretty()</td>
+<td style="text-align:left">where key = &lsquo;value&rsquo;</td>
 </tr>
 <tr>
-<td align="left">小于</td>
-<td align="left">db.col.find({&ldquo;key&rdquo;:{$lt:50}}).pretty()</td>
-<td align="left">where key &lt; 50</td>
+<td style="text-align:left">小于</td>
+<td style="text-align:left">db.col.find({&ldquo;key&rdquo;:{$lt:50}}).pretty()</td>
+<td style="text-align:left">where key &lt; 50</td>
 </tr>
 <tr>
-<td align="left">小于等于</td>
-<td align="left">db.col.find({&ldquo;key&rdquo;:{$lte:50}}).pretty()</td>
-<td align="left">where key &lt;= 50</td>
+<td style="text-align:left">小于等于</td>
+<td style="text-align:left">db.col.find({&ldquo;key&rdquo;:{$lte:50}}).pretty()</td>
+<td style="text-align:left">where key &lt;= 50</td>
 </tr>
 <tr>
-<td align="left">大于</td>
-<td align="left">db.col.find({&ldquo;key&rdquo;:{$gt:50}}).pretty()</td>
-<td align="left">where key &gt; 50</td>
+<td style="text-align:left">大于</td>
+<td style="text-align:left">db.col.find({&ldquo;key&rdquo;:{$gt:50}}).pretty()</td>
+<td style="text-align:left">where key &gt; 50</td>
 </tr>
 <tr>
-<td align="left">大于或等于</td>
-<td align="left">db.col.find({&ldquo;key&rdquo;:{$gte:50}}).pretty()</td>
-<td align="left">where key &gt;= 50</td>
+<td style="text-align:left">大于或等于</td>
+<td style="text-align:left">db.col.find({&ldquo;key&rdquo;:{$gte:50}}).pretty()</td>
+<td style="text-align:left">where key &gt;= 50</td>
 </tr>
 <tr>
-<td align="left">不等于</td>
-<td align="left">db.col.find({&ldquo;key&rdquo;:{$ne:50}}).pretty()</td>
-<td align="left">where key != 50</td>
+<td style="text-align:left">不等于</td>
+<td style="text-align:left">db.col.find({&ldquo;key&rdquo;:{$ne:50}}).pretty()</td>
+<td style="text-align:left">where key != 50</td>
 </tr>
 </tbody>
 </table>
@@ -162,14 +162,14 @@
 <p>find() 方法可以传入多个键，每个键以逗号隔开。</p>
 <p><code>db.col.find({key1:value1, key2:value2}).pretty()</code></p>
 <h5 id="or-条件">or 条件</h5>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="">db.col.find(</span>
-    {
-        <span style="">$or:</span> <span style="">[</span>
-            <span style="">{key1:</span> <span style="">value1</span>}<span style="">,</span> {<span style="">key2:value2</span>}
-        <span style="">]</span>
-    <span style="">}</span>
-<span style="">).pretty()</span>
-</code></pre></div><p>例如 <code>db.col.find({$or:[{&quot;key1&quot;:&quot;value1&quot;}, {&quot;key2&quot;: &quot;value2&quot;}]}).pretty()</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span><span style="">db.col.find(</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="">$or:</span> <span style="">[</span>
+</span></span><span style="display:flex;"><span>            <span style="">{key1:</span> <span style="">value1</span>}<span style="">,</span> {<span style="">key2:value2</span>}
+</span></span><span style="display:flex;"><span>        <span style="">]</span>
+</span></span><span style="display:flex;"><span>    <span style="">}</span>
+</span></span><span style="display:flex;"><span><span style="">).pretty()</span>
+</span></span></code></pre></div><p>例如 <code>db.col.find({$or:[{&quot;key1&quot;:&quot;value1&quot;}, {&quot;key2&quot;: &quot;value2&quot;}]}).pretty()</code></p>
 <h5 id="更新操作">更新操作</h5>
 <p><code>db.collection.update( query, update, upsert, multi )</code></p>
 <p><strong>query</strong>： update 的查询条件，类似 sql update 操作的 where 子句。</p>

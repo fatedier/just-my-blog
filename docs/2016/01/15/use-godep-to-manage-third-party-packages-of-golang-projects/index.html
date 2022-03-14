@@ -93,10 +93,10 @@
 <p>这个命令是根据 <code>Godeps/Godeps.json</code> 文件把项目的依赖包下载到 <code>$GOPATH</code> 目录下，需要注意这个命令是会修改 <code>$GOPATH</code> 下依赖包的状态的，所以最好还是将 <code>Godeps/_workspace</code> 里的内容直接加到自己项目的版本控制里。</p>
 <h4 id="其他命令">其他命令</h4>
 <p>其他的 go 命令基本上都可以通过 godep 执行，例如</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">godep go build
-godep go install
-godep go fmt
-</code></pre></div><p>godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>godep go build
+</span></span><span style="display:flex;"><span>godep go install
+</span></span><span style="display:flex;"><span>godep go fmt
+</span></span></code></pre></div><p>godep 封装的 go 命令其实就是将 Godeps/_workspace 加入到 GOPATH 中，这样编译的时候就会去 Godeps/_workspace 中寻找第三方包。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

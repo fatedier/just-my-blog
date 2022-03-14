@@ -7,11 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Sun, 16 Jul 2017 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://blog.fatedier.com/tags/mesos/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sun, 16 Jul 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/mesos/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>记一次mesos集群停容器时间过长的问题排查</title>
       <link>https://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</link>

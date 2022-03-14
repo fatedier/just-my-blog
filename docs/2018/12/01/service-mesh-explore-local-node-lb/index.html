@@ -82,7 +82,7 @@
 <li>Instance: 实例，服务的最小实现单元。</li>
 </ul>
 <p>这里主要关心 Instance 这个结构，其 protobuf 定义如下:</p>
-<pre><code>message Instance {
+<pre tabindex="0"><code>message Instance {
     NetworkEndpoint endpoint = 1;
     Labels labels = 2;
 }
@@ -96,46 +96,46 @@ message NetworkEndpoint {
 <p>我们需要利用的就是 <code>node</code> 这个标签，表示该实例所在的物理机器节点。这个标签可以为空，表示未知。</p>
 <h3 id="kubernetes-中获取-node-信息">kubernetes 中获取 Node 信息</h3>
 <p>在 kubernetes 中获取 NodeName 的简单代码示例:</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang">out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#39c">*</span>model.Instance, <span style="color:#cd00cd">0</span>)
-<span style="color:#cdcd00">for</span> _, item <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> d.factory.Core().V1().Endpoints().Informer().GetStore().List() {
-    ep <span style="color:#39c">:=</span> <span style="color:#39c">*</span>item.(<span style="color:#39c">*</span>corev1.Endpoints)
-    
-    <span style="color:#cdcd00">for</span> _, ss <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> ep.Subsets {
-        <span style="color:#cdcd00">for</span> _, ea <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> ss.Addresses {
-            <span style="color:#cdcd00">for</span> _, port <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> ss.Ports {
-                labels <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>(model.Labels)
-                labels[<span style="color:#cd0000">&#34;namespace&#34;</span>] = ep.Namespace
-                labels[<span style="color:#cd0000">&#34;registry&#34;</span>] = <span style="color:#cd00cd">string</span>(registry.KubernetesRegistry)
-                labels[<span style="color:#cd0000">&#34;service&#34;</span>] = ep.Name
-                labels[<span style="color:#cd0000">&#34;cluster_id&#34;</span>] = d.clusterID
-                <span style="color:#cdcd00">if</span> ea.NodeName <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
-                    labels[<span style="color:#cd0000">&#34;node&#34;</span>] = <span style="color:#39c">*</span>ea.NodeName
-                }
-
-                out = <span style="color:#cd00cd">append</span>(out, <span style="color:#39c">&amp;</span>model.Instance{
-                    Endpoint: <span style="color:#39c">&amp;</span>model.NetworkEndpoint{
-                        Address:  ea.IP,
-                        Port:     <span style="color:#cd00cd">int</span>(port.Port),
-                        PortName: port.Name,
-                    },
-                    Labels: labels,
-                })
-            }
-        }
-    }
-}
-</code></pre></div><p>k8s 的 Endpoint 信息中会附加上 NodeName，需要注意的是这个参数有可能不存在。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span>out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#39c">*</span>model.Instance, <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">for</span> _, item <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> d.factory.Core().V1().Endpoints().Informer().GetStore().List() {
+</span></span><span style="display:flex;"><span>    ep <span style="color:#39c">:=</span> <span style="color:#39c">*</span>item.(<span style="color:#39c">*</span>corev1.Endpoints)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> _, ss <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> ep.Subsets {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> _, ea <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> ss.Addresses {
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">for</span> _, port <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> ss.Ports {
+</span></span><span style="display:flex;"><span>                labels <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>(model.Labels)
+</span></span><span style="display:flex;"><span>                labels[<span style="color:#cd0000">&#34;namespace&#34;</span>] = ep.Namespace
+</span></span><span style="display:flex;"><span>                labels[<span style="color:#cd0000">&#34;registry&#34;</span>] = <span style="color:#cd00cd">string</span>(registry.KubernetesRegistry)
+</span></span><span style="display:flex;"><span>                labels[<span style="color:#cd0000">&#34;service&#34;</span>] = ep.Name
+</span></span><span style="display:flex;"><span>                labels[<span style="color:#cd0000">&#34;cluster_id&#34;</span>] = d.clusterID
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">if</span> ea.NodeName <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>                    labels[<span style="color:#cd0000">&#34;node&#34;</span>] = <span style="color:#39c">*</span>ea.NodeName
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                out = <span style="color:#cd00cd">append</span>(out, <span style="color:#39c">&amp;</span>model.Instance{
+</span></span><span style="display:flex;"><span>                    Endpoint: <span style="color:#39c">&amp;</span>model.NetworkEndpoint{
+</span></span><span style="display:flex;"><span>                        Address:  ea.IP,
+</span></span><span style="display:flex;"><span>                        Port:     <span style="color:#cd00cd">int</span>(port.Port),
+</span></span><span style="display:flex;"><span>                        PortName: port.Name,
+</span></span><span style="display:flex;"><span>                    },
+</span></span><span style="display:flex;"><span>                    Labels: labels,
+</span></span><span style="display:flex;"><span>                })
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>k8s 的 Endpoint 信息中会附加上 NodeName，需要注意的是这个参数有可能不存在。</p>
 <h3 id="proxy-组件">proxy 组件</h3>
 <p>proxy 在启动时，会通过环境变量 <code>NODE_NAME</code> 识别出自己所在的物理节点。</p>
 <h4 id="部署在-k8s">部署在 k8s</h4>
 <p>proxy 组件在 k8s 中是以 sidecar 的方式和服务的容器部署在同一个 pod 中，所以必然是在同一个物理机器上。我们通过修改 proxy 的 yaml 文件配置附加上 <code>NODE_NAME</code> 这一环境变量。</p>
 <p>示例如下:</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">env</span>:
-- <span style="color:#cdcd00">name</span>: NODE_NAME
-  <span style="color:#cdcd00">valueFrom</span>:
-    <span style="color:#cdcd00">fieldRef</span>:
-      <span style="color:#cdcd00">fieldPath</span>: spec.nodeName
-</code></pre></div><h4 id="部署在物理机">部署在物理机</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>env:
+</span></span><span style="display:flex;"><span>- name: NODE_NAME
+</span></span><span style="display:flex;"><span>  valueFrom:
+</span></span><span style="display:flex;"><span>    fieldRef:
+</span></span><span style="display:flex;"><span>      fieldPath: spec.nodeName
+</span></span></code></pre></div><h4 id="部署在物理机">部署在物理机</h4>
 <p>通过启动 proxy 时主动指定 <code>NODE_NAME</code>。</p>
 <p><code>env NODE_NAME=`hostname` ./proxy</code></p>
 <h3 id="负载均衡算法">负载均衡算法</h3>

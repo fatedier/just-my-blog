@@ -75,45 +75,45 @@
 <p>要实现的效果就像 nginx 启动后通过 ps 查到的名称一样，这个名称就是自定义的，如下图</p>
 <p><img src="https://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-nginx-process-name.png" alt="nginx-process-name"></p>
 <h3 id="方法一">方法一</h3>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">prctl(PR_SET_NAME, name);
-</code></pre></div><p>通过这个函数可以将当前进程的名称修改为 <code>name</code> 的内容。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>prctl(PR_SET_NAME, name);
+</span></span></code></pre></div><p>通过这个函数可以将当前进程的名称修改为 <code>name</code> 的内容。</p>
 <p>我测试了一下，发现只有使用 <code>ps -L</code> 才能看到，达不到想要的效果。</p>
 <h3 id="方法二">方法二</h3>
 <p>参考了 <strong>nginx</strong> 中的源码，主要是通过修改 <strong>argv[0]</strong> 的值来实现的，但是需要注意将后面跟着的 <strong>environ</strong> 环境表中的信息移到其他地方，避免被覆盖。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#00cd00">void</span> set_proctitle(<span style="color:#00cd00">char</span><span style="color:#39c">**</span> argv, <span style="color:#cdcd00">const</span> <span style="color:#00cd00">char</span><span style="color:#39c">*</span> new_name)
-{
-    <span style="color:#00cd00">int</span> size <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
-    <span style="color:#00cd00">int</span> i;
-    <span style="color:#000080">// 申请新的空间存放 environ 中内容
-</span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
-        size <span style="color:#39c">+=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
-    }
-    <span style="color:#00cd00">char</span><span style="color:#39c">*</span> p <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)malloc(size);
-    <span style="color:#00cd00">char</span><span style="color:#39c">*</span> last_argv <span style="color:#39c">=</span> argv[<span style="color:#cd00cd">0</span>];
-    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; argv[i]; i<span style="color:#39c">++</span>) {
-        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">==</span> argv[i]) {
-            last_argv <span style="color:#39c">=</span> argv[i] <span style="color:#39c">+</span> strlen(argv[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
-        }
-    }  
-    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
-        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">==</span> environ[i]) {
-            size <span style="color:#39c">=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
-            last_argv <span style="color:#39c">=</span> environ[i] <span style="color:#39c">+</span> size;  
-   
-            memcpy(p, environ[i], size);
-            environ[i] <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)p;
-            p <span style="color:#39c">+=</span> size;
-        }  
-    }
-    last_argv<span style="color:#39c">--</span>;
-    <span style="color:#000080">// 修改 argv[0]，argv剩余的空间全部填0
-</span><span style="color:#000080"></span>    strncpy(argv[<span style="color:#cd00cd">0</span>], new_name, last_argv <span style="color:#39c">-</span> argv[<span style="color:#cd00cd">0</span>]);
-    p <span style="color:#39c">=</span> argv[<span style="color:#cd00cd">0</span>] <span style="color:#39c">+</span> strlen(argv[<span style="color:#cd00cd">0</span>]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
-    <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">-</span> p <span style="color:#39c">&gt;</span> <span style="color:#cd00cd">0</span>) {
-        memset(p, <span style="color:#cd00cd">0</span>, last_argv <span style="color:#39c">-</span> p);
-    }  
-}
-</code></pre></div><p>稍微解释一下，每一个 c 程序都有个 main 函数，作为程序启动入口函数。main 函数的原型是 <code>int main(int argc , char *argv[])</code>，其中 <strong>argc</strong> 表示命令行参数的个数，<strong>argv</strong> 是一个指针数组，保存所有命令行字符串。Linux进程名称是通过命令行参数 <strong>argv[0]</strong> 来表示的。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#00cd00">void</span> set_proctitle(<span style="color:#00cd00">char</span><span style="color:#39c">**</span> argv, <span style="color:#cdcd00">const</span> <span style="color:#00cd00">char</span><span style="color:#39c">*</span> new_name)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">int</span> size <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">int</span> i;
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 申请新的空间存放 environ 中内容
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>        size <span style="color:#39c">+=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">char</span><span style="color:#39c">*</span> p <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)malloc(size);
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">char</span><span style="color:#39c">*</span> last_argv <span style="color:#39c">=</span> argv[<span style="color:#cd00cd">0</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; argv[i]; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">==</span> argv[i]) {
+</span></span><span style="display:flex;"><span>            last_argv <span style="color:#39c">=</span> argv[i] <span style="color:#39c">+</span> strlen(argv[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }  
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">==</span> environ[i]) {
+</span></span><span style="display:flex;"><span>            size <span style="color:#39c">=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>            last_argv <span style="color:#39c">=</span> environ[i] <span style="color:#39c">+</span> size;  
+</span></span><span style="display:flex;"><span>   
+</span></span><span style="display:flex;"><span>            memcpy(p, environ[i], size);
+</span></span><span style="display:flex;"><span>            environ[i] <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)p;
+</span></span><span style="display:flex;"><span>            p <span style="color:#39c">+=</span> size;
+</span></span><span style="display:flex;"><span>        }  
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    last_argv<span style="color:#39c">--</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 修改 argv[0]，argv剩余的空间全部填0
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    strncpy(argv[<span style="color:#cd00cd">0</span>], new_name, last_argv <span style="color:#39c">-</span> argv[<span style="color:#cd00cd">0</span>]);
+</span></span><span style="display:flex;"><span>    p <span style="color:#39c">=</span> argv[<span style="color:#cd00cd">0</span>] <span style="color:#39c">+</span> strlen(argv[<span style="color:#cd00cd">0</span>]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">-</span> p <span style="color:#39c">&gt;</span> <span style="color:#cd00cd">0</span>) {
+</span></span><span style="display:flex;"><span>        memset(p, <span style="color:#cd00cd">0</span>, last_argv <span style="color:#39c">-</span> p);
+</span></span><span style="display:flex;"><span>    }  
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>稍微解释一下，每一个 c 程序都有个 main 函数，作为程序启动入口函数。main 函数的原型是 <code>int main(int argc , char *argv[])</code>，其中 <strong>argc</strong> 表示命令行参数的个数，<strong>argv</strong> 是一个指针数组，保存所有命令行字符串。Linux进程名称是通过命令行参数 <strong>argv[0]</strong> 来表示的。</p>
 <p>而进程执行时的环境变量信息的存储地址就是紧接着 <strong>argv</strong> 之后，通过 <code>char **environ</code> 变量来获取，类似于下图</p>
 <p><img src="https://image.fatedier.com/pic/2015/2015-08-24-how-to-modify-process-name-argv-info.png" alt="argv-info"></p>
 <p>由于我们需要修改 <strong>argv[0]</strong> 的值，有可能新的字符串的长度超过原来 <strong>argv</strong> 中所有字符串长度的总和，又因为 <strong>environ</strong> 在内存空间上是紧跟着 <strong>argv</strong> 的，我们如果直接修改 <strong>argv[0]</strong> 的值，有可能会覆盖掉 <strong>environ</strong> 的内存空间，所以需要先将 <strong>environ</strong> 的内容 copy 到一块新的内存空间，之后再将 <strong>environ</strong> 指针指向新的空间。</p>
@@ -122,56 +122,56 @@
 <p>经过测试，发现 <strong>environ</strong> 是一个全局变量，可以获取到它的地址，而 <strong>argv</strong> 中内容可以用另外一种方式取得，通过查看 <code>/proc/10000/cmdline</code> 中的值（10000是该进程的进程号），可以获取命令行启动参数的字符串（也就是 <strong>argv</strong> 中的内容，如果 <strong>argv</strong> 没有被其他代码修改过的话），所以用 <strong>environ</strong> 的地址减去 <strong>cmdline</strong> 中字符串的长度就可以得到 <strong>argv[0]</strong> 的地址。</p>
 <p><strong>注：需要注意的是 cmdline 不是一个普通文件，不能用 stat 或者 ftell 等函数来获取长度，必须用 read 等读取文件的函数去读取。</strong></p>
 <p>参考代码如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#00cd00">void</span> set_proctitle_unsafe(<span style="color:#cdcd00">const</span> <span style="color:#00cd00">char</span><span style="color:#39c">*</span> new_name)
-{
-    <span style="color:#000080">// 获取该进程的启动参数字符串
-</span><span style="color:#000080"></span>    <span style="color:#00cd00">int</span> pid <span style="color:#39c">=</span> getpid();
-    <span style="color:#00cd00">char</span> file_name[<span style="color:#cd00cd">100</span>];
-    snprintf(file_name, <span style="color:#cdcd00">sizeof</span>(file_name), <span style="color:#cd0000">&#34;/proc/%d/cmdline&#34;</span>, pid);
-
-    <span style="color:#00cd00">int</span> fd <span style="color:#39c">=</span> open(file_name, O_RDONLY);
-    <span style="color:#cdcd00">if</span> (fd <span style="color:#39c">&lt;</span> <span style="color:#cd00cd">0</span>)
-        <span style="color:#cdcd00">return</span>;
-
-    <span style="color:#00cd00">char</span> tempCmd[<span style="color:#cd00cd">513</span>];
-    <span style="color:#00cd00">long</span> cmd_length <span style="color:#39c">=</span> read(fd, tempCmd, <span style="color:#cdcd00">sizeof</span>(tempCmd));
-    close(fd);
-
-    <span style="color:#000080">// 获取 argv[0] 的地址
-</span><span style="color:#000080"></span>    <span style="color:#00cd00">char</span> <span style="color:#39c">*</span>argv <span style="color:#39c">=</span> environ[<span style="color:#cd00cd">0</span>];
-    argv <span style="color:#39c">=</span> argv <span style="color:#39c">-</span> cmd_length;
-
-    <span style="color:#00cd00">int</span> size <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
-    <span style="color:#00cd00">int</span> i;
-    <span style="color:#000080">// 申请新的空间存放 environ 中内容
-</span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
-        size <span style="color:#39c">+=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
-    }
-    <span style="color:#00cd00">char</span><span style="color:#39c">*</span> p <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)malloc(size);
-
-    <span style="color:#00cd00">char</span><span style="color:#39c">*</span> last_argv <span style="color:#39c">=</span> argv;
-    last_argv <span style="color:#39c">=</span> argv <span style="color:#39c">+</span> cmd_length;
-
-    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
-        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">==</span> environ[i]) {
-            size <span style="color:#39c">=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
-            last_argv <span style="color:#39c">=</span> environ[i] <span style="color:#39c">+</span> size;
-
-            memcpy(p, environ[i], size);
-            environ[i] <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)p;
-            p <span style="color:#39c">+=</span> size;
-        }
-    }
-    last_argv<span style="color:#39c">--</span>;
-
-    <span style="color:#000080">// 修改 argv[0] 的内容
-</span><span style="color:#000080"></span>    strncpy(argv, new_name, last_argv <span style="color:#39c">-</span> argv);
-    p <span style="color:#39c">=</span> (argv) <span style="color:#39c">+</span> strlen(argv) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
-    <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">-</span> p <span style="color:#39c">&gt;</span> <span style="color:#cd00cd">0</span>) {
-        memset(p, <span style="color:#cd00cd">0</span>, last_argv <span style="color:#39c">-</span> p);
-    }
-}
-</code></pre></div><p>这个函数是不安全的，需要小心使用，因为不能确定 <strong>environ</strong> 的地址是否已经被其他人修改过了，比如在 php 扩展中，有可能已经被其他程序用同样的方法修改过，这样就会造成获取到的 <strong>argv[0]</strong> 的地址是未知的，执行的程序可能就会出现内存错误。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#00cd00">void</span> set_proctitle_unsafe(<span style="color:#cdcd00">const</span> <span style="color:#00cd00">char</span><span style="color:#39c">*</span> new_name)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 获取该进程的启动参数字符串
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#00cd00">int</span> pid <span style="color:#39c">=</span> getpid();
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">char</span> file_name[<span style="color:#cd00cd">100</span>];
+</span></span><span style="display:flex;"><span>    snprintf(file_name, <span style="color:#cdcd00">sizeof</span>(file_name), <span style="color:#cd0000">&#34;/proc/%d/cmdline&#34;</span>, pid);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">int</span> fd <span style="color:#39c">=</span> open(file_name, O_RDONLY);
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> (fd <span style="color:#39c">&lt;</span> <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">char</span> tempCmd[<span style="color:#cd00cd">513</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">long</span> cmd_length <span style="color:#39c">=</span> read(fd, tempCmd, <span style="color:#cdcd00">sizeof</span>(tempCmd));
+</span></span><span style="display:flex;"><span>    close(fd);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 获取 argv[0] 的地址
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#00cd00">char</span> <span style="color:#39c">*</span>argv <span style="color:#39c">=</span> environ[<span style="color:#cd00cd">0</span>];
+</span></span><span style="display:flex;"><span>    argv <span style="color:#39c">=</span> argv <span style="color:#39c">-</span> cmd_length;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">int</span> size <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">int</span> i;
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 申请新的空间存放 environ 中内容
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>        size <span style="color:#39c">+=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">char</span><span style="color:#39c">*</span> p <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)malloc(size);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00cd00">char</span><span style="color:#39c">*</span> last_argv <span style="color:#39c">=</span> argv;
+</span></span><span style="display:flex;"><span>    last_argv <span style="color:#39c">=</span> argv <span style="color:#39c">+</span> cmd_length;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> (i <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>; environ[i]; i<span style="color:#39c">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">==</span> environ[i]) {
+</span></span><span style="display:flex;"><span>            size <span style="color:#39c">=</span> strlen(environ[i]) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>            last_argv <span style="color:#39c">=</span> environ[i] <span style="color:#39c">+</span> size;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            memcpy(p, environ[i], size);
+</span></span><span style="display:flex;"><span>            environ[i] <span style="color:#39c">=</span> (<span style="color:#00cd00">char</span><span style="color:#39c">*</span>)p;
+</span></span><span style="display:flex;"><span>            p <span style="color:#39c">+=</span> size;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    last_argv<span style="color:#39c">--</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 修改 argv[0] 的内容
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    strncpy(argv, new_name, last_argv <span style="color:#39c">-</span> argv);
+</span></span><span style="display:flex;"><span>    p <span style="color:#39c">=</span> (argv) <span style="color:#39c">+</span> strlen(argv) <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> (last_argv <span style="color:#39c">-</span> p <span style="color:#39c">&gt;</span> <span style="color:#cd00cd">0</span>) {
+</span></span><span style="display:flex;"><span>        memset(p, <span style="color:#cd00cd">0</span>, last_argv <span style="color:#39c">-</span> p);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这个函数是不安全的，需要小心使用，因为不能确定 <strong>environ</strong> 的地址是否已经被其他人修改过了，比如在 php 扩展中，有可能已经被其他程序用同样的方法修改过，这样就会造成获取到的 <strong>argv[0]</strong> 的地址是未知的，执行的程序可能就会出现内存错误。</p>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

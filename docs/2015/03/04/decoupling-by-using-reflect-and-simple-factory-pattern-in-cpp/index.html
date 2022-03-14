@@ -76,49 +76,49 @@
 <p>这里只列举几个简要的流程，仅包括拼报文，发送报文，接收报文，解析报文，其余整体架构以及后续处理等内容省略。</p>
 <h3 id="初步设计">初步设计</h3>
 <p>创建一个银行交互类 BankOpt，包括四个函数</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#00cd00">int</span> setMsg();       <span style="color:#000080">// 拼报文
-</span><span style="color:#000080"></span><span style="color:#00cd00">int</span> sendMsg();      <span style="color:#000080">// 发送报文
-</span><span style="color:#000080"></span><span style="color:#00cd00">int</span> getMsg();       <span style="color:#000080">// 接收报文
-</span><span style="color:#000080"></span><span style="color:#00cd00">int</span> parseMsg();     <span style="color:#000080">// 解析报文
-</span></code></pre></div><p>然后在每个函数中通过if-else来判断具体是哪一个银行，之后进行相应的处理。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00cd00">int</span> setMsg();       <span style="color:#000080">// 拼报文
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">int</span> sendMsg();      <span style="color:#000080">// 发送报文
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">int</span> getMsg();       <span style="color:#000080">// 接收报文
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">int</span> parseMsg();     <span style="color:#000080">// 解析报文
+</span></span></span></code></pre></div><p>然后在每个函数中通过if-else来判断具体是哪一个银行，之后进行相应的处理。</p>
 <p>这种设计在刚开发的时候非常方便，代码量少，但是如果后续需要接入另外一个银行时就需要改动 <strong>BankOpt</strong> 类，不符合设计模式中的开放-封闭原则。而且单个函数中将来可能会有大量的 <strong>if-else</strong>，使代码可读性下降。</p>
 <h3 id="简单工厂模式">简单工厂模式</h3>
 <p>通过简单工厂模式，我们可以创建一个专门的工厂类用于实例化一个合适的银行交互类，只需要这个银行交互类具有共同的接口即可。</p>
 <p>首先，为了实现更好的复用，把各个银行交互类中相同的部分抽象出来，形成一个银行交互基类，代码如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#cdcd00">class</span> <span style="color:#00cdcd">BaseBank</span>
-{
-<span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
-    <span style="color:#cdcd00">virtual</span> <span style="color:#00cd00">int</span> setMsg() <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
-    <span style="color:#cdcd00">virtual</span> <span style="color:#00cd00">int</span> sendMsg() <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
-    <span style="color:#cdcd00">virtual</span> <span style="color:#00cd00">int</span> getMsg() <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
-    <span style="color:#cdcd00">virtual</span> <span style="color:#00cd00">int</span> parseMsg() <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
-};
-</code></pre></div><p>这里仅仅声明了四个纯虚函数，具体的业务逻辑在子类中实现。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#cdcd00">class</span> <span style="color:#00cdcd">BaseBank</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">virtual</span> <span style="color:#00cd00">int</span> setMsg() <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">virtual</span> <span style="color:#00cd00">int</span> sendMsg() <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">virtual</span> <span style="color:#00cd00">int</span> getMsg() <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">virtual</span> <span style="color:#00cd00">int</span> parseMsg() <span style="color:#39c">=</span> <span style="color:#cd00cd">0</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>这里仅仅声明了四个纯虚函数，具体的业务逻辑在子类中实现。</p>
 <p>创建两个银行交互子类GSBank（工商银行）和RMBank（人民银行），继承BaseBank，实现四个虚函数。</p>
 <h4 id="创建一个工厂类">创建一个工厂类</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#cdcd00">class</span> <span style="color:#00cdcd">BankFactory</span>
-{
-<span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
-    BaseBank<span style="color:#39c">*</span> createBank(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> bank_name) {
-    <span style="color:#cdcd00">if</span> (bank_name <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;SBank&#34;</span>) 
-        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">new</span> GSBank();
-    <span style="color:#cdcd00">else</span> if (bank_name <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;MBank&#34;</span>)
-        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">new</span> RMBank();
-    }
-};
-</code></pre></div><p>工厂类中有一个 <strong>createBank</strong> 函数，用于根据银行编码创建相应的实例并返回其基类指针，这样我们只需要通过基类指针调用相关函数即可。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#cdcd00">class</span> <span style="color:#00cdcd">BankFactory</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
+</span></span><span style="display:flex;"><span>    BaseBank<span style="color:#39c">*</span> createBank(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> bank_name) {
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> (bank_name <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;SBank&#34;</span>) 
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">new</span> GSBank();
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">else</span> if (bank_name <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;MBank&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">new</span> RMBank();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>工厂类中有一个 <strong>createBank</strong> 函数，用于根据银行编码创建相应的实例并返回其基类指针，这样我们只需要通过基类指针调用相关函数即可。</p>
 <h4 id="在主流程中调用">在主流程中调用</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">BankFactory bf;
-BaseBank<span style="color:#39c">*</span> t <span style="color:#39c">=</span> (BaseBank<span style="color:#39c">*</span>)bf.createBank(bank_name);
-<span style="color:#cdcd00">if</span> (t <span style="color:#39c">==</span> <span style="color:#cd00cd">NULL</span>) {
-    cout <span style="color:#39c">&lt;&lt;</span> <span style="color:#cd0000">&#34;银行编码错误！&#34;</span> <span style="color:#39c">&lt;&lt;</span> endl;
-    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">2</span>;
-}
-t<span style="color:#39c">-&gt;</span>setMsg();
-t<span style="color:#39c">-&gt;</span>sendMsg();
-t<span style="color:#39c">-&gt;</span>getMsg();
-t<span style="color:#39c">-&gt;</span>parseMsg();
-</code></pre></div><h4 id="优缺点">优缺点</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>BankFactory bf;
+</span></span><span style="display:flex;"><span>BaseBank<span style="color:#39c">*</span> t <span style="color:#39c">=</span> (BaseBank<span style="color:#39c">*</span>)bf.createBank(bank_name);
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">if</span> (t <span style="color:#39c">==</span> <span style="color:#cd00cd">NULL</span>) {
+</span></span><span style="display:flex;"><span>    cout <span style="color:#39c">&lt;&lt;</span> <span style="color:#cd0000">&#34;银行编码错误！&#34;</span> <span style="color:#39c">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>t<span style="color:#39c">-&gt;</span>setMsg();
+</span></span><span style="display:flex;"><span>t<span style="color:#39c">-&gt;</span>sendMsg();
+</span></span><span style="display:flex;"><span>t<span style="color:#39c">-&gt;</span>getMsg();
+</span></span><span style="display:flex;"><span>t<span style="color:#39c">-&gt;</span>parseMsg();
+</span></span></code></pre></div><h4 id="优缺点">优缺点</h4>
 <p>利用简单工厂模式，当我们后续接入另外的银行时，只需要添加具体的银行交互类，实现业务函数，然后在工厂类的 <strong>createBank</strong> 函数中添加一个 <strong>else if</strong> 子句。相对于原来的设计已经改进很多了，但是仍然需要修改原来的工厂类的代码，没有彻底实现解耦。</p>
 <h3 id="反射">反射</h3>
 <p>反射在java的一些框架中使用的比较多，而且用起来非常方便。C++本身并不支持，但是我们可以模拟一些简单的特性。</p>
@@ -137,58 +137,58 @@ t<span style="color:#39c">-&gt;</span>parseMsg();
 </li>
 </ol>
 <p>相关代码如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#cdcd00">typedef</span> <span style="color:#00cd00">void</span><span style="color:#39c">*</span> (<span style="color:#39c">*</span>register_func)();
-
-<span style="color:#cdcd00">class</span> <span style="color:#00cdcd">Class</span>
-{
-<span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
-<span style="color:#cdcd00">static</span> <span style="color:#00cd00">void</span><span style="color:#39c">*</span> newInstance(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> class_name) {
-    map<span style="color:#39c">&lt;</span>string, register_func<span style="color:#39c">&gt;::</span>iterator it <span style="color:#39c">=</span> m_register.find(class_name);
-    <span style="color:#cdcd00">if</span> (it <span style="color:#39c">==</span> m_register.end())
-        <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">NULL</span>;
-    <span style="color:#cdcd00">else</span>
-        <span style="color:#cdcd00">return</span> it<span style="color:#39c">-&gt;</span>second();
-}
-<span style="color:#cdcd00">static</span> <span style="color:#00cd00">void</span> registerClass(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> class_name, register_func func) {
-    m_register[class_name] <span style="color:#39c">=</span> func;
-}
-
-<span style="color:#cdcd00">private</span><span style="color:#39c">:</span>
-    <span style="color:#000080">/* key is class name and value is function to create instance of class */</span>
-    <span style="color:#cdcd00">static</span> map<span style="color:#39c">&lt;</span>string, register_func<span style="color:#39c">&gt;</span> m_register;
-};
-
-
-<span style="color:#cdcd00">class</span> <span style="color:#00cdcd">Register</span>
-{
-<span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
-    Register(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> class_name, register_func func) {
-        Class<span style="color:#39c">::</span>registerClass(class_name, func);
-    }
-};
-
-<span style="color:#000080">#define REGISTER_CLASS(class_name) \
-</span><span style="color:#000080">    class class_name##Register { \
-</span><span style="color:#000080">    public: \
-</span><span style="color:#000080">        static void* newInstance() { \
-</span><span style="color:#000080">            return new class_name; \
-</span><span style="color:#000080">        } \
-</span><span style="color:#000080">    private: \
-</span><span style="color:#000080">        static const Register reg; \
-</span><span style="color:#000080">    };\
-</span><span style="color:#000080">const Register class_name##Register::reg(#class_name,class_name##Register::newInstance);
-</span></code></pre></div><p>还需要修改工厂类的 <strong>createBank</strong> 函数，利用Class的 <strong>newInstance</strong> 函数来创建实例：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">BaseBank<span style="color:#39c">*</span> createBank(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> bank_name) {
-    <span style="color:#cdcd00">return</span> (BaseBank<span style="color:#39c">*</span>)Class<span style="color:#39c">::</span>newInstance(bank_name);
-}
-</code></pre></div><p>Class类中的 <strong>m_register</strong> 变量是 <strong>static</strong> 类型的map，相当于全局变量。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#cdcd00">typedef</span> <span style="color:#00cd00">void</span><span style="color:#39c">*</span> (<span style="color:#39c">*</span>register_func)();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">class</span> <span style="color:#00cdcd">Class</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">static</span> <span style="color:#00cd00">void</span><span style="color:#39c">*</span> newInstance(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> class_name) {
+</span></span><span style="display:flex;"><span>    map<span style="color:#39c">&lt;</span>string, register_func<span style="color:#39c">&gt;::</span>iterator it <span style="color:#39c">=</span> m_register.find(class_name);
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> (it <span style="color:#39c">==</span> m_register.end())
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">NULL</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">else</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> it<span style="color:#39c">-&gt;</span>second();
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">static</span> <span style="color:#00cd00">void</span> registerClass(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> class_name, register_func func) {
+</span></span><span style="display:flex;"><span>    m_register[class_name] <span style="color:#39c">=</span> func;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">private</span><span style="color:#39c">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">/* key is class name and value is function to create instance of class */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">static</span> map<span style="color:#39c">&lt;</span>string, register_func<span style="color:#39c">&gt;</span> m_register;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">class</span> <span style="color:#00cdcd">Register</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span><span style="color:#cdcd00">public</span><span style="color:#39c">:</span>
+</span></span><span style="display:flex;"><span>    Register(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> class_name, register_func func) {
+</span></span><span style="display:flex;"><span>        Class<span style="color:#39c">::</span>registerClass(class_name, func);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">#define REGISTER_CLASS(class_name) \
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">    class class_name##Register { \
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">    public: \
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">        static void* newInstance() { \
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">            return new class_name; \
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">        } \
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">    private: \
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">        static const Register reg; \
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">    };\
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">const Register class_name##Register::reg(#class_name,class_name##Register::newInstance);
+</span></span></span></code></pre></div><p>还需要修改工厂类的 <strong>createBank</strong> 函数，利用Class的 <strong>newInstance</strong> 函数来创建实例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>BaseBank<span style="color:#39c">*</span> createBank(<span style="color:#cdcd00">const</span> string<span style="color:#39c">&amp;</span> bank_name) {
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> (BaseBank<span style="color:#39c">*</span>)Class<span style="color:#39c">::</span>newInstance(bank_name);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Class类中的 <strong>m_register</strong> 变量是 <strong>static</strong> 类型的map，相当于全局变量。</p>
 <p><strong>newInstance</strong> 函数，传入类名，查找map，调用回调函数，返回一个对应类的实例。</p>
 <p><strong>registerClass</strong> 函数传入类名和用于创建实例的回调函数并将信息存入全局的map中。</p>
 <p><strong>Register</strong> 类只有一个构造函数，会调用Class的 <strong>registerClass</strong> 函数完成注册。</p>
 <p>利用宏定义，在每一个需要反射的类后面额外增加一个类，其中有一个 <strong>Register</strong> 类型的 <strong>static const</strong> 变量，这样在程序启动的时候就会完成初始化调用 <strong>Register</strong> 类的构造函数，完成注册。</p>
 <p>之后只需要在需要反射的类，例如在工商银行交互类 GSBank 后面加上一条宏定义：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">REGISTER_CLASS(GSBank)
-</code></pre></div><p>就可以通过工厂类传入 &ldquo;GSBank&rdquo; 字符串获得工商银行交互类的实例。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>REGISTER_CLASS(GSBank)
+</span></span></code></pre></div><p>就可以通过工厂类传入 &ldquo;GSBank&rdquo; 字符串获得工商银行交互类的实例。</p>
 <h3 id="测试">测试</h3>
 <p><img src="https://image.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-gsbank.jpg" alt="GSBANK"></p>
 <p><img src="https://image.fatedier.com/pic/2015/2015-03-04-decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp-rmbank.jpg" alt="RMBANK"></p>

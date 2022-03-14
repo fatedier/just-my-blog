@@ -74,153 +74,153 @@
 <p>上一篇文章传送门： <a href="/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/">『InfluxDB详解之TSM存储引擎解析（一）』</a>。</p>
 <h3 id="主要数据结构">主要数据结构</h3>
 <p>InfluxDB 中的数据结构主要分为以下几个层次：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tsdb.Store
-    -- map<span style="color:#39c">[</span>string<span style="color:#39c">]</span>*tsdb.DatabaseIndex
-        -- map<span style="color:#39c">[</span>string<span style="color:#39c">]</span>*tsdb.Measurement
-        -- map<span style="color:#39c">[</span>string<span style="color:#39c">]</span>*tsdb.Series
-    -- map<span style="color:#39c">[</span>uint64<span style="color:#39c">]</span>*tsdb.Shard
-        -- Engine // 抽象接口，可插拔设计，目前是 tsm1 存储引擎
-            -- tsm1.WAL
-            -- tsm1.Cache
-            -- tsm1.Compactor
-            -- tsm1.FileStore
-</code></pre></div><h4 id="store">Store</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> Store <span style="color:#00cd00">struct</span> {
-    path <span style="color:#00cd00">string</span>         <span style="color:#000080">// 数据库文件在磁盘上的存储路径
-</span><span style="color:#000080"></span>
-    <span style="color:#000080">// 数据库索引文件，key 为数据库名
-</span><span style="color:#000080"></span>    databaseIndexes <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>DatabaseIndex
-
-    <span style="color:#000080">// 所有 shards 的索引，key 为其 shard ID
-</span><span style="color:#000080"></span>    shards <span style="color:#00cd00">map</span>[<span style="color:#00cd00">uint64</span>]<span style="color:#39c">*</span>Shard
-}
-</code></pre></div><p>Store 是存储结构中最顶层的抽象结构体，主要包含了 InfluxDB 中所有数据库的 <strong>索引</strong> 和 <strong>实际存储数据的 Shard 对象</strong>。InfluxDB 中的其他服务都需要通过 Store 对象对底层数据进行操作。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>tsdb.Store
+</span></span><span style="display:flex;"><span>    -- map<span style="color:#39c">[</span>string<span style="color:#39c">]</span>*tsdb.DatabaseIndex
+</span></span><span style="display:flex;"><span>        -- map<span style="color:#39c">[</span>string<span style="color:#39c">]</span>*tsdb.Measurement
+</span></span><span style="display:flex;"><span>        -- map<span style="color:#39c">[</span>string<span style="color:#39c">]</span>*tsdb.Series
+</span></span><span style="display:flex;"><span>    -- map<span style="color:#39c">[</span>uint64<span style="color:#39c">]</span>*tsdb.Shard
+</span></span><span style="display:flex;"><span>        -- Engine // 抽象接口，可插拔设计，目前是 tsm1 存储引擎
+</span></span><span style="display:flex;"><span>            -- tsm1.WAL
+</span></span><span style="display:flex;"><span>            -- tsm1.Cache
+</span></span><span style="display:flex;"><span>            -- tsm1.Compactor
+</span></span><span style="display:flex;"><span>            -- tsm1.FileStore
+</span></span></code></pre></div><h4 id="store">Store</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> Store <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    path <span style="color:#00cd00">string</span>         <span style="color:#000080">// 数据库文件在磁盘上的存储路径
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 数据库索引文件，key 为数据库名
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    databaseIndexes <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>DatabaseIndex
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 所有 shards 的索引，key 为其 shard ID
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    shards <span style="color:#00cd00">map</span>[<span style="color:#00cd00">uint64</span>]<span style="color:#39c">*</span>Shard
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Store 是存储结构中最顶层的抽象结构体，主要包含了 InfluxDB 中所有数据库的 <strong>索引</strong> 和 <strong>实际存储数据的 Shard 对象</strong>。InfluxDB 中的其他服务都需要通过 Store 对象对底层数据进行操作。</p>
 <h4 id="shard">Shard</h4>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> Shard <span style="color:#00cd00">struct</span> {
-    index   <span style="color:#39c">*</span>DatabaseIndex      <span style="color:#000080">// 所在数据库的索引对象
-</span><span style="color:#000080"></span>    path    <span style="color:#00cd00">string</span>              <span style="color:#000080">// shard 在磁盘上的路径
-</span><span style="color:#000080"></span>    walPath <span style="color:#00cd00">string</span>              <span style="color:#000080">// 对应的 wal 文件所在目录
-</span><span style="color:#000080"></span>    id      <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// shard ID，就是在磁盘上的文件名
-</span><span style="color:#000080"></span>    database        <span style="color:#00cd00">string</span>      <span style="color:#000080">// 所在数据库名
-</span><span style="color:#000080"></span>    retentionPolicy <span style="color:#00cd00">string</span>      <span style="color:#000080">// 对应存储策略名
-</span><span style="color:#000080"></span>    engine  Engine              <span style="color:#000080">// 存储引擎
-</span><span style="color:#000080"></span>}
-</code></pre></div><p>每一个 Shard 对象都有一个单独的底层数据存储引擎，engine 负责和底层的文件数据打交道。Shard 还保存了一个指向所在数据库索引的指针，便于快速检索到该 Shard 中的元数据信息。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> Shard <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    index   <span style="color:#39c">*</span>DatabaseIndex      <span style="color:#000080">// 所在数据库的索引对象
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    path    <span style="color:#00cd00">string</span>              <span style="color:#000080">// shard 在磁盘上的路径
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    walPath <span style="color:#00cd00">string</span>              <span style="color:#000080">// 对应的 wal 文件所在目录
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    id      <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// shard ID，就是在磁盘上的文件名
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    database        <span style="color:#00cd00">string</span>      <span style="color:#000080">// 所在数据库名
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    retentionPolicy <span style="color:#00cd00">string</span>      <span style="color:#000080">// 对应存储策略名
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    engine  Engine              <span style="color:#000080">// 存储引擎
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>}
+</span></span></code></pre></div><p>每一个 Shard 对象都有一个单独的底层数据存储引擎，engine 负责和底层的文件数据打交道。Shard 还保存了一个指向所在数据库索引的指针，便于快速检索到该 Shard 中的元数据信息。</p>
 <h4 id="engine">Engine</h4>
 <p>Engine 是一个抽象接口，对于 InfluxDB 来说，可以很方便地替换掉底层的存储引擎。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> Engine <span style="color:#00cd00">interface</span> {
-    LoadMetadataIndex(shardID <span style="color:#00cd00">uint64</span>, index <span style="color:#39c">*</span>DatabaseIndex) <span style="color:#00cd00">error</span>
-
-    Backup(w io.Writer, basePath <span style="color:#00cd00">string</span>, since time.Time) <span style="color:#00cd00">error</span>
-    Restore(r io.Reader, basePath <span style="color:#00cd00">string</span>) <span style="color:#00cd00">error</span>
-
-    CreateIterator(opt influxql.IteratorOptions) (influxql.Iterator, <span style="color:#00cd00">error</span>)
-    WritePoints(points []models.Point) <span style="color:#00cd00">error</span>
-    ContainsSeries(keys []<span style="color:#00cd00">string</span>) (<span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">bool</span>, <span style="color:#00cd00">error</span>)
-    DeleteSeries(keys []<span style="color:#00cd00">string</span>) <span style="color:#00cd00">error</span>
-    DeleteSeriesRange(keys []<span style="color:#00cd00">string</span>, min, max <span style="color:#00cd00">int64</span>) <span style="color:#00cd00">error</span>
-    DeleteMeasurement(name <span style="color:#00cd00">string</span>, seriesKeys []<span style="color:#00cd00">string</span>) <span style="color:#00cd00">error</span>
-    SeriesCount() (n <span style="color:#00cd00">int</span>, err <span style="color:#00cd00">error</span>)
-    MeasurementFields(measurement <span style="color:#00cd00">string</span>) <span style="color:#39c">*</span>MeasurementFields
-    CreateSnapshot() (<span style="color:#00cd00">string</span>, <span style="color:#00cd00">error</span>)
-}
-</code></pre></div><p>目前 tsm1 存储引擎中 Engine 的结构：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> Engine <span style="color:#00cd00">struct</span> {
-    path      <span style="color:#00cd00">string</span>
-    index             <span style="color:#39c">*</span>tsdb.DatabaseIndex                 <span style="color:#000080">// 数据库索引信息，目前没和存储引擎放在一起，看起来后续会更改设计作为存储引擎的一部分
-</span><span style="color:#000080"></span>    measurementFields <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>tsdb.MeasurementFields  <span style="color:#000080">// 所有 measurement 对应的 fields 对象
-</span><span style="color:#000080"></span>    WAL            <span style="color:#39c">*</span>WAL                 <span style="color:#000080">// WAL 文件对象
-</span><span style="color:#000080"></span>    Cache          <span style="color:#39c">*</span>Cache               <span style="color:#000080">// WAL 文件在内存中的缓存
-</span><span style="color:#000080"></span>    Compactor      <span style="color:#39c">*</span>Compactor           <span style="color:#000080">// 压缩合并管理对象
-</span><span style="color:#000080"></span>    CompactionPlan CompactionPlanner
-    FileStore      <span style="color:#39c">*</span>FileStore           <span style="color:#000080">// 数据文件对象
-</span><span style="color:#000080"></span>    MaxPointsPerBlock <span style="color:#00cd00">int</span>               <span style="color:#000080">// 每个 block 中最多存储的 Points 数量
-</span><span style="color:#000080"></span>
-    <span style="color:#000080">// Cache 超过指定大小后内容会被写入一个新的 TSM 文件
-</span><span style="color:#000080"></span>    CacheFlushMemorySizeThreshold <span style="color:#00cd00">uint64</span>
-
-    <span style="color:#000080">// Cache 超过多长时间后还没有数据写入，会将内容写入新的 TSM 文件
-</span><span style="color:#000080"></span>    CacheFlushWriteColdDuration time.Duration
-}
-</code></pre></div><p>Engine 负责维护和管理 <strong>Cache, FileStore, WAL</strong> 等对象。当用户进行插入或查询操作时，Engine 都会对这些对象进行相应的操作，而这些对上层用户和服务来说是透明的。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> Engine <span style="color:#00cd00">interface</span> {
+</span></span><span style="display:flex;"><span>    LoadMetadataIndex(shardID <span style="color:#00cd00">uint64</span>, index <span style="color:#39c">*</span>DatabaseIndex) <span style="color:#00cd00">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Backup(w io.Writer, basePath <span style="color:#00cd00">string</span>, since time.Time) <span style="color:#00cd00">error</span>
+</span></span><span style="display:flex;"><span>    Restore(r io.Reader, basePath <span style="color:#00cd00">string</span>) <span style="color:#00cd00">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    CreateIterator(opt influxql.IteratorOptions) (influxql.Iterator, <span style="color:#00cd00">error</span>)
+</span></span><span style="display:flex;"><span>    WritePoints(points []models.Point) <span style="color:#00cd00">error</span>
+</span></span><span style="display:flex;"><span>    ContainsSeries(keys []<span style="color:#00cd00">string</span>) (<span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">bool</span>, <span style="color:#00cd00">error</span>)
+</span></span><span style="display:flex;"><span>    DeleteSeries(keys []<span style="color:#00cd00">string</span>) <span style="color:#00cd00">error</span>
+</span></span><span style="display:flex;"><span>    DeleteSeriesRange(keys []<span style="color:#00cd00">string</span>, min, max <span style="color:#00cd00">int64</span>) <span style="color:#00cd00">error</span>
+</span></span><span style="display:flex;"><span>    DeleteMeasurement(name <span style="color:#00cd00">string</span>, seriesKeys []<span style="color:#00cd00">string</span>) <span style="color:#00cd00">error</span>
+</span></span><span style="display:flex;"><span>    SeriesCount() (n <span style="color:#00cd00">int</span>, err <span style="color:#00cd00">error</span>)
+</span></span><span style="display:flex;"><span>    MeasurementFields(measurement <span style="color:#00cd00">string</span>) <span style="color:#39c">*</span>MeasurementFields
+</span></span><span style="display:flex;"><span>    CreateSnapshot() (<span style="color:#00cd00">string</span>, <span style="color:#00cd00">error</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>目前 tsm1 存储引擎中 Engine 的结构：</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> Engine <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    path      <span style="color:#00cd00">string</span>
+</span></span><span style="display:flex;"><span>    index             <span style="color:#39c">*</span>tsdb.DatabaseIndex                 <span style="color:#000080">// 数据库索引信息，目前没和存储引擎放在一起，看起来后续会更改设计作为存储引擎的一部分
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    measurementFields <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>tsdb.MeasurementFields  <span style="color:#000080">// 所有 measurement 对应的 fields 对象
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    WAL            <span style="color:#39c">*</span>WAL                 <span style="color:#000080">// WAL 文件对象
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    Cache          <span style="color:#39c">*</span>Cache               <span style="color:#000080">// WAL 文件在内存中的缓存
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    Compactor      <span style="color:#39c">*</span>Compactor           <span style="color:#000080">// 压缩合并管理对象
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    CompactionPlan CompactionPlanner
+</span></span><span style="display:flex;"><span>    FileStore      <span style="color:#39c">*</span>FileStore           <span style="color:#000080">// 数据文件对象
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    MaxPointsPerBlock <span style="color:#00cd00">int</span>               <span style="color:#000080">// 每个 block 中最多存储的 Points 数量
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Cache 超过指定大小后内容会被写入一个新的 TSM 文件
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    CacheFlushMemorySizeThreshold <span style="color:#00cd00">uint64</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Cache 超过多长时间后还没有数据写入，会将内容写入新的 TSM 文件
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    CacheFlushWriteColdDuration time.Duration
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Engine 负责维护和管理 <strong>Cache, FileStore, WAL</strong> 等对象。当用户进行插入或查询操作时，Engine 都会对这些对象进行相应的操作，而这些对上层用户和服务来说是透明的。</p>
 <p><strong>从代码中的注释来看，在后续的版本中会把 tsdb.DatabaseIndex 移到 Engine 这一层，由存储引擎自己维护，降低代码的耦合程度。</strong></p>
 <h3 id="数据写入">数据写入</h3>
 <p><code>curl -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary 'cpu_usage,host=server01 value=0.64 1434055562000000000'</code></p>
 <h4 id="通过-httpd-插入数据">通过 httpd 插入数据</h4>
 <p>通常我们通过 HTTP 的接口写入一条或同时写入多条数据。在 InfluxDB 启动时会启动一个  httpd 服务，代码在 <code>services/httpd</code> 包中。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">func</span> (h <span style="color:#39c">*</span>Handler) serveWrite(w http.ResponseWriter, r <span style="color:#39c">*</span>http.Request, user <span style="color:#39c">*</span>meta.UserInfo) {
-    <span style="color:#39c">...</span>
-    err <span style="color:#39c">:=</span> h.PointsWriter.WritePoints(database, r.URL.Query().Get(<span style="color:#cd0000">&#34;rp&#34;</span>), consistency, points)
-    <span style="color:#39c">...</span>
-}
-</code></pre></div><p>httpd 服务解析出要插入的所有 Points，以及数据库，存储策略等内容，之后调用 PointsWriter 的 WritePoints 方法插入数据。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">func</span> (h <span style="color:#39c">*</span>Handler) serveWrite(w http.ResponseWriter, r <span style="color:#39c">*</span>http.Request, user <span style="color:#39c">*</span>meta.UserInfo) {
+</span></span><span style="display:flex;"><span>    <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>    err <span style="color:#39c">:=</span> h.PointsWriter.WritePoints(database, r.URL.Query().Get(<span style="color:#cd0000">&#34;rp&#34;</span>), consistency, points)
+</span></span><span style="display:flex;"><span>    <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>httpd 服务解析出要插入的所有 Points，以及数据库，存储策略等内容，之后调用 PointsWriter 的 WritePoints 方法插入数据。</p>
 <h4 id="pointswriter">PointsWriter</h4>
 <p>PointsWriter 的结构在 <code>coordinator</code> 包定义中，所有对数据的操作实际上都是通过这个对象来进行。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">func</span> (w <span style="color:#39c">*</span>PointsWriter) WritePoints(database, retentionPolicy <span style="color:#00cd00">string</span>, consistencyLevel models.ConsistencyLevel, points []models.Point) <span style="color:#00cd00">error</span> {
-    <span style="color:#39c">...</span>
-    <span style="color:#000080">// 将要写入的 Points 按照时间划分到要写入的 shard，返回一个 Point 和 shard 之间的映射关系
-</span><span style="color:#000080"></span>    shardMappings, err <span style="color:#39c">:=</span> w.MapShards(<span style="color:#39c">&amp;</span>WritePointsRequest{Database: database, RetentionPolicy: retentionPolicy, Points: points})
-    <span style="color:#39c">...</span>
-    
-    <span style="color:#000080">// 每一个 shard 都有一个独立的协程负责写入，只要有一个出错，就立即返回错误信息
-</span><span style="color:#000080"></span>    ch <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>(<span style="color:#00cd00">chan</span> <span style="color:#00cd00">error</span>, <span style="color:#cd00cd">len</span>(shardMappings.Points))
-    <span style="color:#cdcd00">for</span> shardID, points <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> shardMappings.Points {
-        <span style="color:#cdcd00">go</span> <span style="color:#00cd00">func</span>(shard <span style="color:#39c">*</span>meta.ShardInfo, database, retentionPolicy <span style="color:#00cd00">string</span>, points []models.Point) {
-            ch <span style="color:#39c">&lt;-</span> w.writeToShard(shard, database, retentionPolicy, points)
-        }(shardMappings.Shards[shardID], database, retentionPolicy, points)
-    }
-}
-</code></pre></div><p><code>WritePoints</code> 函数会<strong>根据 Point 的时间戳判断出其属于哪一个 Shard</strong>，之后调用 <code>writeToShard</code> 函数批量将 Points 分别写入到不同的 Shard 中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">func</span> (w <span style="color:#39c">*</span>PointsWriter) WritePoints(database, retentionPolicy <span style="color:#00cd00">string</span>, consistencyLevel models.ConsistencyLevel, points []models.Point) <span style="color:#00cd00">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 将要写入的 Points 按照时间划分到要写入的 shard，返回一个 Point 和 shard 之间的映射关系
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    shardMappings, err <span style="color:#39c">:=</span> w.MapShards(<span style="color:#39c">&amp;</span>WritePointsRequest{Database: database, RetentionPolicy: retentionPolicy, Points: points})
+</span></span><span style="display:flex;"><span>    <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 每一个 shard 都有一个独立的协程负责写入，只要有一个出错，就立即返回错误信息
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    ch <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>(<span style="color:#00cd00">chan</span> <span style="color:#00cd00">error</span>, <span style="color:#cd00cd">len</span>(shardMappings.Points))
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> shardID, points <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> shardMappings.Points {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">go</span> <span style="color:#00cd00">func</span>(shard <span style="color:#39c">*</span>meta.ShardInfo, database, retentionPolicy <span style="color:#00cd00">string</span>, points []models.Point) {
+</span></span><span style="display:flex;"><span>            ch <span style="color:#39c">&lt;-</span> w.writeToShard(shard, database, retentionPolicy, points)
+</span></span><span style="display:flex;"><span>        }(shardMappings.Shards[shardID], database, retentionPolicy, points)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>WritePoints</code> 函数会<strong>根据 Point 的时间戳判断出其属于哪一个 Shard</strong>，之后调用 <code>writeToShard</code> 函数批量将 Points 分别写入到不同的 Shard 中。</p>
 <p><code>writeToShard</code> 函数中，实际上是调用了 <code>TSDBStore</code> 的 <code>WriteToShard</code>。这里的 <code>TSDBStore</code> 就是前文中提到的 <code>Store</code> 对象，是一个负责数据存储的顶层的抽象数据结构。而在 <code>Store</code> 对象中存储了所有 Shard 的管理对象，数据将会交由指定的 Shard 去处理。Shard 会继续调用底层 tsm1 引擎的 engine 对象来真正意义上的写入数据。代码如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#000080">// PointsWirte.writeToShard -&gt; TSDBStore.WriteToShard
-</span><span style="color:#000080"></span><span style="color:#00cd00">func</span> (w <span style="color:#39c">*</span>PointsWriter) writeToShard(shard <span style="color:#39c">*</span>meta.ShardInfo, database, retentionPolicy <span style="color:#00cd00">string</span>, points []models.Point) <span style="color:#00cd00">error</span> {
-    <span style="color:#39c">...</span>
-    err <span style="color:#39c">:=</span> w.TSDBStore.WriteToShard(shard.ID, points)
-    <span style="color:#39c">...</span>
-}
-
-<span style="color:#000080">// TSDBStore.WriteToShard -&gt; shard.WritePoints
-</span><span style="color:#000080"></span><span style="color:#00cd00">func</span> (s <span style="color:#39c">*</span>Store) WriteToShard(shardID <span style="color:#00cd00">uint64</span>, points []models.Point) <span style="color:#00cd00">error</span> {
-    <span style="color:#39c">...</span>
-    sh, ok <span style="color:#39c">:=</span> s.shards[shardID]
-    <span style="color:#cdcd00">if</span> !ok {
-        <span style="color:#cdcd00">return</span> ErrShardNotFound
-    }
-    <span style="color:#cdcd00">return</span> sh.WritePoints(points)
-}
-
-<span style="color:#000080">// shard.WritePoints -&gt; engine.WritePoints
-</span><span style="color:#000080"></span><span style="color:#00cd00">func</span> (s <span style="color:#39c">*</span>Shard) WritePoints(points []models.Point) <span style="color:#00cd00">error</span> {
-    <span style="color:#39c">...</span>
-    err <span style="color:#39c">:=</span> s.engine.WritePoints(points)
-    <span style="color:#39c">...</span>
-}
-</code></pre></div><h4 id="engine-实际写入数据">Engine 实际写入数据</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000080">// PointsWirte.writeToShard -&gt; TSDBStore.WriteToShard
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> (w <span style="color:#39c">*</span>PointsWriter) writeToShard(shard <span style="color:#39c">*</span>meta.ShardInfo, database, retentionPolicy <span style="color:#00cd00">string</span>, points []models.Point) <span style="color:#00cd00">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>    err <span style="color:#39c">:=</span> w.TSDBStore.WriteToShard(shard.ID, points)
+</span></span><span style="display:flex;"><span>    <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// TSDBStore.WriteToShard -&gt; shard.WritePoints
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> (s <span style="color:#39c">*</span>Store) WriteToShard(shardID <span style="color:#00cd00">uint64</span>, points []models.Point) <span style="color:#00cd00">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>    sh, ok <span style="color:#39c">:=</span> s.shards[shardID]
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> !ok {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> ErrShardNotFound
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> sh.WritePoints(points)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// shard.WritePoints -&gt; engine.WritePoints
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> (s <span style="color:#39c">*</span>Shard) WritePoints(points []models.Point) <span style="color:#00cd00">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>    err <span style="color:#39c">:=</span> s.engine.WritePoints(points)
+</span></span><span style="display:flex;"><span>    <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="engine-实际写入数据">Engine 实际写入数据</h4>
 <p>从下面的代码中可以看出，写入操作实际上就是将 value 写入 Cache 和 WAL 中，Cache 中主要是一个 Map 的结构，根据 key 缓存不同时间戳的 value，而 WAL 文件中的数据就是内存中数据的一个持久化的存储文件。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">func</span> (e <span style="color:#39c">*</span>Engine) WritePoints(points []models.Point) <span style="color:#00cd00">error</span> {
-    values <span style="color:#39c">:=</span> <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>][]Value{}
-    <span style="color:#cdcd00">for</span> _, p <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> points {
-        <span style="color:#000080">// 一条插入语句中一个 series 对应的多个 value 会被拆分出来，形成多条数据
-</span><span style="color:#000080"></span>        <span style="color:#cdcd00">for</span> k, v <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> p.Fields() {
-            <span style="color:#000080">// 这里的 key 是 seriesKey + 分隔符 + filedName
-</span><span style="color:#000080"></span>            key <span style="color:#39c">:=</span> <span style="color:#cd00cd">string</span>(p.Key()) <span style="color:#39c">+</span> keyFieldSeparator <span style="color:#39c">+</span> k
-            values[key] = <span style="color:#cd00cd">append</span>(values[key], NewValue(p.Time().UnixNano(), v))
-        }    
-    }    
-    e.mu.RLock()
-    <span style="color:#cdcd00">defer</span> e.mu.RUnlock()
-
-    <span style="color:#000080">// 向 cache 中写入 value 数据，如果超过了内存阀值上限，返回错误
-</span><span style="color:#000080"></span>    err <span style="color:#39c">:=</span> e.Cache.WriteMulti(values)
-    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
-        <span style="color:#cdcd00">return</span> err
-    }    
-
-    <span style="color:#000080">// 将数据写入 wal 文件中
-</span><span style="color:#000080"></span>    _, err = e.WAL.WritePoints(values)
-    <span style="color:#cdcd00">return</span> err
-}
-</code></pre></div><h3 id="数据删除">数据删除</h3>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">func</span> (e <span style="color:#39c">*</span>Engine) WritePoints(points []models.Point) <span style="color:#00cd00">error</span> {
+</span></span><span style="display:flex;"><span>    values <span style="color:#39c">:=</span> <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>][]Value{}
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> _, p <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> points {
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// 一条插入语句中一个 series 对应的多个 value 会被拆分出来，形成多条数据
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">for</span> k, v <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> p.Fields() {
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">// 这里的 key 是 seriesKey + 分隔符 + filedName
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            key <span style="color:#39c">:=</span> <span style="color:#cd00cd">string</span>(p.Key()) <span style="color:#39c">+</span> keyFieldSeparator <span style="color:#39c">+</span> k
+</span></span><span style="display:flex;"><span>            values[key] = <span style="color:#cd00cd">append</span>(values[key], NewValue(p.Time().UnixNano(), v))
+</span></span><span style="display:flex;"><span>        }    
+</span></span><span style="display:flex;"><span>    }    
+</span></span><span style="display:flex;"><span>    e.mu.RLock()
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">defer</span> e.mu.RUnlock()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 向 cache 中写入 value 数据，如果超过了内存阀值上限，返回错误
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    err <span style="color:#39c">:=</span> e.Cache.WriteMulti(values)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> err
+</span></span><span style="display:flex;"><span>    }    
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 将数据写入 wal 文件中
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    _, err = e.WAL.WritePoints(values)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> err
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="数据删除">数据删除</h3>
 <p>InfluxDB 支持对数据的删除操作，和其他 LSM Tree 类似的数据库一样，都是采用了标记要删除的键的方式来进行操作，等到需要进行压缩合并时，再真正意义上地删除这些数据。</p>
 <p>在 <code>data</code> 中和 tsm file 同一级的目录下，会存在一些以 <code>.tombstone</code> 文件，其中就记录了哪些 key 在哪一个时间段内的数据需要删除。</p>
 <p>有两种情况需要用到这些文件，一种是在查询时，对于查询结果，需要和 <code>.tombstone</code> 文件中的内容进行比对，把不符合条件的 value 剔除。另外就是在 <code>Compactor</code> 进行压缩合并多个 tsm file 时，这些被删除的数据将不会被转存到新的 tsm file 中，从而达到删除数据，释放磁盘空间的目的。</p>
@@ -229,44 +229,44 @@
 <p><strong>InfluxDB 中采用索引的方式进行优化，主要存在两种类型的索引。</strong></p>
 <h4 id="元数据索引">元数据索引</h4>
 <p>一个数据库的元数据索引通过 <strong>DatabaseIndex</strong> 这个结构体来存储，在数据库启动时，会进行初始化，从所有 shard 下的 tsm file 中加载 index 数据，获取其中所有 <strong>Measurement</strong> 以及 <strong>Series</strong> 的信息并缓存到内存中。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> DatabaseIndex <span style="color:#00cd00">struct</span> {
-    measurements <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>Measurement <span style="color:#000080">// 该数据库下所有 Measurement 对象
-</span><span style="color:#000080"></span>    series       <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>Series      <span style="color:#000080">// 所有 Series 对象，SeriesKey = measurement + tags
-</span><span style="color:#000080"></span>    name <span style="color:#00cd00">string</span> <span style="color:#000080">// 数据库名
-</span><span style="color:#000080"></span>}
-</code></pre></div><p>这个结构体中最主要存放的就是该数据下所有 <code>Measurement</code> 和 <code>Series</code> 的内容，其数据结构如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> Measurement <span style="color:#00cd00">struct</span> {
-    Name       <span style="color:#00cd00">string</span> <span style="color:#cd0000">`json:&#34;name,omitempty&#34;`</span>
-    fieldNames <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">struct</span>{}      <span style="color:#000080">// 此 measurement 中的所有 filedNames
-</span><span style="color:#000080"></span>
-    <span style="color:#000080">// 内存中的索引信息
-</span><span style="color:#000080"></span>    <span style="color:#000080">// id 以及其对应的 series 信息，主要是为了在 seriesByTagKeyValue 中存储Id节约内存
-</span><span style="color:#000080"></span>    seriesByID          <span style="color:#00cd00">map</span>[<span style="color:#00cd00">uint64</span>]<span style="color:#39c">*</span>Series              <span style="color:#000080">// lookup table for series by their id
-</span><span style="color:#000080"></span>
-    <span style="color:#000080">// 根据 tagk 和 tagv 的双重索引，保存排好序的 SeriesID 数组
-</span><span style="color:#000080"></span>    <span style="color:#000080">// 这个 map 用于在查询操作时，可以根据 tags 来快速过滤出要查询的所有 SeriesID，之后根据 SeriesKey 以及时间范围从文件中读取相应内容
-</span><span style="color:#000080"></span>    seriesByTagKeyValue <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]SeriesIDs <span style="color:#000080">// map from tag key to value to sorted set of series ids
-</span><span style="color:#000080"></span>
-    <span style="color:#000080">// 此 measurement 中所有 series 的 id，按照 id 排序
-</span><span style="color:#000080"></span>    seriesIDs           SeriesIDs                       <span style="color:#000080">// sorted list of series IDs in this measurement
-</span><span style="color:#000080"></span>}
-
-<span style="color:#00cd00">type</span> Series <span style="color:#00cd00">struct</span> {
-    Key         <span style="color:#00cd00">string</span>              <span style="color:#000080">// series key
-</span><span style="color:#000080"></span>    Tags        <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">string</span>   <span style="color:#000080">// tags
-</span><span style="color:#000080"></span>    id          <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// id
-</span><span style="color:#000080"></span>    measurement <span style="color:#39c">*</span>Measurement        <span style="color:#000080">// 所属 measurement
-</span><span style="color:#000080"></span>    <span style="color:#000080">// 在哪些 shard 中存在
-</span><span style="color:#000080"></span>    shardIDs    <span style="color:#00cd00">map</span>[<span style="color:#00cd00">uint64</span>]<span style="color:#00cd00">bool</span> <span style="color:#000080">// shards that have this series defined
-</span><span style="color:#000080"></span>}
-</code></pre></div><h4 id="元数据查询">元数据查询</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> DatabaseIndex <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    measurements <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>Measurement <span style="color:#000080">// 该数据库下所有 Measurement 对象
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    series       <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>Series      <span style="color:#000080">// 所有 Series 对象，SeriesKey = measurement + tags
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    name <span style="color:#00cd00">string</span> <span style="color:#000080">// 数据库名
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>}
+</span></span></code></pre></div><p>这个结构体中最主要存放的就是该数据下所有 <code>Measurement</code> 和 <code>Series</code> 的内容，其数据结构如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> Measurement <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    Name       <span style="color:#00cd00">string</span> <span style="color:#cd0000">`json:&#34;name,omitempty&#34;`</span>
+</span></span><span style="display:flex;"><span>    fieldNames <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">struct</span>{}      <span style="color:#000080">// 此 measurement 中的所有 filedNames
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 内存中的索引信息
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// id 以及其对应的 series 信息，主要是为了在 seriesByTagKeyValue 中存储Id节约内存
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    seriesByID          <span style="color:#00cd00">map</span>[<span style="color:#00cd00">uint64</span>]<span style="color:#39c">*</span>Series              <span style="color:#000080">// lookup table for series by their id
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 根据 tagk 和 tagv 的双重索引，保存排好序的 SeriesID 数组
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// 这个 map 用于在查询操作时，可以根据 tags 来快速过滤出要查询的所有 SeriesID，之后根据 SeriesKey 以及时间范围从文件中读取相应内容
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    seriesByTagKeyValue <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]SeriesIDs <span style="color:#000080">// map from tag key to value to sorted set of series ids
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 此 measurement 中所有 series 的 id，按照 id 排序
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    seriesIDs           SeriesIDs                       <span style="color:#000080">// sorted list of series IDs in this measurement
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">type</span> Series <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    Key         <span style="color:#00cd00">string</span>              <span style="color:#000080">// series key
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    Tags        <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">string</span>   <span style="color:#000080">// tags
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    id          <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// id
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    measurement <span style="color:#39c">*</span>Measurement        <span style="color:#000080">// 所属 measurement
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// 在哪些 shard 中存在
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    shardIDs    <span style="color:#00cd00">map</span>[<span style="color:#00cd00">uint64</span>]<span style="color:#00cd00">bool</span> <span style="color:#000080">// shards that have this series defined
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>}
+</span></span></code></pre></div><h4 id="元数据查询">元数据查询</h4>
 <p>InfluxDB 支持一些特殊的查询语句（支持正则表达式匹配），可以查询一些 measurement 以及 tags 相关的数据，例如</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">SHOW MEASUREMENTS
-SHOW TAG KEYS FROM <span style="color:#cd0000">&#34;measurement_name&#34;</span>
-SHOW TAG VALUES FROM <span style="color:#cd0000">&#34;measurement_name&#34;</span> WITH <span style="color:#00cdcd">KEY</span> <span style="color:#39c">=</span> <span style="color:#cd0000">&#34;tag_key&#34;</span>
-</code></pre></div><p>例如我们需要查询 <code>cpu_usage</code> 这个 measurement 上传数据的机器有哪些，一个可能的查询语句为：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">SHOW TAG VALUES FROM <span style="color:#cd0000">&#34;cpu_usage&#34;</span> WITH <span style="color:#00cdcd">KEY</span> <span style="color:#39c">=</span> <span style="color:#cd0000">&#34;host&#34;</span>
-</code></pre></div><ol>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>SHOW MEASUREMENTS
+</span></span><span style="display:flex;"><span>SHOW TAG KEYS FROM <span style="color:#cd0000">&#34;measurement_name&#34;</span>
+</span></span><span style="display:flex;"><span>SHOW TAG VALUES FROM <span style="color:#cd0000">&#34;measurement_name&#34;</span> WITH <span style="color:#00cdcd">KEY</span> <span style="color:#39c">=</span> <span style="color:#cd0000">&#34;tag_key&#34;</span>
+</span></span></code></pre></div><p>例如我们需要查询 <code>cpu_usage</code> 这个 measurement 上传数据的机器有哪些，一个可能的查询语句为：</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>SHOW TAG VALUES FROM <span style="color:#cd0000">&#34;cpu_usage&#34;</span> WITH <span style="color:#00cdcd">KEY</span> <span style="color:#39c">=</span> <span style="color:#cd0000">&#34;host&#34;</span>
+</span></span></code></pre></div><ol>
 <li>首先根据 measurement 可以在 <code>DatabaseIndex.measurements</code> 中拿到 <code>cpu_usage</code> 所对应的 <code>Measurement</code> 对象。</li>
 <li>通过 <code>Measurement.seriesByTagKeyValue</code> 获取 <code>tagk=host</code> 所对应的以 <code>tagv</code> 为键的 map 对象。</li>
 <li>遍历这个 map 对象，所有的 key 则为我们需要获取的数据。</li>
@@ -274,146 +274,146 @@ SHOW TAG VALUES FROM <span style="color:#cd0000">&#34;measurement_name&#34;</spa
 <h4 id="普通数据查询的定位">普通数据查询的定位</h4>
 <p>对于普通的数据查询语句，则可以通过上述的元数据索引快速定位到要查询的数据所包含的所有 <strong>seriesKey，fieldName 和时间范围</strong>。</p>
 <p>举个例子，假设查询语句为获取 <code>server01</code> 这台机器上 <code>cpu_usage</code> 指标最近一小时的数据：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#cd0000">`</span>SELECT value FROM <span style="color:#cd0000">&#34;cpu_usage&#34;</span> WHERE <span style="color:#00cdcd">host</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;server01&#39;</span> AND <span style="color:#cd00cd">time</span> &gt; now<span style="color:#39c">()</span> - 1h<span style="color:#cd0000">`</span>
-</code></pre></div><p>先根据 <code>measurement=cpu_usage</code> 从 <code>DatabaseIndex.measurements</code> 中获取到 <code>cpu_usage</code> 对应的 <code>Measurement</code> 对象。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#cd0000">`</span>SELECT value FROM <span style="color:#cd0000">&#34;cpu_usage&#34;</span> WHERE <span style="color:#00cdcd">host</span><span style="color:#39c">=</span><span style="color:#cd0000">&#39;server01&#39;</span> AND <span style="color:#cd00cd">time</span> &gt; now<span style="color:#39c">()</span> - 1h<span style="color:#cd0000">`</span>
+</span></span></code></pre></div><p>先根据 <code>measurement=cpu_usage</code> 从 <code>DatabaseIndex.measurements</code> 中获取到 <code>cpu_usage</code> 对应的 <code>Measurement</code> 对象。</p>
 <p>之后通过 <code>DatabaseIndex.measurements[&quot;cpu_usage&quot;].seriesByTagKeyValue[&quot;host&quot;][&quot;server01&quot;]</code> 获取到所有匹配的 <code>series</code> 的 ID值，再通过 <code>Measurement.seriesByID</code> 这个 map 对象根据 <code>series ID</code> 获取它们的实际对象。</p>
 <p><strong>注意这里虽然只指定了 <code>host=server01</code>，但不代表 <code>cpu_usage</code> 下只有这一个 <code>series</code>，可能还有其他的 tags 例如 <code>user=1</code> 以及 <code>user=2</code>，这样获取到的 <code>series ID</code> 实际上有两个，获取数据时需要获取所有 <code>series</code> 下的数据。</strong></p>
 <p>在 <code>Series</code> 结构体中的 <code>shardIDs</code> 这个 map 变量存放了哪些 shard 中存在这个 series 的数据。而 <code>Measurement.fieldNames</code> 这个 map 可以帮助过滤掉 fieldName 不存在的情况。</p>
 <p>至此，我们在 o(1) 的时间复杂度内，获取到了所有符合要求的 series key、这些 series key 所存在的 shardID，要查询数据的时间范围，之后我们就可以创建数据迭代器从不同的 shard 中获取每一个 series key 在指定时间范围内的数据。后续的查询则和 tsm file 中的 Index 的在内存中的缓存相关。</p>
 <h4 id="tsm-file-索引">TSM File 索引</h4>
 <p>上一篇文章中讲过了对于 tsm file 中的 Index 部分会在内存中做间接索引，从而可以实现快速检索的目的。这里看一下具体的数据结构：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> indirectIndex <span style="color:#00cd00">struct</span> {
-    b []<span style="color:#00cd00">byte</span>                <span style="color:#000080">// 下层详细索引的字节流
-</span><span style="color:#000080"></span>    offsets []<span style="color:#00cd00">int32</span>         <span style="color:#000080">// 偏移量数组，记录了一个 key 在 b 中的偏移量
-</span><span style="color:#000080"></span>    minKey, maxKey <span style="color:#00cd00">string</span>   
-    minTime, maxTime <span style="color:#00cd00">int64</span>  <span style="color:#000080">// 此文件中的最小时间和最大时间，根据这个可以快速判断要查询的数据在此文件中是否存在，是否有必要读取这个文件
-</span><span style="color:#000080"></span>    tombstones <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>][]TimeRange   <span style="color:#000080">// 用于记录哪些 key 在指定范围内的数据是已经被删除的
-</span><span style="color:#000080"></span>}
-</code></pre></div><p><code>b</code> 直接对应着 tsm file 中的 Index 部分，通过对 offsets 进行二分查找，可以获取到指定 key 的所有 block 的索引信息，之后根据 offset 和 size 信息可以取出一个指定的 block 中的所有数据。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> indexEntries <span style="color:#00cd00">struct</span> {
-    Type    <span style="color:#00cd00">byte</span> 
-    entries []IndexEntry
-}
-
-<span style="color:#00cd00">type</span> IndexEntry <span style="color:#00cd00">struct</span> {
-    <span style="color:#000080">// 一个 block 中的 point 都在这个最小和最大的时间范围内
-</span><span style="color:#000080"></span>    MinTime, MaxTime <span style="color:#00cd00">int64</span>
-
-    <span style="color:#000080">// block 在 tsm 文件中偏移量
-</span><span style="color:#000080"></span>    Offset <span style="color:#00cd00">int64</span>
-
-    <span style="color:#000080">// block 的具体大小
-</span><span style="color:#000080"></span>    Size <span style="color:#00cd00">uint32</span>
-}
-</code></pre></div><p>在上一节中说明了通过元数据索引可以获取到所有 <strong>符合要求的 series key，它们对应的 shardID，时间范围</strong>。通过 tsm file 索引，我们就可以根据 series key 和 时间范围快速定位到数据在 tsm file 中的位置。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> indirectIndex <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    b []<span style="color:#00cd00">byte</span>                <span style="color:#000080">// 下层详细索引的字节流
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    offsets []<span style="color:#00cd00">int32</span>         <span style="color:#000080">// 偏移量数组，记录了一个 key 在 b 中的偏移量
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    minKey, maxKey <span style="color:#00cd00">string</span>   
+</span></span><span style="display:flex;"><span>    minTime, maxTime <span style="color:#00cd00">int64</span>  <span style="color:#000080">// 此文件中的最小时间和最大时间，根据这个可以快速判断要查询的数据在此文件中是否存在，是否有必要读取这个文件
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    tombstones <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>][]TimeRange   <span style="color:#000080">// 用于记录哪些 key 在指定范围内的数据是已经被删除的
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>}
+</span></span></code></pre></div><p><code>b</code> 直接对应着 tsm file 中的 Index 部分，通过对 offsets 进行二分查找，可以获取到指定 key 的所有 block 的索引信息，之后根据 offset 和 size 信息可以取出一个指定的 block 中的所有数据。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> indexEntries <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    Type    <span style="color:#00cd00">byte</span> 
+</span></span><span style="display:flex;"><span>    entries []IndexEntry
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">type</span> IndexEntry <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 一个 block 中的 point 都在这个最小和最大的时间范围内
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    MinTime, MaxTime <span style="color:#00cd00">int64</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// block 在 tsm 文件中偏移量
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    Offset <span style="color:#00cd00">int64</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// block 的具体大小
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    Size <span style="color:#00cd00">uint32</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在上一节中说明了通过元数据索引可以获取到所有 <strong>符合要求的 series key，它们对应的 shardID，时间范围</strong>。通过 tsm file 索引，我们就可以根据 series key 和 时间范围快速定位到数据在 tsm file 中的位置。</p>
 <h4 id="从-tsm-file-中读取数据">从 tsm file 中读取数据</h4>
 <p>InfluxDB 中的所有数据读取操作都通过 <strong>Iterator</strong> 来完成。</p>
 <p><strong>Iterator</strong> 是一个抽象概念，并且支持嵌套，一个 Iterator 可以从底层的其他 Iterator 中获取数据并进行处理，之后再将结果传递给上层的 Iterator。</p>
 <p>这部分的代码逻辑比较复杂，这里不展开说明。实际上 <strong>Iterator</strong> 底层最主要的就是通过 <code>cursor</code> 来获取数据。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> cursor <span style="color:#00cd00">interface</span> {
-    next() (t <span style="color:#00cd00">int64</span>, v <span style="color:#00cd00">interface</span>{})
-}
-
-<span style="color:#00cd00">type</span> floatCursor <span style="color:#00cd00">interface</span> {
-    cursor
-    nextFloat() (t <span style="color:#00cd00">int64</span>, v <span style="color:#00cd00">float64</span>)
-}
-
-<span style="color:#000080">// 底层主要是 KeyCursor，每次读取一个 block 的数据
-</span><span style="color:#000080"></span><span style="color:#00cd00">type</span> floatAscendingCursor <span style="color:#00cd00">struct</span> {
-    <span style="color:#000080">// 内存中的 value 对象
-</span><span style="color:#000080"></span>    cache <span style="color:#00cd00">struct</span> {
-        values Values
-        pos    <span style="color:#00cd00">int</span>
-    }
-
-    tsm <span style="color:#00cd00">struct</span> {
-        tdec      TimeDecoder   <span style="color:#000080">// 时间序列化对象
-</span><span style="color:#000080"></span>        vdec      FloatDecoder  <span style="color:#000080">// value 序列化对象
-</span><span style="color:#000080"></span>        buf       []FloatValue
-        values    []FloatValue  <span style="color:#000080">// 从 tsm 文件中读取到的 FloatValue 的缓存
-</span><span style="color:#000080"></span>        pos       <span style="color:#00cd00">int</span>
-        keyCursor <span style="color:#39c">*</span>KeyCursor
-    }
-}
-</code></pre></div><p><strong>cursor</strong> 提供了一个 <code>next()</code> 方法用于获取一个 value 值。每一种数据类型都有一个自己的 <code>cursor</code> 实现。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> cursor <span style="color:#00cd00">interface</span> {
+</span></span><span style="display:flex;"><span>    next() (t <span style="color:#00cd00">int64</span>, v <span style="color:#00cd00">interface</span>{})
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">type</span> floatCursor <span style="color:#00cd00">interface</span> {
+</span></span><span style="display:flex;"><span>    cursor
+</span></span><span style="display:flex;"><span>    nextFloat() (t <span style="color:#00cd00">int64</span>, v <span style="color:#00cd00">float64</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// 底层主要是 KeyCursor，每次读取一个 block 的数据
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">type</span> floatAscendingCursor <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 内存中的 value 对象
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    cache <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>        values Values
+</span></span><span style="display:flex;"><span>        pos    <span style="color:#00cd00">int</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    tsm <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>        tdec      TimeDecoder   <span style="color:#000080">// 时间序列化对象
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        vdec      FloatDecoder  <span style="color:#000080">// value 序列化对象
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        buf       []FloatValue
+</span></span><span style="display:flex;"><span>        values    []FloatValue  <span style="color:#000080">// 从 tsm 文件中读取到的 FloatValue 的缓存
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        pos       <span style="color:#00cd00">int</span>
+</span></span><span style="display:flex;"><span>        keyCursor <span style="color:#39c">*</span>KeyCursor
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>cursor</strong> 提供了一个 <code>next()</code> 方法用于获取一个 value 值。每一种数据类型都有一个自己的 <code>cursor</code> 实现。</p>
 <p>底层实现都是 <strong>KeyCursor</strong>，<strong>KeyCursor</strong> 会缓存每个 Block 的数据，通过 <code>Next()</code> 函数依次返回，当一个 Block 中的内容读完后再通过 <code>ReadBlock()</code> 函数读取下一个 Block 中的内容。</p>
 <h3 id="数据压缩与合并">数据压缩与合并</h3>
 <p>主要涉及到两个结构体：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">type</span> Compactor <span style="color:#00cd00">struct</span> {
-    Dir  <span style="color:#00cd00">string</span>
-    Size <span style="color:#00cd00">int</span>
-    FileStore <span style="color:#00cd00">interface</span> {
-        NextGeneration() <span style="color:#00cd00">int</span>
-    }
-}
-
-<span style="color:#00cd00">type</span> CompactionPlanner <span style="color:#00cd00">interface</span> {
-    Plan(lastWrite time.Time) []CompactionGroup
-    PlanLevel(level <span style="color:#00cd00">int</span>) []CompactionGroup
-    PlanOptimize() []CompactionGroup
-}
-
-<span style="color:#000080">// 默认的压缩合并计划
-</span><span style="color:#000080"></span><span style="color:#00cd00">type</span> DefaultPlanner <span style="color:#00cd00">struct</span> {
-    FileStore <span style="color:#00cd00">interface</span> {
-        Stats() []FileStat
-        LastModified() time.Time
-        BlockCount(path <span style="color:#00cd00">string</span>, idx <span style="color:#00cd00">int</span>) <span style="color:#00cd00">int</span>
-    }
-
-    <span style="color:#000080">// 如果一个 shard 对应的 wal 文件超过指定时间一直没有数据写入
-</span><span style="color:#000080"></span>    <span style="color:#000080">// 存储引擎将会将此 shard 中的 tsm 文件进行一次全量压缩合并
-</span><span style="color:#000080"></span>    CompactFullWriteColdDuration time.Duration
-
-    <span style="color:#000080">// 如果为 true，表示此 shard 中的 tsm 文件要么只有一个，要么已经处于单个文件最大值
-</span><span style="color:#000080"></span>    lastPlanCompactedFull <span style="color:#00cd00">bool</span>
-
-    <span style="color:#000080">// lastPlanCheck is the last time Plan was called
-</span><span style="color:#000080"></span>    lastPlanCheck time.Time
-}
-</code></pre></div><p>在 InfluxDB 创建一个 Shard 对应的底层的存储引擎时，会启用一些协程，每隔 1s 检查是否有需要压缩合并的任务，如果有就去执行相应的操作，部分代码如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#00cd00">func</span> (e <span style="color:#39c">*</span>Engine) SetCompactionsEnabled(enabled <span style="color:#00cd00">bool</span>) {
-    <span style="color:#cdcd00">if</span> enabled {
-        <span style="color:#39c">...</span>
-        e.done = <span style="color:#cd00cd">make</span>(<span style="color:#00cd00">chan</span> <span style="color:#00cd00">struct</span>{})
-        <span style="color:#000080">// 启用压缩合并功能
-</span><span style="color:#000080"></span>        e.Compactor.Open()
-
-        <span style="color:#000080">// 启用另外的协程去定期检测是否需要进行压缩合并
-</span><span style="color:#000080"></span>        e.wg.Add(<span style="color:#cd00cd">5</span>)
-        <span style="color:#000080">// 将 cache 中的内容刷新到磁盘上的新的 tsm 文件中
-</span><span style="color:#000080"></span>        <span style="color:#cdcd00">go</span> e.compactCache()
-        <span style="color:#000080">// 下面是定期合并不同 level 的 tsm 文件
-</span><span style="color:#000080"></span>        <span style="color:#cdcd00">go</span> e.compactTSMFull()
-        <span style="color:#cdcd00">go</span> e.compactTSMLevel(<span style="color:#cdcd00">true</span>, <span style="color:#cd00cd">1</span>)
-        <span style="color:#cdcd00">go</span> e.compactTSMLevel(<span style="color:#cdcd00">true</span>, <span style="color:#cd00cd">2</span>)
-        <span style="color:#cdcd00">go</span> e.compactTSMLevel(<span style="color:#cdcd00">false</span>, <span style="color:#cd00cd">3</span>)
-    }
-    <span style="color:#39c">...</span>
-}
-
-<span style="color:#00cd00">func</span> (e <span style="color:#39c">*</span>Engine) compactCache() {
-    <span style="color:#cdcd00">defer</span> e.wg.Done()
-    <span style="color:#000080">// 每秒钟检查一次
-</span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> {
-        <span style="color:#cdcd00">select</span> {
-        <span style="color:#cdcd00">case</span> <span style="color:#39c">&lt;-</span>e.done:
-            <span style="color:#cdcd00">return</span>
-
-        <span style="color:#cdcd00">default</span>:
-            <span style="color:#000080">// 更新缓存据上一次快照时间的间隔时间
-</span><span style="color:#000080"></span>            e.Cache.UpdateAge()
-            <span style="color:#cdcd00">if</span> e.ShouldCompactCache(e.WAL.LastWriteTime()) {
-                start <span style="color:#39c">:=</span> time.Now()
-                err <span style="color:#39c">:=</span> e.WriteSnapshot()
-                <span style="color:#39c">...</span>
-            }
-        }
-        time.Sleep(time.Second)
-    }
-}
-</code></pre></div><p><code>compactCache()</code> 函数负责定期检测 Cache 中的容量是否达到阀值，如果超过阀值会将 Cache 中的内容做一个快照，之后写入到一个新的 tsm file 中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> Compactor <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    Dir  <span style="color:#00cd00">string</span>
+</span></span><span style="display:flex;"><span>    Size <span style="color:#00cd00">int</span>
+</span></span><span style="display:flex;"><span>    FileStore <span style="color:#00cd00">interface</span> {
+</span></span><span style="display:flex;"><span>        NextGeneration() <span style="color:#00cd00">int</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">type</span> CompactionPlanner <span style="color:#00cd00">interface</span> {
+</span></span><span style="display:flex;"><span>    Plan(lastWrite time.Time) []CompactionGroup
+</span></span><span style="display:flex;"><span>    PlanLevel(level <span style="color:#00cd00">int</span>) []CompactionGroup
+</span></span><span style="display:flex;"><span>    PlanOptimize() []CompactionGroup
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// 默认的压缩合并计划
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">type</span> DefaultPlanner <span style="color:#00cd00">struct</span> {
+</span></span><span style="display:flex;"><span>    FileStore <span style="color:#00cd00">interface</span> {
+</span></span><span style="display:flex;"><span>        Stats() []FileStat
+</span></span><span style="display:flex;"><span>        LastModified() time.Time
+</span></span><span style="display:flex;"><span>        BlockCount(path <span style="color:#00cd00">string</span>, idx <span style="color:#00cd00">int</span>) <span style="color:#00cd00">int</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 如果一个 shard 对应的 wal 文件超过指定时间一直没有数据写入
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// 存储引擎将会将此 shard 中的 tsm 文件进行一次全量压缩合并
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    CompactFullWriteColdDuration time.Duration
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 如果为 true，表示此 shard 中的 tsm 文件要么只有一个，要么已经处于单个文件最大值
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    lastPlanCompactedFull <span style="color:#00cd00">bool</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// lastPlanCheck is the last time Plan was called
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    lastPlanCheck time.Time
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在 InfluxDB 创建一个 Shard 对应的底层的存储引擎时，会启用一些协程，每隔 1s 检查是否有需要压缩合并的任务，如果有就去执行相应的操作，部分代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">func</span> (e <span style="color:#39c">*</span>Engine) SetCompactionsEnabled(enabled <span style="color:#00cd00">bool</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> enabled {
+</span></span><span style="display:flex;"><span>        <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>        e.done = <span style="color:#cd00cd">make</span>(<span style="color:#00cd00">chan</span> <span style="color:#00cd00">struct</span>{})
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// 启用压缩合并功能
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        e.Compactor.Open()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// 启用另外的协程去定期检测是否需要进行压缩合并
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        e.wg.Add(<span style="color:#cd00cd">5</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// 将 cache 中的内容刷新到磁盘上的新的 tsm 文件中
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">go</span> e.compactCache()
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// 下面是定期合并不同 level 的 tsm 文件
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">go</span> e.compactTSMFull()
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">go</span> e.compactTSMLevel(<span style="color:#cdcd00">true</span>, <span style="color:#cd00cd">1</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">go</span> e.compactTSMLevel(<span style="color:#cdcd00">true</span>, <span style="color:#cd00cd">2</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">go</span> e.compactTSMLevel(<span style="color:#cdcd00">false</span>, <span style="color:#cd00cd">3</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> (e <span style="color:#39c">*</span>Engine) compactCache() {
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">defer</span> e.wg.Done()
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 每秒钟检查一次
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">for</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">select</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">case</span> <span style="color:#39c">&lt;-</span>e.done:
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">return</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">default</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">// 更新缓存据上一次快照时间的间隔时间
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            e.Cache.UpdateAge()
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> e.ShouldCompactCache(e.WAL.LastWriteTime()) {
+</span></span><span style="display:flex;"><span>                start <span style="color:#39c">:=</span> time.Now()
+</span></span><span style="display:flex;"><span>                err <span style="color:#39c">:=</span> e.WriteSnapshot()
+</span></span><span style="display:flex;"><span>                <span style="color:#39c">...</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        time.Sleep(time.Second)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>compactCache()</code> 函数负责定期检测 Cache 中的容量是否达到阀值，如果超过阀值会将 Cache 中的内容做一个快照，之后写入到一个新的 tsm file 中。</p>
 <p><code>compactTSMLevel()</code> 函数则负责对 tsm file 文件进行合并，每一个协程负责不同级别的文件，多个文件合并后，生成的新的文件级别会是旧文件中级别最高的那个文件加1。合并过程中，会在同一目录下创建以 <code>.tmp</code> 结尾的临时文件存储合并后的数据，当合并操作完成后，会进行替换操作，删除已经被合并完成的文件。<code>.tombstone</code> 文件在合并时也会被利用以过滤无效数据。</p>
 <h3 id="一些问题">一些问题</h3>
 <h4 id="go-不支持泛型">Go 不支持泛型</h4>

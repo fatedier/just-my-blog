@@ -80,50 +80,50 @@
 <p>第一个方法很显然不够优雅，在大并发量连接请求时对效率有很大影响，而且退出机制是延迟的，不能及时退出。</p>
 <p>第二个方法的问题就在于如果 <strong>close net.Listener</strong>，<code>accept</code> 函数返回的 <strong>error</strong> 信息只能拿到错误的字符串信息，如果是被 <strong>close</strong> 的话返回的信息是：<code>use of closed network connection</code>，这个时候退出监听，如果是其他错误，则继续监听。想法是好的，然而并不能用错误信息的字符串来判断是哪一种类型的错误，有可能以后的版本中错误信息字符串变更也说不定，最好不要在代码中写死。这个 <strong>error</strong> 其实是有类型的，在标准库中是 <code>errClosing</code>，开头小写，说明只能在包内部使用，我们没有办法使用这个类型来判断具体是哪一种错误。个人觉得这方面可能还没有 <strong>c语言</strong> 中通过 <strong>errno</strong> 的值来判断是哪一种类型的错误来的方便。</p>
 <p>既然不能通过 <strong>error</strong> 的字符串信息判断是哪一种错误，那么我们只能用类似第一个方法中使用的标志来判断了，先将结束标志置为 <strong>true</strong>，之后 <strong>close net.Listener</strong>，<code>accept</code> 函数返回 <code>error != nil</code> 时，检查结束标志，如果为 <strong>true</strong> 就退出，这样相比较第一个方法退出时就没有延迟了，参考代码如下：</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#cd00cd">package</span> main
-
-<span style="color:#cd00cd">import</span> (
-    <span style="color:#cd0000">&#34;fmt&#34;</span>
-    <span style="color:#cd0000">&#34;net&#34;</span>
-    <span style="color:#cd0000">&#34;time&#34;</span>
-)
-
-<span style="color:#00cd00">var</span> (
-    ln        net.Listener
-    closeFlag <span style="color:#00cd00">bool</span> = <span style="color:#cdcd00">false</span>
-)
-
-<span style="color:#00cd00">func</span> startServer() (err <span style="color:#00cd00">error</span>) {
-    ln, err = net.Listen(<span style="color:#cd0000">&#34;tcp&#34;</span>, <span style="color:#cd0000">&#34;:12345&#34;</span>)
-    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
-        <span style="color:#cdcd00">return</span> err
-    }
-    <span style="color:#cdcd00">defer</span> ln.Close()
-
-    <span style="color:#cdcd00">for</span> {
-        conn, err <span style="color:#39c">:=</span> ln.Accept()
-        <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
-            fmt.Printf(<span style="color:#cd0000">&#34;accept error: %v\n&#34;</span>, err)
-            <span style="color:#cdcd00">if</span> closeFlag {
-                <span style="color:#cdcd00">break</span>
-            } <span style="color:#cdcd00">else</span> {
-                <span style="color:#cdcd00">continue</span>
-            }
-        } <span style="color:#cdcd00">else</span> {
-            conn.Close()
-        }
-    }
-    <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">nil</span>
-}
-
-<span style="color:#00cd00">func</span> main() {
-    <span style="color:#cdcd00">go</span> startServer()
-    time.Sleep(<span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> time.Second)
-    closeFlag = <span style="color:#cdcd00">true</span>
-    ln.Close()
-    time.Sleep(<span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> time.Second)
-}
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#cd00cd">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cd00cd">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#cd0000">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cd0000">&#34;net&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cd0000">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">var</span> (
+</span></span><span style="display:flex;"><span>    ln        net.Listener
+</span></span><span style="display:flex;"><span>    closeFlag <span style="color:#00cd00">bool</span> = <span style="color:#cdcd00">false</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> startServer() (err <span style="color:#00cd00">error</span>) {
+</span></span><span style="display:flex;"><span>    ln, err = net.Listen(<span style="color:#cd0000">&#34;tcp&#34;</span>, <span style="color:#cd0000">&#34;:12345&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> err
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">defer</span> ln.Close()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> {
+</span></span><span style="display:flex;"><span>        conn, err <span style="color:#39c">:=</span> ln.Accept()
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>            fmt.Printf(<span style="color:#cd0000">&#34;accept error: %v\n&#34;</span>, err)
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> closeFlag {
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">break</span>
+</span></span><span style="display:flex;"><span>            } <span style="color:#cdcd00">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">continue</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#cdcd00">else</span> {
+</span></span><span style="display:flex;"><span>            conn.Close()
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> main() {
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">go</span> startServer()
+</span></span><span style="display:flex;"><span>    time.Sleep(<span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> time.Second)
+</span></span><span style="display:flex;"><span>    closeFlag = <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>    ln.Close()
+</span></span><span style="display:flex;"><span>    time.Sleep(<span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> time.Second)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
             </div>
             
             <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">

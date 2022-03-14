@@ -75,42 +75,42 @@
 <p>当前 Kubernetes 已经发布了 1.18 版本，这个问题仍然存在。</p>
 <p>社区相关 issue <a href="https://github.com/kubernetes/kubernetes/issues/68211">#68211</a></p>
 <h3 id="复现步骤">复现步骤</h3>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
-<span style="color:#cdcd00">apiVersion</span>: v1
-<span style="color:#cdcd00">kind</span>: Pod 
-<span style="color:#cdcd00">metadata</span>:
-  <span style="color:#cdcd00">name</span>: test-pod
-<span style="color:#cdcd00">spec</span>:
-  <span style="color:#cdcd00">volumes</span>:
-  - <span style="color:#cdcd00">configMap</span>:
-      <span style="color:#cdcd00">name</span>: extra-cfg
-    <span style="color:#cdcd00">name</span>: extra-cfg
-  <span style="color:#cdcd00">containers</span>:
-  - <span style="color:#cdcd00">name</span>: test
-    <span style="color:#cdcd00">image</span>: ubuntu:bionic
-    <span style="color:#cdcd00">command</span>: [<span style="color:#cd0000">&#34;sleep&#34;</span>, <span style="color:#cd0000">&#34;30&#34;</span>]
-    <span style="color:#cdcd00">resources</span>:
-      <span style="color:#cdcd00">requests</span>:
-        <span style="color:#cdcd00">cpu</span>: 100m
-    <span style="color:#cdcd00">volumeMounts</span>:
-      - <span style="color:#cdcd00">name</span>: extra-cfg
-        <span style="color:#cdcd00">mountPath</span>: /etc/extra.ini
-        <span style="color:#cdcd00">subPath</span>: extra.ini
----
-<span style="color:#cdcd00">apiVersion</span>: v1
-<span style="color:#cdcd00">data</span>:
-  <span style="color:#cdcd00">extra.ini</span>: <span style="color:#cd0000">|
-</span><span style="color:#cd0000">    somedata</span>
-<span style="color:#cdcd00">kind</span>: ConfigMap
-<span style="color:#cdcd00">metadata</span>:
-  <span style="color:#cdcd00">name</span>: extra-cfg
-</code></pre></div><p>Apply 此配置，Pod 启动完成后，修改 configmap 的内容，等待 30 秒后容器自动退出，kubelet 重启容器，此时观察到容器持续 mount 失败。</p>
-<pre><code>Error: failed to start container &quot;test&quot;: Error response from daemon: OCI runtime create failed: container_linux.go:345: starting container process caused &quot;process_linux.go:424: container init caused \&quot;rootfs_linux.go:58: mounting \\\&quot;/var/lib/kubelet/pods/e044883a-48da-4d28-b304-1a57dcb32203/volume-subpaths/extra-cfg/test/0\\\&quot; to rootfs \\\&quot;/var/lib/docker/overlay2/31b076d0012aad47aa938b482de24ecda8b41505489a22f63b8a3e4ce39b43ba/merged\\\&quot; at \\\&quot;/var/lib/docker/overlay2/31b076d0012aad47aa938b482de24ecda8b41505489a22f63b8a3e4ce39b43ba/merged/etc/extra.ini\\\&quot; caused \\\&quot;no such file or directory\\\&quot;\&quot;&quot;: unknown
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>apiVersion: v1
+</span></span><span style="display:flex;"><span>kind: Pod 
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: test-pod
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  volumes:
+</span></span><span style="display:flex;"><span>  - configMap:
+</span></span><span style="display:flex;"><span>      name: extra-cfg
+</span></span><span style="display:flex;"><span>    name: extra-cfg
+</span></span><span style="display:flex;"><span>  containers:
+</span></span><span style="display:flex;"><span>  - name: test
+</span></span><span style="display:flex;"><span>    image: ubuntu:bionic
+</span></span><span style="display:flex;"><span>    command: [<span style="color:#cd0000">&#34;sleep&#34;</span>, <span style="color:#cd0000">&#34;30&#34;</span>]
+</span></span><span style="display:flex;"><span>    resources:
+</span></span><span style="display:flex;"><span>      requests:
+</span></span><span style="display:flex;"><span>        cpu: 100m
+</span></span><span style="display:flex;"><span>    volumeMounts:
+</span></span><span style="display:flex;"><span>      - name: extra-cfg
+</span></span><span style="display:flex;"><span>        mountPath: /etc/extra.ini
+</span></span><span style="display:flex;"><span>        subPath: extra.ini
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>apiVersion: v1
+</span></span><span style="display:flex;"><span>data:
+</span></span><span style="display:flex;"><span>  extra.ini: |<span style="color:#cd0000">
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">    </span>    somedata
+</span></span><span style="display:flex;"><span>kind: ConfigMap
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: extra-cfg
+</span></span></code></pre></div><p>Apply 此配置，Pod 启动完成后，修改 configmap 的内容，等待 30 秒后容器自动退出，kubelet 重启容器，此时观察到容器持续 mount 失败。</p>
+<pre tabindex="0"><code>Error: failed to start container &#34;test&#34;: Error response from daemon: OCI runtime create failed: container_linux.go:345: starting container process caused &#34;process_linux.go:424: container init caused \&#34;rootfs_linux.go:58: mounting \\\&#34;/var/lib/kubelet/pods/e044883a-48da-4d28-b304-1a57dcb32203/volume-subpaths/extra-cfg/test/0\\\&#34; to rootfs \\\&#34;/var/lib/docker/overlay2/31b076d0012aad47aa938b482de24ecda8b41505489a22f63b8a3e4ce39b43ba/merged\\\&#34; at \\\&#34;/var/lib/docker/overlay2/31b076d0012aad47aa938b482de24ecda8b41505489a22f63b8a3e4ce39b43ba/merged/etc/extra.ini\\\&#34; caused \\\&#34;no such file or directory\\\&#34;\&#34;&#34;: unknown
 </code></pre><h3 id="原因分析">原因分析</h3>
 <h4 id="configmap-volume-的更新">Configmap Volume 的更新</h4>
 <p>当容器第一次启动前，kubelet 先将 configmap 中的内容下载到 Pod 对应的 Volume 目录下，例如  <code>/var/lib/kubelet/pods/{Pod UID}/volumes/kubernetes.io~configmap/extra-cfg</code>。</p>
 <p>同时为了保证对此 volume 下内容的更新是原子的(更新目录时)，所以会通过软链接的方式进行更新，目录中文件如下。</p>
-<pre><code>drwxrwxrwx 3 root root 4.0K Mar 29 03:12 .
+<pre tabindex="0"><code>drwxrwxrwx 3 root root 4.0K Mar 29 03:12 .
 drwxr-xr-x 3 root root 4.0K Mar 29 03:12 ..
 drwxr-xr-x 2 root root 4.0K Mar 29 03:12 ..2020_03_29_03_12_44.788930127
 lrwxrwxrwx 1 root root   31 Mar 29 03:12 ..data -&gt; ..2020_03_29_03_12_44.788930127
@@ -121,17 +121,17 @@ lrwxrwxrwx 1 root root   16 Mar 29 03:12 extra.ini -&gt; ..data/extra.ini
 <p>最后删除旧的时间戳目录。</p>
 <h4 id="容器挂载-subpath-volume-的准备">容器挂载 subpath Volume 的准备</h4>
 <p>当 configmap Volume 准备完成后，kubelet 会将 configmap 中 subpath 指定的文件 bind mount 到一个特殊的目录下: <code>/var/lib/kubelet/pods/{Pod UID}/volume-subpaths/extra-cfg/{container name}/0</code>。</p>
-<pre><code>cat /proc/self/mountinfo|grep extra
+<pre tabindex="0"><code>cat /proc/self/mountinfo|grep extra
 2644 219 8:1 /var/lib/kubelet/pods/{Pod UID}/volumes/kubernetes.io~configmap/extra-cfg/..2020_03_29_03_12_13.444136014/extra.ini /var/lib/kubelet/pods/{Pod UID}/volume-subpaths/extra-cfg/test/0 rw,relatime shared:99 - ext4 /dev/sda1 rw,data=ordered
 </code></pre><p>可以看出，bind mount 的文件其实是真实文件的时间戳目录下的内容。</p>
 <p>当 Configmap 更新后，此时间戳目录会被删除，源文件加上了 <code>//deleted</code>。</p>
-<pre><code>cat /proc/self/mountinfo|grep extra
+<pre tabindex="0"><code>cat /proc/self/mountinfo|grep extra
 2644 219 8:1 /var/lib/kubelet/pods/{Pod UID}/volumes/kubernetes.io~configmap/extra-cfg/..2020_03_29_03_12_13.444136014/extra.ini//deleted /var/lib/kubelet/pods/{Pod UID}/volume-subpaths/extra-cfg/test/0 rw,relatime shared:99 - ext4 /dev/sda1 rw,data=ordered
 </code></pre><h4 id="bind-mount">Bind Mount</h4>
 <p>当容器启动时，需要将 <code>/var/lib/kubelet/pods/{Pod UID}/volume-subpaths/extra-cfg/test/0</code> 挂载到容器中。</p>
 <p>如果原来的时间戳目录被删除，则 mount 会出错: <code>mount: mount(2) failed: No such file or directory</code>。</p>
 <p>通过简单的命令模拟这个问题:</p>
-<pre><code># touch a b c
+<pre tabindex="0"><code># touch a b c
 # mount --bind a b
 # rm -f a
 # mount --bind b c
@@ -150,30 +150,30 @@ mount: mount(2) failed: No such file or directory
 <h3 id="为什么使用间接-bind-mount-而不是直接-mount-软链接">为什么使用间接 Bind Mount 而不是直接 Mount 软链接</h3>
 <p>参考 <a href="https://kubernetes.io/blog/2018/04/04/fixing-subpath-volume-vulnerability/">https://kubernetes.io/blog/2018/04/04/fixing-subpath-volume-vulnerability/</a> 这篇文章。</p>
 <p>可以看出原先使用的就是直接 Mount 软链接的方式，但是存在安全漏洞，<a href="https://en.wikipedia.org/wiki/Symlink_race">symlink race</a> 。恶意程序可以通过构造一个软链接，使特权程序(kubelet) 将超出权限范围之外的文件内容挂载到用户容器中。</p>
-<div class="highlight"><pre style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#cdcd00">apiVersion</span>: v1
-<span style="color:#cdcd00">kind</span>: Pod
-<span style="color:#cdcd00">metadata</span>:
-<span style="color:#cdcd00">name</span>: my-pod
-<span style="color:#cdcd00">spec</span>:
-  <span style="color:#cdcd00">initContainers</span>:
-  - <span style="color:#cdcd00">name</span>: prep-symlink
-    <span style="color:#cdcd00">image</span>: <span style="color:#cd0000">&#34;busybox&#34;</span>
-    <span style="color:#cdcd00">command</span>: [<span style="color:#cd0000">&#34;bin/sh&#34;</span>, <span style="color:#cd0000">&#34;-ec&#34;</span>, <span style="color:#cd0000">&#34;ln -s / /mnt/data/symlink-door&#34;</span>]
-    <span style="color:#cdcd00">volumeMounts</span>:
-    - <span style="color:#cdcd00">name</span>: my-volume
-      <span style="color:#cdcd00">mountPath</span>: /mnt/data
-  <span style="color:#cdcd00">containers</span>:
-  - <span style="color:#cdcd00">name</span>: my-container
-    <span style="color:#cdcd00">image</span>: <span style="color:#cd0000">&#34;busybox&#34;</span>
-    <span style="color:#cdcd00">command</span>: [<span style="color:#cd0000">&#34;/bin/sh&#34;</span>, <span style="color:#cd0000">&#34;-ec&#34;</span>, <span style="color:#cd0000">&#34;ls /mnt/data; sleep 999999&#34;</span>]
-    <span style="color:#cdcd00">volumeMounts</span>:
-    - <span style="color:#cdcd00">mountPath</span>: /mnt/data
-      <span style="color:#cdcd00">name</span>: my-volume
-      <span style="color:#cdcd00">subPath</span>: symlink-door
-  <span style="color:#cdcd00">volumes</span>:
-  - <span style="color:#cdcd00">name</span>: my-volume
-  <span style="color:#cdcd00">emptyDir</span>: {}
-</code></pre></div><p>使用如上的配置，通过 emptyDir，在 initContainer 中在挂载的 Volume 目录中创建了一个指向根目录的软链接。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: v1
+</span></span><span style="display:flex;"><span>kind: Pod
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>name: my-pod
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  initContainers:
+</span></span><span style="display:flex;"><span>  - name: prep-symlink
+</span></span><span style="display:flex;"><span>    image: <span style="color:#cd0000">&#34;busybox&#34;</span>
+</span></span><span style="display:flex;"><span>    command: [<span style="color:#cd0000">&#34;bin/sh&#34;</span>, <span style="color:#cd0000">&#34;-ec&#34;</span>, <span style="color:#cd0000">&#34;ln -s / /mnt/data/symlink-door&#34;</span>]
+</span></span><span style="display:flex;"><span>    volumeMounts:
+</span></span><span style="display:flex;"><span>    - name: my-volume
+</span></span><span style="display:flex;"><span>      mountPath: /mnt/data
+</span></span><span style="display:flex;"><span>  containers:
+</span></span><span style="display:flex;"><span>  - name: my-container
+</span></span><span style="display:flex;"><span>    image: <span style="color:#cd0000">&#34;busybox&#34;</span>
+</span></span><span style="display:flex;"><span>    command: [<span style="color:#cd0000">&#34;/bin/sh&#34;</span>, <span style="color:#cd0000">&#34;-ec&#34;</span>, <span style="color:#cd0000">&#34;ls /mnt/data; sleep 999999&#34;</span>]
+</span></span><span style="display:flex;"><span>    volumeMounts:
+</span></span><span style="display:flex;"><span>    - mountPath: /mnt/data
+</span></span><span style="display:flex;"><span>      name: my-volume
+</span></span><span style="display:flex;"><span>      subPath: symlink-door
+</span></span><span style="display:flex;"><span>  volumes:
+</span></span><span style="display:flex;"><span>  - name: my-volume
+</span></span><span style="display:flex;"><span>  emptyDir: {}
+</span></span></code></pre></div><p>使用如上的配置，通过 emptyDir，在 initContainer 中在挂载的 Volume 目录中创建了一个指向根目录的软链接。</p>
 <p>之后正常的容器启动，但是指定了 subpath，如果 kubelet 直接 Mount 软链接，会将宿主机的根目录 Mount 到用户容器中。</p>
 <p>为了解决这个问题，需要解析出软链接对应的真实文件路径，并且判断此路径是否是在 Volume 目录下，校验通过后才能挂载到容器中。但是由于校验和挂载之间存在时间差，此文件还是有可能会被篡改。</p>
 <p>社区讨论后，通过引入中间 Bind Mount 的机制，相当于给这个文件加锁，将原文件的路径固化，之后再 Mount 到容器中时，只会 Mount 当时创建挂载点时的源文件。</p>

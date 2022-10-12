@@ -13,7 +13,7 @@ url: "/2021/08/26/istio-sidecar-container-start-and-stop-problem"
 
 <!--more-->
 
-## 概述
+### 概述
 
 目前由于 sidecar 会引起的一些问题场景:
 
@@ -34,7 +34,7 @@ https://github.com/istio/istio/issues/11659
 
 istio sidecar 目前会在收到 SIGTERM 信号后，停止接收新的连接，然后 sleep 5 秒(可配置)，之后退出，并不会等到所有进行中的请求结束。
 
-## 理想的状态
+### 理想的状态
 
 * 当 Pod 被启动时，sidecar 先于主容器启动，启动完成后，kubelet 再拉起主容器。
 * 当 Pod 被主动结束时，sidecar 停止接收外部连接，处于 shutdown 状态，当前正在进行的请求不受影响，等待主容器结束。当主容器退出后，sidecar 再退出。
@@ -42,7 +42,7 @@ istio sidecar 目前会在收到 SIGTERM 信号后，停止接收新的连接，
 
 如果能实现上述能力，则可以解决问题一，二，三。问题四目前还没有想到很好的解决方案，只能限制用户不在 init containter 中做一些需要依赖 istio 的服务访问。
 
-## sidecar 启动顺序问题
+### sidecar 启动顺序问题
 
 启动顺序的问题，目前已经有了比较简单的解决方案。主要是借助 K8s 提供的 postStart hook 的能力。
 
@@ -67,7 +67,7 @@ lifecycle:
       - wait
 ```
 
-## sidecar 停止顺序问题
+### sidecar 停止顺序问题
 
 sidecar 停止顺序目前还没有很好的解决方案，各个依赖 sidecar 能力的开源项目基本上都在等着 K8s 官方社区来推动这个问题的解决。
 
@@ -80,7 +80,7 @@ https://github.com/kubernetes/enhancements/issues/753
 
 在官方没有彻底解决此问题前，我们只能在 K8s 之外尝试解决这个问题，目前收集到的解决方案大致有以下三种:
 
-### preStop 等待其他容器结束
+#### preStop 等待其他容器结束
 
 K8s pod lifecycle 提供了一种 preStop hook 的能力，可以在 Pod 被删除时，先执行容器的 preStop hook，执行完成后再给容器发送 SIGTERM 信号，如果超过 terminationGracePeriodSeconds 配置的时间后用户进程仍然没有结束，则发送 SIGKILL 信号强制退出。
 
@@ -119,7 +119,7 @@ lifecycle:
 
 这个方案并不能解决 Job 类型的 Pod 无法接入 istio 的问题，因为当用户进程退出后，没有其他方式通知 envoy sidecar 去退出。
 
-### 改造 pilot-agent，依赖外部 Pod 信息等待其他容器结束
+#### 改造 pilot-agent，依赖外部 Pod 信息等待其他容器结束
 
 此方案可以通过改造 pilot-agent 和 istiod 来实现。
 
@@ -129,7 +129,7 @@ istiod 拥有所有 Pod 的 status 信息。pilot-agent 可以通过 istiod 提�
 
 另外，由于依赖 istiod 提供的外部信息，可能会有某些没有考虑到的边界场景，例如网络异常等情况，导致 sidecar 没有按照预期的行为来退出。
 
-### 由自定义启动程序接管用户进程的生命周期
+#### 由自定义启动程序接管用户进程的生命周期
 
 此方案的目的是提供一套通用的解决方法，构造一个通用的容器生命周期管理机制。
 

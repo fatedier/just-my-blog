@@ -19,7 +19,7 @@ url: "/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid
 
 控制面和数据面都更新到 1.10 后问题会恢复，但是中间阶段鉴权会失效，存在一段风险窗口。
 
-## 复现步骤
+### 复现步骤
 
 参考官方文档 https://istio.io/latest/docs/tasks/security/authorization/authz-custom/
 
@@ -29,9 +29,9 @@ url: "/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid
 4. 通过 helm chart 将 istio 控制面升级到 1.10.4，数据面仍然保持在 1.9.1。
 5. 发送测试请求，原来预期 403 的请求，现在变成 200 了。
 
-## 问题排查
+### 问题排查
 
-### 服务 Pod istio-proxy 容器日志
+#### 服务 Pod istio-proxy 容器日志
 
 通过 kubectl logs 查看问题的 pod 日志。
 
@@ -51,7 +51,7 @@ warning envoy config    Unknown field: type envoy.extensions.filters.network.rba
 
 说明 1.10 的控制面下发的配置中有新的字段，在旧版本的数据面里没有定义，不被识别，虽然不会导致出错，但是相当于默认值为空。
 
-### Envoy ConfigDump
+#### Envoy ConfigDump
 
 执行 `kubectl -n foo exec  $(kubectl -n foo get pods -l app=httpbin -o jsonpath='{.items[0].metadata.name}') -c istio-proxy -- pilot-agent request GET config_dump > new.json`，将对应 envoy 的 config dump 到本地文件中。
 
@@ -123,7 +123,7 @@ warning envoy config    Unknown field: type envoy.extensions.filters.network.rba
 }
 ```
 
-## 原因
+### 原因
 
 从上面排查到的现象来分析，基本上猜测这个问题和 envoy api 中新增加的 `shadow_rules_stat_prefix` 字段非常相关。
 
@@ -141,7 +141,7 @@ Istio 外部鉴权的实现方式有点 tricky，会创建一个 rbac filter 的
 
 所以问题就显而易见了，由于给这个元数据加前缀的代码在旧版本的 envoy 中还不支持，所以生成的元数据的 key 还是 `shadow_effective_policy_id`，但是匹配条件中的 key 已经被修改成了 `istio_ext_authz_shadow_effective_policy_id`，由于不匹配，所以请求就不会被转发给外部鉴权服务，从而导致所有请求都被房型。
 
-## 解决方案
+### 解决方案
 
 首先需要慎重使用 experimental 阶段的功能，试验阶段的功能官方也不会保证稳定性，可能随时会有不兼容的更新或者被直接移除。
 

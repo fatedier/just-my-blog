@@ -74,7 +74,7 @@
 <p>给社区提了 issue: <a href="https://github.com/istio/istio/issues/34988">https://github.com/istio/istio/issues/34988</a></p>
 <p>但是因为此功能之前也说明了是在 experimental 阶段，各个阶段的功能说明见: <a href="https://istio.io/latest/docs/releases/feature-stages/">feature-stages</a>。</p>
 <p>控制面和数据面都更新到 1.10 后问题会恢复，但是中间阶段鉴权会失效，存在一段风险窗口。</p>
-<h2 id="复现步骤">复现步骤</h2>
+<h3 id="复现步骤">复现步骤</h3>
 <p>参考官方文档 <a href="https://istio.io/latest/docs/tasks/security/authorization/authz-custom/">https://istio.io/latest/docs/tasks/security/authorization/authz-custom/</a></p>
 <ol>
 <li>通过 helm chart 安装 istio 1.9.1。</li>
@@ -83,8 +83,8 @@
 <li>通过 helm chart 将 istio 控制面升级到 1.10.4，数据面仍然保持在 1.9.1。</li>
 <li>发送测试请求，原来预期 403 的请求，现在变成 200 了。</li>
 </ol>
-<h2 id="问题排查">问题排查</h2>
-<h3 id="服务-pod-istio-proxy-容器日志">服务 Pod istio-proxy 容器日志</h3>
+<h3 id="问题排查">问题排查</h3>
+<h4 id="服务-pod-istio-proxy-容器日志">服务 Pod istio-proxy 容器日志</h4>
 <p>通过 kubectl logs 查看问题的 pod 日志。</p>
 <pre tabindex="0"><code>warning envoy config    Unknown field: type envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager with unknown field set {45}
 warning envoy config    Unknown field: type envoy.extensions.filters.http.rbac.v3.RBAC with unknown field set {3}
@@ -94,7 +94,7 @@ warning envoy config    Unknown field: type envoy.extensions.filters.network.rba
 <p><code>envoy.extensions.filters.http.rbac.v3.RBAC</code> 增加了一个字段 <code>string shadow_rules_stat_prefix = 3</code></p>
 <p><code>envoy.extensions.filters.network.rbac.v3.RBAC</code> 增加了一个字段 <code>string shadow_rules_stat_prefix = 5</code></p>
 <p>说明 1.10 的控制面下发的配置中有新的字段，在旧版本的数据面里没有定义，不被识别，虽然不会导致出错，但是相当于默认值为空。</p>
-<h3 id="envoy-configdump">Envoy ConfigDump</h3>
+<h4 id="envoy-configdump">Envoy ConfigDump</h4>
 <p>执行 <code>kubectl -n foo exec  $(kubectl -n foo get pods -l app=httpbin -o jsonpath='{.items[0].metadata.name}') -c istio-proxy -- pilot-agent request GET config_dump &gt; new.json</code>，将对应 envoy 的 config dump 到本地文件中。</p>
 <p>将 proxy 1.10 版本的配置 dump 到 new.json，将 proxy 1.9 版本的配置 dump 到 old.json。</p>
 <p>两个文件对 extAuthz 相关的部分做 Diff。</p>
@@ -151,7 +151,7 @@ warning envoy config    Unknown field: type envoy.extensions.filters.network.rba
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>  }
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h2 id="原因">原因</h2>
+</span></span></code></pre></div><h3 id="原因">原因</h3>
 <p>从上面排查到的现象来分析，基本上猜测这个问题和 envoy api 中新增加的 <code>shadow_rules_stat_prefix</code> 字段非常相关。</p>
 <p>这个字段的作用是什么？</p>
 <p>通过 enovy 的官方文档可以发现，rbac filter 提供了一个 <code>shadow rule</code> 的功能，这个作用是 rbac 的 filter 并不实际生效去拦截请求，而是如果规则匹配成功，则写入动态的元数据，这个元数据的 key 原来就是 <code>shadow_effective_policy_id</code>，值是匹配的策略 ID，这个 ID 在 <code>shadow_rules.policies</code> 中定义。之后在日志记录和 metrics 数据生成时都可以使用这个元数据，方便用户排查问题。</p>
@@ -160,7 +160,7 @@ warning envoy config    Unknown field: type envoy.extensions.filters.network.rba
 <p>1.10 版本中，由于为了支持 extAuthz 的 dry-run 功能，这部分代码有所修改，引起问题的代码: <a href="https://github.com/istio/istio/pull/32011/files#diff-420b184ed85af159a2ec1ea8a74c300b272fe014bc45652c2f7a443fe11b558dL357">https://github.com/istio/istio/pull/32011/files#diff-420b184ed85af159a2ec1ea8a74c300b272fe014bc45652c2f7a443fe11b558dL357</a></p>
 <p>正常的 AuthPolicy 的 key 被修改成了 <code>istio_ext_authz_shadow_effective_policy_id</code>，dryRun 的 AuthPolicy 的 key 前缀是 <code>istio_dry_run_allow_</code> 或 <code>istio_dry_run_deny_</code>。</p>
 <p>所以问题就显而易见了，由于给这个元数据加前缀的代码在旧版本的 envoy 中还不支持，所以生成的元数据的 key 还是 <code>shadow_effective_policy_id</code>，但是匹配条件中的 key 已经被修改成了 <code>istio_ext_authz_shadow_effective_policy_id</code>，由于不匹配，所以请求就不会被转发给外部鉴权服务，从而导致所有请求都被房型。</p>
-<h2 id="解决方案">解决方案</h2>
+<h3 id="解决方案">解决方案</h3>
 <p>首先需要慎重使用 experimental 阶段的功能，试验阶段的功能官方也不会保证稳定性，可能随时会有不兼容的更新或者被直接移除。</p>
 <ol>
 <li>通过 EnvoyFilter 将相关的字段改回去。但由于过滤条件的地方是一个数组，使用 MERGE 的方式会导致两个值都保留，不符合预期。</li>
@@ -235,8 +235,15 @@ warning envoy config    Unknown field: type envoy.extensions.filters.network.rba
 
             <nav id="TableOfContents">
   <ul>
-    <li><a href="#服务-pod-istio-proxy-容器日志">服务 Pod istio-proxy 容器日志</a></li>
-    <li><a href="#envoy-configdump">Envoy ConfigDump</a></li>
+    <li><a href="#复现步骤">复现步骤</a></li>
+    <li><a href="#问题排查">问题排查</a>
+      <ul>
+        <li><a href="#服务-pod-istio-proxy-容器日志">服务 Pod istio-proxy 容器日志</a></li>
+        <li><a href="#envoy-configdump">Envoy ConfigDump</a></li>
+      </ul>
+    </li>
+    <li><a href="#原因">原因</a></li>
+    <li><a href="#解决方案">解决方案</a></li>
   </ul>
 </nav>
         </div>

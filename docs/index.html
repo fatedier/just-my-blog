@@ -66,6 +66,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2021年11月17日
+        </div>
+        <h2 class="post-title">
+            <a href="/2021/11/17/macos-iptables-block-address/">macos 上如何实现类似 iptables 的防火墙规则</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>Linux 上调试开发的时候，经常需要模拟网络断开，端口无法访问等场景。</p>
+<p>mac 上开发也有类似的需求，例如禁用掉所有到 192.168.100.2 的 80 端口的流量。可以通过 PF 防火墙来实现。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2020年07月22日
         </div>
         <h2 class="post-title">
@@ -302,23 +320,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2017年07月16日
-        </div>
-        <h2 class="post-title">
-            <a href="/2017/07/16/record-problem-resolve-for-docker-stop-slow/">记一次mesos集群停容器时间过长的问题排查</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>公司 mesos 集群某个 app 已经有数千的实例数，每次做滚动升级时，由于总资源不足，需要分批操作，每次起一批新版本实例，再停一批旧版本实例。目前停容器的策略是，先从服务发现中摘除需要停掉的节点，等待 60 秒后再停止容器，释放资源，但是实际上每次从发送停止容器的请求到容器资源被实际释放需要长达 6 分钟，导致滚动升级耗时过长。经过排查，最终确认问题出在我们使用 docker 的方式上，这里记录下分析和解决问题的过程。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -339,6 +340,8 @@
                 </div>
                 <div class="list-group">
                     
+                    <a href="/2021/11/17/macos-iptables-block-address/" class="list-group-item">macos 上如何实现类似 iptables 的防火墙规则</a>
+                    
                     <a href="/2020/07/22/k8s-pod-directional-migration/" class="list-group-item">Kubernetes 中支持 Pod 定向迁移</a>
                     
                     <a href="/2020/04/17/pod-loopcrash-of-k8s-subpath/" class="list-group-item">Kubernetes 挂载 subpath 的容器在 configmap 变更后重启时挂载失败</a>
@@ -352,8 +355,6 @@
                     <a href="/2019/03/25/k8s-crd-authorization/" class="list-group-item">kubernetes CRD 权限管理</a>
                     
                     <a href="/2019/03/20/k8s-crd/" class="list-group-item">kubernetes 自定义资源(CRD)</a>
-                    
-                    <a href="/2019/01/12/service-mesh-explore-upgrade-http2/" class="list-group-item">Service Mesh 探索之升级 HTTP/2 协议</a>
                     
                 </div>
             </div>
@@ -413,7 +414,7 @@
                     </a>
                     
                     <a href="/tags/mac/" class="list-group-item">
-                        <span class="badge">1</span>
+                        <span class="badge">2</span>
                         mac
                     </a>
                     
@@ -541,7 +542,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2020  fatedier blog </p>
+    <p>&copy; 2021  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

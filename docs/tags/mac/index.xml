@@ -7,7 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Sun, 20 Sep 2015 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/mac/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 17 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/mac/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>macos 上如何实现类似 iptables 的防火墙规则</title>
+      <link>https://blog.fatedier.com/2021/11/17/macos-iptables-block-address/</link>
+      <pubDate>Wed, 17 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/11/17/macos-iptables-block-address/</guid>
+      <description>&lt;p&gt;Linux 上调试开发的时候，经常需要模拟网络断开，端口无法访问等场景。&lt;/p&gt;
+&lt;p&gt;mac 上开发也有类似的需求，例如禁用掉所有到 192.168.100.2 的 80 端口的流量。可以通过 PF 防火墙来实现。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>mac上将socks5代理转为http代理</title>
       <link>https://blog.fatedier.com/2015/09/20/trans-socks5-proxy-to-http-proxy-on-mac/</link>

@@ -19,6 +19,15 @@
     </item>
     
     <item>
+      <title>Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</title>
+      <link>https://blog.fatedier.com/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/</link>
+      <pubDate>Thu, 02 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/</guid>
+      <description>&lt;p&gt;近期在将 Istio 1.9.1 升级到 1.10.4。发现原来在 1.9 版本中生效的 ExternalAuthorization 的功能在控制面升级到 1.10，数据面保持在 1.9 版本时，会失效。所有的请求都不需要鉴权就能访问到后端服务。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Kubernetes 中支持 Pod 定向迁移</title>
       <link>https://blog.fatedier.com/2020/07/22/k8s-pod-directional-migration/</link>
       <pubDate>Wed, 22 Jul 2020 00:00:00 +0000</pubDate>

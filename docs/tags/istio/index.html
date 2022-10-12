@@ -6,12 +6,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="service mesh">
-<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:title" content="service mesh - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+<meta name="description" content="istio">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:title" content="istio - fatedier blog"><meta property="og:site_name" content="fatedier blog">
 
 <title>
     
-    service mesh - fatedier blog
+    istio - fatedier blog
     
 </title>
 
@@ -71,74 +71,6 @@
     </header>
     <div class="post-content">
         <p>近期在将 Istio 1.9.1 升级到 1.10.4。发现原来在 1.9 版本中生效的 ExternalAuthorization 的功能在控制面升级到 1.10，数据面保持在 1.9 版本时，会失效。所有的请求都不需要鉴权就能访问到后端服务。</p>
-    </div>
-    </article>
-<hr>
-
-    
-    
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2019年01月12日
-        </div>
-        <h2 class="post-title">
-            <a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>HTTP/2 是 HTTP/1.1 的升级，在请求方法、状态码乃至 URI 和绝大多数 HTTP 头部字段等方面保持高度兼容性，同时能够减少网络延迟和连接资源占用。Service Mesh 架构中，由于两个服务之间的通信由 proxy 介入，对于依靠 HTTP/1.1 通信的服务来说，可以无缝升级到 HTTP/2 协议。</p>
-    </div>
-    </article>
-<hr>
-
-    
-    
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2018年12月01日
-        </div>
-        <h2 class="post-title">
-            <a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>在设计 Service Mesh 架构方案时，考虑到有一些基础服务，访问频率高，流量大，如果在 kubernetes 平台上采用 DaemonSet 的部署方式，每一个机器部署一个实例，访问方能够优先访问同一个节点上的该服务，则可以极大地减少网络开销和延迟。</p>
-    </div>
-    </article>
-<hr>
-
-    
-    
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2018年11月21日
-        </div>
-        <h2 class="post-title">
-            <a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>Istio 的项目中有一个亮点就是可以将旧的应用无缝接入到 Service Mesh 的平台上来，不用修改一行代码。实现这个功能，目前主要是通过 iptables 来截获流量转发给 proxy。</p>
-    </div>
-    </article>
-<hr>
-
-    
-    
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2018年10月15日
-        </div>
-        <h2 class="post-title">
-            <a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>最近都在做自研 Service Mesh 方案的落地和后续迭代优化，目前稳定承接了旧系统的大部分流量，这里分享一下这套架构，以及过程中的思考和遇到的一些问题。</p>
     </div>
     </article>
 <hr>

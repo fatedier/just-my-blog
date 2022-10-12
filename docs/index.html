@@ -84,6 +84,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2021年09月02日
+        </div>
+        <h2 class="post-title">
+            <a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>近期在将 Istio 1.9.1 升级到 1.10.4。发现原来在 1.9 版本中生效的 ExternalAuthorization 的功能在控制面升级到 1.10，数据面保持在 1.9 版本时，会失效。所有的请求都不需要鉴权就能访问到后端服务。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2020年07月22日
         </div>
         <h2 class="post-title">
@@ -303,23 +320,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2018年09月01日
-        </div>
-        <h2 class="post-title">
-            <a href="/2018/09/01/yan-ran/">烟然</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>通关仙剑四后的随笔，作于 2008 年。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -342,6 +342,8 @@
                     
                     <a href="/2021/11/17/macos-iptables-block-address/" class="list-group-item">macos 上如何实现类似 iptables 的防火墙规则</a>
                     
+                    <a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/" class="list-group-item">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>
+                    
                     <a href="/2020/07/22/k8s-pod-directional-migration/" class="list-group-item">Kubernetes 中支持 Pod 定向迁移</a>
                     
                     <a href="/2020/04/17/pod-loopcrash-of-k8s-subpath/" class="list-group-item">Kubernetes 挂载 subpath 的容器在 configmap 变更后重启时挂载失败</a>
@@ -353,8 +355,6 @@
                     <a href="/2019/04/02/k8s-custom-controller/" class="list-group-item">kubernetes 自定义控制器</a>
                     
                     <a href="/2019/03/25/k8s-crd-authorization/" class="list-group-item">kubernetes CRD 权限管理</a>
-                    
-                    <a href="/2019/03/20/k8s-crd/" class="list-group-item">kubernetes 自定义资源(CRD)</a>
                     
                 </div>
             </div>
@@ -401,6 +401,11 @@
                     <a href="/tags/influxdb/" class="list-group-item">
                         <span class="badge">3</span>
                         influxdb
+                    </a>
+                    
+                    <a href="/tags/istio/" class="list-group-item">
+                        <span class="badge">1</span>
+                        istio
                     </a>
                     
                     <a href="/tags/kubernetes/" class="list-group-item">
@@ -459,7 +464,7 @@
                     </a>
                     
                     <a href="/tags/service-mesh/" class="list-group-item">
-                        <span class="badge">4</span>
+                        <span class="badge">5</span>
                         service-mesh
                     </a>
                     

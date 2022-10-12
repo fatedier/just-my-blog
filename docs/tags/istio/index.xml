@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>istio on fatedier blog</title>
+    <link>https://blog.fatedier.com/tags/istio/</link>
+    <description>Recent content in istio on fatedier blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <copyright>Copyright (c) 2020. All rights reserved.</copyright>
+    <lastBuildDate>Thu, 02 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/istio/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</title>
+      <link>https://blog.fatedier.com/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/</link>
+      <pubDate>Thu, 02 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/</guid>
+      <description>&lt;p&gt;近期在将 Istio 1.9.1 升级到 1.10.4。发现原来在 1.9 版本中生效的 ExternalAuthorization 的功能在控制面升级到 1.10，数据面保持在 1.9 版本时，会失效。所有的请求都不需要鉴权就能访问到后端服务。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

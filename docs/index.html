@@ -101,6 +101,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2021年08月26日
+        </div>
+        <h2 class="post-title">
+            <a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/">Istio sidecar 容器启动停止问题</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>由于引入了 sidecar，会通过 iptables 规则将流量劫持到 sidecar 中的进程。但是 K8s 上并没有精确控制 sidecar 的能力，导致由于 sidecar 与主容器的启停顺序问题会引起一些非预期的行为。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2020年07月22日
         </div>
         <h2 class="post-title">
@@ -303,23 +320,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2018年10月15日
-        </div>
-        <h2 class="post-title">
-            <a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>最近都在做自研 Service Mesh 方案的落地和后续迭代优化，目前稳定承接了旧系统的大部分流量，这里分享一下这套架构，以及过程中的思考和遇到的一些问题。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -344,6 +344,8 @@
                     
                     <a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/" class="list-group-item">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>
                     
+                    <a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/" class="list-group-item">Istio sidecar 容器启动停止问题</a>
+                    
                     <a href="/2020/07/22/k8s-pod-directional-migration/" class="list-group-item">Kubernetes 中支持 Pod 定向迁移</a>
                     
                     <a href="/2020/04/17/pod-loopcrash-of-k8s-subpath/" class="list-group-item">Kubernetes 挂载 subpath 的容器在 configmap 变更后重启时挂载失败</a>
@@ -353,8 +355,6 @@
                     <a href="/2019/04/17/k8s-custom-controller-high-available/" class="list-group-item">kubernetes 自定义控制器的高可用</a>
                     
                     <a href="/2019/04/02/k8s-custom-controller/" class="list-group-item">kubernetes 自定义控制器</a>
-                    
-                    <a href="/2019/03/25/k8s-crd-authorization/" class="list-group-item">kubernetes CRD 权限管理</a>
                     
                 </div>
             </div>
@@ -404,7 +404,7 @@
                     </a>
                     
                     <a href="/tags/istio/" class="list-group-item">
-                        <span class="badge">1</span>
+                        <span class="badge">2</span>
                         istio
                     </a>
                     
@@ -464,7 +464,7 @@
                     </a>
                     
                     <a href="/tags/service-mesh/" class="list-group-item">
-                        <span class="badge">5</span>
+                        <span class="badge">6</span>
                         service-mesh
                     </a>
                     

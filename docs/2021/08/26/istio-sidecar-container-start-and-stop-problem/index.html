@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="由于引入了 sidecar，会通过 iptables 规则将流量劫持到 sidecar 中的进程。但是 K8s 上并没有精确控制 sidecar 的能力，导致由于 sidecar 与主容器的启停顺序问题会引起一些非预期的行为。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="Istio sidecar 容器启动停止问题 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Istio sidecar 容器启动停止问题
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2021年08月26日 
+                </div>
+                <h1 class="post-title">Istio sidecar 容器启动停止问题</h1>
+            </header>
+
+            <div class="post-content">
+                <p>由于引入了 sidecar，会通过 iptables 规则将流量劫持到 sidecar 中的进程。但是 K8s 上并没有精确控制 sidecar 的能力，导致由于 sidecar 与主容器的启停顺序问题会引起一些非预期的行为。</p>
+<h2 id="概述">概述</h2>
+<p>目前由于 sidecar 会引起的一些问题场景:</p>
+<ol>
+<li>主容器启动前 sidecar 还没有启动完成，导致主容器的进程在这段时间无法访问外部网络，比如从远端拉取配置信息。有的应用可能失败后就直接退出，重新拉起后仍然会循环出现此问题。</li>
+<li>在 Pod 被停止时，sidecar 先于主容器退出。这个会面临两类问题，一个是当前正在进行的请求会被异常中断，另外就是主容器将无法再和外部网络通信。</li>
+<li>K8s 中 Job 类型的 Pod 注入 sidecar 后无法正常结束。因为 Job 类型的 Pod 主容器退出后，sidecar 并没有退出，导致 Job 永远无法结束。</li>
+<li>接入 istio 后，在 istio init containter 之后启动的其他 init container 中的进程将无法访问外部网络。这个取决于修改 iptables 的 init containter 的注入顺序。即使顺序正常，init containter 的流量也无法被劫持，将不能按照预期的行为来工作。</li>
+</ol>
+<p>社区的一些问题追踪:</p>
+<p>Envoy shutting down before the thing it&rsquo;s wrapping can cause failed requests
+<a href="https://github.com/istio/istio/issues/7136">https://github.com/istio/istio/issues/7136</a></p>
+<p>Using Istio with CronJobs
+<a href="https://github.com/istio/istio/issues/11659">https://github.com/istio/istio/issues/11659</a></p>
+<p>目前 istio sidecar 的 graceful shutdown 做的也相当不好，有待完善。</p>
+<p>istio sidecar 目前会在收到 SIGTERM 信号后，停止接收新的连接，然后 sleep 5 秒(可配置)，之后退出，并不会等到所有进行中的请求结束。</p>
+<h2 id="理想的状态">理想的状态</h2>
+<ul>
+<li>当 Pod 被启动时，sidecar 先于主容器启动，启动完成后，kubelet 再拉起主容器。</li>
+<li>当 Pod 被主动结束时，sidecar 停止接收外部连接，处于 shutdown 状态，当前正在进行的请求不受影响，等待主容器结束。当主容器退出后，sidecar 再退出。</li>
+<li>当 Job 类型的 Pod 启动时，sidecar 先于主容器启动。当 Job 类型的 Pod 主容器退出后，sidecar 能感知到，并且正常退出。</li>
+</ul>
+<p>如果能实现上述能力，则可以解决问题一，二，三。问题四目前还没有想到很好的解决方案，只能限制用户不在 init containter 中做一些需要依赖 istio 的服务访问。</p>
+<h2 id="sidecar-启动顺序问题">sidecar 启动顺序问题</h2>
+<p>启动顺序的问题，目前已经有了比较简单的解决方案。主要是借助 K8s 提供的 postStart hook 的能力。</p>
+<p><img src="https://image.fatedier.com/pic/2021/2021-08-26-istio-sidecar-container-start-and-stop-problem-sidecar.jpg" alt="sidecar"></p>
+<p>目前这个能力需要依赖 kubelet 的具体实现逻辑，这个逻辑看上去并非官方正式的定义，不一定完全可靠，也许在之后的版本中会被修改:</p>
+<ol>
+<li>kubelet 会按照 containter 的定义顺序来依次启动每个容器。</li>
+<li>kubelet 在创建容器后，会执行 postStart hook，只有在 hook 调用返回后才会继续创建下一个容器。</li>
+</ol>
+<p>借助这两个逻辑，我们需要:</p>
+<ol>
+<li>注入 sidecar containter 时，将其放到 containter 数组的第一个。</li>
+<li>sidecar container 的 lifecycle postStart hook 中增加一个等待 envoy 进程 ready 的逻辑。</li>
+</ol>
+<p>istio 目前会加上</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>lifecycle:
+</span></span><span style="display:flex;"><span>  postStart:
+</span></span><span style="display:flex;"><span>    exec:
+</span></span><span style="display:flex;"><span>      command:
+</span></span><span style="display:flex;"><span>      - pilot-agent
+</span></span><span style="display:flex;"><span>      - wait
+</span></span></code></pre></div><h2 id="sidecar-停止顺序问题">sidecar 停止顺序问题</h2>
+<p>sidecar 停止顺序目前还没有很好的解决方案，各个依赖 sidecar 能力的开源项目基本上都在等着 K8s 官方社区来推动这个问题的解决。</p>
+<p>2019 年的时候已经有 Proposal 提议增加 sidecar 类型的 containter
+<a href="https://github.com/kubernetes/enhancements/issues/753">https://github.com/kubernetes/enhancements/issues/753</a></p>
+<p>该提案的目的是可以声明指定的 containter 为 sidecar 类型，则这样的容器会先于主容器启动，并在主容器停止后才退出。本来预计是在 K8s 1.18 版本中发布，代码也已经合入，但是后来由于某些大佬觉得此方案并不完善，没有覆盖到所有的场景(上述问题三和四就没有解决)，就将这部分代码 revert 了。</p>
+<p>目前社区的进度还是在收集场景，没有继续推进，中短期来看，并不会有很好的官方解决方案。</p>
+<p>在官方没有彻底解决此问题前，我们只能在 K8s 之外尝试解决这个问题，目前收集到的解决方案大致有以下三种:</p>
+<h3 id="prestop-等待其他容器结束">preStop 等待其他容器结束</h3>
+<p>K8s pod lifecycle 提供了一种 preStop hook 的能力，可以在 Pod 被删除时，先执行容器的 preStop hook，执行完成后再给容器发送 SIGTERM 信号，如果超过 terminationGracePeriodSeconds 配置的时间后用户进程仍然没有结束，则发送 SIGKILL 信号强制退出。</p>
+<p>我们可以参考解决容器启动顺序时的方法，在 envoy sidecar 的 preStop hook 中，等待其他容器退出后，自己再退出。和 postStart 不同的是，kubelet 停止容器并不是顺序执行的，而是同时给所有的容器发送信号，和顺序无关。</p>
+<p>那么怎么判断除自己之外的其他容器都已经退出了呢？</p>
+<p>目前主要可以根据网络连接和进程信息来判断，同时需要确保 istio-proxy 使用的镜像里包含了相关的命令行工具，此外，通过 grep 过滤有可能会有一些误判，比如用户进程的命名有冲突。</p>
+<p>网络连接过滤的命令:</p>
+<p><code>netstat -plunt | grep tcp | grep -v envoy | grep -v pilot-agent | wc -l | xargs</code></p>
+<p>优点: 改动较小，现有服务的运行环境没有变化。
+缺点: 不能覆盖所有的场景，例如 Job 类型的服务，如果一段时间内不会对外保持连接的话，则会判断失误。</p>
+<p>进程信息过滤的命令:</p>
+<p><code>ps -e -o uid,pid,comm | grep -v '1337' | grep -v '1 pause' | grep -v 'UID' | wc -l | xargs</code></p>
+<p>使用进程信息过滤的话，需要设置 <code>pod.spec.shareProcessNamespace: true</code>，使所有容器共享进程命名空间。这里过滤了 1337 是因为 istio-proxy 容器的用户 UID 是 1337，另外启用 shareProcessNamespace 后，1 号进程会是 pause。</p>
+<p>优点: 能覆盖绝大多数场景。
+缺点: 由于需要共享进程命名空间，改变了原先服务的运行环境，需要确保服务对这一变化没有依赖。</p>
+<p>我们可以在 sidecar inject 模版中配置 lifecycle。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>lifecycle:
+</span></span><span style="display:flex;"><span>  preStop:
+</span></span><span style="display:flex;"><span>    exec:
+</span></span><span style="display:flex;"><span>      command: [<span style="color:#cd0000">&#34;/bin/sh&#34;</span>, <span style="color:#cd0000">&#34;-c&#34;</span>, <span style="color:#cd0000">&#34;curl -X POST localhost:15000/drain_listeners?inboundonly; while [ $(ps -e -o uid,pid,comm | grep -v &#39;1337&#39; | grep -v &#39;1 pause&#39; | grep -v &#39;UID&#39; | wc -l | xargs) -ne 0 ]; do sleep 1; done&#34;</span>]
+</span></span></code></pre></div><p>这里增加了一个 <code>curl -X POST localhost:15000/drain_listeners?inboundonly</code>，是向 envoy 发送信号，停止接收新建连接，<code>inboundonly</code> 表示停止接收入方向的连接，但是出方向不受影响，因为用户进程可能仍然需要主动向外部服务发送请求。</p>
+<p>这个方案并不能解决 Job 类型的 Pod 无法接入 istio 的问题，因为当用户进程退出后，没有其他方式通知 envoy sidecar 去退出。</p>
+<h3 id="改造-pilot-agent依赖外部-pod-信息等待其他容器结束">改造 pilot-agent，依赖外部 Pod 信息等待其他容器结束</h3>
+<p>此方案可以通过改造 pilot-agent 和 istiod 来实现。</p>
+<p>istiod 拥有所有 Pod 的 status 信息。pilot-agent 可以通过 istiod 提供的接口查询自身 Pod 的容器状态信息，等所有容器的状态信息被更新为退出后，自己再退出。</p>
+<p>这个方案的缺点是仅能解决 istio 自身的问题，并不是一个 sidecar 问题的通用解决方案，如果使用了其他项目，则仍然需要改造其他项目的代码。</p>
+<p>另外，由于依赖 istiod 提供的外部信息，可能会有某些没有考虑到的边界场景，例如网络异常等情况，导致 sidecar 没有按照预期的行为来退出。</p>
+<h3 id="由自定义启动程序接管用户进程的生命周期">由自定义启动程序接管用户进程的生命周期</h3>
+<p>此方案的目的是提供一套通用的解决方法，构造一个通用的容器生命周期管理机制。</p>
+<p>可参考项目: <a href="https://github.com/karlkfi/kubexit">https://github.com/karlkfi/kubexit</a></p>
+<p>类似于 tini 这样的工具，我们可以编写一个自定义的 exec 应用，作为容器的启动入口，由 exec 应用去启动用户的进程。</p>
+<p>这个 exec 应用可以在执行用户进程前以及用户进程结束后注入自定义的处理逻辑。</p>
+<p>例如，在容器启动前，将容器名写入一个指定的共享目录，在容器结束后，再将之前创建的文件删除。则其他容器可以根据该目录下的文件来判断哪些容器还没有退出。</p>
+<p>我们还可以通过环境变量去编排容器的退出规则，例如使 A 在 B 退出之后才能退出，B 在 C 退出之后才能退出。</p>
+<p>通过 webhook 机制可以将注入共享目录，替换容器启动参数等工作自动化，做到用户无感知。</p>
+<p>这个方案的缺点是，需要用户显式的指定容器启动的 command 和 args，如果用户使用的是 Dockerfiles 中 EntryPoint，则无法使用。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2021/08/26/istio-sidecar-container-start-and-stop-problem/">https://blog.fatedier.com/2021/08/26/istio-sidecar-container-start-and-stop-problem/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/istio/">
+                            <i class="fa fa-tags"></i>
+                            istio
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年09月02日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年11月21日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2020/07/22/k8s-pod-directional-migration/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#prestop-等待其他容器结束">preStop 等待其他容器结束</a></li>
+    <li><a href="#改造-pilot-agent依赖外部-pod-信息等待其他容器结束">改造 pilot-agent，依赖外部 Pod 信息等待其他容器结束</a></li>
+    <li><a href="#由自定义启动程序接管用户进程的生命周期">由自定义启动程序接管用户进程的生命周期</a></li>
+  </ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2021  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

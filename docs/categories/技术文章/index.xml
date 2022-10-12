@@ -28,6 +28,15 @@
     </item>
     
     <item>
+      <title>Istio sidecar 容器启动停止问题</title>
+      <link>https://blog.fatedier.com/2021/08/26/istio-sidecar-container-start-and-stop-problem/</link>
+      <pubDate>Thu, 26 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/08/26/istio-sidecar-container-start-and-stop-problem/</guid>
+      <description>&lt;p&gt;由于引入了 sidecar，会通过 iptables 规则将流量劫持到 sidecar 中的进程。但是 K8s 上并没有精确控制 sidecar 的能力，导致由于 sidecar 与主容器的启停顺序问题会引起一些非预期的行为。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Kubernetes 中支持 Pod 定向迁移</title>
       <link>https://blog.fatedier.com/2020/07/22/k8s-pod-directional-migration/</link>
       <pubDate>Wed, 22 Jul 2020 00:00:00 +0000</pubDate>

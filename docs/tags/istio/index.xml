@@ -17,5 +17,14 @@
       <description>&lt;p&gt;近期在将 Istio 1.9.1 升级到 1.10.4。发现原来在 1.9 版本中生效的 ExternalAuthorization 的功能在控制面升级到 1.10，数据面保持在 1.9 版本时，会失效。所有的请求都不需要鉴权就能访问到后端服务。&lt;/p&gt;</description>
     </item>
     
+    <item>
+      <title>Istio sidecar 容器启动停止问题</title>
+      <link>https://blog.fatedier.com/2021/08/26/istio-sidecar-container-start-and-stop-problem/</link>
+      <pubDate>Thu, 26 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/08/26/istio-sidecar-container-start-and-stop-problem/</guid>
+      <description>&lt;p&gt;由于引入了 sidecar，会通过 iptables 规则将流量劫持到 sidecar 中的进程。但是 K8s 上并没有精确控制 sidecar 的能力，导致由于 sidecar 与主容器的启停顺序问题会引起一些非预期的行为。&lt;/p&gt;</description>
+    </item>
+    
   </channel>
 </rss>

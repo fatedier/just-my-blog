@@ -80,6 +80,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2021年08月26日
+        </div>
+        <h2 class="post-title">
+            <a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/">Istio sidecar 容器启动停止问题</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>由于引入了 sidecar，会通过 iptables 规则将流量劫持到 sidecar 中的进程。但是 K8s 上并没有精确控制 sidecar 的能力，导致由于 sidecar 与主容器的启停顺序问题会引起一些非预期的行为。</p>
+    </div>
+    </article>
+<hr>
+
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
             2019年01月12日
         </div>
         <h2 class="post-title">

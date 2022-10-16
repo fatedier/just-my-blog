@@ -81,6 +81,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2021年12月24日
+        </div>
+        <h2 class="post-title">
+            <a href="/2021/12/24/reduce-istio-control-panel-push-config/">减少 Istio 控制面下发的配置</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>默认情况下，istiod 会 watch 集群中所有的 namespace，生成对应的配置，实时的通过 xDS 协议，推送给所有实例的 sidecar 容器。</p>
+<p>业务实例会被分发到大量不相关的配置，根本用不到，不仅增加 istiod 分发配置的时效性，也增加了 sidecar 的资源消耗。</p>
+    </div>
+    </article>
+<hr>
+
+        
+        
+<article class="post li">
+    <header>
+        <div class="post-date">
             2021年12月16日
         </div>
         <h2 class="post-title">

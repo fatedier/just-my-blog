@@ -84,6 +84,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2021年12月24日
+        </div>
+        <h2 class="post-title">
+            <a href="/2021/12/24/reduce-istio-control-panel-push-config/">减少 Istio 控制面下发的配置</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>默认情况下，istiod 会 watch 集群中所有的 namespace，生成对应的配置，实时的通过 xDS 协议，推送给所有实例的 sidecar 容器。</p>
+<p>业务实例会被分发到大量不相关的配置，根本用不到，不仅增加 istiod 分发配置的时效性，也增加了 sidecar 的资源消耗。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2021年12月16日
         </div>
         <h2 class="post-title">
@@ -304,23 +322,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2019年01月12日
-        </div>
-        <h2 class="post-title">
-            <a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>HTTP/2 是 HTTP/1.1 的升级，在请求方法、状态码乃至 URI 和绝大多数 HTTP 头部字段等方面保持高度兼容性，同时能够减少网络延迟和连接资源占用。Service Mesh 架构中，由于两个服务之间的通信由 proxy 介入，对于依靠 HTTP/1.1 通信的服务来说，可以无缝升级到 HTTP/2 协议。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -343,6 +344,8 @@
                     
                     <a href="/2022/10/11/istio-grpc-gateway-disable-http1/" class="list-group-item">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>
                     
+                    <a href="/2021/12/24/reduce-istio-control-panel-push-config/" class="list-group-item">减少 Istio 控制面下发的配置</a>
+                    
                     <a href="/2021/12/16/istio-sidecar-graceful-shutdown/" class="list-group-item">让 Istio sidecar 优雅终止</a>
                     
                     <a href="/2021/11/17/macos-iptables-block-address/" class="list-group-item">macos 上如何实现类似 iptables 的防火墙规则</a>
@@ -354,8 +357,6 @@
                     <a href="/2021/08/24/istio-tcp-health-probe-invalid/" class="list-group-item">Istio TCP 健康检查无效的问题</a>
                     
                     <a href="/2021/07/29/istio-service-port-name-requirements/" class="list-group-item">Istio 对 Service port name 的要求</a>
-                    
-                    <a href="/2020/07/22/k8s-pod-directional-migration/" class="list-group-item">Kubernetes 中支持 Pod 定向迁移</a>
                     
                 </div>
             </div>
@@ -405,7 +406,7 @@
                     </a>
                     
                     <a href="/tags/istio/" class="list-group-item">
-                        <span class="badge">6</span>
+                        <span class="badge">7</span>
                         istio
                     </a>
                     
@@ -465,7 +466,7 @@
                     </a>
                     
                     <a href="/tags/service-mesh/" class="list-group-item">
-                        <span class="badge">10</span>
+                        <span class="badge">11</span>
                         service-mesh
                     </a>
                     

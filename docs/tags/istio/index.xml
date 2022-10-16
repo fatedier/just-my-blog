@@ -35,5 +35,14 @@
       <description>&lt;p&gt;由于引入了 sidecar，会通过 iptables 规则将流量劫持到 sidecar 中的进程。但是 K8s 上并没有精确控制 sidecar 的能力，导致由于 sidecar 与主容器的启停顺序问题会引起一些非预期的行为。&lt;/p&gt;</description>
     </item>
     
+    <item>
+      <title>Istio TCP 健康检查无效的问题</title>
+      <link>https://blog.fatedier.com/2021/08/24/istio-tcp-health-probe-invalid/</link>
+      <pubDate>Tue, 24 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/08/24/istio-tcp-health-probe-invalid/</guid>
+      <description>&lt;p&gt;1.9，1.10 的官方文档对这个问题的表述不是很清楚，都没有提到 TCP 的健康检查无效的问题。&lt;/p&gt;</description>
+    </item>
+    
   </channel>
 </rss>

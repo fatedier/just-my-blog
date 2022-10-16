@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="1.9，1.10 的官方文档对这个问题的表述不是很清楚，都没有提到 TCP 的健康检查无效的问题。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="Istio TCP 健康检查无效的问题 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Istio TCP 健康检查无效的问题
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2021年08月24日 
+                </div>
+                <h1 class="post-title">Istio TCP 健康检查无效的问题</h1>
+            </header>
+
+            <div class="post-content">
+                <p>1.9，1.10 的官方文档对这个问题的表述不是很清楚，都没有提到 TCP 的健康检查无效的问题。</p>
+<h3 id="背景">背景</h3>
+<p>K8s 的健康检查是由 kubelet 发起，kubelet 会通过 Pod IP 向指定的端口建立连接，如果连接建立成功，则认为服务健康，反之则认为不健康。</p>
+<p>服务接入 Istio 后，istio 会通过 iptables 规则劫持流量到 enovy，当 kubelet 建立连接时，连接被转给 enovy，此时连接建立成功，kubelet 认为服务健康，但是实际上可能该端口根本没有被绑定。</p>
+<p>像 HTTP 类型的健康检查，istio 会在 webhook 中就把原来 container 的健康检查配置修改掉，改成像 envoy 的特定接口发送 HTTP 请求，然后由 envoy 去转发给业务服务。</p>
+<h3 id="解决方案">解决方案</h3>
+<p>目前只能要求接入的服务提供 HTTP 类型的健康检查接口。</p>
+<p>社区有一个解决方案目前已经被合入，但是在 1.11 中还没有发布，看起来有可能在 1.11 的小版本或者 1.12 版本中发布。<a href="https://github.com/istio/istio/pull/33734">https://github.com/istio/istio/pull/33734</a></p>
+<p>原理是，pilot-agent 提供一个类似 <code>/check/{port}</code> 的接口，通过 http 请求发起对 tcp 端口的探测。之后 istio webhook 在注入 sidecar 时，将用户配置的健康检查接口进行替换，转换成 HTTP 类型的 <code>/check/{port}</code> 接口，从而实现对 TCP 端口的探测。</p>
+<p><strong>更新: istio 1.12 中已修复 <a href="https://istio.io/latest/news/releases/1.12.x/announcing-1.12/change-notes/">https://istio.io/latest/news/releases/1.12.x/announcing-1.12/change-notes/</a></strong></p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2021/08/24/istio-tcp-health-probe-invalid/">https://blog.fatedier.com/2021/08/24/istio-tcp-health-probe-invalid/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/istio/">
+                            <i class="fa fa-tags"></i>
+                            istio
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2021/12/16/istio-sidecar-graceful-shutdown/">让 Istio sidecar 优雅终止</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月16日)</span></li><li id="li-rels"><a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年09月02日)</span></li><li id="li-rels"><a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/">Istio sidecar 容器启动停止问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年08月26日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年11月21日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2020/07/22/k8s-pod-directional-migration/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#解决方案">解决方案</a></li>
+  </ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2021  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

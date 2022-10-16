@@ -135,6 +135,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2021年08月24日
+        </div>
+        <h2 class="post-title">
+            <a href="/2021/08/24/istio-tcp-health-probe-invalid/">Istio TCP 健康检查无效的问题</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>1.9，1.10 的官方文档对这个问题的表述不是很清楚，都没有提到 TCP 的健康检查无效的问题。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2020年07月22日
         </div>
         <h2 class="post-title">
@@ -303,23 +320,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2018年12月01日
-        </div>
-        <h2 class="post-title">
-            <a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>在设计 Service Mesh 架构方案时，考虑到有一些基础服务，访问频率高，流量大，如果在 kubernetes 平台上采用 DaemonSet 的部署方式，每一个机器部署一个实例，访问方能够优先访问同一个节点上的该服务，则可以极大地减少网络开销和延迟。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -348,13 +348,13 @@
                     
                     <a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/" class="list-group-item">Istio sidecar 容器启动停止问题</a>
                     
+                    <a href="/2021/08/24/istio-tcp-health-probe-invalid/" class="list-group-item">Istio TCP 健康检查无效的问题</a>
+                    
                     <a href="/2020/07/22/k8s-pod-directional-migration/" class="list-group-item">Kubernetes 中支持 Pod 定向迁移</a>
                     
                     <a href="/2020/04/17/pod-loopcrash-of-k8s-subpath/" class="list-group-item">Kubernetes 挂载 subpath 的容器在 configmap 变更后重启时挂载失败</a>
                     
                     <a href="/2020/03/28/golang-jwt/" class="list-group-item">Golang 中使用 JWT 做用户认证</a>
-                    
-                    <a href="/2019/04/17/k8s-custom-controller-high-available/" class="list-group-item">kubernetes 自定义控制器的高可用</a>
                     
                 </div>
             </div>
@@ -404,7 +404,7 @@
                     </a>
                     
                     <a href="/tags/istio/" class="list-group-item">
-                        <span class="badge">3</span>
+                        <span class="badge">4</span>
                         istio
                     </a>
                     
@@ -464,7 +464,7 @@
                     </a>
                     
                     <a href="/tags/service-mesh/" class="list-group-item">
-                        <span class="badge">7</span>
+                        <span class="badge">8</span>
                         service-mesh
                     </a>
                     

@@ -36,6 +36,15 @@
     </item>
     
     <item>
+      <title>Istio TCP 健康检查无效的问题</title>
+      <link>https://blog.fatedier.com/2021/08/24/istio-tcp-health-probe-invalid/</link>
+      <pubDate>Tue, 24 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/08/24/istio-tcp-health-probe-invalid/</guid>
+      <description>&lt;p&gt;1.9，1.10 的官方文档对这个问题的表述不是很清楚，都没有提到 TCP 的健康检查无效的问题。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Service Mesh 探索之升级 HTTP/2 协议</title>
       <link>https://blog.fatedier.com/2019/01/12/service-mesh-explore-upgrade-http2/</link>
       <pubDate>Sat, 12 Jan 2019 00:00:00 +0000</pubDate>

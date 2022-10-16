@@ -46,6 +46,15 @@
     </item>
     
     <item>
+      <title>Istio TCP 健康检查无效的问题</title>
+      <link>https://blog.fatedier.com/2021/08/24/istio-tcp-health-probe-invalid/</link>
+      <pubDate>Tue, 24 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/08/24/istio-tcp-health-probe-invalid/</guid>
+      <description>&lt;p&gt;1.9，1.10 的官方文档对这个问题的表述不是很清楚，都没有提到 TCP 的健康检查无效的问题。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Kubernetes 中支持 Pod 定向迁移</title>
       <link>https://blog.fatedier.com/2020/07/22/k8s-pod-directional-migration/</link>
       <pubDate>Wed, 22 Jul 2020 00:00:00 +0000</pubDate>

@@ -84,6 +84,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2022年01月11日
+        </div>
+        <h2 class="post-title">
+            <a href="/2022/01/11/istio-service-send-request-failed-even-dns-switched/">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>假设 K8s 集群内的服务会以串行的方式不断请求一个外部域名的 80 端口。这个域名通过 DNS 解析到一个固定 IP。当某个时间段，这个 IP 上绑定的服务突然不可用，端口无法访问。内部服务会持续的得到 HTTP 503 的响应。</p>
+<p>此时即使将这个域名的 DNS 切到一个正常的 IP，服务仍然会得到持续的 503 错误，一直无法恢复。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2021年12月24日
         </div>
         <h2 class="post-title">
@@ -305,23 +323,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2019年03月20日
-        </div>
-        <h2 class="post-title">
-            <a href="/2019/03/20/k8s-crd/">kubernetes 自定义资源(CRD)</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>在研究 Service Mesh 的过程中，发现 Istio 很多参数都通过 kubernetes CRD 来管理，例如 VirtualService 和 DestinationRule，这种方式使部署在 k8s 集群上的服务的管理方式更趋向一致。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -344,6 +345,8 @@
                     
                     <a href="/2022/10/11/istio-grpc-gateway-disable-http1/" class="list-group-item">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>
                     
+                    <a href="/2022/01/11/istio-service-send-request-failed-even-dns-switched/" class="list-group-item">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</a>
+                    
                     <a href="/2021/12/24/reduce-istio-control-panel-push-config/" class="list-group-item">减少 Istio 控制面下发的配置</a>
                     
                     <a href="/2021/12/16/istio-sidecar-graceful-shutdown/" class="list-group-item">让 Istio sidecar 优雅终止</a>
@@ -355,8 +358,6 @@
                     <a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/" class="list-group-item">Istio sidecar 容器启动停止问题</a>
                     
                     <a href="/2021/08/24/istio-tcp-health-probe-invalid/" class="list-group-item">Istio TCP 健康检查无效的问题</a>
-                    
-                    <a href="/2021/07/29/istio-service-port-name-requirements/" class="list-group-item">Istio 对 Service port name 的要求</a>
                     
                 </div>
             </div>
@@ -406,7 +407,7 @@
                     </a>
                     
                     <a href="/tags/istio/" class="list-group-item">
-                        <span class="badge">7</span>
+                        <span class="badge">8</span>
                         istio
                     </a>
                     
@@ -466,7 +467,7 @@
                     </a>
                     
                     <a href="/tags/service-mesh/" class="list-group-item">
-                        <span class="badge">11</span>
+                        <span class="badge">12</span>
                         service-mesh
                     </a>
                     

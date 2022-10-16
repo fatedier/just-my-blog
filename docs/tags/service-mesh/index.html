@@ -81,6 +81,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2022年01月11日
+        </div>
+        <h2 class="post-title">
+            <a href="/2022/01/11/istio-service-send-request-failed-even-dns-switched/">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>假设 K8s 集群内的服务会以串行的方式不断请求一个外部域名的 80 端口。这个域名通过 DNS 解析到一个固定 IP。当某个时间段，这个 IP 上绑定的服务突然不可用，端口无法访问。内部服务会持续的得到 HTTP 503 的响应。</p>
+<p>此时即使将这个域名的 DNS 切到一个正常的 IP，服务仍然会得到持续的 503 错误，一直无法恢复。</p>
+    </div>
+    </article>
+<hr>
+
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
             2021年12月24日
         </div>
         <h2 class="post-title">

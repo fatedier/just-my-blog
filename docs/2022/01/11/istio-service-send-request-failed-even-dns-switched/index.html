@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="假设 K8s 集群内的服务会以串行的方式不断请求一个外部域名的 80 端口。这个域名通过 DNS 解析到一个固定 IP。当某个时间段，这个 IP 上绑定的服务突然不可用，端口无法访问。内部服务会持续的得到 HTTP 503 的响应。
+此时即使将这个域名的 DNS 切到一个正常的 IP，服务仍然会得到持续的 503 错误，一直无法恢复。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2022年01月11日 
+                </div>
+                <h1 class="post-title">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</h1>
+            </header>
+
+            <div class="post-content">
+                <p>假设 K8s 集群内的服务会以串行的方式不断请求一个外部域名的 80 端口。这个域名通过 DNS 解析到一个固定 IP。当某个时间段，这个 IP 上绑定的服务突然不可用，端口无法访问。内部服务会持续的得到 HTTP 503 的响应。</p>
+<p>此时即使将这个域名的 DNS 切到一个正常的 IP，服务仍然会得到持续的 503 错误，一直无法恢复。</p>
+<p>在社区提了 issue: <a href="https://github.com/istio/istio/issues/36768">https://github.com/istio/istio/issues/36768</a></p>
+<h3 id="原因分析">原因分析</h3>
+<h4 id="本地模拟">本地模拟</h4>
+<p>在 K8s 中启动一个测试的 Go 服务并接入 istio，会以串行的方式持续的向 <code>test.com</code> 发送 HTTP 请求，使用默认的 Go HTTP Transport。</p>
+<p>在容器中执行 <code>echo '4.4.4.4 test.com' &gt; /etc/hosts</code> 修改 <code>test.com</code> 的解析到 4.4.4.4，由于该 IP 网络不通，所以永远都是连接超时。</p>
+<p>在 istio 容器中通过 <code>ss -antp|grep 4.4.4.4</code> 观察连接状态。</p>
+<pre tabindex="0"><code>ESTAB     0       0                 172.17.0.3:35900              4.4.4.4:80
+SYN-SENT  0       1                 172.17.0.3:38418              4.4.4.4:80     users:((&#34;envoy&#34;,pid=16,fd=44))
+</code></pre><p>172.17.0.3:38418 是 envoy 到对端的连接，处于 SYN-SENT 状态，因为 sync 包无法到达 4.4.4.4，所以永远不会有回应。</p>
+<p>172.17.0.3:35900 是 go 应用到 envoy 的连接，由于是通过 iptables 劫持，这里的 destination 地址还是 4.4.4.4。状态是 ESTAB，说明 go 到 envoy 的连接仍然保持着。</p>
+<p>1s 后</p>
+<pre tabindex="0"><code>ESTAB     0       0                 172.17.0.3:35900              4.4.4.4:80
+</code></pre><p>由于本地设置的 envoy 连接超时是 1s，所以 envoy 对外的连接断开了，但是 go 应用到 envoy 的连接仍然保持着。</p>
+<p>之后 envoy 会发起一个到 4.4.4.4 的新的连接，但是仍然失败，一直循环。</p>
+<p>期间，go 应用每隔 1s 会收到 HTTP 503 的响应。</p>
+<p>执行 <code>echo '5.5.5.5 test.com' &gt; /etc/hosts</code>，切换 DNS。</p>
+<p>通过 <code>ss -antp|grep 5.5.5.5</code> 观察连接状态，发现连接并没有切换到新的 IP，而是仍然在不停的往 4.4.4.4 建立连接。</p>
+<h4 id="初步分析">初步分析</h4>
+<p>从本地模拟的结果来看，基本上可以看出问题的主要原因是，envoy 在将应用请求外部 80 端口域名的流量看做了 HTTP 协议来处理，自身是一个代理，所以当连接 Upstream 失败后，并没有断开和 go 应用的连接，而是返回了 503。</p>
+<p>Go 应用收到 503 后，并不会断开连接，由于连接复用，如果在 IdleConnTimeout 时间段内，一直有请求的话，和 envoy 之间的连接就一直不会断开。</p>
+<p>对 istio 来说，请求内部服务和外部域名是有区别的。内部服务会有一套内部的服务发现机制，请求内部服务，其 DNS 解析得到的 IP 并不会影响到 envoy 对外请求的 IP。但是对外部域名来说，envoy 并不会做服务发现，而是通过 iptables 劫持后，拿到原先的目标地址去建立连接。那么只要 go 应用和 envoy 之间的连接不断开，后续在这个连接上有新的请求的话，仍然会发送到原来 go 应用解析到的那个 IP。</p>
+<h4 id="深入分析">深入分析</h4>
+<p>通过 istio 的调试工具进行进一步的分析。</p>
+<p>这里先说明一下几个 envoy 相关的概念:</p>
+<ul>
+<li>Listener: 监听器，绑定在指定的端口上接收连接，并且通过 Listener Filter Chain，支持一些协议探测等的 Filter 处理。</li>
+<li>HTTP Connection Manager: 一个特殊的 Listener Filter，用于处理 HTTP 请求，并且支持多种 HTTP Filter。</li>
+<li>TCPProxy: 一个 Listener Filter，处理 TCP 流量。</li>
+<li>Route: 一个特殊的 HTTP Filter，根据配置的路由规则，将请求路由到对应的 Cluster。</li>
+<li>Cluster: 对应 Upstream 服务，Endpoint 集合。</li>
+</ul>
+<h5 id="listener">Listener</h5>
+<p>通过命令查看 Listener 信息 <code>istioctl proxy-config listeners istio-test-client-f7c785975-qst9q</code></p>
+<pre tabindex="0"><code>0.0.0.0        80    Trans: raw_buffer; App: HTTP                                                                    Route: 80
+0.0.0.0        80    ALL                                                                                             PassthroughCluster
+</code></pre><p>可以看出，80 端口上有两个 Listener，HTTP 协议的会被 Route <code>80</code> 处理，其他协议则会被路由到 <code>PassthroughCluster</code> 这个 cluster。</p>
+<p>通过 <code>istioctl proxy-config listeners istio-test-client-f7c785975-qst9q -o json</code> 查看更详细一些的信息。</p>
+<pre tabindex="0"><code>{
+    &#34;name&#34;: &#34;0.0.0.0_80&#34;,
+    &#34;address&#34;: {
+        ...
+    },
+    &#34;filterChains&#34;: [
+        {
+            &#34;filterChainMatch&#34;: {
+                &#34;transportProtocol&#34;: &#34;raw_buffer&#34;,
+                &#34;applicationProtocols&#34;: [
+                    &#34;http/1.0&#34;,
+                    &#34;http/1.1&#34;,
+                    &#34;h2c&#34;
+                ]
+            },
+            &#34;filters&#34;: [
+                {
+                    &#34;name&#34;: &#34;envoy.filters.network.http_connection_manager&#34;,
+                    &#34;typedConfig&#34;: {
+                        &#34;@type&#34;: &#34;type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager&#34;,
+                        &#34;statPrefix&#34;: &#34;outbound_0.0.0.0_80&#34;,
+                        &#34;rds&#34;: {
+                            ...
+                            &#34;routeConfigName&#34;: &#34;80&#34;
+                        },
+                        &#34;httpFilters&#34;: ...
+                    }
+                }
+            ]
+        }
+    ],
+    &#34;defaultFilterChain&#34;: {
+        &#34;filterChainMatch&#34;: {},
+        &#34;filters&#34;: [
+            ...
+            {
+                &#34;name&#34;: &#34;envoy.filters.network.tcp_proxy&#34;,
+                &#34;typedConfig&#34;: {
+                    &#34;@type&#34;: &#34;type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy&#34;,
+                    &#34;statPrefix&#34;: &#34;PassthroughCluster&#34;,
+                    &#34;cluster&#34;: &#34;PassthroughCluster&#34;
+                    ...
+                }
+            }  
+        ]
+    },
+    ...
+}
+</code></pre><p>省略了其中大部分不重要的配置。</p>
+<p>可以看出，80 端口的 listener，有一个 defaultFilterChain，filterChainMatch 为空，说明匹配所有流量，并且 filters 中包括一个 <code>tcp_proxy</code> 的 filter，用于代理 TCP 连接。可见这个 defaultFilterChain 就是用于兜底的，如果没有匹配其他的 FilterChain，则默认都以 TCP 流量来处理。</p>
+<p>再看 filterChains 中的内容，filterChainMatch 中指定了 applicationProtocols，包含了 HTTP 的各种协议，说明这个 FilterChains 是用于处理 HTTP 请求的。<code>http_connection_manager</code> 这个特殊的 Filter 会将 HTTP 请求路由到 <code>routeConfigName: 80</code>。</p>
+<h5 id="route">Route</h5>
+<p>通过命令 <code>istioctl proxy-config route istio-test-client-f7c785975-qst9q -o json</code> 查找 route name 80 的详细信息。</p>
+<pre tabindex="0"><code>{
+    &#34;name&#34;: &#34;80&#34;,
+    &#34;virtualHosts&#34;: [
+        {
+            &#34;name&#34;: &#34;allow_any&#34;,
+            &#34;domains&#34;: [
+                &#34;*&#34;
+            ],
+            &#34;routes&#34;: [
+                {
+                    &#34;name&#34;: &#34;allow_any&#34;,
+                    &#34;match&#34;: {
+                        &#34;prefix&#34;: &#34;/&#34;
+                    },
+                    &#34;route&#34;: {
+                        &#34;cluster&#34;: &#34;PassthroughCluster&#34;,
+                        &#34;timeout&#34;: &#34;0s&#34;,
+                        &#34;maxGrpcTimeout&#34;: &#34;0s&#34;
+                    }
+                }
+            ]
+        },
+        {
+            &#34;name&#34;: &#34;ingress-nginx-controller.ingress-nginx.svc.cluster.local:80&#34;,
+            &#34;domains&#34;: [
+                &#34;ingress-nginx-controller.ingress-nginx.svc.cluster.local&#34;,
+                ...
+            ],
+            &#34;routes&#34;: [
+                {
+                    &#34;name&#34;: &#34;default&#34;,
+                    &#34;match&#34;: {
+                        &#34;prefix&#34;: &#34;/&#34;
+                    },
+                    &#34;route&#34;: {
+                        &#34;cluster&#34;: &#34;outbound|80||ingress-nginx-controller.ingress-nginx.svc.cluster.local&#34;,
+                        &#34;timeout&#34;: &#34;0s&#34;
+                        ...
+                    },
+                    ...
+                }
+            ]
+        }
+    }
+}
+</code></pre><p>可以看出 name 80 的 Route 中的 virtualHosts 是一个数组，进入这个 route 的请求，会根据请求的 host 匹配对应的规则，然后路由到对应的 cluster。例如，如果 host 是 <code>ingress-nginx-controller.ingress-nginx.svc.cluster.local</code>，则会被路由到 cluster <code>outbound|80||ingress-nginx-controller.ingress-nginx.svc.cluster.local</code>。这个 cluster 中的 endpoint 会通过 eds 从 istiod 动态获取。</p>
+<p>那么 allow_any 这个特殊的规则，可以认为是一个兜底的规则，如果请求的 host 和其他所有 route 的 domain 都不匹配，则会匹配到 allow_any 的规则，会被路由到 PassthroughCluster 这个 cluster。</p>
+<h5 id="cluster">Cluster</h5>
+<p>通过命令 <code>istioctl proxy-config cluster istio-test-client-f7c785975-qst9q -o json</code> 查找 PassthroughCluster 的详细信息。</p>
+<pre tabindex="0"><code>{
+    &#34;name&#34;: &#34;PassthroughCluster&#34;,
+    &#34;type&#34;: &#34;ORIGINAL_DST&#34;,
+    &#34;connectTimeout&#34;: &#34;1s&#34;,
+    &#34;lbPolicy&#34;: &#34;CLUSTER_PROVIDED&#34;,
+    &#34;circuitBreakers&#34;: {
+        ...
+    },
+    &#34;typedExtensionProtocolOptions&#34;: {
+        ...
+    },
+    &#34;filters&#34;: [
+        {
+            &#34;name&#34;: &#34;istio.metadata_exchange&#34;,
+            &#34;typedConfig&#34;: {
+                ...
+            }
+        }
+    ]
+}
+</code></pre><p>可以看到这个 Cluster 比较简单，核心的配置就在于 type 为 <code>ORIGINAL_DST</code>，表示使用 TCP 连接原来的目的地址作为 upstream 地址。</p>
+<h5 id="结论">结论</h5>
+<p>从上述配置中，可以发现，核心的问题是， 80 端口的 listener 配置了 HTTP 的协议探测，并且访问外部域名的 80 端口会匹配 HTTP 协议的 FilterChain 之后交由 HTTP Connection Manager 处理，从而并没有完全遵循 TCP 代理的逻辑，当 Upstream 连接断开后，仍然保持了和 Downstream 的连接。</p>
+<p>尝试访问外部域名的 8080 端口，则不会出现同样的问题。因为内部服务并没有监听 8080 端口，所以 istio 并不会为 8080 端口创建 listener。所以到 8080 端口的流量会直接被当做 TCP 流量走 TCP Proxy 的 Filter 来处理。</p>
+<p>但是内部服务通常都有暴露 HTTP 协议的 80 端口，所以 istio 会创建 80 端口的 listener ，探测到是 HTTP 协议之后，根据 host 来做内部服务的路由。因为要通过 host 来判断是否是内部服务，所以必须要经过 HTTP Connection Manager，就没办法走 TCP Proxy，从而导致了这个问题。</p>
+<h3 id="解决方案">解决方案</h3>
+<h4 id="serviceentry">ServiceEntry</h4>
+<p>通过创建 ServiceEntry，将外部域名声明为一个服务，通过 DNS 来做服务发现，从而让 envoy 重新连接时，不使用 <code>ORIGINAL_DST</code>，而是连接通过 DNS 获取到的 IP。</p>
+<pre tabindex="0"><code>apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: external-svc
+spec:
+  hosts:
+  - test.com
+  location: MESH_EXTERNAL
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+  resolution: DNS
+</code></pre><p>问题:</p>
+<ul>
+<li>DNS 解析的方式，不支持将 hosts 设置为泛域名，需要预先配置好所有的外部域名，非常麻烦和难以维护。</li>
+<li>istio 会让所有下发了此配置的 envoy 进行频繁的 DNS 解析来更新服务发现的结果，默认为 5s，可以调整。但是如果 host 很多，且 Pod 也很多，仍然可能给 coredns 造成一定的压力。当域名解析不存在时，这个问题会放大，https://github.com/istio/istio/issues/35603 。</li>
+<li>对于请求的 url host 和 HTTP header Host 不同的请求来说，将会出错，因为 envoy 不再使用 connect 的目的 IP 来进行连接。</li>
+<li>这样的 ServiceEntry，会增加 cluster，route，endpoint 的配置，对配置下发也会产生压力。</li>
+</ul>
+<h4 id="限制需要劫持的-ip">限制需要劫持的 IP</h4>
+<p>通过 <code>values.global.proxy.includeIPRanges</code> 配置需要劫持的 IP 段，只对内部 IP 段进行劫持，这样外部请求就不经过 envoy，就不会有类似的问题。</p>
+<p><code>traffic.sidecar.istio.io/includeOutboundIPRanges</code> 或 <code>traffic.sidecar.istio.io/excludeOutboundIPRanges</code> pod annotation 可以只针对部分 pod 进行灰度。</p>
+<p>但是这个方案，维护起来比较复杂，因为在云厂商的网络架构下，集群 Pod 网段可能和其他云资源有冲突。如果划分的太细，维护成本又很高，而且以后都需要记得根据网段来及时做调整。一旦出现误差，可能导致集群流量的不稳定。</p>
+<p>且这样做也丧失了对于外部 HTTP 请求的监控和管理。</p>
+<h4 id="envoy-优化todo">Envoy 优化(TODO)</h4>
+<p>这个问题比较难在 istio 层面完美解决，必须要 envoy 支持。</p>
+<p>对于经过 HTTP Connection Manager 路由到 PassthroughCluster 的连接，能够将 Downstream connection 和 Upstream connection 完全关联，当 Downstream connection 断开后，Upstream connection 会断开，反之亦然。</p>
+<p>待 envoy 社区解决，相关的一些 issue，周期可能较长。</p>
+<p><a href="https://github.com/envoyproxy/envoy/issues/19458">https://github.com/envoyproxy/envoy/issues/19458</a></p>
+<p><a href="https://github.com/envoyproxy/envoy/issues/12370">https://github.com/envoyproxy/envoy/issues/12370</a></p>
+<h3 id="总结">总结</h3>
+<p>ServiceEntry 的方案短期内更具有可实施性，对部分重要的域名可以采用这种方式来避免发生故障。</p>
+<p>限制劫持 IP 段的方案风险较高，因为涉及到 iptables，指定过多的 IP 段也不是很合适，但是如果要将某一个明确的 IP 段排除的话也是可以考虑的。只是会丧失对外部 HTTP 请求的管控和监控告警的能力。</p>
+<p>Envoy 优化可能是更完美的解决方式，但是感觉难度较大，不确定社区能否解决。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2022/01/11/istio-service-send-request-failed-even-dns-switched/">https://blog.fatedier.com/2022/01/11/istio-service-send-request-failed-even-dns-switched/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/istio/">
+                            <i class="fa fa-tags"></i>
+                            istio
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月11日)</span></li><li id="li-rels"><a href="/2021/12/24/reduce-istio-control-panel-push-config/">减少 Istio 控制面下发的配置</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月24日)</span></li><li id="li-rels"><a href="/2021/12/16/istio-sidecar-graceful-shutdown/">让 Istio sidecar 优雅终止</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月16日)</span></li><li id="li-rels"><a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年09月02日)</span></li><li id="li-rels"><a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/">Istio sidecar 容器启动停止问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年08月26日)</span></li><li id="li-rels"><a href="/2021/08/24/istio-tcp-health-probe-invalid/">Istio TCP 健康检查无效的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年08月24日)</span></li><li id="li-rels"><a href="/2021/07/29/istio-service-port-name-requirements/">Istio 对 Service port name 的要求</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年07月29日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年11月21日)</span></li></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2021/12/24/reduce-istio-control-panel-push-config/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#原因分析">原因分析</a>
+      <ul>
+        <li><a href="#本地模拟">本地模拟</a></li>
+        <li><a href="#初步分析">初步分析</a></li>
+        <li><a href="#深入分析">深入分析</a>
+          <ul>
+            <li><a href="#listener">Listener</a></li>
+            <li><a href="#route">Route</a></li>
+            <li><a href="#cluster">Cluster</a></li>
+            <li><a href="#结论">结论</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#解决方案">解决方案</a>
+      <ul>
+        <li><a href="#serviceentry">ServiceEntry</a></li>
+        <li><a href="#限制需要劫持的-ip">限制需要劫持的 IP</a></li>
+        <li><a href="#envoy-优化todo">Envoy 优化(TODO)</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2022  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

@@ -63,6 +63,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2022年10月11日
+        </div>
+        <h2 class="post-title">
+            <a href="/2022/10/11/istio-grpc-gateway-disable-http1/">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>有一组专门用于 grpc 请求的 istio-gateway 网关，但是会被通过 HTTP1.1 的请求做漏洞扫描，istio gateway 仍然能够处理，并且会将这个请求转发给后端的服务，后端服务由于协议不匹配，会直接断开连接，istio gateway 就会返回 503。</p>
+<p>这样会误触发告警，并且也会影响观测正常的监控。</p>
+    </div>
+    </article>
+<hr>
+
+        
+        
+<article class="post li">
+    <header>
+        <div class="post-date">
             2021年12月16日
         </div>
         <h2 class="post-title">
@@ -1349,7 +1367,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2021  fatedier blog </p>
+    <p>&copy; 2022  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

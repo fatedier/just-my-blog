@@ -65,6 +65,15 @@
     </item>
     
     <item>
+      <title>Istio 对 Service port name 的要求</title>
+      <link>https://blog.fatedier.com/2021/07/29/istio-service-port-name-requirements/</link>
+      <pubDate>Thu, 29 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/07/29/istio-service-port-name-requirements/</guid>
+      <description>&lt;p&gt;由于 Istio 需要在七层解析流量，所以劫持服务流量后需要知道协议类型才能用合适的协议规则来解析。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Kubernetes 中支持 Pod 定向迁移</title>
       <link>https://blog.fatedier.com/2020/07/22/k8s-pod-directional-migration/</link>
       <pubDate>Wed, 22 Jul 2020 00:00:00 +0000</pubDate>

@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Thu, 02 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/service-mesh/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 16 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/service-mesh/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>让 Istio sidecar 优雅终止</title>
+      <link>https://blog.fatedier.com/2021/12/16/istio-sidecar-graceful-shutdown/</link>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/12/16/istio-sidecar-graceful-shutdown/</guid>
+      <description>&lt;p&gt;在 &lt;a href=&#34;https://blog.fatedier.com/2021/08/26/istio-sidecar-container-start-and-stop-problem/&#34;&gt;Istio sidecar 容器启动停止问题&lt;/a&gt; 这篇文章中，描述了 Istio sidecar 的启动停止顺序的问题，但是实际接入服务的过程中，仍然发现存在一些异常的情况发生，需要进一步的优化。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</title>
       <link>https://blog.fatedier.com/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/</link>

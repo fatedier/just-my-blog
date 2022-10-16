@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="在 Istio sidecar 容器启动停止问题 这篇文章中，描述了 Istio sidecar 的启动停止顺序的问题，但是实际接入服务的过程中，仍然发现存在一些异常的情况发生，需要进一步的优化。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="让 Istio sidecar 优雅终止 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    让 Istio sidecar 优雅终止
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2021年12月16日 
+                </div>
+                <h1 class="post-title">让 Istio sidecar 优雅终止</h1>
+            </header>
+
+            <div class="post-content">
+                <p>在 <a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/">Istio sidecar 容器启动停止问题</a> 这篇文章中，描述了 Istio sidecar 的启动停止顺序的问题，但是实际接入服务的过程中，仍然发现存在一些异常的情况发生，需要进一步的优化。</p>
+<h3 id="方案更新过程">方案更新过程</h3>
+<p>我们主要通过在 sidecar container 增加 prestop command 来控制 envoy 的退出逻辑。在生产环境不断遇到了新的问题，也不断优化了这个脚本的逻辑，记录过程如下。</p>
+<h4 id="初始脚本">初始脚本</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>lifecycle:
+</span></span><span style="display:flex;"><span>  preStop:
+</span></span><span style="display:flex;"><span>    exec:
+</span></span><span style="display:flex;"><span>      command: [<span style="color:#cd0000">&#34;/bin/sh&#34;</span>, <span style="color:#cd0000">&#34;-c&#34;</span>, <span style="color:#cd0000">&#34;curl -X POST localhost:15000/drain_listeners?inboundonly; while [ $(ps -e -o uid,pid,comm | grep -v &#39;1337&#39; | grep -v &#39;1 pause&#39; | grep -v &#39;UID&#39; | wc -l | xargs) -ne 0 ]; do sleep 1; done&#34;</span>]
+</span></span></code></pre></div><p>当 Pod 被删除时，kubelet 会并发地给所有容器发送 SIGTERM 的信号，当达到 terminationGracePeriodSeconds 后，如果容器还没有退出，会发送 SIGKILL 信号强制退出。</p>
+<p>增加了 preStop 后，kubelet 在发送 SIGTERM 信号之前，会先执行 preStop 的逻辑，也就是上述 command。执行完成后才会继续发送信号。</p>
+<p><code>curl -X POST localhost:15000/drain_listeners?inboundonly</code> 是向 enovy 的 admin port 发送请求，将入方向的 listener 结束。enovy 收到请求后，会取消所有入方向的端口监听，不再接收新的连接和请求。注意，这里特别设置了 inboundonly，不关闭出方向的 listeners，因为即使处于终止阶段，用于进程可能仍然需要向外发送请求。</p>
+<p>后续的 while 循环通过 ps 等待所有用户进程退出，间隔 1s。之所以在 sidecar 容器中通过 ps 可以看到所有的进程，依赖于我们让所有的 Pod 开启 ShareProcessNamespace 以共享进程命名空间。开启后，1 号进程就是 pause 进程。</p>
+<p>再之后会进入到 pilot-agent(go 写的用于和 enovy 交互的 agent) 的退出信号处理逻辑。</p>
+<p>pilot-agent 会先调用 <code>localhost:15000/drain_listeners?inboundonly&amp;graceful</code>。</p>
+<p>再 sleep 一段时间 (目前默认全局配置为 5s，可修改)，之后强行结束 envoy。</p>
+<h4 id="移除开始的-drain_listeners">移除开始的 drain_listeners</h4>
+<p>上述配置实际应用后，发现在容器停止过程中有少量 503 的请求，如果是 ingress-nginx 过来的请求可能会返回 502。</p>
+<p>原因就是当 Pod 被删除时，马上调用 drain_listeners 会导致 enovy 不再监听端口，不再接收新的连接，新连接过来会是 connection refused。</p>
+<p>所以我们决定将 drain_listeners 的操作移除，让 enovy 继续接收请求，直到用户进程完全退出之后，再进入到 pilot-agent 的退出流程。</p>
+<h4 id="用户进程退出后立即结束-envoy">用户进程退出后立即结束 envoy</h4>
+<p>上述配置实际应用后，遇到新的问题。</p>
+<p>某个服务对外提供 grpc 服务，grpc 客户端是长连接。此时的退出流程变为:</p>
+<ol>
+<li>Pod 被终止。</li>
+<li>用户容器开始 sleep 5s。(app 模版中会给所有的容器加上 sleep 5s 的 prestop 逻辑，以避免因为服务发现更新的延迟，导致请求仍然发给旧的实例，旧实例不存在会有问题)</li>
+<li>sidecar 容器持续等待用户进程退出。</li>
+<li>用户进程退出，关闭监听端口。</li>
+<li>sidecar 容器 pilot-agent sleep 5s。</li>
+<li>sidecar 容器退出。</li>
+</ol>
+<p>上述流程在第 5 步时，由于 grpc 客户端是长连接，所以即使服务发现/kube-proxy 已经将旧的 pod ip 摘除，请求仍然会发到旧的实例上去。此时 envoy 处于正常状态，但是用户进程已经退出，所以 envoy 向客户端返回了 503。</p>
+<p>在没有接入 sidecar 前，用户进程退出后，客户端的 grpc 长连接就会立刻断开，顶多影响到当前正在进程中的少量请求，影响比较小。而接入 sidecar 后，会有 5s 的时间，所有进来的请求都会返回 503。</p>
+<p>为了解决这个问题，我们需要让 envoy 在用户进程退出后就立即退出，避免 hold 住 grpc 的长连接继续接收请求。</p>
+<p>prestop command 被修改为</p>
+<pre tabindex="0"><code>while [ $(ps -e -o uid,pid,comm | grep -v &#39;1337&#39; | grep -v &#39;1 pause&#39; | grep -v &#39;UID&#39; | wc -l | xargs) -ne 0 ]; do sleep 0.1; done; curl -XPOST http://127.0.0.1:15000/quitquitquit&#34;
+</code></pre><p>ps 判断间隔缩短为 0.1s，尽量减少 envoy 退出的延迟时间。</p>
+<p>通过 <code>quitquitquit</code> 接口，强制退出 envoy。</p>
+<h4 id="避免僵尸进程的影响">避免僵尸进程的影响</h4>
+<p>上述配置实际应用后，遇到新的问题。</p>
+<p>由于有的 K8s 集群版本比较旧，使用的 pause 镜像也是旧版本，pause 进程并不会回收挂到自己下面的僵尸进程。</p>
+<p>某些容器启动命令会通过 shell 去启动应用程序，应用程序的进程是 shell 进程的子进程。当容器接收到退出信号后，shell 进程可能会先退出，之后应用程序会被挂到 1 号进程(pause)下，当应用程序退出后，成为僵尸进程，旧版本的 pause 进程没有通过 wait 回收。</p>
+<p>之前没有考虑到僵尸进程的问题，导致 envoy 一直不能退出，直到达到容器的 terminationGracePeriodSeconds 时间后才被强制结束。</p>
+<p>修改 prestop command 加入对僵尸进程的过滤:</p>
+<pre tabindex="0"><code>while [ $(ps -e -o uid,pid,comm | grep -v &#39;1337&#39; | grep -v &#39;1 pause&#39; | grep -v &#39;UID&#39; | grep -v &#39;defunct&#39; | wc -l | xargs) -ne 0 ]; do sleep 0.1; done; curl -XPOST http://127.0.0.1:15000/quitquitquit&#34;
+</code></pre><h4 id="加回-drain_listeners">加回 drain_listeners</h4>
+<p>上述配置实际应用后，遇到新的问题。</p>
+<p>有的用户容器，在退出前，会先停止监听端口，过一段时间才会退出。</p>
+<p>退出流程为:</p>
+<ol>
+<li>Pod 被终止。</li>
+<li>用户容器开始 sleep 5s。</li>
+<li>sidecar 容器持续等待用户进程退出。</li>
+<li>用户进程关闭端口监听，但是进程并不退出。</li>
+<li>sidecar 容器继续等待。</li>
+<li>用户进程退出。</li>
+<li>sidecar 容器 envoy 立即退出。</li>
+</ol>
+<p>上述步骤 5 中，如果客户端是 grpc 或 http 的长连接，请求就有可能继续发到这个实例，此时用户进程已经没有监听端口，所以 envoy 只能返回 503。</p>
+<p>在没有接入 sidecar 前，用户进程通过断开连接的方式，让客户端重连到其他新的节点。但是引入 sidecar 后，envoy 会维持和客户端的长连接，导致出错。</p>
+<p>为了解决上述问题，我们将 preStop command 修改为:</p>
+<pre tabindex="0"><code>sleep 4.8; curl -XPOST &#39;http://127.0.0.1:15000/drain_listeners?inboundonly&amp;graceful&#39;; while [ $(ps -e -o uid,pid,comm | grep -v &#39;1337&#39; | grep -v &#39;1 pause&#39; | grep -v &#39;UID&#39; | grep -v &#39;defunct&#39; | wc -l | xargs) -ne 0 ]; do sleep 0.1; done; curl -XPOST http://127.0.0.1:15000/quitquitquit
+</code></pre><p>增加了 <code>curl -XPOST 'http://127.0.0.1:15000/drain_listeners?inboundonly&amp;graceful</code></p>
+<p>这里需要说明一下 envoy 关于这个接口逻辑，参考 <a href="https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/operations/draining">https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/operations/draining</a></p>
+<ul>
+<li>如果没有 graceful 参数，则 drain_listeners 会立即关闭 listeners，停止端口监听。</li>
+<li>如果加上 graceful 参数，drain_listeners 会先进入一段 graceful 的时间段，在这个时间段内，如果当前没有正在进行中的请求，则立即停止端口监听; 如果有正在进行中的请求，则继续接收新的连接，处理新的请求，但是，对于 HTTP1 请求，会在 Response 中增加 <code>Connection: close</code> header，对于 HTTP2(grpc) 请求，会发送 GOAWAY 帧，意图都是提醒客户端断开当前连接。</li>
+<li>上面的 graceful 时间由 drain-time-s 参数指定，istio 中全局配置为 45s。当达到这个时间后，即使有当前进行中的请求，也会立即关闭端口监听。</li>
+<li>可以通过 envoy 的 drain_strategy 参数指定 graceful 阶段 drain 的策略，可选 default 和 immediate。istio 全局硬编码为 immediate。default 会在 45s 的持续时间内，从 0 到 100% 给响应加上断开连接的标志，有一个逐渐增加的过程。immediate 表示进入 graceful 阶段后立即给所有请求的响应增加断开连接的标志。</li>
+</ul>
+<p>增加了 <code>sleep 4.8</code>。</p>
+<p>这里之所以 sleep 4.8s，比用户容器的 sleep 时间短了 200ms。因为当 kubelet 并发的给所有容器执行 sleep 命令时，很难保证大家同时完成，很有可能会有一个间隔的时间窗口。如果用户进程在 envoy 之前结束并退出，那么就仍然有可能出现一个非常短暂的时间窗口， envoy 接收请求，用户进程没有监听，只能返回 503。当 envoy 先进入 drain 的流程后，如果用户进程退出，envoy 也会立即关闭监听，不再接收新的连接和请求，将影响降低到最低。</p>
+<p>优化后的退出流程:</p>
+<ol>
+<li>Pod 被终止。</li>
+<li>用户容器开始 sleep 5s。</li>
+<li>sidecar 容器开始 sleep 4.8s。</li>
+<li>sidecar 通常会先 sleep 结束，调用 drain_listeners 接口，使 envoy 进入 graceful drain 的阶段。并持续等待用户进程结束。</li>
+<li>如果当前没有正在进行中的请求，envoy 会立即关闭监听。</li>
+<li>如果当前有正在进程中的请求，envoy 会继续接收新的请求，并给每一个请求的响应中添加上断开连接的标志，以使客户端能够主动断开连接，重连到其他节点。</li>
+<li>用户进程关闭端口监听，断开连接，但是进程不退出。</li>
+<li>sidecar 中 envoy 感知到当前没有进行中的请求，立即关闭端口监听。</li>
+<li>客户端理论上应该都已经重连到其他节点，不会再有新的请求进入。如果有新连接，会得到 connection refused 的响应。</li>
+<li>用户进程退出。</li>
+<li>sidecar 强制退出 envoy，之后容器退出。</li>
+</ol>
+<h4 id="降低-terminationdrainduration">降低 terminationDrainDuration</h4>
+<p><code>terminationDrainDuration</code> 默认为全局 5s。也就是 envoy 收到退出信号后，会固定 sleep 的时间。</p>
+<p>由于我们通过 prestop hook 来实现优雅终止，就不需要依赖 <code>terminationDrainDuration</code> 了。</p>
+<p>由于并发问题，envoy 处理 <code>curl -XPOST http://127.0.0.1:15000/quitquitquit</code> 的请求有一定几率 在收到 SIGTERM 信号之后，这样导致 istio sidecar 毫无意义地 sleep 了一段时间。</p>
+<p>如果服务发现的数据出现了延迟，那么过来请求会得到 503 的结果，而不是 connection refused，有可能就会影响到客户端的重试。</p>
+<p>我们可以通过修改 <code>meshConfig.defaultConfig.terminationDrainDuration</code> 来调整全局的默认值，将这个值改成尽可能的小，比如 100ms。但是由于 Bug，某些版本中可能无法修改为小于 1s 的值，具体见 issue: <a href="https://github.com/istio/istio/issues/41046">https://github.com/istio/istio/issues/41046</a>。该问题在最新的 1.14 和 1.15 版本中已修复。</p>
+<h3 id="社区的进展">社区的进展</h3>
+<p>istio 1.12 之前的退出逻辑基本上不可用，pilot-agent 会在调用 drain_listeners 之后 sleep 一段固定的时间就立即结束 envoy。这个时间默认是全局配置为 5s。配置太短，会导致 envoy 退出了，用户进程还没退出，用户进程也没法访问外部网络。配置的太长，会导致 Pod 停止时间过长，影响发版效率。</p>
+<p><a href="https://github.com/istio/istio/pull/35059">https://github.com/istio/istio/pull/35059</a></p>
+<p>istio 1.12 中做了一个优化，将原来 sleep 的逻辑更改为先 sleep 一个 MINIMUM_DRAIN_DURATION 的时间段，再通过 envoy 的 stats 接口获取当前 active 的连接数，当 active 连接数为 0 时，立即退出 envoy。会比之前好很多，解决了部分问题。但是，envoy 的生命周期也没有完全和用户进程关联，有可能退出阶段短暂的没有请求，之后用户进程可能仍然需要向外部通信，如果此时 envoy 退出了的话，外部通信就失败了。</p>
+<p>而且在收到 SIGTERM 信号后就立即调用 drain_listeners，如果用户服务请求较少，当前恰好没有进行中的请求，端口监听就被立即关闭了。此时服务发现的节点还没有摘掉，刚好有新的请求进来，就会出现 connection refused。</p>
+<p>此功能默认没有开启，需要将 EXIT_ON_ZERO_ACTIVE_CONNECTIONS 环境变量设置为 true 来启用。</p>
+<p>总的来说，要想让 envoy sidecar 的终止逻辑能够完美的 cover 住各个边界场景，可能还需要更多的实践经验。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2021/12/16/istio-sidecar-graceful-shutdown/">https://blog.fatedier.com/2021/12/16/istio-sidecar-graceful-shutdown/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/istio/">
+                            <i class="fa fa-tags"></i>
+                            istio
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年09月02日)</span></li><li id="li-rels"><a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/">Istio sidecar 容器启动停止问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年08月26日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li><li id="li-rels"><a href="/2018/12/01/service-mesh-explore-local-node-lb/">Service Mesh 探索之优先本地访问</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年12月01日)</span></li><li id="li-rels"><a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年11月21日)</span></li><li id="li-rels"><a href="/2018/10/15/self-designed-service-mesh/">Service Mesh 自研实践</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2018年10月15日)</span></li></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2021/11/17/macos-iptables-block-address/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#方案更新过程">方案更新过程</a>
+      <ul>
+        <li><a href="#初始脚本">初始脚本</a></li>
+        <li><a href="#移除开始的-drain_listeners">移除开始的 drain_listeners</a></li>
+        <li><a href="#用户进程退出后立即结束-envoy">用户进程退出后立即结束 envoy</a></li>
+        <li><a href="#避免僵尸进程的影响">避免僵尸进程的影响</a></li>
+        <li><a href="#加回-drain_listeners">加回 drain_listeners</a></li>
+        <li><a href="#降低-terminationdrainduration">降低 terminationDrainDuration</a></li>
+      </ul>
+    </li>
+    <li><a href="#社区的进展">社区的进展</a></li>
+  </ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2021  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

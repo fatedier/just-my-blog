@@ -7,20 +7,11 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Wed, 17 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>mac</title>
-      <link>https://blog.fatedier.com/tags/mac/</link>
-      <pubDate>Wed, 17 Nov 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.fatedier.com/tags/mac/</guid>
-      <description></description>
-    </item>
-    
+    <lastBuildDate>Thu, 16 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>istio</title>
       <link>https://blog.fatedier.com/tags/istio/</link>
-      <pubDate>Thu, 02 Sep 2021 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://blog.fatedier.com/tags/istio/</guid>
       <description></description>
@@ -29,9 +20,18 @@
     <item>
       <title>service mesh</title>
       <link>https://blog.fatedier.com/tags/service-mesh/</link>
-      <pubDate>Thu, 02 Sep 2021 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://blog.fatedier.com/tags/service-mesh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mac</title>
+      <link>https://blog.fatedier.com/tags/mac/</link>
+      <pubDate>Wed, 17 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/tags/mac/</guid>
       <description></description>
     </item>
     

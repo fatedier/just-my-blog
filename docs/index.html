@@ -66,6 +66,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2021年12月16日
+        </div>
+        <h2 class="post-title">
+            <a href="/2021/12/16/istio-sidecar-graceful-shutdown/">让 Istio sidecar 优雅终止</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>在 <a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/">Istio sidecar 容器启动停止问题</a> 这篇文章中，描述了 Istio sidecar 的启动停止顺序的问题，但是实际接入服务的过程中，仍然发现存在一些异常的情况发生，需要进一步的优化。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2021年11月17日
         </div>
         <h2 class="post-title">
@@ -303,23 +320,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2018年11月21日
-        </div>
-        <h2 class="post-title">
-            <a href="/2018/11/21/service-mesh-traffic-hijack/">Service Mesh 探索之流量劫持</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>Istio 的项目中有一个亮点就是可以将旧的应用无缝接入到 Service Mesh 的平台上来，不用修改一行代码。实现这个功能，目前主要是通过 iptables 来截获流量转发给 proxy。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -340,6 +340,8 @@
                 </div>
                 <div class="list-group">
                     
+                    <a href="/2021/12/16/istio-sidecar-graceful-shutdown/" class="list-group-item">让 Istio sidecar 优雅终止</a>
+                    
                     <a href="/2021/11/17/macos-iptables-block-address/" class="list-group-item">macos 上如何实现类似 iptables 的防火墙规则</a>
                     
                     <a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/" class="list-group-item">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>
@@ -353,8 +355,6 @@
                     <a href="/2020/03/28/golang-jwt/" class="list-group-item">Golang 中使用 JWT 做用户认证</a>
                     
                     <a href="/2019/04/17/k8s-custom-controller-high-available/" class="list-group-item">kubernetes 自定义控制器的高可用</a>
-                    
-                    <a href="/2019/04/02/k8s-custom-controller/" class="list-group-item">kubernetes 自定义控制器</a>
                     
                 </div>
             </div>
@@ -404,7 +404,7 @@
                     </a>
                     
                     <a href="/tags/istio/" class="list-group-item">
-                        <span class="badge">2</span>
+                        <span class="badge">3</span>
                         istio
                     </a>
                     
@@ -464,7 +464,7 @@
                     </a>
                     
                     <a href="/tags/service-mesh/" class="list-group-item">
-                        <span class="badge">6</span>
+                        <span class="badge">7</span>
                         service-mesh
                     </a>
                     

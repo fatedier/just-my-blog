@@ -81,6 +81,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2022年04月18日
+        </div>
+        <h2 class="post-title">
+            <a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/">Istio sidecar TCP 空闲连接 1 小时自动断开</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>部分服务连接 redis 会经常出现连接被断开，导致从连接池中取出连接发送请求时会失败。</p>
+<p>从 istio accesslog 中观测到到 redis 的连接，断开时间通常是 3600s 即一个小时。</p>
+    </div>
+    </article>
+<hr>
+
+        
+        
+<article class="post li">
+    <header>
+        <div class="post-date">
             2022年01月11日
         </div>
         <h2 class="post-title">

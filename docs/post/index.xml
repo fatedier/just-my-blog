@@ -19,6 +19,16 @@
     </item>
     
     <item>
+      <title>Istio sidecar TCP 空闲连接 1 小时自动断开</title>
+      <link>https://blog.fatedier.com/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/</link>
+      <pubDate>Mon, 18 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/</guid>
+      <description>&lt;p&gt;部分服务连接 redis 会经常出现连接被断开，导致从连接池中取出连接发送请求时会失败。&lt;/p&gt;
+&lt;p&gt;从 istio accesslog 中观测到到 redis 的连接，断开时间通常是 3600s 即一个小时。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</title>
       <link>https://blog.fatedier.com/2022/01/11/istio-service-send-request-failed-even-dns-switched/</link>
       <pubDate>Tue, 11 Jan 2022 00:00:00 +0000</pubDate>

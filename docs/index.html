@@ -84,6 +84,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2022年07月07日
+        </div>
+        <h2 class="post-title">
+            <a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>有用户反馈新增的接口调用后返回 upstream connect error or disconnect/reset before headers. reset reason: protocol error。</p>
+<p>但是同一个接口，在未登录时，返回未认证的 json 是正常的。只有在登录后，返回接口才不正常。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2022年04月18日
         </div>
         <h2 class="post-title">
@@ -306,24 +324,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2019年04月02日
-        </div>
-        <h2 class="post-title">
-            <a href="/2019/04/02/k8s-custom-controller/">kubernetes 自定义控制器</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>kubernetes 的 controller-manager 通过 APIServer 实时监控内部资源的变化情况，通过各种操作将系统维持在一个我们预期的状态上。比如当我们将 Deployment 的副本数增加时，controller-manager 会监听到此变化，主动创建新的 Pod。</p>
-<p>对于通过 CRD 创建的资源，也可以创建一个自定义的 controller 来管理。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -346,6 +346,8 @@
                     
                     <a href="/2022/10/11/istio-grpc-gateway-disable-http1/" class="list-group-item">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>
                     
+                    <a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/" class="list-group-item">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>
+                    
                     <a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/" class="list-group-item">Istio sidecar TCP 空闲连接 1 小时自动断开</a>
                     
                     <a href="/2022/01/11/istio-service-send-request-failed-even-dns-switched/" class="list-group-item">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</a>
@@ -357,8 +359,6 @@
                     <a href="/2021/11/17/macos-iptables-block-address/" class="list-group-item">macos 上如何实现类似 iptables 的防火墙规则</a>
                     
                     <a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/" class="list-group-item">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>
-                    
-                    <a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/" class="list-group-item">Istio sidecar 容器启动停止问题</a>
                     
                 </div>
             </div>
@@ -408,7 +408,7 @@
                     </a>
                     
                     <a href="/tags/istio/" class="list-group-item">
-                        <span class="badge">9</span>
+                        <span class="badge">10</span>
                         istio
                     </a>
                     
@@ -468,7 +468,7 @@
                     </a>
                     
                     <a href="/tags/service-mesh/" class="list-group-item">
-                        <span class="badge">13</span>
+                        <span class="badge">14</span>
                         service-mesh
                     </a>
                     

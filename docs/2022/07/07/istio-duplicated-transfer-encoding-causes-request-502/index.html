@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="有用户反馈新增的接口调用后返回 upstream connect error or disconnect/reset before headers. reset reason: protocol error。
+但是同一个接口，在未登录时，返回未认证的 json 是正常的。只有在登录后，返回接口才不正常。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2022年07月07日 
+                </div>
+                <h1 class="post-title">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</h1>
+            </header>
+
+            <div class="post-content">
+                <p>有用户反馈新增的接口调用后返回 upstream connect error or disconnect/reset before headers. reset reason: protocol error。</p>
+<p>但是同一个接口，在未登录时，返回未认证的 json 是正常的。只有在登录后，返回接口才不正常。</p>
+<h3 id="排查">排查</h3>
+<p>这个返回内容明显是 envoy 返回的，从错误提示看，大概率是协议问题。但是同一个接口，登录和未登录时不一致，比较奇怪。</p>
+<p>查看 trace 信息，java 服务返回的 http status code 是 200。而 envoy sidecar 返回的是 502。</p>
+<p>怀疑是 java 服务返回的 http response 是不是有什么不规范的地方。</p>
+<p>尝试对容器进行抓包。</p>
+<pre tabindex="0"><code>HTTP/1.1 200
+date: Thu, 07 Jul 2022 03:27:40 GMT
+server: envoy
+transfer-encoding: chunked
+vary: Accept-Encoding
+x-envoy-upstream-service-time: 88
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+Strict-Transport-Security: max-age=31536000 ; includeSubDomains
+X-Frame-Options: SAMEORIGIN
+Content-Type: application/json
+Transfer-Encoding: chunked
+</code></pre><p>发现 java 服务返回的响应中存在两个重复的 <code>Transfer-Encoding: chunked</code>。</p>
+<p>搜索 istio issue，发现有类似的问题，<a href="https://github.com/istio/istio/issues/36711">istio#36711</a>，社区的说法是这种返回是不符合规范的，导致 envoy 无法正常解析，所以报 protocol error，推荐是应用层解决这个问题。</p>
+<p>经过定位，是 java 服务将上游请求返回的 response header 直接 copy 之后，返回给了下游服务，然后框架可能又加上了一个 Transfer-Encoding header，导致同时存在两个。</p>
+<h3 id="hop-by-hop-headers">Hop-by-hop headers</h3>
+<p>一般来说，这一类 header 只在单个 HTTP 连接的两端起作用，如果中间接入的是代理，不应该透传给上游或下游。</p>
+<pre tabindex="0"><code>- Connection
+- Keep-Alive
+- Proxy-Authenticate
+- Proxy-Authorization
+- TE
+- Trailers
+- Transfer-Encoding
+- Upgrade
+</code></pre><p>通常，不管是将 request 转发给上游服务，还是将上游服务的请求 header 透传给下游服务，都应该移除其中的这些 header，避免将这些 header 透传。</p>
+<h3 id="解决">解决</h3>
+<p>目前接入 Istio 的服务除了这一个之外，还没有观测到类似的问题，后续接入过程中如果再有这样的报错，可以用同样的方法排查。</p>
+<p>提醒对应的应用开发者修改代码。</p>
+<p>Ingress-Nginx 并没有观测到类似的错误，大概率是 nginx 进行了兼容。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/">https://blog.fatedier.com/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/istio/">
+                            <i class="fa fa-tags"></i>
+                            istio
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月11日)</span></li><li id="li-rels"><a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/">Istio sidecar TCP 空闲连接 1 小时自动断开</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年04月18日)</span></li><li id="li-rels"><a href="/2022/01/11/istio-service-send-request-failed-even-dns-switched/">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年01月11日)</span></li><li id="li-rels"><a href="/2021/12/24/reduce-istio-control-panel-push-config/">减少 Istio 控制面下发的配置</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月24日)</span></li><li id="li-rels"><a href="/2021/12/16/istio-sidecar-graceful-shutdown/">让 Istio sidecar 优雅终止</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月16日)</span></li><li id="li-rels"><a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年09月02日)</span></li><li id="li-rels"><a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/">Istio sidecar 容器启动停止问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年08月26日)</span></li><li id="li-rels"><a href="/2021/08/24/istio-tcp-health-probe-invalid/">Istio TCP 健康检查无效的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年08月24日)</span></li><li id="li-rels"><a href="/2021/07/29/istio-service-port-name-requirements/">Istio 对 Service port name 的要求</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年07月29日)</span></li><li id="li-rels"><a href="/2019/01/12/service-mesh-explore-upgrade-http2/">Service Mesh 探索之升级 HTTP/2 协议</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2019年01月12日)</span></li></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#排查">排查</a></li>
+    <li><a href="#hop-by-hop-headers">Hop-by-hop headers</a></li>
+    <li><a href="#解决">解决</a></li>
+  </ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2022  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

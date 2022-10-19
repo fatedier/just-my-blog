@@ -19,6 +19,16 @@
     </item>
     
     <item>
+      <title>应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</title>
+      <link>https://blog.fatedier.com/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/</link>
+      <pubDate>Thu, 07 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/</guid>
+      <description>&lt;p&gt;有用户反馈新增的接口调用后返回 upstream connect error or disconnect/reset before headers. reset reason: protocol error。&lt;/p&gt;
+&lt;p&gt;但是同一个接口，在未登录时，返回未认证的 json 是正常的。只有在登录后，返回接口才不正常。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Istio sidecar TCP 空闲连接 1 小时自动断开</title>
       <link>https://blog.fatedier.com/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/</link>
       <pubDate>Mon, 18 Apr 2022 00:00:00 +0000</pubDate>

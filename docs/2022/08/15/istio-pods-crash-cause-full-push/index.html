@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="测试环境发现 istiod 有持续的 Push 时间较长的问题。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2022年08月15日 
+                </div>
+                <h1 class="post-title">Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</h1>
+            </header>
+
+            <div class="post-content">
+                <p>测试环境发现 istiod 有持续的 Push 时间较长的问题。</p>
+<h3 id="问题">问题</h3>
+<p><img src="https://image.fatedier.com/pic/2022/2022-08-15-istio-pods-crash-cause-full-push-monitor.png" alt="monitor"></p>
+<p>Push 耗时的 99 值接近 5s。其中 TriggerReason 大部分是 endpoint。</p>
+<p>查询 istiod pod 的日志，发现当时有较多的如下日志:</p>
+<pre tabindex="0"><code>info    ads    Incremental push, service {service name} at shard Kubernetes/Kubernetes has no endpoints
+info    ads    Push debounce stable[34060] 1 for config ServiceEntry/{namespace}/{service name}: 100.318346ms since last change, 100.318141ms since last push, full=false
+info    ads    Full push, service accounts changed, {service name}
+info    ads    Push debounce stable[34061] 1 for config ServiceEntry/{namespace}/{service name}: 100.687724ms since last change, 100.687555ms since last push, full=true
+</code></pre><h3 id="分析">分析</h3>
+<p>通过查看当时日志中对应实例的情况，确认问题的原因是由于这个服务只有一个 pod，且由于服务不稳定，会频繁地在 Ready 和 UnReady 之间变化。</p>
+<p>这些变化触发了 istio 控制面的逻辑，认为服务的 service accounts 发生了变化，从而触发了一次 Full Push。正常来说，如果只有 endpoint ip 变化的话，istio 会采用 <code>Incremental push</code>，不怎么耗费资源，推送也会很快。</p>
+<p>这个行为的逻辑在不同 Istio 版本中也有一些差异:</p>
+<h4 id="istio-113">Istio 1.13</h4>
+<p><img src="https://image.fatedier.com/pic/2022/2022-08-15-istio-pods-crash-cause-full-push-code.png" alt="code"></p>
+<p>1.13 以及之前的版本，会在 istiod cache 中记录 endpoints 对应的 service accounts，业务服务一般默认都是 default。</p>
+<p>当 endpoints 中的 address 都被删除，没有 ready 的实例之后，istiod 会 watch 到这个变化，然后先在 cache 中将对应的 endpoints 删除，并且 service accounts name 也会被删除。</p>
+<p>而当这个 pod 恢复，endpoints 的 address 中又有了这个 ip 之后，istiod 会从对应的 pod spec 中拿到其 service accounts name，再加到 cache 中。之后会去做判断，如果 service accounts name 发生了变化，就会触发一次 Full Push，否则就用 Incremental push。由于 service accounts name 之前被删除了，所以这里肯定会被判断为出现了变化，从而走 Full Push 的逻辑。</p>
+<p>所以当一个服务正常扩缩容时，是 Incremental push，成本很低，推送延迟也很低。但是当服务的 endpoints 的 ip 数量从 0 变成非 0 时，就会触发一次 Full Push。</p>
+<h4 id="istio-114">Istio 1.14</h4>
+<p>1.14 这个版本支持了流量预热，且为了更好地支持这个功能，istiod 新增了一个环境变量，<code>PILOT_SEND_UNHEALTHY_ENDPOINTS</code>，这个变量为 true 时，istiod 会将 K8s endpoints 中 UnReady 的 addresses 也发送给 envoy，但是标记 status 为 unhealthy，正常情况下 envoy 是不会将流量路由到 unhealthy 的实例。</p>
+<p>1.14.0 中这个变量值默认是 true，但是后来有人发现出现了一些异常情况，比如当一个服务下所有 pod 不健康之后，会触发 envoy 的 panic threshold，导致流量仍然会被路由到不健康的实例上，这不符个 K8s 中 UnReady 的语义。</p>
+<p>所以为了避免这个问题，在 1.14.2 中，将 <code>PILOT_SEND_UNHEALTHY_ENDPOINTS</code> 的默认值修改为了 false。但是这样会导致流量预热这个功能出现一些问题（具体原因比较复杂，暂不详细说明）。如果手动配置将 <code>PILOT_SEND_UNHEALTHY_ENDPOINTS</code> 改为 true，则现在会禁用掉 envoy 的 panic threshold 的功能，但是这个功能被 OutlierDetection.minHealthPercent 所使用，所以两个是互斥的。目前还不明确最佳实践是什么样的。</p>
+<p>istio 社区给 envoy 提了一个 <a href="https://github.com/envoyproxy/envoy/issues/22120">Issues</a> 在 endpoint 的 healthy 和 unhealthy 之外增加一个状态，这个状态表示即使在 panic threshold 的状态下，也不将流量发给这个状态的实例。</p>
+<p>在这个版本中，如果 <code>PILOT_SEND_UNHEALTHY_ENDPOINTS</code> 为 false，则和 1.13 中的逻辑一样会触发 Full Push。</p>
+<p>如果 <code>PILOT_SEND_UNHEALTHY_ENDPOINTS</code> 为 true，由于会将 unready 的 address 也计算在内，所以当所有 pod 都 unready 之后，并不会在 cache 中将 service accounts name 移除。当 pod 恢复 ready 之后，也就不会认为是 service accounts name changed，也就不会触发 Full Push。</p>
+<h4 id="istio-115">Istio 1.15</h4>
+<p>1.15 中，即使 <code>PILOT_SEND_UNHEALTHY_ENDPOINTS</code> 为 false，也不会因为所有 pod 从 unready 变为 ready 而触发 Full Push 了。</p>
+<p>具体的代码逻辑还没有细看，1.15 目前在 beta 阶段，也没有详细的 release notes，猜测是和 <a href="https://github.com/istio/istio/pull/39133">https://github.com/istio/istio/pull/39133</a> 以及一些 xds delta 推送的优化相关。</p>
+<h3 id="结论">结论</h3>
+<p>当更新到 Istio 1.15 之后，基本上可以忽略这个问题造成的影响。</p>
+<p>但是如果一个服务，就是实例数从 0 扩到 1，仍然会触发一次 Full Push。可能的一种情况是，一个服务只有一个 Pod，然后会被频繁的 Evict。这种情况应该比较少见。</p>
+<p>更新: 1.15.1 中有一个 <a href="https://github.com/istio/istio/pull/40866">PR</a> 进行了优化，实例数缩到 0 再扩到 1 应该也不会触发 Full Push 了。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2022/08/15/istio-pods-crash-cause-full-push/">https://blog.fatedier.com/2022/08/15/istio-pods-crash-cause-full-push/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/istio/">
+                            <i class="fa fa-tags"></i>
+                            istio
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月11日)</span></li><li id="li-rels"><a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月07日)</span></li><li id="li-rels"><a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/">Istio sidecar TCP 空闲连接 1 小时自动断开</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年04月18日)</span></li><li id="li-rels"><a href="/2022/01/11/istio-service-send-request-failed-even-dns-switched/">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年01月11日)</span></li><li id="li-rels"><a href="/2021/12/24/reduce-istio-control-panel-push-config/">减少 Istio 控制面下发的配置</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月24日)</span></li><li id="li-rels"><a href="/2021/12/16/istio-sidecar-graceful-shutdown/">让 Istio sidecar 优雅终止</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月16日)</span></li><li id="li-rels"><a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年09月02日)</span></li><li id="li-rels"><a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/">Istio sidecar 容器启动停止问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年08月26日)</span></li><li id="li-rels"><a href="/2021/08/24/istio-tcp-health-probe-invalid/">Istio TCP 健康检查无效的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年08月24日)</span></li><li id="li-rels"><a href="/2021/07/29/istio-service-port-name-requirements/">Istio 对 Service port name 的要求</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年07月29日)</span></li></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#问题">问题</a></li>
+    <li><a href="#分析">分析</a>
+      <ul>
+        <li><a href="#istio-113">Istio 1.13</a></li>
+        <li><a href="#istio-114">Istio 1.14</a></li>
+        <li><a href="#istio-115">Istio 1.15</a></li>
+      </ul>
+    </li>
+    <li><a href="#结论">结论</a></li>
+  </ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2022  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

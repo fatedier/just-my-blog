@@ -19,6 +19,15 @@
     </item>
     
     <item>
+      <title>Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</title>
+      <link>https://blog.fatedier.com/2022/08/15/istio-pods-crash-cause-full-push/</link>
+      <pubDate>Mon, 15 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2022/08/15/istio-pods-crash-cause-full-push/</guid>
+      <description>&lt;p&gt;测试环境发现 istiod 有持续的 Push 时间较长的问题。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</title>
       <link>https://blog.fatedier.com/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/</link>
       <pubDate>Thu, 07 Jul 2022 00:00:00 +0000</pubDate>

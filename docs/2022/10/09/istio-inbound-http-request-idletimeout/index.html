@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="istio sidecar inbound HTTP 请求的 idle timeout 配置默认为 1h。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="Istio Inbound HTTP 请求的 IdleTimeout 问题 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Istio Inbound HTTP 请求的 IdleTimeout 问题
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2022年10月09日 
+                </div>
+                <h1 class="post-title">Istio Inbound HTTP 请求的 IdleTimeout 问题</h1>
+            </header>
+
+            <div class="post-content">
+                <p>istio sidecar inbound HTTP 请求的 idle timeout 配置默认为 1h。</p>
+<p>之前以为 <a href="https://www.envoyproxy.io/docs/envoy/latest/api-v3/config/cluster/v3/cluster.proto#envoy-v3-api-field-config-cluster-v3-cluster-cleanup-interval">cleanup_interval</a> 是 istio sidecar 的 envoy 清理 inbound 空闲连接的配置，测试下来发现并不完全是。</p>
+<p>在 envoy 的一个 cluster 中，cleanup 的逻辑应该是清理 host 级别的整个连接池，每一个 host 应该是独立的 connection pool，整个 host 级别如果持续了 <code>cleanup_interval</code> 的时间后都没有任何请求，则会将这个 connection pool 中的连接都清理了。</p>
+<p>如果需要配置 HTTP 的 idle timeout，envoy 的文档中有说明，分别介绍了 downstream 和 upstream 的这个值要如何配置: <a href="https://www.envoyproxy.io/docs/envoy/latest/faq/configuration/timeouts#faq-configuration-connection-timeouts">https://www.envoyproxy.io/docs/envoy/latest/faq/configuration/timeouts#faq-configuration-connection-timeouts</a>。</p>
+<p>对应到 istio 中，目前研究下来，没有一个正式的配置可以用来配置一个全局的默认值。Istio 没有主动配置，则 envoy 默认的配置是 1 小时。</p>
+<p>有两个方法来实现修改 Inbound 请求的 idle timeout。</p>
+<ol>
+<li>
+<p>通过 DestinationRule 显示为特定的服务配置 http idle timeout:</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: networking.istio.io/v1beta1
+</span></span><span style="display:flex;"><span>kind: DestinationRule
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: istio-test
+</span></span><span style="display:flex;"><span>  namespace: infra
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  host: istio-test-server
+</span></span><span style="display:flex;"><span>  trafficPolicy:
+</span></span><span style="display:flex;"><span>    connectionPool:
+</span></span><span style="display:flex;"><span>      http:
+</span></span><span style="display:flex;"><span>        idleTimeout: 10s
+</span></span></code></pre></div><p>上面的配置会将 istio-test-server 的实例的 Inbound Cluster HTTP IdleTimeout 值修改为 10s。也就是 istio-test-server pod 内的 envoy 处理入请求时使用的配置。</p>
+<p>同时会将其他服务访问 istio-test-server 的 HTTP IdleTimeout 也设置为 10s。假设 istio-test-client 访问 istio-test-server，则 istio-test-client 所在的 envoy 访问 istio-test-server 的 envoy 的时候，也遵循这个 idle timeout 的配置。</p>
+</li>
+<li>
+<p>通过 EnvoyFilter 全局修改 InboundCluster 的配置。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: networking.istio.io/v1alpha3
+</span></span><span style="display:flex;"><span>kind: EnvoyFilter
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: test-http-idle-timeout
+</span></span><span style="display:flex;"><span>  namespace: istio-system
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  configPatches:
+</span></span><span style="display:flex;"><span>    - applyTo: CLUSTER
+</span></span><span style="display:flex;"><span>      match:
+</span></span><span style="display:flex;"><span>        context: SIDECAR_INBOUND
+</span></span><span style="display:flex;"><span>      patch:
+</span></span><span style="display:flex;"><span>        operation: MERGE
+</span></span><span style="display:flex;"><span>        value:
+</span></span><span style="display:flex;"><span>          typedExtensionProtocolOptions:
+</span></span><span style="display:flex;"><span>            envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+</span></span><span style="display:flex;"><span>              &#39;@type&#39;: type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+</span></span><span style="display:flex;"><span>              commonHttpProtocolOptions:
+</span></span><span style="display:flex;"><span>                idleTimeout: 10s
+</span></span><span style="display:flex;"><span>              explicitHttpConfig:
+</span></span><span style="display:flex;"><span>                httpProtocolOptions: {}
+</span></span></code></pre></div><p>上面的配置会修改所有实例的 Inbound Cluster 的 HTTP idleTimeout。</p>
+<p>需要额外注意的是，这个 EnvoyFilter 会同时修改 <code>InboundPassthroughClusterIpv4</code> 这个特殊 Cluster。这个 Cluster 主要是用于转发没有在 Service 中声明的端口。给这个 Cluster 加上这个配置的影响不是非常确定，至少和 DestinationRule 中的实现不完全一致。</p>
+</li>
+</ol>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2022/10/09/istio-inbound-http-request-idletimeout/">https://blog.fatedier.com/2022/10/09/istio-inbound-http-request-idletimeout/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/istio/">
+                            <i class="fa fa-tags"></i>
+                            istio
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月11日)</span></li><li id="li-rels"><a href="/2022/08/15/istio-pods-crash-cause-full-push/">Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年08月15日)</span></li><li id="li-rels"><a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月07日)</span></li><li id="li-rels"><a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/">Istio sidecar TCP 空闲连接 1 小时自动断开</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年04月18日)</span></li><li id="li-rels"><a href="/2022/01/11/istio-service-send-request-failed-even-dns-switched/">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年01月11日)</span></li><li id="li-rels"><a href="/2021/12/24/reduce-istio-control-panel-push-config/">减少 Istio 控制面下发的配置</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月24日)</span></li><li id="li-rels"><a href="/2021/12/16/istio-sidecar-graceful-shutdown/">让 Istio sidecar 优雅终止</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月16日)</span></li><li id="li-rels"><a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年09月02日)</span></li><li id="li-rels"><a href="/2021/08/26/istio-sidecar-container-start-and-stop-problem/">Istio sidecar 容器启动停止问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年08月26日)</span></li><li id="li-rels"><a href="/2021/08/24/istio-tcp-health-probe-invalid/">Istio TCP 健康检查无效的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年08月24日)</span></li></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2022/08/15/istio-pods-crash-cause-full-push/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents"></nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2022  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

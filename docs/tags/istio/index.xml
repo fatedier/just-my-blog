@@ -19,6 +19,15 @@
     </item>
     
     <item>
+      <title>Istio Inbound HTTP 请求的 IdleTimeout 问题</title>
+      <link>https://blog.fatedier.com/2022/10/09/istio-inbound-http-request-idletimeout/</link>
+      <pubDate>Sun, 09 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2022/10/09/istio-inbound-http-request-idletimeout/</guid>
+      <description>&lt;p&gt;istio sidecar inbound HTTP 请求的 idle timeout 配置默认为 1h。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</title>
       <link>https://blog.fatedier.com/2022/08/15/istio-pods-crash-cause-full-push/</link>
       <pubDate>Mon, 15 Aug 2022 00:00:00 +0000</pubDate>

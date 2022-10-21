@@ -38,6 +38,12 @@
     <loc>https://blog.fatedier.com/2022/01/11/istio-service-send-request-failed-even-dns-switched/</loc>
     <lastmod>2022-01-11T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://blog.fatedier.com/tags/http/</loc>
+    <lastmod>2021-12-27T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.fatedier.com/2021/12/27/http-server-idle-conn-timeout-cause-occasional-requests-fail/</loc>
+    <lastmod>2021-12-27T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://blog.fatedier.com/2021/12/24/reduce-istio-control-panel-push-config/</loc>
     <lastmod>2021-12-24T00:00:00+00:00</lastmod>
   </url><url>

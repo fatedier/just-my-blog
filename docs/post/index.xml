@@ -58,6 +58,15 @@
     </item>
     
     <item>
+      <title>HTTP Server IdleConneTimeout 配置导致偶发性请求失败的问题</title>
+      <link>https://blog.fatedier.com/2021/12/27/http-server-idle-conn-timeout-cause-occasional-requests-fail/</link>
+      <pubDate>Mon, 27 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/12/27/http-server-idle-conn-timeout-cause-occasional-requests-fail/</guid>
+      <description>&lt;p&gt;服务接入 Istio 后，观测到有极少量的 503 错误。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>减少 Istio 控制面下发的配置</title>
       <link>https://blog.fatedier.com/2021/12/24/reduce-istio-control-panel-push-config/</link>
       <pubDate>Fri, 24 Dec 2021 00:00:00 +0000</pubDate>

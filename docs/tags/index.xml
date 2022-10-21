@@ -81,15 +81,6 @@
     </item>
     
     <item>
-      <title>mesos</title>
-      <link>https://blog.fatedier.com/tags/mesos/</link>
-      <pubDate>Sun, 16 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.fatedier.com/tags/mesos/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Linux</title>
       <link>https://blog.fatedier.com/tags/linux/</link>
       <pubDate>Fri, 03 Mar 2017 00:00:00 +0000</pubDate>
@@ -171,24 +162,6 @@
     </item>
     
     <item>
-      <title>openstack</title>
-      <link>https://blog.fatedier.com/tags/openstack/</link>
-      <pubDate>Wed, 25 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.fatedier.com/tags/openstack/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>swift</title>
-      <link>https://blog.fatedier.com/tags/swift/</link>
-      <pubDate>Wed, 25 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.fatedier.com/tags/swift/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>git</title>
       <link>https://blog.fatedier.com/tags/git/</link>
       <pubDate>Tue, 05 Apr 2016 00:00:00 +0000</pubDate>
@@ -198,29 +171,11 @@
     </item>
     
     <item>
-      <title>sed</title>
-      <link>https://blog.fatedier.com/tags/sed/</link>
+      <title>开发技巧</title>
+      <link>https://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7/</link>
       <pubDate>Fri, 25 Mar 2016 00:00:00 +0000</pubDate>
       
-      <guid>https://blog.fatedier.com/tags/sed/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>gem</title>
-      <link>https://blog.fatedier.com/tags/gem/</link>
-      <pubDate>Sun, 06 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.fatedier.com/tags/gem/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ruby</title>
-      <link>https://blog.fatedier.com/tags/ruby/</link>
-      <pubDate>Sun, 06 Dec 2015 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.fatedier.com/tags/ruby/</guid>
+      <guid>https://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7/</guid>
       <description></description>
     </item>
     
@@ -234,38 +189,11 @@
     </item>
     
     <item>
-      <title>codis</title>
-      <link>https://blog.fatedier.com/tags/codis/</link>
-      <pubDate>Wed, 07 Oct 2015 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.fatedier.com/tags/codis/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>redis</title>
       <link>https://blog.fatedier.com/tags/redis/</link>
       <pubDate>Wed, 07 Oct 2015 00:00:00 +0000</pubDate>
       
       <guid>https://blog.fatedier.com/tags/redis/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>smtp</title>
-      <link>https://blog.fatedier.com/tags/smtp/</link>
-      <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.fatedier.com/tags/smtp/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>vim</title>
-      <link>https://blog.fatedier.com/tags/vim/</link>
-      <pubDate>Thu, 30 Jul 2015 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.fatedier.com/tags/vim/</guid>
       <description></description>
     </item>
     
@@ -293,15 +221,6 @@
       <pubDate>Wed, 04 Mar 2015 00:00:00 +0000</pubDate>
       
       <guid>https://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>STL</title>
-      <link>https://blog.fatedier.com/tags/stl/</link>
-      <pubDate>Fri, 26 Sep 2014 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.fatedier.com/tags/stl/</guid>
       <description></description>
     </item>
     

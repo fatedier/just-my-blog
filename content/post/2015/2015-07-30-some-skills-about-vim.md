@@ -2,7 +2,8 @@
 categories:
     - "技术文章"
 tags:
-    - "vim"
+    - "开发工具"
+    - "开发技巧"
 date: 2015-07-30
 title: "关于vim的一些小技巧"
 url: "/2015/07/30/some-skills-about-vim"

@@ -125,9 +125,6 @@
     <loc>https://blog.fatedier.com/tags/docker/</loc>
     <lastmod>2017-07-16T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.fatedier.com/tags/mesos/</loc>
-    <lastmod>2017-07-16T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</loc>
     <lastmod>2017-07-16T00:00:00+00:00</lastmod>
   </url><url>
@@ -206,12 +203,6 @@
     <loc>https://blog.fatedier.com/tags/%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2016-06-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.fatedier.com/tags/openstack/</loc>
-    <lastmod>2016-05-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/tags/swift/</loc>
-    <lastmod>2016-05-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://blog.fatedier.com/2016/05/25/deploy-openstack-swift/</loc>
     <lastmod>2016-05-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -227,7 +218,7 @@
     <loc>https://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</loc>
     <lastmod>2016-04-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.fatedier.com/tags/sed/</loc>
+    <loc>https://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7/</loc>
     <lastmod>2016-03-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</loc>
@@ -248,13 +239,7 @@
     <loc>https://blog.fatedier.com/2015/12/18/terminal-multiplexer-tmux/</loc>
     <lastmod>2015-12-18T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.fatedier.com/tags/gem/</loc>
-    <lastmod>2015-12-06T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</loc>
-    <lastmod>2015-12-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/tags/ruby/</loc>
     <lastmod>2015-12-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/tags/shell/</loc>
@@ -262,9 +247,6 @@
   </url><url>
     <loc>https://blog.fatedier.com/2015/11/24/give-your-shell-some-color/</loc>
     <lastmod>2015-11-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/tags/codis/</loc>
-    <lastmod>2015-10-07T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</loc>
     <lastmod>2015-10-07T00:00:00+00:00</lastmod>
@@ -286,12 +268,6 @@
   </url><url>
     <loc>https://blog.fatedier.com/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp/</loc>
     <lastmod>2015-08-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/tags/smtp/</loc>
-    <lastmod>2015-08-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/tags/vim/</loc>
-    <lastmod>2015-07-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/2015/07/30/some-skills-about-vim/</loc>
     <lastmod>2015-07-30T00:00:00+00:00</lastmod>
@@ -360,9 +336,6 @@
     <lastmod>2014-09-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/2014/09/26/function-size-equal-zero-compare-with-empty/</loc>
-    <lastmod>2014-09-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/tags/stl/</loc>
     <lastmod>2014-09-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/2014/09/24/learn-to-write-makefile-02/</loc>

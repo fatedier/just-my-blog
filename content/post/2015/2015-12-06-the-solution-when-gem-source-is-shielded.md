@@ -2,8 +2,7 @@
 categories:
     - "技术文章"
 tags:
-    - "gem"
-    - "ruby"
+    - "开发技巧"
 date: 2015-12-06
 title: "gem 源被屏蔽的解决方法"
 url: "/2015/12/06/the-solution-when-gem-source-is-shielded"

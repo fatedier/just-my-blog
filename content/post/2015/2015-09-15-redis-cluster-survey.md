@@ -4,6 +4,7 @@ categories:
 tags:
     - "redis"
     - "分布式存储"
+    - "数据库"
 date: 2015-09-15
 title: "Redis集群调研"
 url: "/2015/09/15/redis-cluster-survey"

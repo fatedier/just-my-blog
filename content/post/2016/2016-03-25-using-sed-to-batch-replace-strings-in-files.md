@@ -3,7 +3,7 @@ categories:
     - "技术文章"
 tags:
     - "linux"
-    - "sed"
+    - "开发技巧"
 date: 2016-03-25
 title: "简记用sed对文件执行批量替换字符串的方法"
 url: "/2016/03/25/using-sed-to-batch-replace-strings-in-files"

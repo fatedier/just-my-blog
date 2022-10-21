@@ -2,7 +2,6 @@
 categories:
     - "技术文章"
 tags:
-    - "mesos"
     - "docker"
 date: 2017-07-16
 title: "记一次mesos集群停容器时间过长的问题排查"

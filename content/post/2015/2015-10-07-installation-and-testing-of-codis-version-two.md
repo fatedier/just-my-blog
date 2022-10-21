@@ -2,9 +2,9 @@
 categories:
     - "技术文章"
 tags:
-    - "codis"
     - "redis"
     - "分布式存储"
+    - "数据库"
 date: 2015-10-07
 title: "codis 2.x版本环境搭建与测试"
 url: "/2015/10/07/installation-and-testing-of-codis-version-two"

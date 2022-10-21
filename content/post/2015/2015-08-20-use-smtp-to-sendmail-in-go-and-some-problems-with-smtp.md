@@ -3,7 +3,6 @@ categories:
     - "技术文章"
 tags:
     - "golang"
-    - "smtp"
 date: 2015-08-20
 title: "go语言中使用smtp发送邮件及smtp协议的相关问题"
 url: "/2015/08/20/use-smtp-to-sendmail-in-go-and-some-problems-with-smtp"

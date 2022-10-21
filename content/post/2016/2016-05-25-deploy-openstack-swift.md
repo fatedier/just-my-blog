@@ -2,8 +2,6 @@
 categories:
     - "技术文章"
 tags:
-    - "openstack"
-    - "swift"
     - "分布式存储"
 date: 2016-05-25
 title: "部署openstack的对象存储服务swift"

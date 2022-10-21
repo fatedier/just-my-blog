@@ -3,6 +3,7 @@ categories:
     - "技术文章"
 tags:
     - "mongodb"
+    - "数据库"
 date: 2015-06-05
 title: "MongoDB常用命令"
 url: "/2015/06/05/common-commands-of-mongodb"

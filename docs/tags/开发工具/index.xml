@@ -45,6 +45,15 @@
     </item>
     
     <item>
+      <title>关于vim的一些小技巧</title>
+      <link>https://blog.fatedier.com/2015/07/30/some-skills-about-vim/</link>
+      <pubDate>Thu, 30 Jul 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2015/07/30/some-skills-about-vim/</guid>
+      <description>&lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>linux core文件调试</title>
       <link>https://blog.fatedier.com/2014/12/07/debug-with-linux-core-file/</link>
       <pubDate>Sun, 07 Dec 2014 00:00:00 +0000</pubDate>

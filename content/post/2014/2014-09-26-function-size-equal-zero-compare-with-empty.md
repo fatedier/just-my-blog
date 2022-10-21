@@ -3,8 +3,7 @@ categories:
     - "技术文章"
 tags:
     - "c/cpp"
-    - "Linux"
-    - "STL"
+    - "linux"
 date: 2014-09-26
 title: "size() == 0和empty()的比较"
 url: "/2014/09/26/function-size-equal-zero-compare-with-empty"

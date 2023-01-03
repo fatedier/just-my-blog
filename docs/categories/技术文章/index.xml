@@ -37,6 +37,15 @@
     </item>
     
     <item>
+      <title>Headless Service 导致 Istio 控制面负载过高</title>
+      <link>https://blog.fatedier.com/2022/07/13/headless-service-cause-istiod-overloading/</link>
+      <pubDate>Wed, 13 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2022/07/13/headless-service-cause-istiod-overloading/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</title>
       <link>https://blog.fatedier.com/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/</link>
       <pubDate>Thu, 07 Jul 2022 00:00:00 +0000</pubDate>

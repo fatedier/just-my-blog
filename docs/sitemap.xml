@@ -32,6 +32,9 @@
     <loc>https://blog.fatedier.com/2022/08/15/istio-pods-crash-cause-full-push/</loc>
     <lastmod>2022-08-15T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://blog.fatedier.com/2022/07/13/headless-service-cause-istiod-overloading/</loc>
+    <lastmod>2022-07-13T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://blog.fatedier.com/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/</loc>
     <lastmod>2022-07-07T00:00:00+00:00</lastmod>
   </url><url>

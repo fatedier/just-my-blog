@@ -56,6 +56,16 @@
     </item>
     
     <item>
+      <title>Istio 控制面配置推送分析与优化</title>
+      <link>https://blog.fatedier.com/2022/06/01/istio-control-plane-config-push-optimization/</link>
+      <pubDate>Wed, 01 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2022/06/01/istio-control-plane-config-push-optimization/</guid>
+      <description>&lt;p&gt;Istio 主要分为控制面和数据面，控制面负责从数据源（通常是 K8s）获取变更内容，渲染成 envoy 使用的配置文件，推送到各个 Sidecar 和 Gateway 节点。&lt;/p&gt;
+&lt;p&gt;如果对 K8s 比较熟悉的话，可以和 K8s controller 类比，只是需要计算的内容更多。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Istio DNS Proxying</title>
       <link>https://blog.fatedier.com/2022/05/22/istio-dns-proxying/</link>
       <pubDate>Sun, 22 May 2022 00:00:00 +0000</pubDate>

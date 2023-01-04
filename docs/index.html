@@ -153,6 +153,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2022年06月01日
+        </div>
+        <h2 class="post-title">
+            <a href="/2022/06/01/istio-control-plane-config-push-optimization/">Istio 控制面配置推送分析与优化</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>Istio 主要分为控制面和数据面，控制面负责从数据源（通常是 K8s）获取变更内容，渲染成 envoy 使用的配置文件，推送到各个 Sidecar 和 Gateway 节点。</p>
+<p>如果对 K8s 比较熟悉的话，可以和 K8s controller 类比，只是需要计算的内容更多。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2022年05月22日
         </div>
         <h2 class="post-title">
@@ -308,23 +326,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2021年09月02日
-        </div>
-        <h2 class="post-title">
-            <a href="/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/">Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>近期在将 Istio 1.9.1 升级到 1.10.4。发现原来在 1.9 版本中生效的 ExternalAuthorization 的功能在控制面升级到 1.10，数据面保持在 1.9 版本时，会失效。所有的请求都不需要鉴权就能访问到后端服务。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -355,11 +356,11 @@
                     
                     <a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/" class="list-group-item">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>
                     
+                    <a href="/2022/06/01/istio-control-plane-config-push-optimization/" class="list-group-item">Istio 控制面配置推送分析与优化</a>
+                    
                     <a href="/2022/05/22/istio-dns-proxying/" class="list-group-item">Istio DNS Proxying</a>
                     
                     <a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/" class="list-group-item">Istio sidecar TCP 空闲连接 1 小时自动断开</a>
-                    
-                    <a href="/2022/01/11/istio-service-send-request-failed-even-dns-switched/" class="list-group-item">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</a>
                     
                 </div>
             </div>
@@ -404,7 +405,7 @@
                     </a>
                     
                     <a href="/tags/istio/" class="list-group-item">
-                        <span class="badge">16</span>
+                        <span class="badge">17</span>
                         istio
                     </a>
                     
@@ -444,7 +445,7 @@
                     </a>
                     
                     <a href="/tags/service-mesh/" class="list-group-item">
-                        <span class="badge">20</span>
+                        <span class="badge">21</span>
                         service-mesh
                     </a>
                     

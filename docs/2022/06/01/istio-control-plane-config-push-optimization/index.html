@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="Istio 主要分为控制面和数据面，控制面负责从数据源（通常是 K8s）获取变更内容，渲染成 envoy 使用的配置文件，推送到各个 Sidecar 和 Gateway 节点。
+如果对 K8s 比较熟悉的话，可以和 K8s controller 类比，只是需要计算的内容更多。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="Istio 控制面配置推送分析与优化 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    Istio 控制面配置推送分析与优化
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2022年06月01日 
+                </div>
+                <h1 class="post-title">Istio 控制面配置推送分析与优化</h1>
+            </header>
+
+            <div class="post-content">
+                <p>Istio 主要分为控制面和数据面，控制面负责从数据源（通常是 K8s）获取变更内容，渲染成 envoy 使用的配置文件，推送到各个 Sidecar 和 Gateway 节点。</p>
+<p>如果对 K8s 比较熟悉的话，可以和 K8s controller 类比，只是需要计算的内容更多。</p>
+<h3 id="基本架构">基本架构</h3>
+<p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-architecture.jpg" alt="architecture"></p>
+<p>Istiod 中和配置生成和推送相关的功能是无状态的，可以支持水平扩展。（有一部分和证书相关的逻辑是通过 leader election 选主后由单个节点负责处理）</p>
+<p>Istiod 会通过 List-Watch 从 kube-apiserver 获取到相关资源的变更。例如 Service, Endpoint, VirtualService, DestinationRule, ServiceEntry, Gateway。</p>
+<p>Sidecar 是指和业务 Pod 部署在一起的 pilot-agent 加上 envoy 的容器。envoy 会通过 <code>istiod.istio-system</code> 这个 service 连接到 Istiod 的其中一个实例，创建一个 GRPC stream 请求。</p>
+<p>Gateway 和 Sidecar 类似，区别就在于没有业务容器，只有单独的 envoy 容器，生成的配置会考虑到 Gateway 这个K8s 资源。</p>
+<p>后面会将 Sidecar 和 Gateway 统称为 node，是 istiod 需要推送配置的节点。</p>
+<p>每个 Istiod 会负责将计算后生成的配置通过 GRPC stream 实时推送给连接上来的 node。</p>
+<h3 id="xds-概念说明">xDS 概念说明</h3>
+<p>Envoy 的配置更新协议被称作 xDS 协议。DS 表示 Discovery Service，意思就是各种资源的发现服务。</p>
+<p>简而言之，就是 envoy 会按照固定的交互协议和 API 从其他数据源拉取各个资源的配置信息。具体的交互协议也没必要了解的特别深入，只需要关注有哪些重要的资源及其作用就可以了。</p>
+<p>xDS 现在主要包含 LDS, RDS, CDS, EDS。</p>
+<p>Istio 的推送还用到了一个 ADS(Aggregated Discovery Service) 的概念，主要目的是为了保证对各种 DS 推送的顺序。比如创建了一个路由规则，会将请求路由到一个指定的 cluster，那么如果先推送了 RDS，在这段时间内，请求会由于找不到对应的 Cluster，而失败。所以需要按照一定的顺序来进行更新，比如需要先更新 CDS，再更新 RDS。</p>
+<p>下面主要用 istio-test-server 这个测试服务用于简单说明 istio 的配置是如何映射到 envoy 的配置以及如何生效的。</p>
+<p>istio-test-server 的一些 K8s 资源:</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: v1
+</span></span><span style="display:flex;"><span>kind: Service
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  labels:
+</span></span><span style="display:flex;"><span>    app: istio-test-server
+</span></span><span style="display:flex;"><span>  name: istio-test-server
+</span></span><span style="display:flex;"><span>  namespace: infra
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  ports:
+</span></span><span style="display:flex;"><span>  - name: http-8000
+</span></span><span style="display:flex;"><span>    port: <span style="color:#cd00cd">8000</span>
+</span></span><span style="display:flex;"><span>    protocol: TCP
+</span></span><span style="display:flex;"><span>    targetPort: <span style="color:#cd00cd">8000</span>
+</span></span><span style="display:flex;"><span>  selector:
+</span></span><span style="display:flex;"><span>    app: istio-test-server
+</span></span><span style="display:flex;"><span>  type: ClusterIP
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>apiVersion: networking.istio.io/v1beta1
+</span></span><span style="display:flex;"><span>kind: VirtualService
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  labels:
+</span></span><span style="display:flex;"><span>    app: istio-test-server
+</span></span><span style="display:flex;"><span>    type: internal
+</span></span><span style="display:flex;"><span>  name: istio-test-server
+</span></span><span style="display:flex;"><span>  namespace: infra
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  hosts:
+</span></span><span style="display:flex;"><span>  - istio-test-server
+</span></span><span style="display:flex;"><span>  http:
+</span></span><span style="display:flex;"><span>  - match:
+</span></span><span style="display:flex;"><span>    - port: <span style="color:#cd00cd">8000</span>
+</span></span><span style="display:flex;"><span>    route:
+</span></span><span style="display:flex;"><span>    - destination:
+</span></span><span style="display:flex;"><span>        host: istio-test-server
+</span></span><span style="display:flex;"><span>        port:
+</span></span><span style="display:flex;"><span>          number: <span style="color:#cd00cd">8000</span>
+</span></span></code></pre></div><h4 id="lds">LDS</h4>
+<p>Listener Discovery Service</p>
+<p>监听器配置，在 envoy 中，需要为每一个端口创建一个对应的 listener。envoy 会根据连接的端口，进入到不同的 listener filter chain 进行处理。</p>
+<p>例如 8000 端口的 listener 配置如下:</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>- accessLog:
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  address:
+</span></span><span style="display:flex;"><span>    socketAddress:
+</span></span><span style="display:flex;"><span>      address: <span style="color:#cd00cd">0.0.0.0</span>
+</span></span><span style="display:flex;"><span>      portValue: <span style="color:#cd00cd">8000</span>
+</span></span><span style="display:flex;"><span>  bindToPort: <span style="color:#cdcd00">false</span>
+</span></span><span style="display:flex;"><span>  continueOnListenerFiltersTimeout: <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>  defaultFilterChain:
+</span></span><span style="display:flex;"><span>    filterChainMatch: {}
+</span></span><span style="display:flex;"><span>    filters:
+</span></span><span style="display:flex;"><span>    - name: istio.stats
+</span></span><span style="display:flex;"><span>      typedConfig:
+</span></span><span style="display:flex;"><span>        &#39;@type&#39;: type.googleapis.com/udpa.type.v1.TypedStruct
+</span></span><span style="display:flex;"><span>        typeUrl: type.googleapis.com/envoy.extensions.filters.network.wasm.v3.Wasm
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>    - name: envoy.filters.network.tcp_proxy
+</span></span><span style="display:flex;"><span>      typedConfig:
+</span></span><span style="display:flex;"><span>        &#39;@type&#39;: type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>        cluster: PassthroughCluster
+</span></span><span style="display:flex;"><span>        idleTimeout: 0s
+</span></span><span style="display:flex;"><span>        statPrefix: PassthroughCluster
+</span></span><span style="display:flex;"><span>    name: PassthroughFilterChain
+</span></span><span style="display:flex;"><span>  filterChains:
+</span></span><span style="display:flex;"><span>  - filterChainMatch:
+</span></span><span style="display:flex;"><span>      applicationProtocols:
+</span></span><span style="display:flex;"><span>      - http/1.0
+</span></span><span style="display:flex;"><span>      - http/1.1
+</span></span><span style="display:flex;"><span>      - h2c
+</span></span><span style="display:flex;"><span>      transportProtocol: raw_buffer
+</span></span><span style="display:flex;"><span>    filters:
+</span></span><span style="display:flex;"><span>    - name: envoy.filters.network.http_connection_manager
+</span></span><span style="display:flex;"><span>      typedConfig:
+</span></span><span style="display:flex;"><span>        &#39;@type&#39;: type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+</span></span><span style="display:flex;"><span>        accessLog:
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>        httpFilters:
+</span></span><span style="display:flex;"><span>        - name: istio.metadata_exchange
+</span></span><span style="display:flex;"><span>          ...
+</span></span><span style="display:flex;"><span>        - name: istio.alpn
+</span></span><span style="display:flex;"><span>          ...
+</span></span><span style="display:flex;"><span>        - name: envoy.filters.http.cors
+</span></span><span style="display:flex;"><span>          typedConfig:
+</span></span><span style="display:flex;"><span>            &#39;@type&#39;: type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
+</span></span><span style="display:flex;"><span>        - name: envoy.filters.http.fault
+</span></span><span style="display:flex;"><span>          typedConfig:
+</span></span><span style="display:flex;"><span>            &#39;@type&#39;: type.googleapis.com/envoy.extensions.filters.http.fault.v3.HTTPFault
+</span></span><span style="display:flex;"><span>        - name: istio.stats
+</span></span><span style="display:flex;"><span>          typedConfig:
+</span></span><span style="display:flex;"><span>            &#39;@type&#39;: type.googleapis.com/udpa.type.v1.TypedStruct
+</span></span><span style="display:flex;"><span>            typeUrl: type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+</span></span><span style="display:flex;"><span>            ......
+</span></span><span style="display:flex;"><span>        - name: envoy.filters.http.router
+</span></span><span style="display:flex;"><span>          typedConfig:
+</span></span><span style="display:flex;"><span>            &#39;@type&#39;: type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+</span></span><span style="display:flex;"><span>        normalizePath: <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>        pathWithEscapedSlashesAction: KEEP_UNCHANGED
+</span></span><span style="display:flex;"><span>        rds:
+</span></span><span style="display:flex;"><span>          configSource:
+</span></span><span style="display:flex;"><span>            ads: {}
+</span></span><span style="display:flex;"><span>            initialFetchTimeout: 0s
+</span></span><span style="display:flex;"><span>            resourceApiVersion: V3
+</span></span><span style="display:flex;"><span>          routeConfigName: <span style="color:#cd0000">&#34;8000&#34;</span>
+</span></span><span style="display:flex;"><span>        statPrefix: outbound_0.0.0.0_8000
+</span></span><span style="display:flex;"><span>        streamIdleTimeout: 0s
+</span></span><span style="display:flex;"><span>        tracing:
+</span></span><span style="display:flex;"><span>          clientSampling:
+</span></span><span style="display:flex;"><span>            value: <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>          customTags:
+</span></span><span style="display:flex;"><span>          ...
+</span></span><span style="display:flex;"><span>        upgradeConfigs:
+</span></span><span style="display:flex;"><span>        - upgradeType: websocket
+</span></span><span style="display:flex;"><span>        useRemoteAddress: <span style="color:#cdcd00">false</span>
+</span></span><span style="display:flex;"><span>  listenerFilters:
+</span></span><span style="display:flex;"><span>  - name: envoy.filters.listener.tls_inspector
+</span></span><span style="display:flex;"><span>    typedConfig:
+</span></span><span style="display:flex;"><span>      &#39;@type&#39;: type.googleapis.com/envoy.extensions.filters.listener.tls_inspector.v3.TlsInspector
+</span></span><span style="display:flex;"><span>  - name: envoy.filters.listener.http_inspector
+</span></span><span style="display:flex;"><span>    typedConfig:
+</span></span><span style="display:flex;"><span>      &#39;@type&#39;: type.googleapis.com/envoy.extensions.filters.listener.http_inspector.v3.HttpInspector
+</span></span><span style="display:flex;"><span>  listenerFiltersTimeout: 0s
+</span></span><span style="display:flex;"><span>  name: <span style="color:#cd00cd">0.0.0</span>.0_8000
+</span></span><span style="display:flex;"><span>  trafficDirection: OUTBOUND
+</span></span></code></pre></div><p>几个重要的点:</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>address:
+</span></span><span style="display:flex;"><span>  socketAddress:
+</span></span><span style="display:flex;"><span>    address: <span style="color:#cd00cd">0.0.0.0</span>
+</span></span><span style="display:flex;"><span>    portValue: <span style="color:#cd00cd">8000</span>
+</span></span><span style="display:flex;"><span>name: <span style="color:#cd00cd">0.0.0</span>.0_8000
+</span></span><span style="display:flex;"><span>trafficDirection: OUTBOUND
+</span></span></code></pre></div><p>监听器的端口是 8000，流量方向是出方向，表示如果是连接外部服务的 8000 端口，则会匹配到这个 listener。</p>
+<p><code>listenerFilters</code> 有两个，<code>TlsInspector</code> 和 <code>HttpInspector</code>，这两个 Filter 是用于协议探测，如果探测是 TLS 或者 HTTP 协议，则会将解析到的一些元数据写入 context 中，可以被后面的 FilterChain 中的其他 Filter 以及在 FilterChainMatch 中使用。</p>
+<p><code>filterChains</code> 是一个数组，会按照顺序匹配每一个 <code>filterChainMatch</code>，如果匹配成功，则执行对应的 <code>filters</code>，否则匹配下一个，如果都不匹配，则进入到 <code>defaultFilterChain</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>filterChainMatch:
+</span></span><span style="display:flex;"><span>  applicationProtocols:
+</span></span><span style="display:flex;"><span>  - http/1.0
+</span></span><span style="display:flex;"><span>  - http/1.1
+</span></span><span style="display:flex;"><span>  - h2c
+</span></span><span style="display:flex;"><span>  transportProtocol: raw_buffer
+</span></span></code></pre></div><p>上面的配置只有一个 filterChainMatch 用于匹配 HTTP 协议。在 envoy 中 HTTP 是一等公民，<code>http_connection_manager</code> 也是一个非常特殊的 filter（基本可以认为很多逻辑都特殊对待了），可以继续指定 http filters。</p>
+<p>http filters 则是一些处理 HTTP 请求的插件。</p>
+<p>filters 并不一定会对请求做修改，有一些 filter 是专门用于解析请求，然后将解析后的数据写入 context 中，供后续的 filters 来使用。</p>
+<p><code>istio.metadata_exchange</code> 用于获取下游请求的元数据，在遥测中上报数据时之所以能知道是哪个服务请求哪个服务就是通过这个插件实现。</p>
+<p><code>istio.alpn</code> 会根据服务声明的协议设置 ALPN 信息。</p>
+<p><code>envoy.filters.http.cors</code> 用于 cors 的校验逻辑。</p>
+<p><code>envoy.filters.http.fault</code> 用于故障注入。</p>
+<p><code>istio.stats</code> 用于生成遥测数据。</p>
+<p><code>envoy.filters.http.router</code> 负责路由，根据路由规则将请求路由到对应的 cluster。router 的配置通过 RDS 获取。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>rds:
+</span></span><span style="display:flex;"><span>  configSource:
+</span></span><span style="display:flex;"><span>    ads: {}
+</span></span><span style="display:flex;"><span>    initialFetchTimeout: 0s
+</span></span><span style="display:flex;"><span>    resourceApiVersion: V3
+</span></span><span style="display:flex;"><span>  routeConfigName: <span style="color:#cd0000">&#34;8000&#34;</span>
+</span></span></code></pre></div><p>rds 的配置表示 <code>envoy.filters.http.router</code> 关联的配置名称为 <code>8000</code>。</p>
+<p><code>defaultFilterChain</code> 在 istio 中一般就配置一个 <code>TcpProxy</code> 的 filter，用于在四层透传流量。需要注意的是这里指定了目标 Cluster 是 <code>PassthroughCluster</code>，这个会在 CDS 中说明。</p>
+<h4 id="rds">RDS</h4>
+<p>Route Discovery Service</p>
+<p>路由配置，针对 HTTP 协议。负责将 HTTP 请求根据 host, path, header 等路由到指定的 Cluster。并且可以额外指定一些超时以及重试规则。</p>
+<p>下面是 name 为 <code>8000</code> 的 route 配置。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>- name: <span style="color:#cd0000">&#34;8000&#34;</span>
+</span></span><span style="display:flex;"><span>  validateClusters: <span style="color:#cdcd00">false</span>
+</span></span><span style="display:flex;"><span>  virtualHosts:
+</span></span><span style="display:flex;"><span>  - domains:
+</span></span><span style="display:flex;"><span>    - <span style="color:#cd0000">&#39;*&#39;</span>
+</span></span><span style="display:flex;"><span>    includeRequestAttemptCount: <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>    name: allow_any
+</span></span><span style="display:flex;"><span>    routes:
+</span></span><span style="display:flex;"><span>    - match:
+</span></span><span style="display:flex;"><span>        prefix: /
+</span></span><span style="display:flex;"><span>      name: allow_any
+</span></span><span style="display:flex;"><span>      route:
+</span></span><span style="display:flex;"><span>        cluster: PassthroughCluster
+</span></span><span style="display:flex;"><span>        maxGrpcTimeout: 0s
+</span></span><span style="display:flex;"><span>        timeout: 0s
+</span></span><span style="display:flex;"><span>  - domains:
+</span></span><span style="display:flex;"><span>    - istio-test-server.infra.svc.cluster.local
+</span></span><span style="display:flex;"><span>    - istio-test-server.infra.svc.cluster.local:8000
+</span></span><span style="display:flex;"><span>    - istio-test-server
+</span></span><span style="display:flex;"><span>    - istio-test-server:8000
+</span></span><span style="display:flex;"><span>    - istio-test-server.infra.svc
+</span></span><span style="display:flex;"><span>    - istio-test-server.infra.svc:8000
+</span></span><span style="display:flex;"><span>    - istio-test-server.infra
+</span></span><span style="display:flex;"><span>    - istio-test-server.infra:8000
+</span></span><span style="display:flex;"><span>    - <span style="color:#cd00cd">172.18.7.189</span>
+</span></span><span style="display:flex;"><span>    - <span style="color:#cd00cd">172.18.7.189</span>:<span style="color:#cd00cd">8000</span>
+</span></span><span style="display:flex;"><span>    includeRequestAttemptCount: <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>    name: istio-test-server.infra.svc.cluster.local:8000
+</span></span><span style="display:flex;"><span>    routes:
+</span></span><span style="display:flex;"><span>    - decorator:
+</span></span><span style="display:flex;"><span>        operation: istio-test-server.infra.svc.cluster.local:8000/*
+</span></span><span style="display:flex;"><span>      match:
+</span></span><span style="display:flex;"><span>        caseSensitive: <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>        prefix: /
+</span></span><span style="display:flex;"><span>      metadata:
+</span></span><span style="display:flex;"><span>        filterMetadata:
+</span></span><span style="display:flex;"><span>          istio:
+</span></span><span style="display:flex;"><span>            config: /apis/networking.istio.io/v1alpha3/namespaces/infra/virtual-service/istio-test-server
+</span></span><span style="display:flex;"><span>      route:
+</span></span><span style="display:flex;"><span>        cluster: outbound|8000||istio-test-server.infra.svc.cluster.local
+</span></span><span style="display:flex;"><span>        maxGrpcTimeout: 0s
+</span></span><span style="display:flex;"><span>        retryPolicy:
+</span></span><span style="display:flex;"><span>          hostSelectionRetryMaxAttempts: <span style="color:#cd0000">&#34;5&#34;</span>
+</span></span><span style="display:flex;"><span>          numRetries: <span style="color:#cd00cd">2</span>
+</span></span><span style="display:flex;"><span>          retryHostPredicate:
+</span></span><span style="display:flex;"><span>          - name: envoy.retry_host_predicates.previous_hosts
+</span></span><span style="display:flex;"><span>          retryOn: connect-failure,refused-stream
+</span></span><span style="display:flex;"><span>        timeout: 0s
+</span></span><span style="display:flex;"><span>  - domains:
+</span></span><span style="display:flex;"><span>    ...
+</span></span></code></pre></div><p><code>8000</code> 这个 route 配置中包括了所有声明了这个端口并且 protocol 是 HTTP 的 service/virtualservice 。</p>
+<p><code>virtualHosts</code> 是一个定义了不同的 domain 的路由规则的数组。</p>
+<p><code>domain</code> 的匹配比较特殊，应该是索引查找，不是顺序匹配。</p>
+<p>先根据 HTTP 请求的 Host 匹配了 domain 了之后进入到对应的 virtualHost 的规则。像 <code>istio-test-server</code> 这个服务，istio 会把所有可能的 Host 都配置进去，<code>172.18.7.189</code> 是 service 的 ClusterIP。</p>
+<p>后续的 <code>match-route</code> 对，会按照顺序匹配所有的 match 规则，匹配了之后进入对应的 route 逻辑。</p>
+<p>route 中指定了要路由到的 Cluster，istio-test-server 对应的是 cluster 是 <code>outbound|8000||istio-test-server.infra.svc.cluster.local</code>。</p>
+<p>对不同的 route 对象，可以指定不同的 timeout 和 retryPolicy。</p>
+<p>注意到还有一个 <code>allow_any</code> 的 virtualHost，domains 是 <code>*</code>，用于兜底。如果和 8000 端口的连接，协议是 HTTP，但是目标 Host 又没有在 Mesh 内声明，则会转发到 <code>PassthroughCluster</code> 这个 Cluster。之前 <code>TCPProxy</code> filter 也是转发到这个 Cluster。</p>
+<h4 id="cds">CDS</h4>
+<p>luster Discovery Service</p>
+<p>Cluster 在 envoy 中类似于服务的概念，是一组 endpoint 的集合。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>- circuitBreakers:
+</span></span><span style="display:flex;"><span>    thresholds:
+</span></span><span style="display:flex;"><span>    - maxConnections: <span style="color:#cd00cd">4294967295</span>
+</span></span><span style="display:flex;"><span>      maxPendingRequests: <span style="color:#cd00cd">4294967295</span>
+</span></span><span style="display:flex;"><span>      maxRequests: <span style="color:#cd00cd">4294967295</span>
+</span></span><span style="display:flex;"><span>      maxRetries: <span style="color:#cd00cd">4294967295</span>
+</span></span><span style="display:flex;"><span>      trackRemaining: <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>  commonLbConfig:
+</span></span><span style="display:flex;"><span>    localityWeightedLbConfig: {}
+</span></span><span style="display:flex;"><span>  connectTimeout: 2s
+</span></span><span style="display:flex;"><span>  edsClusterConfig:
+</span></span><span style="display:flex;"><span>    edsConfig:
+</span></span><span style="display:flex;"><span>      ads: {}
+</span></span><span style="display:flex;"><span>      initialFetchTimeout: 0s
+</span></span><span style="display:flex;"><span>      resourceApiVersion: V3
+</span></span><span style="display:flex;"><span>    serviceName: outbound|8000||istio-test-server.infra.svc.cluster.local
+</span></span><span style="display:flex;"><span>  filters:
+</span></span><span style="display:flex;"><span>  - name: istio.metadata_exchange
+</span></span><span style="display:flex;"><span>    typedConfig:
+</span></span><span style="display:flex;"><span>      &#39;@type&#39;: type.googleapis.com/envoy.tcp.metadataexchange.config.MetadataExchange
+</span></span><span style="display:flex;"><span>      protocol: istio-peer-exchange
+</span></span><span style="display:flex;"><span>  lbPolicy: LEAST_REQUEST
+</span></span><span style="display:flex;"><span>  name: outbound|8000||istio-test-server.infra.svc.cluster.local
+</span></span><span style="display:flex;"><span>  transportSocketMatches:
+</span></span><span style="display:flex;"><span>  - match:
+</span></span><span style="display:flex;"><span>      tlsMode: istio
+</span></span><span style="display:flex;"><span>    name: tlsMode-istio
+</span></span><span style="display:flex;"><span>    transportSocket:
+</span></span><span style="display:flex;"><span>      name: envoy.transport_sockets.tls
+</span></span><span style="display:flex;"><span>      typedConfig:
+</span></span><span style="display:flex;"><span>        &#39;@type&#39;: type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>        sni: outbound_.8000_._.istio-test-server.infra.svc.cluster.local
+</span></span><span style="display:flex;"><span>  - match: {}
+</span></span><span style="display:flex;"><span>    name: tlsMode-disabled
+</span></span><span style="display:flex;"><span>    transportSocket:
+</span></span><span style="display:flex;"><span>      name: envoy.transport_sockets.raw_buffer
+</span></span><span style="display:flex;"><span>  type: EDS
+</span></span></code></pre></div><p>Cluster 的类型分为几种:</p>
+<p><code>EDS</code> 的 endpoint 由 EDS 动态推送。</p>
+<p><code>STATIC</code> 的 endpoint 由用户静态配置。</p>
+<p><code>STRICT_DNS</code>, <code>LOGICAL_DNS</code> 通过定期的 DNS 解析获取所有的 IP 地址。</p>
+<p><code>ORIGINAL_DST</code> 是比较特殊的类型，连接在四层的目标 IP 是什么，这里的 upstream endpoint 的 IP 就是什么。一般用于透传流量的场景。</p>
+<p><code>circuitBreakers</code> 用于配置一些限流功能。</p>
+<p><code>commonLbConfig</code> 和 <code>lbPolicy</code> 用于配置负载均衡相关的功能。</p>
+<p><code>edsClusterConfig</code> 指定要关联的 EDS 的 service name。</p>
+<h4 id="eds">EDS</h4>
+<p>int Discovery Service</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>- addedViaApi: <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>  circuitBreakers:
+</span></span><span style="display:flex;"><span>    thresholds:
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>  hostStatuses:
+</span></span><span style="display:flex;"><span>  - address:
+</span></span><span style="display:flex;"><span>      socketAddress:
+</span></span><span style="display:flex;"><span>        address: <span style="color:#cd00cd">172.17.15.27</span>
+</span></span><span style="display:flex;"><span>        portValue: <span style="color:#cd00cd">8000</span>
+</span></span><span style="display:flex;"><span>    healthStatus:
+</span></span><span style="display:flex;"><span>      edsHealthStatus: HEALTHY
+</span></span><span style="display:flex;"><span>    locality:
+</span></span><span style="display:flex;"><span>      region: cn-shanghai
+</span></span><span style="display:flex;"><span>      zone: cn-shanghai-g
+</span></span><span style="display:flex;"><span>    stats:
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    weight: <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>  name: outbound|8000||istio-test-server.infra.svc.cluster.local
+</span></span><span style="display:flex;"><span>  observabilityName: outbound|8000||istio-test-server.infra.svc.cluster.local
+</span></span></code></pre></div><p>K8s 中就是每个 Pod 的一些信息，IP，端口等等，会在 CDS 中被使用。</p>
+<h3 id="推送流程">推送流程</h3>
+<h4 id="流程图">流程图</h4>
+<p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-flow.jpg" alt="flow"></p>
+<h4 id="推送顺序">推送顺序</h4>
+<ul>
+<li>必须始终先推送 CDS 更新（如果有）。</li>
+<li>EDS 更新（如果有）必须在相应集群的 CDS 更新后到达。</li>
+<li>LDS 更新必须在相应的 CDS/EDS 更新后到达。</li>
+<li>与新添加的监听器相关的 RDS 更新必须在最后到达。</li>
+<li>最后，删除过期的 CDS 集群和相关的 EDS 端点（不再被引用的端点）。</li>
+</ul>
+<p>所以 Istio 中推送的顺序是 CDS, EDS, LDS, RDS。</p>
+<p>对我们来说，LDS 和 RDS 的变更推送及时性的要求一般，慢一点也影响不大，就是生效慢一些。但是 EDS 的推送涉及到服务实例的变更，会比较频繁，如果推送不及时，可能会导致请求发送到错误或者不存在的节点，导致请求出错。</p>
+<h3 id="优化点">优化点</h3>
+<h4 id="pprof">pprof</h4>
+<p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-pprof.jpg" alt="pprof"></p>
+<p>通过 pprof cpu 数据，可以看出核心的资源消耗都在 pushXds 上，主要就是各个资源的配置生成的计算。而其中接近 60% 是耗费在了 RDS 配置的计算上。</p>
+<p>之所以这么耗费资源，主要还是 Istio 中这些配置的计算有大量的循环，例如很多地方会存在泛域名匹配，需要 N * N 的计算去查找匹配的资源。这个从 mapiternext 的 cpu 消耗占比可以看出来。</p>
+<p>另外，在循环中，很多内容每一次循环都会重复的计算，代码中的一些额外增加耗时的写法也会被放大。</p>
+<p>整个生成的 envoy 配置中也会创建大量的临时对象，导致在内存分配和 GC 上都会有较大的资源消耗。</p>
+<h4 id="istio-配置生成的优化">Istio 配置生成的优化</h4>
+<p>从 pprof 的结果来看，大致上可以看出能优化的核心的几点:</p>
+<ol>
+<li>减少循环次数。</li>
+<li>由于循环次数很多，需要降低每一次循环内的开销。</li>
+<li>尽量复用对象。</li>
+</ol>
+<p>下面举一些典型的例子作为示例说明:</p>
+<h5 id="减少循环次数">减少循环次数</h5>
+<p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-pprof-iterate.jpg" alt="pprof-iterate"></p>
+<p>从图中可以看出来，mapiternext 占用了不少 cpu 资源，说明 selectVirtualServices 这个函数的循环次数可能非常多。</p>
+<p>对应的代码</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000080">// selectVirtualServices 会遍历出匹配 service 的所有的 vs
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">// 例如 service host 是 istio-test-server.infra，那么 vs host 也是 istio-test-server.infra 就匹配
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">// 需要考虑到泛域名的情况
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> selectVirtualServices(virtualServices []config.Config, servicesByName <span style="color:#00cd00">map</span>[host.Name]<span style="color:#39c">*</span>model.Service) []config.Config {
+</span></span><span style="display:flex;"><span>    out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]config.Config, <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> _, c <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> virtualServices {
+</span></span><span style="display:flex;"><span>        rule <span style="color:#39c">:=</span> c.Spec.(<span style="color:#39c">*</span>networking.VirtualService)
+</span></span><span style="display:flex;"><span>        <span style="color:#00cd00">var</span> match <span style="color:#00cd00">bool</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Selection algorithm:
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// virtualservices have a list of hosts in the API spec
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// if any host in the list matches one service hostname, select the virtual service
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// and break out of the loop.
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">for</span> _, h <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> rule.Hosts {
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">// TODO: This is a bug. VirtualServices can have many hosts
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#000080">// while the user might be importing only a single host
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#000080">// We need to generate a new VirtualService with just the matched host
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#cdcd00">if</span> servicesByName[host.Name(h)] <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>                match = <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">break</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">for</span> svcHost <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> servicesByName {
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">if</span> host.Name(h).Matches(svcHost) {
+</span></span><span style="display:flex;"><span>                    match = <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#cdcd00">break</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> match {
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">break</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> match {
+</span></span><span style="display:flex;"><span>            out = <span style="color:#cd00cd">append</span>(out, c)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> out
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>整体逻辑其实非常简单，两层循环，遍历 vs host，找到其他与 service host 匹配的 vs 添加到数组中返回。</p>
+<p>如果都是 FQDN host，直接 map 查找，一层循环就解决了。但是由于 host 中可以含有泛域名。导致需要两层遍历。</p>
+<p>注意，这里传入的 service 是监听在指定端口上的 service，而 vs 是全量的 vs。所以每一个端口上的 service 都要和所有的 vs 循环计算一遍。另外，推送给每一个节点的时候需要再重复计算一遍。</p>
+<p>但是真实的场景中，使用泛域名的 service 和 vs 并不多，大部分都是 FQDN host，所以其实大量的循环计算是在浪费。</p>
+<p>优化后，事先把泛域名的 service host 保存下来，在之后的循环中，如果 vs 的 host 也是 FQDN host，则只需要去匹配泛域名的 service host。由于这个 case 才是主要的使用场景，所以实际优化的效果会非常好，可以减少掉大部分的循环次数。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">func</span> selectVirtualServices(virtualServices []config.Config, servicesByName <span style="color:#00cd00">map</span>[host.Name]<span style="color:#39c">*</span>model.Service) []config.Config {
+</span></span><span style="display:flex;"><span>    out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]config.Config, <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Pre-compute wildcarded service hosts to reduce loop count.
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    wildCardedSvcHosts <span style="color:#39c">:=</span> []host.Name{}
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> svcHost <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> servicesByName {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> svcHost.IsWildCarded() {
+</span></span><span style="display:flex;"><span>            wildCardedSvcHosts = <span style="color:#cd00cd">append</span>(wildCardedSvcHosts, svcHost)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> i <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> virtualServices {
+</span></span><span style="display:flex;"><span>        rule <span style="color:#39c">:=</span> virtualServices[i].Spec.(<span style="color:#39c">*</span>networking.VirtualService)
+</span></span><span style="display:flex;"><span>        <span style="color:#00cd00">var</span> match <span style="color:#00cd00">bool</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Selection algorithm:
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// virtualservices have a list of hosts in the API spec
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// if any host in the list matches one service hostname, select the virtual service
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// and break out of the loop.
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">for</span> _, h <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> rule.Hosts {
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">// TODO: This is a bug. VirtualServices can have many hosts
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#000080">// while the user might be importing only a single host
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#000080">// We need to generate a new VirtualService with just the matched host
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#cdcd00">if</span> servicesByName[host.Name(h)] <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>                match = <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">break</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> host.Name(h).IsWildCarded() {
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">for</span> svcHost <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> servicesByName {
+</span></span><span style="display:flex;"><span>                    <span style="color:#cdcd00">if</span> host.Name(h).Matches(svcHost) {
+</span></span><span style="display:flex;"><span>                        match = <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#cdcd00">break</span>
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#cdcd00">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">for</span> _, svcHost <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> wildCardedSvcHosts {
+</span></span><span style="display:flex;"><span>                    <span style="color:#cdcd00">if</span> host.Name(h).Matches(svcHost) {
+</span></span><span style="display:flex;"><span>                        match = <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#cdcd00">break</span>
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> match {
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">break</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> match {
+</span></span><span style="display:flex;"><span>            out = <span style="color:#cd00cd">append</span>(out, virtualServices[i])
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> out
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在我们当前的场景下，这个函数的资源消耗只有原来的 1/9 左右。</p>
+<p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-pprof-iterate-after.jpg" alt="pprof-iterate-after"></p>
+<h5 id="降低每一次循环内的开销">降低每一次循环内的开销</h5>
+<p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-pprof-convert.jpg" alt="pprof-convert"></p>
+<p>retry.CovertPolicy 也耗费了不少的资源，看上去让人比较费解，大部分的消耗还在 retry.parseRetryOn 上。</p>
+<p>代码:</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000080">// 给所有没有对应 VirtualService 的 service 创建默认的 VirtualHosts
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> buildSidecarVirtualHostsForService(
+</span></span><span style="display:flex;"><span>    serviceRegistry <span style="color:#00cd00">map</span>[host.Name]<span style="color:#39c">*</span>model.Service,
+</span></span><span style="display:flex;"><span>    hashByService <span style="color:#00cd00">map</span>[host.Name]<span style="color:#00cd00">map</span>[<span style="color:#00cd00">int</span>]<span style="color:#39c">*</span>networking.LoadBalancerSettings_ConsistentHashLB,
+</span></span><span style="display:flex;"><span>    mesh <span style="color:#39c">*</span>meshconfig.MeshConfig,
+</span></span><span style="display:flex;"><span>) []VirtualHostWrapper {
+</span></span><span style="display:flex;"><span>    out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]VirtualHostWrapper, <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> _, svc <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> serviceRegistry {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> _, port <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> svc.Ports {
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> port.Protocol.IsHTTP() <span style="color:#39c">||</span> util.IsProtocolSniffingEnabledForPort(port) {
+</span></span><span style="display:flex;"><span>                cluster <span style="color:#39c">:=</span> model.BuildSubsetKey(model.TrafficDirectionOutbound, <span style="color:#cd0000">&#34;&#34;</span>, svc.Hostname, port.Port)
+</span></span><span style="display:flex;"><span>                traceOperation <span style="color:#39c">:=</span> util.TraceOperation(<span style="color:#cd00cd">string</span>(svc.Hostname), port.Port)
+</span></span><span style="display:flex;"><span>                <span style="color:#000080">// 创建默认的 outbound 的 Route
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>                httpRoute <span style="color:#39c">:=</span> BuildDefaultHTTPOutboundRoute(cluster, traceOperation, mesh)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#000080">// if this host has no virtualservice, the consistentHash on its destinationRule will be useless
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>                <span style="color:#cdcd00">if</span> hashByPort, ok <span style="color:#39c">:=</span> hashByService[svc.Hostname]; ok {
+</span></span><span style="display:flex;"><span>                    hashPolicy <span style="color:#39c">:=</span> consistentHashToHashPolicy(hashByPort[port.Port])
+</span></span><span style="display:flex;"><span>                    <span style="color:#cdcd00">if</span> hashPolicy <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>                        httpRoute.GetRoute().HashPolicy = []<span style="color:#39c">*</span>route.RouteAction_HashPolicy{hashPolicy}
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                out = <span style="color:#cd00cd">append</span>(out, VirtualHostWrapper{
+</span></span><span style="display:flex;"><span>                    Port:     port.Port,
+</span></span><span style="display:flex;"><span>                    Services: []<span style="color:#39c">*</span>model.Service{svc},
+</span></span><span style="display:flex;"><span>                    Routes:   []<span style="color:#39c">*</span>route.Route{httpRoute},
+</span></span><span style="display:flex;"><span>                })
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> out
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// BuildDefaultHTTPOutboundRoute builds a default outbound route, including a retry policy.
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> BuildDefaultHTTPOutboundRoute(clusterName <span style="color:#00cd00">string</span>, operation <span style="color:#00cd00">string</span>, mesh <span style="color:#39c">*</span>meshconfig.MeshConfig) <span style="color:#39c">*</span>route.Route {
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Start with the same configuration as for inbound.
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    out <span style="color:#39c">:=</span> BuildDefaultHTTPInboundRoute(clusterName, operation)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Add a default retry policy for outbound routes.
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// 由于是默认的 Route，直接用全局的 mesh 级别的 retry policy
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    out.GetRoute().RetryPolicy = retry.ConvertPolicy(mesh.GetDefaultHttpRetryPolicy())
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> out
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// 将 istio 中的 HTTPRetry 转化为对应的 envoy 中使用的 RetryPolicy
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> ConvertPolicy(in <span style="color:#39c">*</span>networking.HTTPRetry) <span style="color:#39c">*</span>route.RetryPolicy {
+</span></span><span style="display:flex;"><span>    out <span style="color:#39c">:=</span> DefaultPolicy()
+</span></span><span style="display:flex;"><span>    out.NumRetries = <span style="color:#39c">&amp;</span>wrappers.UInt32Value{Value: <span style="color:#cd00cd">uint32</span>(in.Attempts)}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> in.RetryOn <span style="color:#39c">!=</span> <span style="color:#cd0000">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Allow the incoming configuration to specify both Envoy RetryOn and RetriableStatusCodes. Any integers are
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// assumed to be status codes.
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        out.RetryOn, out.RetriableStatusCodes = parseRetryOn(in.RetryOn)
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// If user has just specified HTTP status codes in retryOn but have not specified &#34;retriable-status-codes&#34;, let us add it.
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">if</span> <span style="color:#cd00cd">len</span>(out.RetriableStatusCodes) &gt; <span style="color:#cd00cd">0</span> <span style="color:#39c">&amp;&amp;</span> !strings.Contains(out.RetryOn, <span style="color:#cd0000">&#34;retriable-status-codes&#34;</span>) {
+</span></span><span style="display:flex;"><span>            out.RetryOn <span style="color:#39c">+=</span> <span style="color:#cd0000">&#34;,retriable-status-codes&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#39c">......</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> out
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// 解析 Istio VirtualService 中的 retryOn 字段为 envoy 中的 retryOn 和重试 code 列表
+</span></span></span><span style="display:flex;"><span><span style="color:#000080">// 主要是字符串相关的操作，由于循环次数较多，实际占用的资源也不少
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> parseRetryOn(retryOn <span style="color:#00cd00">string</span>) (<span style="color:#00cd00">string</span>, []<span style="color:#00cd00">uint32</span>) {
+</span></span><span style="display:flex;"><span>    codes <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#00cd00">uint32</span>, <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span>    tojoin <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#00cd00">string</span>, <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    parts <span style="color:#39c">:=</span> strings.Split(retryOn, <span style="color:#cd0000">&#34;,&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> _, part <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> parts {
+</span></span><span style="display:flex;"><span>        part = strings.TrimSpace(part)
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> part <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">continue</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Try converting it to an integer to see if it&#39;s a valid HTTP status code.
+</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        i, err <span style="color:#39c">:=</span> strconv.Atoi(part)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> err <span style="color:#39c">==</span> <span style="color:#cdcd00">nil</span> <span style="color:#39c">&amp;&amp;</span> http.StatusText(i) <span style="color:#39c">!=</span> <span style="color:#cd0000">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>            codes = <span style="color:#cd00cd">append</span>(codes, <span style="color:#cd00cd">uint32</span>(i))
+</span></span><span style="display:flex;"><span>        } <span style="color:#cdcd00">else</span> {
+</span></span><span style="display:flex;"><span>            tojoin = <span style="color:#cd00cd">append</span>(tojoin, part)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> strings.Join(tojoin, <span style="color:#cd0000">&#34;,&#34;</span>), codes
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这里核心的问题是，在每一次循环中 <code>out.GetRoute().RetryPolicy = retry.ConvertPolicy(mesh.GetDefaultHttpRetryPolicy())</code>，这行代码的执行结果其实并不会变化，每一次调用 retry.ConvertPolicy 去做计算比较多余，只需要在循环开始前计算一次，后面直接赋值即可。</p>
+<p>但是由于不能复用同一个对象的指针，每一次还是要创建一个新的对象，所以只需要复用解析 retryOn 的结果即可，可以在 ConvertPolicy 函数入参增加 override 参数，如果 override 参数存在，则不需要重复计算，直接赋值。 (优化后的消耗降为原来的 1/5 左右)</p>
+<p>实际上用 DeepCopy 更合适，但是由于这个类型没有 auto generate 的 DeepCopy 代码，用 reflect 的方式做 DeepCopy 性能并不好，在 retryOn 为空时，反而性能更差。</p>
+<h5 id="尽量复用对象">尽量复用对象</h5>
+<p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-pprof-mallocgc.jpg" alt="pprof-mallocgc"></p>
+<p>可以看出创建新对象和 GC 产生的开销其实占比很大。</p>
+<p>在能够复用对象的前提下，需要尽量避免创建新的对象。由于支持 EnvoyFilter 的动态修改 config 的功能，不太确定这部分的代码实现逻辑，如果 EnvoyFilter 的 Patch 会改动原来的对象，不会 DeepCopy，那么很多对象也没法直接复用。否则，例如前面的 defaultRetryPolicy 的对象，没必要每一个 route 都创建一个。</p>
+<p>也可以使用 sync.Pool 以及其他的对象池的方式来优化，但是成本较高，会影响到代码结构，增加心智负担。</p>
+<h4 id="golang-常见的优化点">Golang 常见的优化点</h4>
+<p>很多时候也不必过度优化，优先功能开发，在遇到瓶颈时再对出现瓶颈的部分有针对性的优化，可能综合成本更低。</p>
+<h5 id="避免值拷贝">避免值拷贝</h5>
+<p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-pprof-duffcopy.jpg" alt="pprof-duffcopy"></p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#cdcd00">for</span> _, vs <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> r.VirtualServices {
+</span></span><span style="display:flex;"><span>        params = <span style="color:#cd00cd">append</span>(params, vs.Name<span style="color:#39c">+</span><span style="color:#cd0000">&#34;/&#34;</span><span style="color:#39c">+</span>vs.Namespace)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这个函数里，r.VirtualService 并不是指针类型，而是 <code>[]config.Config</code>，每一次循环涉及到一次值拷贝，当这个结构体本身比较大时，影响会比较大。</p>
+<p>建议修改为</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#cdcd00">for</span> index <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> r.VirtualServices {
+</span></span><span style="display:flex;"><span>        params = <span style="color:#cd00cd">append</span>(params, r.VirtualServices[index].Name<span style="color:#39c">+</span><span style="color:#cd0000">&#34;/&#34;</span><span style="color:#39c">+</span>r.VirtualServices[index].Namespace)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="避免-slice-grow">避免 slice grow</h5>
+<p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-pprof-growslice.jpg" alt="pprof-growslice"></p>
+<p>最基础的，当已知数组要插入的元素个数时，可以在 make slice 时通过指定 cap 来一次性分配好内存，避免后续 append 时再去不停的翻倍申请内存。不仅性能差，而且会有额外的内存消耗以及影响 GC。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">func</span> BenchmarkTest1(b <span style="color:#39c">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    arrs <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#00cd00">int64</span>, <span style="color:#cd00cd">10000</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> i <span style="color:#39c">:=</span> <span style="color:#cd00cd">0</span>; i &lt; b.N; i<span style="color:#39c">++</span> {
+</span></span><span style="display:flex;"><span>        out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#00cd00">int64</span>, <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> _, v <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> arrs {
+</span></span><span style="display:flex;"><span>            out = <span style="color:#cd00cd">append</span>(out, v)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> BenchmarkTest2(b <span style="color:#39c">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    arrs <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#00cd00">int64</span>, <span style="color:#cd00cd">10000</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> i <span style="color:#39c">:=</span> <span style="color:#cd00cd">0</span>; i &lt; b.N; i<span style="color:#39c">++</span> {
+</span></span><span style="display:flex;"><span>        out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#00cd00">int64</span>, <span style="color:#cd00cd">0</span>, <span style="color:#cd00cd">len</span>(arrs))
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> _, v <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> arrs {
+</span></span><span style="display:flex;"><span>            out = <span style="color:#cd00cd">append</span>(out, v)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><pre tabindex="0"><code>BenchmarkTest1-16          23138             52313 ns/op          357629 B/op         19 allocs/op
+BenchmarkTest2-16          88789             13487 ns/op           81921 B/op          1 allocs/op
+</code></pre><p>上面的例子很多人都会注意，但是在实际开发中，如果要插入的元素个数不确定，但是由于业务场景的原因，大部分情况下都接近固定的值时，也可以通过空间换时间，浪费一点内存，换取更高的效率。</p>
+<p>例如要从所有 Endpoint 节点中过滤出所有健康的节点，大多数情况下，不健康的节点是少数，所以即使不能事先知道的元素个数，也可以先预分配和所有节点数量相当的内存空间。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">func</span> FilterHealthyEndpoints(in []<span style="color:#39c">*</span>Endpoint) []<span style="color:#39c">*</span>Endpoint {
+</span></span><span style="display:flex;"><span>    out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#39c">*</span>Endpoint, <span style="color:#cd00cd">0</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> _, v <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> in {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> !v.Healthy {
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">continue</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        out = <span style="color:#cd00cd">append</span>(out, v)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> out
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> FilterHealthyEndpoints2(in []<span style="color:#39c">*</span>Endpoint) []<span style="color:#39c">*</span>Endpoint {
+</span></span><span style="display:flex;"><span>    out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#39c">*</span>Endpoint, <span style="color:#cd00cd">0</span>, <span style="color:#cd00cd">len</span>(in))
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> _, v <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> in {
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> !v.Healthy {
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">continue</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        out = <span style="color:#cd00cd">append</span>(out, v)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> out
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> BenchmarkFilterHealthyEndpoints(b <span style="color:#39c">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    arrs <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#39c">*</span>Endpoint, <span style="color:#cd00cd">10000</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> i <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> arrs {
+</span></span><span style="display:flex;"><span>        healthy <span style="color:#39c">:=</span> <span style="color:#cdcd00">true</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> i <span style="color:#39c">&gt;=</span> <span style="color:#cd00cd">100</span> <span style="color:#39c">&amp;&amp;</span> i &lt; <span style="color:#cd00cd">200</span> {
+</span></span><span style="display:flex;"><span>            healthy = <span style="color:#cdcd00">false</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        arrs[i] = <span style="color:#39c">&amp;</span>Endpoint{IP: <span style="color:#cd0000">&#34;127.0.0.1&#34;</span>, Healthy: healthy}
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> i <span style="color:#39c">:=</span> <span style="color:#cd00cd">0</span>; i &lt; b.N; i<span style="color:#39c">++</span> {
+</span></span><span style="display:flex;"><span>        FilterHealthyEndpoints(arrs)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><pre tabindex="0"><code>BenchmarkFilterHealthyEndpoints-16          8967            121711 ns/op          357666 B/op         20 allocs/op
+BenchmarkFilterHealthyEndpoints2-16        36163             33013 ns/op           81928 B/op          1 allocs/op
+</code></pre><h5 id="字符串拼接">字符串拼接</h5>
+<p>在有大量字符串拼接的场景下，可以用 strings.Builder 取代 string 之间的直接相加。</p>
+<p>string 直接相加，每一次都需要分配一块新的内存空间然后将两个 string 的内存 copy 过去。</p>
+<p>strings.Builder 内部维护了一个 []byte，在容量不足时会翻倍扩容。也可以通过 Grow(n int) 预分配内存。</p>
+<pre tabindex="0"><code>func StringsAdd(str string, n int) string {
+    out := &#34;&#34;
+    for i := 0; i &lt; n; i++ {
+        out += str
+    }
+    return out
+}
+
+func StringsAdd2(str string, n int) string {
+    var b strings.Builder
+    for i := 0; i &lt; n; i++ {
+        b.WriteString(str)
+    }
+    return b.String()
+}
+
+func StringsAdd3(str string, n int) string {
+    var b strings.Builder
+    b.Grow(len(str) * n)
+    for i := 0; i &lt; n; i++ {
+        b.WriteString(str)
+    }
+    return b.String()
+}
+
+func BenchmarkStringsAdd(b *testing.B) {
+    for i := 0; i &lt; b.N; i++ {
+        StringsAdd(&#34;hello world&#34;, 1000)
+    }
+}
+</code></pre><pre tabindex="0"><code>BenchmarkStringsAdd-16              1345            907935 ns/op         5829004 B/op        999 allocs/op
+BenchmarkStringsAdd2-16           144880              8348 ns/op           46576 B/op         15 allocs/op
+BenchmarkStringsAdd3-16           229389              5289 ns/op           12288 B/op          1 allocs/op
+</code></pre><h5 id="避免-string-和-byte-转换">避免 string 和 []byte 转换</h5>
+<p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-pprof-stringtoslicebyte.jpg" alt="pprof-stringtoslicebyte"></p>
+<p>尽量避免 <code>[]byte(str)</code> 这样的转换，会存在内存分配和拷贝。例如如果变量是 string 类型，在调用一些库函数的时候，如果有提供 WriteString 方法，优先调用，而不是调用 <code>Write([]byte(str))</code>。</p>
+<p>在转换无法避免，且对性能有较高要求的场景下，可以用 unsafe.Pointer 避免内存分配。但是这个方法不安全，调用的runtime 的函数、结构体随时都有可能被修改。且由于新建的 []byte 和 string 共用了内存，新建的 []byte 的内容只能只读使用，不能被修改。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">func</span> doNothing(in []<span style="color:#00cd00">byte</span>) {
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> s2b(s <span style="color:#00cd00">string</span>) (b []<span style="color:#00cd00">byte</span>) {
+</span></span><span style="display:flex;"><span>    bh <span style="color:#39c">:=</span> (<span style="color:#39c">*</span>reflect.SliceHeader)(unsafe.Pointer(<span style="color:#39c">&amp;</span>b))
+</span></span><span style="display:flex;"><span>    sh <span style="color:#39c">:=</span> (<span style="color:#39c">*</span>reflect.StringHeader)(unsafe.Pointer(<span style="color:#39c">&amp;</span>s))
+</span></span><span style="display:flex;"><span>    bh.Data = sh.Data
+</span></span><span style="display:flex;"><span>    bh.Cap = sh.Len
+</span></span><span style="display:flex;"><span>    bh.Len = sh.Len
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> b
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> String2Slice(strs []<span style="color:#00cd00">string</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> _, str <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> strs {
+</span></span><span style="display:flex;"><span>        doNothing([]<span style="color:#cd00cd">byte</span>(str))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> String2Slice2(strs []<span style="color:#00cd00">string</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> _, str <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> strs {
+</span></span><span style="display:flex;"><span>        doNothing(s2b(str))
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> BenchmarkString2Slice(b <span style="color:#39c">*</span>testing.B) {
+</span></span><span style="display:flex;"><span>    strs <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#00cd00">string</span>, <span style="color:#cd00cd">0</span>, <span style="color:#cd00cd">1000</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> i <span style="color:#39c">:=</span> <span style="color:#cd00cd">0</span>; i &lt; <span style="color:#cd00cd">1000</span>; i<span style="color:#39c">++</span> {
+</span></span><span style="display:flex;"><span>        strs = <span style="color:#cd00cd">append</span>(strs, <span style="color:#cd0000">&#34;hello&#34;</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> i <span style="color:#39c">:=</span> <span style="color:#cd00cd">0</span>; i &lt; b.N; i<span style="color:#39c">++</span> {
+</span></span><span style="display:flex;"><span>        String2Slice(strs)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><pre tabindex="0"><code>BenchmarkString2Slice-16          300843              4240 ns/op               0 B/op          0 allocs/op
+BenchmarkString2Slice2-16        4706086               255.0 ns/op             0 B/op          0 allocs/op
+</code></pre><p>Go 的函数形参不能声明为 const，所以无法在编译阶段保证变量不被修改，只能依靠人工检查确认，存在风险。</p>
+<p>换言之，如果有这样的方式的话，那么其实编译器在编译阶段就可以把这一块优化掉，因为可以确保在函数中这个变量不会被修改，可以共享其中的内存。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2022/06/01/istio-control-plane-config-push-optimization/">https://blog.fatedier.com/2022/06/01/istio-control-plane-config-push-optimization/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/istio/">
+                            <i class="fa fa-tags"></i>
+                            istio
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月11日)</span></li><li id="li-rels"><a href="/2022/10/09/istio-inbound-http-request-idletimeout/">Istio Inbound HTTP 请求的 IdleTimeout 问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月09日)</span></li><li id="li-rels"><a href="/2022/08/15/istio-pods-crash-cause-full-push/">Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年08月15日)</span></li><li id="li-rels"><a href="/2022/07/13/headless-service-cause-istiod-overloading/">Headless Service 导致 Istio 控制面负载过高</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月13日)</span></li><li id="li-rels"><a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月07日)</span></li><li id="li-rels"><a href="/2022/05/22/istio-dns-proxying/">Istio DNS Proxying</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年05月22日)</span></li><li id="li-rels"><a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/">Istio sidecar TCP 空闲连接 1 小时自动断开</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年04月18日)</span></li><li id="li-rels"><a href="/2022/01/11/istio-service-send-request-failed-even-dns-switched/">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年01月11日)</span></li><li id="li-rels"><a href="/2021/12/24/reduce-istio-control-panel-push-config/">减少 Istio 控制面下发的配置</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月24日)</span></li><li id="li-rels"><a href="/2021/12/16/istio-sidecar-graceful-shutdown/">让 Istio sidecar 优雅终止</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月16日)</span></li></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2022/05/22/istio-dns-proxying/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#基本架构">基本架构</a></li>
+    <li><a href="#xds-概念说明">xDS 概念说明</a>
+      <ul>
+        <li><a href="#lds">LDS</a></li>
+        <li><a href="#rds">RDS</a></li>
+        <li><a href="#cds">CDS</a></li>
+        <li><a href="#eds">EDS</a></li>
+      </ul>
+    </li>
+    <li><a href="#推送流程">推送流程</a>
+      <ul>
+        <li><a href="#流程图">流程图</a></li>
+        <li><a href="#推送顺序">推送顺序</a></li>
+      </ul>
+    </li>
+    <li><a href="#优化点">优化点</a>
+      <ul>
+        <li><a href="#pprof">pprof</a></li>
+        <li><a href="#istio-配置生成的优化">Istio 配置生成的优化</a>
+          <ul>
+            <li><a href="#减少循环次数">减少循环次数</a></li>
+            <li><a href="#降低每一次循环内的开销">降低每一次循环内的开销</a></li>
+            <li><a href="#尽量复用对象">尽量复用对象</a></li>
+          </ul>
+        </li>
+        <li><a href="#golang-常见的优化点">Golang 常见的优化点</a>
+          <ul>
+            <li><a href="#避免值拷贝">避免值拷贝</a></li>
+            <li><a href="#避免-slice-grow">避免 slice grow</a></li>
+            <li><a href="#字符串拼接">字符串拼接</a></li>
+            <li><a href="#避免-string-和-byte-转换">避免 string 和 []byte 转换</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2022  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

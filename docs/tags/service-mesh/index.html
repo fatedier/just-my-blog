@@ -150,6 +150,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2022年06月01日
+        </div>
+        <h2 class="post-title">
+            <a href="/2022/06/01/istio-control-plane-config-push-optimization/">Istio 控制面配置推送分析与优化</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>Istio 主要分为控制面和数据面，控制面负责从数据源（通常是 K8s）获取变更内容，渲染成 envoy 使用的配置文件，推送到各个 Sidecar 和 Gateway 节点。</p>
+<p>如果对 K8s 比较熟悉的话，可以和 K8s controller 类比，只是需要计算的内容更多。</p>
+    </div>
+    </article>
+<hr>
+
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
             2022年05月22日
         </div>
         <h2 class="post-title">

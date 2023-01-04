@@ -150,6 +150,25 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2022年05月22日
+        </div>
+        <h2 class="post-title">
+            <a href="/2022/05/22/istio-dns-proxying/">Istio DNS Proxying</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>原理就是通过 iptables 劫持 DNS 查询请求到 sidecar ，由 sidecar 提供 DNS 请求的响应和转发。</p>
+<p>对于 K8s 内部的 service 名称解析，会直接返回结果。</p>
+<p>对于外部的域名，会转发给上游的 DNS Server 查询。</p>
+    </div>
+    </article>
+<hr>
+
+    
+    
+<article class="post li">
+    <header>
+        <div class="post-date">
             2022年04月18日
         </div>
         <h2 class="post-title">

@@ -56,6 +56,17 @@
     </item>
     
     <item>
+      <title>Istio DNS Proxying</title>
+      <link>https://blog.fatedier.com/2022/05/22/istio-dns-proxying/</link>
+      <pubDate>Sun, 22 May 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2022/05/22/istio-dns-proxying/</guid>
+      <description>&lt;p&gt;原理就是通过 iptables 劫持 DNS 查询请求到 sidecar ，由 sidecar 提供 DNS 请求的响应和转发。&lt;/p&gt;
+&lt;p&gt;对于 K8s 内部的 service 名称解析，会直接返回结果。&lt;/p&gt;
+&lt;p&gt;对于外部的域名，会转发给上游的 DNS Server 查询。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Istio sidecar TCP 空闲连接 1 小时自动断开</title>
       <link>https://blog.fatedier.com/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/</link>
       <pubDate>Mon, 18 Apr 2022 00:00:00 +0000</pubDate>

@@ -95,6 +95,15 @@
     </item>
     
     <item>
+      <title>通过 WebAssembly 扩展 Istio 和 Envoy</title>
+      <link>https://blog.fatedier.com/2021/09/17/extend-istio-and-envoy-by-wasm/</link>
+      <pubDate>Fri, 17 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/09/17/extend-istio-and-envoy-by-wasm/</guid>
+      <description>&lt;p&gt;Istio 在 1.5 版本(2020年5月)中宣布支持 WebAssembly 扩展，通过定制化的 envoy 实现。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Istio Gateway 支持 gzip</title>
       <link>https://blog.fatedier.com/2021/09/07/istio-gateway-support-gzip/</link>
       <pubDate>Tue, 07 Sep 2021 00:00:00 +0000</pubDate>

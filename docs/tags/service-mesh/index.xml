@@ -95,6 +95,15 @@
     </item>
     
     <item>
+      <title>Istio Gateway 支持 gzip</title>
+      <link>https://blog.fatedier.com/2021/09/07/istio-gateway-support-gzip/</link>
+      <pubDate>Tue, 07 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2021/09/07/istio-gateway-support-gzip/</guid>
+      <description>&lt;p&gt;目前使用的 Ingress Nginx 中开启了 gzip 压缩。在将服务网关从 Ingress Nginx 迁移到 Istio Gateway 后，也需要相应支持这个能力。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</title>
       <link>https://blog.fatedier.com/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/</link>
       <pubDate>Thu, 02 Sep 2021 00:00:00 +0000</pubDate>

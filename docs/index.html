@@ -118,6 +118,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2022年07月17日
+        </div>
+        <h2 class="post-title">
+            <a href="/2022/07/17/ignore-prometheus-scrape-error-by-custom-metrics-tag/">通过自定义 metrics tag 忽略 prometheus 抓取错误</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>由于接入 istio 后，所有的入请求会被 istio sidecar 劫持，并在 accesslog 和 metrics 中记录请求的状态。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2022年07月13日
         </div>
         <h2 class="post-title">
@@ -309,23 +326,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2021年09月07日
-        </div>
-        <h2 class="post-title">
-            <a href="/2021/09/07/istio-gateway-support-gzip/">Istio Gateway 支持 gzip</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>目前使用的 Ingress Nginx 中开启了 gzip 压缩。在将服务网关从 Ingress Nginx 迁移到 Istio Gateway 后，也需要相应支持这个能力。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -352,6 +352,8 @@
                     
                     <a href="/2022/08/15/istio-pods-crash-cause-full-push/" class="list-group-item">Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</a>
                     
+                    <a href="/2022/07/17/ignore-prometheus-scrape-error-by-custom-metrics-tag/" class="list-group-item">通过自定义 metrics tag 忽略 prometheus 抓取错误</a>
+                    
                     <a href="/2022/07/13/headless-service-cause-istiod-overloading/" class="list-group-item">Headless Service 导致 Istio 控制面负载过高</a>
                     
                     <a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/" class="list-group-item">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>
@@ -359,8 +361,6 @@
                     <a href="/2022/06/01/istio-control-plane-config-push-optimization/" class="list-group-item">Istio 控制面配置推送分析与优化</a>
                     
                     <a href="/2022/05/22/istio-dns-proxying/" class="list-group-item">Istio DNS Proxying</a>
-                    
-                    <a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/" class="list-group-item">Istio sidecar TCP 空闲连接 1 小时自动断开</a>
                     
                 </div>
             </div>
@@ -405,7 +405,7 @@
                     </a>
                     
                     <a href="/tags/istio/" class="list-group-item">
-                        <span class="badge">17</span>
+                        <span class="badge">18</span>
                         istio
                     </a>
                     
@@ -445,7 +445,7 @@
                     </a>
                     
                     <a href="/tags/service-mesh/" class="list-group-item">
-                        <span class="badge">21</span>
+                        <span class="badge">22</span>
                         service-mesh
                     </a>
                     

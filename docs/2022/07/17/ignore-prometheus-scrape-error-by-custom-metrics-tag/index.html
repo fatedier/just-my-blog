@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="由于接入 istio 后，所有的入请求会被 istio sidecar 劫持，并在 accesslog 和 metrics 中记录请求的状态。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="通过自定义 metrics tag 忽略 prometheus 抓取错误 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    通过自定义 metrics tag 忽略 prometheus 抓取错误
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2022年07月17日 
+                </div>
+                <h1 class="post-title">通过自定义 metrics tag 忽略 prometheus 抓取错误</h1>
+            </header>
+
+            <div class="post-content">
+                <p>由于接入 istio 后，所有的入请求会被 istio sidecar 劫持，并在 accesslog 和 metrics 中记录请求的状态。</p>
+<p>业务服务的 Pod 在启动后，prometheus 会立即去抓取 metrics，但此时应用可能还没有初始化完成，没有监听端口，所以抓取请求必然会失败，返回 503。prometheus 不会等到 Pod Ready 之后才去采集，而是只要 Pod 调度完成，有 PodIP 了之后就会按照指定的频率去采集。</p>
+<p>当应用数量较多，发版步长比较长时，在监控页面会显示有不少 503 的 QPS，也会误触发告警，影响告警的有效性。</p>
+<h3 id="解决方案">解决方案</h3>
+<p>考虑一个可行的方案是通过识别请求的特征，将具有某些特征的请求识别为可以忽略错误，并在 metrics 中新增一个 tag <code>ignore_error</code> 用于表示是否需要忽略错误。</p>
+<p>比如当前 prometheus 和 vm-agent 去采集时，都会带上 <code>x-prometheus-scrape-timeout-seconds</code> 这个 header。可以通过 istio 提供的自定义 metrics 来实现只要带有这个 header 的请求，附加的 tag 的值为 true，否则为 false。之后在监控和告警中可以忽略这个 tag 为 true 的 metrics。</p>
+<p>官方文档: <a href="https://istio.io/latest/docs/tasks/observability/metrics/customize-metrics/">https://istio.io/latest/docs/tasks/observability/metrics/customize-metrics/</a></p>
+<h3 id="配置">配置</h3>
+<h4 id="extrastattags">extraStatTags</h4>
+<p>需要特别注意: 必须先配置 <code>extraStatTags</code>，再修改后面的 EnvoyFilter，否则可能会导致 Pod 产生很多脏数据的 metrics。应该是 envoy 的机制的问题，会把新加的 tag 加到 metrics name 前面。</p>
+<p>只增加 extraStatTags，不定义 tag 的值，就没有影响，所以可以先更新。</p>
+<p><code>extraStatTags</code> 有两种方式配置，一种是 Pod annotation，不是很建议，因为更新这个字段并不影响 metrics 采集，所以测试环境验证没问题后，可以直接全量更新。</p>
+<pre tabindex="0"><code>apiVersion: apps/v1
+kind: Deployment
+spec:
+  template: # pod template
+    metadata:
+      annotations:
+        sidecar.istio.io/extraStatTags: ignore_error
+</code></pre><p>meshConfig.defaultConfig 可以定义全局配置，但是需要注意，所有的 Pod 都需要重启后才能生效。因为这个配置是 envoy 的 bootstrap 配置。</p>
+<pre tabindex="0"><code>mesh:
+  defaultConfig:
+    extraStatTags:
+    - ignore_error
+</code></pre><h4 id="在-envoyfilter-中开启自定义-metrics-配置">在 EnvoyFilter 中开启自定义 metrics 配置</h4>
+<p>在 <code>extraStatTags</code> 中配置了 <code>ignore_error</code> 之后，确保所有的 Pod 都重启，应用了这个配置后，才能通过修改 stats filter 的配置来定义 metrics 配置。</p>
+<p>istio 的 helm chart 中封装了这个 EnvoyFilter 的配置，可以在 values.yaml 中的 <code>telemetry.v2.prometheus</code> 配置。我们只需要修改 inboundSidecar 的配置。</p>
+<pre tabindex="0"><code>telemetry:
+  enabled: true
+  v2:
+    enabled: true
+    metadataExchange:
+      wasmEnabled: false
+    # Indicate if prometheus stats filter is enabled or not
+    prometheus:
+      enabled: true
+      # Indicates whether to enable WebAssembly runtime for stats filter.
+      wasmEnabled: false
+      # overrides stats EnvoyFilter configuration.
+      configOverride:
+        inboundSidecar:
+          debug: &#34;false&#34;
+          stat_prefix: &#34;istio&#34;
+          disable_host_header_fallback: true
+          metrics:
+          - dimensions:
+              destination_cluster: &#34;node.metadata[&#39;CLUSTER_ID&#39;]&#34;
+              source_cluster: &#34;downstream_peer.cluster_id&#34;
+          - name: requests_total
+            dimensions:
+              ignore_error: &#34;(&#39;x-prometheus-scrape-timeout-seconds&#39; in request.headers) ? &#39;true&#39; : &#39;false&#39;&#34;
+</code></pre><p>除了 <code>ignore_error</code> 之外，其他的是目前 chart 里的默认配置，由于 chart 的实现问题，这个配置会覆盖掉默认配置，所以这里把默认配置也一起加过来。以后同步配置的时候需要注意下官方的默认配置会不会更改，如果改了，要记得同步下。</p>
+<p>values.yaml 中的修改会影响到的是 <code>templates/telemetryv2_1.12.yaml</code> 这个文件。注意，文件名后缀是 istio 版本，这个配置由于 istio 版本不同，要考虑兼容性的问题，由于 Istio 的 Release 规则会兼容最近三个版本，所以会同时存在三个版本的文件，创建三套不同的 EnvoyFilter，而每一个 EnvoyFilter 会通过 Match 规则，只匹配对应版本的 sidecar。</p>
+<p>注: 社区在推一个新的 Telemetry CRD，可以用于配置 metrics, trace, accesslog，相比于 EnvoyFilter 会更标准化一些。之后可以考虑通过 TelemetryAPI 来配置。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2022/07/17/ignore-prometheus-scrape-error-by-custom-metrics-tag/">https://blog.fatedier.com/2022/07/17/ignore-prometheus-scrape-error-by-custom-metrics-tag/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/istio/">
+                            <i class="fa fa-tags"></i>
+                            istio
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月11日)</span></li><li id="li-rels"><a href="/2022/10/09/istio-inbound-http-request-idletimeout/">Istio Inbound HTTP 请求的 IdleTimeout 问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月09日)</span></li><li id="li-rels"><a href="/2022/08/15/istio-pods-crash-cause-full-push/">Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年08月15日)</span></li><li id="li-rels"><a href="/2022/07/13/headless-service-cause-istiod-overloading/">Headless Service 导致 Istio 控制面负载过高</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月13日)</span></li><li id="li-rels"><a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月07日)</span></li><li id="li-rels"><a href="/2022/06/01/istio-control-plane-config-push-optimization/">Istio 控制面配置推送分析与优化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年06月01日)</span></li><li id="li-rels"><a href="/2022/05/22/istio-dns-proxying/">Istio DNS Proxying</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年05月22日)</span></li><li id="li-rels"><a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/">Istio sidecar TCP 空闲连接 1 小时自动断开</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年04月18日)</span></li><li id="li-rels"><a href="/2022/01/11/istio-service-send-request-failed-even-dns-switched/">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年01月11日)</span></li><li id="li-rels"><a href="/2021/12/24/reduce-istio-control-panel-push-config/">减少 Istio 控制面下发的配置</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2021年12月24日)</span></li></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2022/08/15/istio-pods-crash-cause-full-push/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2022/07/13/headless-service-cause-istiod-overloading/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#解决方案">解决方案</a></li>
+    <li><a href="#配置">配置</a>
+      <ul>
+        <li><a href="#extrastattags">extraStatTags</a></li>
+        <li><a href="#在-envoyfilter-中开启自定义-metrics-配置">在 EnvoyFilter 中开启自定义 metrics 配置</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2022  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

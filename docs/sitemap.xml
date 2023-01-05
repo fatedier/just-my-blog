@@ -29,6 +29,9 @@
     <loc>https://blog.fatedier.com/2022/10/09/istio-inbound-http-request-idletimeout/</loc>
     <lastmod>2022-10-09T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://blog.fatedier.com/2022/09/09/proxy-egress-tcp-traffic-by-istio/</loc>
+    <lastmod>2022-09-09T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://blog.fatedier.com/2022/08/15/istio-pods-crash-cause-full-push/</loc>
     <lastmod>2022-08-15T00:00:00+00:00</lastmod>
   </url><url>

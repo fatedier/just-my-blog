@@ -28,6 +28,15 @@
     </item>
     
     <item>
+      <title>通过 Istio 代理出方向的 TCP 流量</title>
+      <link>https://blog.fatedier.com/2022/09/09/proxy-egress-tcp-traffic-by-istio/</link>
+      <pubDate>Fri, 09 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2022/09/09/proxy-egress-tcp-traffic-by-istio/</guid>
+      <description>&lt;p&gt;通过 Istio 可以劫持出方向的 HTTP/HTTPS 流量到特定的 Egress Gateway。通过固定 Egress Gateway 的节点可以实现线路优化，固定出口 IP，安全审计等等功能。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</title>
       <link>https://blog.fatedier.com/2022/08/15/istio-pods-crash-cause-full-push/</link>
       <pubDate>Mon, 15 Aug 2022 00:00:00 +0000</pubDate>

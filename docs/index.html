@@ -101,6 +101,23 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2022年09月09日
+        </div>
+        <h2 class="post-title">
+            <a href="/2022/09/09/proxy-egress-tcp-traffic-by-istio/">通过 Istio 代理出方向的 TCP 流量</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>通过 Istio 可以劫持出方向的 HTTP/HTTPS 流量到特定的 Egress Gateway。通过固定 Egress Gateway 的节点可以实现线路优化，固定出口 IP，安全审计等等功能。</p>
+    </div>
+    </article>
+<hr>
+
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
             2022年08月15日
         </div>
         <h2 class="post-title">
@@ -309,23 +326,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2021年09月17日
-        </div>
-        <h2 class="post-title">
-            <a href="/2021/09/17/extend-istio-and-envoy-by-wasm/">通过 WebAssembly 扩展 Istio 和 Envoy</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>Istio 在 1.5 版本(2020年5月)中宣布支持 WebAssembly 扩展，通过定制化的 envoy 实现。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -350,6 +350,8 @@
                     
                     <a href="/2022/10/09/istio-inbound-http-request-idletimeout/" class="list-group-item">Istio Inbound HTTP 请求的 IdleTimeout 问题</a>
                     
+                    <a href="/2022/09/09/proxy-egress-tcp-traffic-by-istio/" class="list-group-item">通过 Istio 代理出方向的 TCP 流量</a>
+                    
                     <a href="/2022/08/15/istio-pods-crash-cause-full-push/" class="list-group-item">Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</a>
                     
                     <a href="/2022/07/17/ignore-prometheus-scrape-error-by-custom-metrics-tag/" class="list-group-item">通过自定义 metrics tag 忽略 prometheus 抓取错误</a>
@@ -359,8 +361,6 @@
                     <a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/" class="list-group-item">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>
                     
                     <a href="/2022/06/01/istio-control-plane-config-push-optimization/" class="list-group-item">Istio 控制面配置推送分析与优化</a>
-                    
-                    <a href="/2022/05/22/istio-dns-proxying/" class="list-group-item">Istio DNS Proxying</a>
                     
                 </div>
             </div>
@@ -405,7 +405,7 @@
                     </a>
                     
                     <a href="/tags/istio/" class="list-group-item">
-                        <span class="badge">18</span>
+                        <span class="badge">19</span>
                         istio
                     </a>
                     
@@ -445,7 +445,7 @@
                     </a>
                     
                     <a href="/tags/service-mesh/" class="list-group-item">
-                        <span class="badge">22</span>
+                        <span class="badge">23</span>
                         service-mesh
                     </a>
                     

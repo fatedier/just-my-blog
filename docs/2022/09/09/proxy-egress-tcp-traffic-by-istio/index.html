@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="通过 Istio 可以劫持出方向的 HTTP/HTTPS 流量到特定的 Egress Gateway。通过固定 Egress Gateway 的节点可以实现线路优化，固定出口 IP，安全审计等等功能。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="通过 Istio 代理出方向的 TCP 流量 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    通过 Istio 代理出方向的 TCP 流量
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2022年09月09日 
+                </div>
+                <h1 class="post-title">通过 Istio 代理出方向的 TCP 流量</h1>
+            </header>
+
+            <div class="post-content">
+                <p>通过 Istio 可以劫持出方向的 HTTP/HTTPS 流量到特定的 Egress Gateway。通过固定 Egress Gateway 的节点可以实现线路优化，固定出口 IP，安全审计等等功能。</p>
+<p>但是如果需要代理 TCP 的流量，会麻烦一点，由于 TCP 不像 HTTP 那样可以通过 Host header 拿到目的服务的地址。转发 TCP 流量会丢失目的地址信息。</p>
+<p>我们需要结合 Istio 的 DNS Proxying 功能，给 TCP 连接的域名固定一个 IP 地址。Istio 劫持到这个 IP 地址的出连接后，转发时通过 TLS 带上 SNI 信息转发给一个 SNI Proxy，SNI Proxy 会根据 server name 去代理连接目标地址。</p>
+<h3 id="配置方式">配置方式</h3>
+<p>示例假设我们希望劫持 example.com:9444 端口的流量，到我们指定的 SNI Proxy 去。</p>
+<p>为了便于验证，9444 端口的协议还是用 HTTP 来进行测试。</p>
+<h4 id="启用-dns-proxying-功能">启用 DNS Proxying 功能</h4>
+<p>通过给 Pod 加上 annotation 启用 DNS 代理功能，以及启用自动分配 IP 地址的能力。</p>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>  template:
+</span></span><span style="display:flex;"><span>    metadata:
+</span></span><span style="display:flex;"><span>      annotations:
+</span></span><span style="display:flex;"><span>        proxy.istio.io/config: |<span style="color:#cd0000">
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">          proxyMetadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">            ISTIO_META_DNS_CAPTURE: &#34;true&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">            ISTIO_META_DNS_AUTO_ALLOCATE: &#34;true&#34;</span>          
+</span></span></code></pre></div><h4 id="创建-serviceentry-声明要劫持的域名和端口">创建 ServiceEntry 声明要劫持的域名和端口</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: networking.istio.io/v1beta1
+</span></span><span style="display:flex;"><span>kind: ServiceEntry
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: external-auto
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  hosts:
+</span></span><span style="display:flex;"><span>  - example.com
+</span></span><span style="display:flex;"><span>  ports:
+</span></span><span style="display:flex;"><span>  - name: tcp
+</span></span><span style="display:flex;"><span>    number: <span style="color:#cd00cd">9444</span>
+</span></span><span style="display:flex;"><span>    protocol: TCP
+</span></span><span style="display:flex;"><span>  resolution: DNS
+</span></span></code></pre></div><h4 id="给-sni-proxy-配置-destinationrule启用-tls">给 SNI Proxy 配置 DestinationRule，启用 TLS</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: networking.istio.io/v1beta1
+</span></span><span style="display:flex;"><span>kind: DestinationRule
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: tls-sni-proxy
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  host: sni-proxy
+</span></span><span style="display:flex;"><span>  subsets:
+</span></span><span style="display:flex;"><span>  - name: example-com-9444
+</span></span><span style="display:flex;"><span>    trafficPolicy:
+</span></span><span style="display:flex;"><span>      tls:
+</span></span><span style="display:flex;"><span>        mode: SIMPLE
+</span></span><span style="display:flex;"><span>        sni: example.com:9443
+</span></span></code></pre></div><h4 id="创建-virtualservice-将-examplecom9444-的流量路由到上面创建的-destinationrule">创建 VirtualService 将 <code>example.com:9444</code> 的流量路由到上面创建的 DestinationRule</h4>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>apiVersion: networking.istio.io/v1alpha3
+</span></span><span style="display:flex;"><span>kind: VirtualService
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: auto-tls
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  hosts:
+</span></span><span style="display:flex;"><span>  - <span style="color:#cd0000">&#34;example.com&#34;</span>
+</span></span><span style="display:flex;"><span>  gateways:
+</span></span><span style="display:flex;"><span>  - mesh
+</span></span><span style="display:flex;"><span>  tcp:
+</span></span><span style="display:flex;"><span>  - match:
+</span></span><span style="display:flex;"><span>    - port: <span style="color:#cd00cd">9444</span>
+</span></span><span style="display:flex;"><span>    route:
+</span></span><span style="display:flex;"><span>    - destination:
+</span></span><span style="display:flex;"><span>        host: sni-proxy
+</span></span><span style="display:flex;"><span>        subset: example-com-9444
+</span></span><span style="display:flex;"><span>        port:
+</span></span><span style="display:flex;"><span>          number: <span style="color:#cd00cd">443</span>
+</span></span></code></pre></div><h4 id="测试">测试</h4>
+<p><code>curl example.com:9444</code> 会被路由到 SNI Proxy 代理请求出去。</p>
+<h3 id="问题">问题</h3>
+<h4 id="同一域名未定义的其他端口无法正常访问">同一域名未定义的其他端口无法正常访问</h4>
+<p><a href="https://github.com/istio/istio/issues/39080">HTTP request failed after ISTIO_META_DNS_AUTO_ALLOCATE enabled</a></p>
+<p>当前如果开启了 <code>ISTIO_META_DNS_AUTO_ALLOCATE</code> ，由 Istio 给 ServiceEntry 的域名分配了 IP，会导致所有没有在 ServiceEntry 中定义的端口都无法访问。</p>
+<p>因为这些连接会被路由到 PassthroughCluster，然后 upstream 会是 Istio 分配的虚拟 IP，无法正常连接。</p>
+<p>目前只能通过在 ServiceEntry 中给该域名所有需要访问的端口都预先定义好才能避免。</p>
+<p>但是如果是严格限制对外访问的环境，要求所有外部请求的端口都事先定义也很合理。</p>
+<p>注: 可以不使用 <code>ISTIO_META_DNS_AUTO_ALLOCATE</code> 自动分配 IP，而是通过 ServiceEntry.addresses 手动给需要的 ServiceEntry 分配 IP，这样可以尽量减小对其他 ServiceEntry 中定义域名的影响。</p>
+<h4 id="sni-proxy-的端口问题">SNI Proxy 的端口问题</h4>
+<p>由于我们通过 SNI 设置的 server name 格式为 <code>example.com:9443</code>，SNI Proxy 需要能够解析出 host 和端口号然后去访问。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2022/09/09/proxy-egress-tcp-traffic-by-istio/">https://blog.fatedier.com/2022/09/09/proxy-egress-tcp-traffic-by-istio/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/istio/">
+                            <i class="fa fa-tags"></i>
+                            istio
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/service-mesh/">
+                            <i class="fa fa-tags"></i>
+                            service mesh
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月11日)</span></li><li id="li-rels"><a href="/2022/10/09/istio-inbound-http-request-idletimeout/">Istio Inbound HTTP 请求的 IdleTimeout 问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月09日)</span></li><li id="li-rels"><a href="/2022/08/15/istio-pods-crash-cause-full-push/">Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年08月15日)</span></li><li id="li-rels"><a href="/2022/07/17/ignore-prometheus-scrape-error-by-custom-metrics-tag/">通过自定义 metrics tag 忽略 prometheus 抓取错误</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月17日)</span></li><li id="li-rels"><a href="/2022/07/13/headless-service-cause-istiod-overloading/">Headless Service 导致 Istio 控制面负载过高</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月13日)</span></li><li id="li-rels"><a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月07日)</span></li><li id="li-rels"><a href="/2022/06/01/istio-control-plane-config-push-optimization/">Istio 控制面配置推送分析与优化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年06月01日)</span></li><li id="li-rels"><a href="/2022/05/22/istio-dns-proxying/">Istio DNS Proxying</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年05月22日)</span></li><li id="li-rels"><a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/">Istio sidecar TCP 空闲连接 1 小时自动断开</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年04月18日)</span></li><li id="li-rels"><a href="/2022/01/11/istio-service-send-request-failed-even-dns-switched/">Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年01月11日)</span></li></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous"><a href="/2022/10/09/istio-inbound-http-request-idletimeout/"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2022/08/15/istio-pods-crash-cause-full-push/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#配置方式">配置方式</a>
+      <ul>
+        <li><a href="#启用-dns-proxying-功能">启用 DNS Proxying 功能</a></li>
+        <li><a href="#创建-serviceentry-声明要劫持的域名和端口">创建 ServiceEntry 声明要劫持的域名和端口</a></li>
+        <li><a href="#给-sni-proxy-配置-destinationrule启用-tls">给 SNI Proxy 配置 DestinationRule，启用 TLS</a></li>
+        <li><a href="#创建-virtualservice-将-examplecom9444-的流量路由到上面创建的-destinationrule">创建 VirtualService 将 <code>example.com:9444</code> 的流量路由到上面创建的 DestinationRule</a></li>
+        <li><a href="#测试">测试</a></li>
+      </ul>
+    </li>
+    <li><a href="#问题">问题</a>
+      <ul>
+        <li><a href="#同一域名未定义的其他端口无法正常访问">同一域名未定义的其他端口无法正常访问</a></li>
+        <li><a href="#sni-proxy-的端口问题">SNI Proxy 的端口问题</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2022  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

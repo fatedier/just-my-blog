@@ -148,7 +148,7 @@ crate-type = [&#34;cdylib&#34;]
 </span></span><span style="display:flex;"><span><span style="color:#cdcd00">impl</span> HttpContext <span style="color:#cdcd00">for</span> HttpHeaders {
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">fn</span> on_http_request_headers(<span style="color:#39c">&amp;</span><span style="color:#cdcd00">mut</span> self, _: <span style="color:#00cd00">usize</span>) -&gt; <span style="color:#00cdcd">Action</span> {
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> (name, value) <span style="color:#cdcd00">in</span> <span style="color:#39c">&amp;</span>self.get_http_request_headers() {
-</span></span><span style="display:flex;"><span>            trace<span style="color:#39c">!</span>(<span style="color:#cd0000">&#34;#{} -&gt; {}: {}&#34;</span>, self.context_id, name, value);
+</span></span><span style="display:flex;"><span>            trace!(<span style="color:#cd0000">&#34;#{} -&gt; {}: {}&#34;</span>, self.context_id, name, value);
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span> 
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">match</span> self.get_http_request_header(<span style="color:#cd0000">&#34;:path&#34;</span>) {
@@ -156,7 +156,7 @@ crate-type = [&#34;cdylib&#34;]
 </span></span><span style="display:flex;"><span>                self.send_http_response(
 </span></span><span style="display:flex;"><span>                    <span style="color:#cd00cd">200</span>,
 </span></span><span style="display:flex;"><span>                    vec![(<span style="color:#cd0000">&#34;Hello&#34;</span>, <span style="color:#cd0000">&#34;World&#34;</span>), (<span style="color:#cd0000">&#34;Powered-By&#34;</span>, <span style="color:#cd0000">&#34;proxy-wasm&#34;</span>)],
-</span></span><span style="display:flex;"><span>                    <span style="color:#cd00cd">Some</span>(<span style="color:#cd0000">b&#34;Hello, World!</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>),
+</span></span><span style="display:flex;"><span>                    <span style="color:#cd00cd">Some</span>(<span style="color:#cd0000">b</span><span style="color:#cd0000">&#34;Hello, World!</span><span style="color:#cd0000">\n</span><span style="color:#cd0000">&#34;</span>),
 </span></span><span style="display:flex;"><span>                );
 </span></span><span style="display:flex;"><span>                Action::Pause
 </span></span><span style="display:flex;"><span>            }
@@ -165,7 +165,7 @@ crate-type = [&#34;cdylib&#34;]
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span> 
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">fn</span> on_log(<span style="color:#39c">&amp;</span><span style="color:#cdcd00">mut</span> self) {
-</span></span><span style="display:flex;"><span>        trace<span style="color:#39c">!</span>(<span style="color:#cd0000">&#34;#{} completed.&#34;</span>, self.context_id);
+</span></span><span style="display:flex;"><span>        trace!(<span style="color:#cd0000">&#34;#{} completed.&#34;</span>, self.context_id);
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>上述代码，会在收到请求的 rquest path 为 <code>/hello</code> 时，直接返回 Hello World 以及指定的 header，否则透传请求。</p>
@@ -324,7 +324,7 @@ crate-type = [&#34;cdylib&#34;]
 </span></span><span style="display:flex;"><span>                configuration:
 </span></span><span style="display:flex;"><span>                  &#39;@type&#39;: type.googleapis.com/google.protobuf.StringValue
 </span></span><span style="display:flex;"><span>                  value: |<span style="color:#cd0000">
-</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">                    </span>                    <span style="color:#cd00cd">10.0.0.0</span>/8,172.16.0.0/12,192.168.0.0/16
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">                    10.0.0.0/8,172.16.0.0/12,192.168.0.0/16</span>                    
 </span></span><span style="display:flex;"><span>                vm_config:
 </span></span><span style="display:flex;"><span>                  vm_id: realip
 </span></span><span style="display:flex;"><span>                  code:

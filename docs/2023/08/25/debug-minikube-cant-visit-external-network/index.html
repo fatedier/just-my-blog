@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="通过 minikube 搭建本地的 K8s 环境用于测试，但是过了一段时间，突然在虚拟机内访问不了外网，拉不到镜像了，这里记录一下排查的过程，供后续再遇到时检索。
+问题的根本原因是网卡上不知道为什么绑了两个 IP，其中只有一个可用，虚拟机访问外网时本地 IP 是不可用的那一个，才导致了问题。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="minikube 虚拟机无法访问外网的问题排查 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    minikube 虚拟机无法访问外网的问题排查
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2023年08月25日 
+                </div>
+                <h1 class="post-title">minikube 虚拟机无法访问外网的问题排查</h1>
+            </header>
+
+            <div class="post-content">
+                <p>通过 minikube 搭建本地的 K8s 环境用于测试，但是过了一段时间，突然在虚拟机内访问不了外网，拉不到镜像了，这里记录一下排查的过程，供后续再遇到时检索。</p>
+<p>问题的根本原因是网卡上不知道为什么绑了两个 IP，其中只有一个可用，虚拟机访问外网时本地 IP 是不可用的那一个，才导致了问题。</p>
+<h3 id="访问链路">访问链路</h3>
+<p>首先，需要大致上知道虚拟机里面是怎么通过宿主机的网络和外网通信的。</p>
+<p>我的系统环境是 macos，minikube 指定的 vm-driver 是 hyperkit。</p>
+<p>通过 minikube ssh 登录到虚拟机环境，执行 ip route 查看路由表。</p>
+<pre tabindex="0"><code># default 路由
+default via 192.168.77.1 dev eth0 proto dhcp src 192.168.77.6 metric 1024
+# docker pod ip 路由
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1
+</code></pre><p>可以看出来，docker 内部的数据包是会发给 docker0 这个网络接口。</p>
+<p>剩下的数据包会通过 192.168.77.1 转发出去。</p>
+<p>192.168.77.1 是宿主机的一个 bridge 接口：</p>
+<pre tabindex="0"><code>bridge100: flags=8a63&lt;UP,BROADCAST,SMART,RUNNING,ALLMULTI,SIMPLEX,MULTICAST&gt; mtu 1500
+        options=3&lt;RXCSUM,TXCSUM&gt;
+        ether 16:7d:da:47:fb:64
+        inet 192.168.77.1 netmask 0xffffff00 broadcast 192.168.77.255
+        inet6 fe80::147d:daff:fe47:fb64%bridge100 prefixlen 64 scopeid 0x13
+        inet6 fdc3:c045:483c:7986:c67:998c:8b2c:7afa prefixlen 64 autoconf secured
+        Configuration:
+                id 0:0:0:0:0:0 priority 0 hellotime 0 fwddelay 0
+                maxage 0 holdcnt 0 proto stp maxaddr 100 timeout 1200
+                root id 0:0:0:0:0:0 priority 0 ifcost 0 port 0
+                ipfilter disabled flags 0x0
+        member: vmenet0 flags=3&lt;LEARNING,DISCOVER&gt;
+                ifmaxaddr 0 port 18 priority 0 path cost 0
+        member: vmenet1 flags=3&lt;LEARNING,DISCOVER&gt;
+                ifmaxaddr 0 port 22 priority 0 path cost 0
+        nd6 options=201&lt;PERFORMNUD,DAD&gt;
+        media: autoselect
+        status: active
+</code></pre><p>macos 上的路由表通过 <code>netstat -nr</code> 查看。</p>
+<pre tabindex="0"><code>Routing tables
+
+Internet:
+Destination        Gateway            Flags           Netif Expire
+default            172.2.2.2          UGScg             en0
+</code></pre><p>由于是公司的网络，所以默认的路由会通过 en0 网络接口，转发给 172.2.2.2 这个网关 IP。</p>
+<h3 id="抓包">抓包</h3>
+<p>分别在宿主机和虚拟机里通过 curl 访问 baidu.com 测试。</p>
+<p>同时在宿主机上通过 tcpdump 抓包 <code>tcpdump -i en0 -nn host x.x.x.x</code>。</p>
+<p>发现宿主机和虚拟机里建立连接的本地 IP 不一样。</p>
+<p>通过 ifconfig 发现 en0 网卡接口上绑定了两个 IP，虚拟机访问外网的时候使用的那一个看上去是有问题的。</p>
+<h3 id="删除无效的网卡-ip">删除无效的网卡 IP</h3>
+<p>不确定是因为系统原因还是什么其他的原因，导致 en0 上同时存在两个 IP。正常来说，应该每次在连接办公网络的时候会通过 DHCP 分配一个新的 IP。</p>
+<p>通过 <code>sudo ifconfig en0 delete &lt;ip 地址&gt;</code> 来删除有问题的那个 IP，删除后问题解决。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2023/08/25/debug-minikube-cant-visit-external-network/">https://blog.fatedier.com/2023/08/25/debug-minikube-cant-visit-external-network/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/network/">
+                            <i class="fa fa-tags"></i>
+                            network
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#访问链路">访问链路</a></li>
+    <li><a href="#抓包">抓包</a></li>
+    <li><a href="#删除无效的网卡-ip">删除无效的网卡 IP</a></li>
+  </ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2023  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

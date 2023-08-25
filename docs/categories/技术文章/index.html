@@ -64,6 +64,24 @@
 <article class="post li">
     <header>
         <div class="post-date">
+            2023年08月25日
+        </div>
+        <h2 class="post-title">
+            <a href="/2023/08/25/debug-minikube-cant-visit-external-network/">minikube 虚拟机无法访问外网的问题排查</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>通过 minikube 搭建本地的 K8s 环境用于测试，但是过了一段时间，突然在虚拟机内访问不了外网，拉不到镜像了，这里记录一下排查的过程，供后续再遇到时检索。</p>
+<p>问题的根本原因是网卡上不知道为什么绑了两个 IP，其中只有一个可用，虚拟机访问外网时本地 IP 是不可用的那一个，才导致了问题。</p>
+    </div>
+    </article>
+<hr>
+
+        
+        
+<article class="post li">
+    <header>
+        <div class="post-date">
             2022年10月11日
         </div>
         <h2 class="post-title">
@@ -1579,7 +1597,7 @@ go 跨平台的特性，有一些 api 是无法拿到特定平台上的一些特
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2022  fatedier blog </p>
+    <p>&copy; 2023  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

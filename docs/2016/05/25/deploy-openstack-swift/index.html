@@ -104,7 +104,7 @@
 <h5 id="swift-client">swift-client</h5>
 <div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/openstack/python-swiftclient.git
 </span></span><span style="display:flex;"><span>git checkout 2.4.0
-</span></span><span style="display:flex;"><span><span style="color:#cd00cd">cd</span> ./python-swiftclient; sudo python setup.py develop; <span style="color:#cd00cd">cd</span> -
+</span></span><span style="display:flex;"><span>cd ./python-swiftclient; sudo python setup.py develop; cd -
 </span></span></code></pre></div><h5 id="swift">swift</h5>
 <div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/openstack/swift.git
 </span></span><span style="display:flex;"><span>git checkout 2.4.0
@@ -299,17 +299,17 @@
 </span></span><span style="display:flex;"><span>swift-ring-builder object.builder create <span style="color:#cd00cd">18</span> <span style="color:#cd00cd">3</span> <span style="color:#cd00cd">1</span>
 </span></span></code></pre></div><p>需要事先创建好3个 ring，18 表示 partition 数为2的18次方，3表示 replication 数为3，1 表示分区数据的最短迁移间隔时间为1小时。（官网说明里如果移除设备的话不在这个限制内）</p>
 <h3 id="向-ring-中加入设备">向 ring 中加入设备</h3>
-<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swift-ring-builder account.builder add z1-192.168.2.129:6002/sdb1 <span style="color:#cd00cd">100</span>
-</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z1-192.168.2.129:6001/sdb1 <span style="color:#cd00cd">100</span>
-</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z1-192.168.2.129:6000/sdb1 <span style="color:#cd00cd">100</span>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swift-ring-builder account.builder add z1-192.168.2.129:6002/sdb1 100
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z1-192.168.2.129:6001/sdb1 100
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z1-192.168.2.129:6000/sdb1 100
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>swift-ring-builder account.builder add z2-192.168.2.130:6002/sdb1 <span style="color:#cd00cd">100</span>
-</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z2-192.168.2.130:6001/sdb1 <span style="color:#cd00cd">100</span>
-</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z2-192.168.2.130:6000/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder account.builder add z2-192.168.2.130:6002/sdb1 100
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z2-192.168.2.130:6001/sdb1 100
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z2-192.168.2.130:6000/sdb1 100
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>swift-ring-builder account.builder add z2-192.168.2.131:6002/sdb1 <span style="color:#cd00cd">100</span>
-</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z2-192.168.2.131:6001/sdb1 <span style="color:#cd00cd">100</span>
-</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z2-192.168.2.131:6000/sdb1 <span style="color:#cd00cd">100</span>
+</span></span><span style="display:flex;"><span>swift-ring-builder account.builder add z2-192.168.2.131:6002/sdb1 100
+</span></span><span style="display:flex;"><span>swift-ring-builder container.builder add z2-192.168.2.131:6001/sdb1 100
+</span></span><span style="display:flex;"><span>swift-ring-builder object.builder add z2-192.168.2.131:6000/sdb1 100
 </span></span></code></pre></div><p><strong>z1</strong> 和 <strong>z2</strong> 表示 <strong>zone1</strong> 和 <strong>zone2</strong>（<strong>zone</strong> 这个概念是虚拟的，可以将一个 <strong>device</strong> 划定到一个 <strong>zone</strong>，在分配 <strong>partition</strong> 的时候会考虑到这个因素，尽量划分到不同的 <strong>zone</strong> 中）。</p>
 <p><strong>sdb1</strong> 为 <strong>swift</strong> 所使用的存储空间。</p>
 <p><strong>100</strong> 代表设备的权重，也是在分配 <strong>partition</strong> 的时候会考虑的因素。</p>
@@ -658,7 +658,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2022  fatedier blog </p>
+    <p>&copy; 2023  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

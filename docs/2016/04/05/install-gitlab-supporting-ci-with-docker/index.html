@@ -153,15 +153,15 @@
 </span></span></span><span style="display:flex;"><span><span style="color:#cd0000"></span>      gitlab/gitlab-runner:latest
 </span></span></code></pre></div><h4 id="关联-gitlab">关联 gitlab</h4>
 <p>启动成功后的 <code>Runner</code> 需要在 <code>gitlab</code> 上注册，通过在 <code>Runner</code> 上执行注册命令，会调用 <code>gitlab</code> 的相关接口注册。</p>
-<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker <span style="color:#cd00cd">exec</span> -it gitlab-runner gitlab-runner register
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker exec -it gitlab-runner gitlab-runner register
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>Please enter the gitlab-ci coordinator URL <span style="color:#39c">(</span>e.g. <span style="color:#39c">[</span>https://gitlab.com/ci<span style="color:#39c">](</span>https://gitlab.com/ci<span style="color:#39c">)</span> <span style="color:#39c">)</span>
 </span></span><span style="display:flex;"><span><span style="color:#39c">[</span>https://gitlab.com/ci<span style="color:#39c">](</span>https://gitlab.com/ci<span style="color:#39c">)</span>（这里的gitlab.com替换成之前启动gitlab时填写的 hostname）
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Please enter the gitlab-ci token <span style="color:#cdcd00">for</span> this runner
+</span></span><span style="display:flex;"><span>Please enter the gitlab-ci token for this runner
 </span></span><span style="display:flex;"><span>xxx（填写获取到的 runner registration token）
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Please enter the gitlab-ci description <span style="color:#cdcd00">for</span> this runner
+</span></span><span style="display:flex;"><span>Please enter the gitlab-ci description for this runner
 </span></span><span style="display:flex;"><span>my
 </span></span><span style="display:flex;"><span>INFO<span style="color:#39c">[</span>0034<span style="color:#39c">]</span> fcf5c619 Registering runner... succeeded
 </span></span><span style="display:flex;"><span>
@@ -170,7 +170,7 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>Please enter the Docker image <span style="color:#39c">(</span>eg. ruby:2.1<span style="color:#39c">)</span>:
 </span></span><span style="display:flex;"><span>golang:1.5
-</span></span><span style="display:flex;"><span>INFO<span style="color:#39c">[</span>0037<span style="color:#39c">]</span> Runner registered successfully. Feel free to start it, but <span style="color:#cdcd00">if</span> it<span style="">&#39;</span>s
+</span></span><span style="display:flex;"><span>INFO<span style="color:#39c">[</span>0037<span style="color:#39c">]</span> Runner registered successfully. Feel free to start it, but if it<span style="">&#39;</span>s
 </span></span><span style="display:flex;"><span>running already the config should be automatically reloaded!
 </span></span></code></pre></div><h3 id="测试">测试</h3>
 <p>利用 <code>docker</code> 来搭建这套环境还是非常简单的。</p>
@@ -296,7 +296,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2022  fatedier blog </p>
+    <p>&copy; 2023  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

@@ -3,10 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://blog.fatedier.com/categories/</loc>
-    <lastmod>2022-10-11T00:00:00+00:00</lastmod>
+    <lastmod>2023-08-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/</loc>
-    <lastmod>2022-10-11T00:00:00+00:00</lastmod>
+    <lastmod>2023-08-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.fatedier.com/2023/08/25/debug-minikube-cant-visit-external-network/</loc>
+    <lastmod>2023-08-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.fatedier.com/tags/network/</loc>
+    <lastmod>2023-08-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.fatedier.com/post/</loc>
+    <lastmod>2023-08-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.fatedier.com/tags/</loc>
+    <lastmod>2023-08-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.fatedier.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/</loc>
+    <lastmod>2023-08-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/tags/istio/</loc>
     <lastmod>2022-10-11T00:00:00+00:00</lastmod>
@@ -14,16 +29,7 @@
     <loc>https://blog.fatedier.com/2022/10/11/istio-grpc-gateway-disable-http1/</loc>
     <lastmod>2022-10-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.fatedier.com/post/</loc>
-    <lastmod>2022-10-11T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://blog.fatedier.com/tags/service-mesh/</loc>
-    <lastmod>2022-10-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/tags/</loc>
-    <lastmod>2022-10-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/</loc>
     <lastmod>2022-10-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/2022/10/09/istio-inbound-http-request-idletimeout/</loc>

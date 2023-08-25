@@ -2,7 +2,7 @@
 
 <html lang="zh-cn">
 <head>
-	<meta name="generator" content="Hugo 0.104.3" />
+	<meta name="generator" content="Hugo 0.110.0">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="author" content="fatedier">
@@ -61,6 +61,24 @@
 <div class="row">
     <div class="col-md-8">
         <div class="posts">
+            
+            
+<article class="post li">
+    <header>
+        <div class="post-date">
+            2023年08月25日
+        </div>
+        <h2 class="post-title">
+            <a href="/2023/08/25/debug-minikube-cant-visit-external-network/">minikube 虚拟机无法访问外网的问题排查</a>
+        </h2>
+    </header>
+    <div class="post-content">
+        <p>通过 minikube 搭建本地的 K8s 环境用于测试，但是过了一段时间，突然在虚拟机内访问不了外网，拉不到镜像了，这里记录一下排查的过程，供后续再遇到时检索。</p>
+<p>问题的根本原因是网卡上不知道为什么绑了两个 IP，其中只有一个可用，虚拟机访问外网时本地 IP 是不可用的那一个，才导致了问题。</p>
+    </div>
+    </article>
+<hr>
+
             
             
 <article class="post li">
@@ -308,24 +326,6 @@
 <hr>
 
             
-            
-<article class="post li">
-    <header>
-        <div class="post-date">
-            2021年11月17日
-        </div>
-        <h2 class="post-title">
-            <a href="/2021/11/17/macos-iptables-block-address/">macos 上如何实现类似 iptables 的防火墙规则</a>
-        </h2>
-    </header>
-    <div class="post-content">
-        <p>Linux 上调试开发的时候，经常需要模拟网络断开，端口无法访问等场景。</p>
-<p>mac 上开发也有类似的需求，例如禁用掉所有到 192.168.100.2 的 80 端口的流量。可以通过 PF 防火墙来实现。</p>
-    </div>
-    </article>
-<hr>
-
-            
             <nav>
                 <ul class="pager">
                     <li><a href="/post/">All Posts</a></li>
@@ -346,6 +346,8 @@
                 </div>
                 <div class="list-group">
                     
+                    <a href="/2023/08/25/debug-minikube-cant-visit-external-network/" class="list-group-item">minikube 虚拟机无法访问外网的问题排查</a>
+                    
                     <a href="/2022/10/11/istio-grpc-gateway-disable-http1/" class="list-group-item">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>
                     
                     <a href="/2022/10/09/istio-inbound-http-request-idletimeout/" class="list-group-item">Istio Inbound HTTP 请求的 IdleTimeout 问题</a>
@@ -359,8 +361,6 @@
                     <a href="/2022/07/13/headless-service-cause-istiod-overloading/" class="list-group-item">Headless Service 导致 Istio 控制面负载过高</a>
                     
                     <a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/" class="list-group-item">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>
-                    
-                    <a href="/2022/06/01/istio-control-plane-config-push-optimization/" class="list-group-item">Istio 控制面配置推送分析与优化</a>
                     
                 </div>
             </div>
@@ -427,6 +427,11 @@
                     <a href="/tags/mongodb/" class="list-group-item">
                         <span class="badge">1</span>
                         mongodb
+                    </a>
+                    
+                    <a href="/tags/network/" class="list-group-item">
+                        <span class="badge">1</span>
+                        network
                     </a>
                     
                     <a href="/tags/opentsdb/" class="list-group-item">
@@ -513,7 +518,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2022  fatedier blog </p>
+    <p>&copy; 2023  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

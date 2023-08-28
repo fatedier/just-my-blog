@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="author" content="fatedier">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="minikube 可以很方便地在本地创建用于测试的持久化的 K8s 集群，能够很方便地测试 Istio 多主集群架构。">
+<meta property="og:url" content="https://blog.fatedier.com/"><meta property="og:type" content="article">
+<meta property="og:title" content="通过 minikube 测试 Istio 多主集群架构 - fatedier blog"><meta property="og:site_name" content="fatedier blog">
+
+<title>
+    
+    通过 minikube 测试 Istio 多主集群架构
+    
+</title>
+
+<link rel="stylesheet" href="/onlyone/onlyone.css">
+<link rel="shortcut icon" href="/assets/favicon.ico">
+<script src="/onlyone/onlyone.js"></script>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/index.xml">
+</head>
+<body>
+
+
+<div class="container">
+    <header class="nav">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">fatedier blog</a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/categories/技术文章/">技术文章</a></li>
+                        <li><a href="/categories/诗与远方/">诗与远方</a></li>
+                        <li><a href="/tags/">分类</a></li>
+                        <li><a href="/about/">关于我</a></li>
+                        <li>
+                            <form method="get" style="padding: 8px" action="https://www.google.com/search" target="_blank">
+                                <input type="hidden" name="sitesearch" value="blog.fatedier.com"/>
+                                <input type="text" class="form-control" name="q" placeholder="Press enter to search">
+                            </form>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+<div class="row">
+    <div class="col-md-8">
+        <article class="post single">
+
+            <header>
+                <div class="post-date">
+                    2023年08月26日 
+                </div>
+                <h1 class="post-title">通过 minikube 测试 Istio 多主集群架构</h1>
+            </header>
+
+            <div class="post-content">
+                <p>minikube 可以很方便地在本地创建用于测试的持久化的 K8s 集群，能够很方便地测试 Istio 多主集群架构。</p>
+<h3 id="概述">概述</h3>
+<p>Istio 多主集群架构，是指每个集群都部署自己的控制面，同时，支持通过 secret 声明其他集群的 API Server 连接信息，通过其他集群的 API Server 获取服务发现信息。</p>
+<p>从而实现多个集群之间的任意服务的互相访问的能力，且一个服务可以同时部署在多个集群。</p>
+<p>这个架构要求多个集群之间的 Pod 网络是互通的。</p>
+<p><img src="https://image.fatedier.com/pic/2023/2023-08-26-use-minikube-test-istio-multi-primary-architecture.jpg" alt="architecture"></p>
+<h3 id="创建-k8s-集群">创建 K8s 集群</h3>
+<p>minikube 可以通过 -p 参数指定名称创建不同的 K8s 集群用于测试。</p>
+<p>我们需要创建两个 K8s 集群，一个默认的名称就叫 minikube，另外一个名称叫 test。</p>
+<p>为了避免 Pod IP 冲突，需要主动给不同集群配置不同的 pod cidr 以及 docker 网桥的 ip 段。</p>
+<p>minikube 集群</p>
+<pre tabindex="0"><code>minikube start --registry-mirror=https://docker.mirrors.sjtug.sjtu.edu.cn --cache-images=true --vm-driver=hyperkit --kubernetes-version=1.26.8 --extra-config=kubeadm.pod-network-cidr=172.17.0.0/16 --docker-opt bip=172.17.0.1/24
+</code></pre><p>test 集群</p>
+<pre tabindex="0"><code>minikube start --registry-mirror=https://docker.mirrors.sjtug.sjtu.edu.cn --cache-images=true --vm-driver=hyperkit --kubernetes-version=1.26.8 --extra-config=kubeadm.pod-network-cidr=172.18.0.0/16 --docker-opt bip=172.18.0.1/24 -p test
+</code></pre><h3 id="部署-istio">部署 Istio</h3>
+<p><code>curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.18.2 sh -</code></p>
+<p>通过上面的命令下载 helm chart 到本地，然后部署到两个集群，可以参考 Istio 文档: <a href="https://istio.io/latest/docs/setup/install/helm/">https://istio.io/latest/docs/setup/install/helm/</a></p>
+<pre tabindex="0"><code>$ kubectl create namespace istio-system
+$ helm install istio-base istio/base -n istio-system --set defaultRevision=default
+$ helm install istiod istio/istiod -n istio-system --wait
+</code></pre><p>建议在部署时将 mtls 设置为默认关闭，例如给 pod 加上 <code>security.istio.io/tlsMode: disabled</code> label。这么做的目的是部署 istio 时不需要考虑证书的问题，否则需要用同一个 CA 来签两个集群的证书。关闭之后，服务之间通过明文通信，不会走 tls 加密。</p>
+<p>如果用默认的配置是 <code>security.istio.io/tlsMode: istio</code>，部署完成后，只会将请求发送到本地集群，不会转发给远端集群。</p>
+<h3 id="打通两个-minikube-集群的-pod-网络">打通两个 minikube 集群的 Pod 网络</h3>
+<p>两个 minikube 集群之间可以通过 Node IP 直接通信，但是访问另一个集群的 Pod IP，则访问不通。</p>
+<p>我们需要补充配置相关的路由信息。</p>
+<p>在 minikube 集群节点上执行 <code>sudo ip route add 172.18.0.0/16 via 192.168.64.3 dev eth0</code></p>
+<p>在 test 集群节点上执行 <code>sudo ip route add 172.17.0.0/16 via 192.168.64.2 dev eth0</code></p>
+<p>在两个节点上互相加上对方的路由，就可以实现 pod 和 pod 之间的互通。<code>192.168.64.2</code> 和 <code>192.168.64.3</code> 是对方 Node 的 IP 地址。这个路由配置的含义是如果访问的是对端集群的 Pod IP，则将数据包转发给对端的 Node，由对端的 Node 再去转发给 Pod。</p>
+<h3 id="通过-istioctl-启用对端集群的服务发现">通过 istioctl 启用对端集群的服务发现</h3>
+<p>通过 istioctl 分别创建用于连接远端集群的 secret。</p>
+<pre tabindex="0"><code>istioctl x create-remote-secret --name=minikube --context minikube &gt; ./minikube.yaml
+istioctl x create-remote-secret --name=test --context test &gt; ./test.yaml
+</code></pre><p>将对端的 remote secret 分别 apply 到自己的集群。</p>
+<pre tabindex="0"><code>kubectl apply -f ./test.yaml --context minikube
+kubectl apply -f ./minikube.yaml --context test
+</code></pre><p>上面的命令，会创建一个 secret 保存了用于访问另外一个集群 apiserver 的 kubeconfig 信息。</p>
+<p>这个 kubeconfig 的鉴权是从对端集群的 的 istio-system/istio-reader-service-account 这个 SA 中获取的，其中只有对相关对象的读权限。</p>
+<h3 id="测试">测试</h3>
+<p>参考文档: <a href="https://istio.io/latest/docs/setup/install/multicluster/verify/">https://istio.io/latest/docs/setup/install/multicluster/verify/</a></p>
+<p>通过分别在两个集群部署一个客户端和服务端服务来进行验证，最终在客户端服务的 Pod 中，可以正常访问到对端集群的服务即可。</p>
+<h3 id="问题">问题</h3>
+<h4 id="dns-解析">DNS 解析</h4>
+<p>目前 istio 的多集群方案，需要在每一个集群都创建一个 service ，分配一个 ClusterIP，目的是需要让每一个服务在任何一个集群都有 DNS 解析。否则用户发送一个请求，在 DNS 解析的步骤就会出错，到不了网络层被 istio 劫持。</p>
+<p>通过启用 DNSProxying 可以避免这个问题，sidecar 会劫持并完成 DNS 解析。但是需要注意，其他 VirtualService，DestinationRule 之类的配置仍然需要在每个集群都创建。</p>
+            </div>
+            
+            <div style="border: 1px dashed #e0e0e0; margin-bottom: 15px; padding: 10px 10px 10px 10px; background-color: #fffeee; background-repeat: no-repeat; background-attachment: scroll; background-position: 1% 50%; -moz-background-size: auto auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial;">
+                <div>
+                    <p style="margin-top:0px;">作者：<a target="_blank" href="http://blog.fatedier.com/">fatedier</a>
+                    <br />本文出处：<a target="_blank" href="https://blog.fatedier.com/2023/08/26/use-minikube-test-istio-multi-primary/">https://blog.fatedier.com/2023/08/26/use-minikube-test-istio-multi-primary/</a>
+                    <br />
+                    文章版权归本人所有，欢迎转载，但未经作者同意必须保留此段声明，且在文章页面明显位置给出原文链接，否则保留追究法律责任的权利。 </p>
+                </div>
+            </div>
+
+            <aside>
+                
+                <ul class="list-inline post-tags">
+                    
+                    <li>
+                        <a href="/tags/istio/">
+                            <i class="fa fa-tags"></i>
+                            istio
+                        </a>
+                    </li>
+                    
+                </ul>
+
+                
+                
+                <h4 id="real-rels">相关文章</h4>
+                <ul class="post-rels" id="real-rels"><li id="li-rels"><a href="/2022/10/11/istio-grpc-gateway-disable-http1/">Istio GRPC Gateway 禁用 HTTP1.1 请求</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月11日)</span></li><li id="li-rels"><a href="/2022/10/09/istio-inbound-http-request-idletimeout/">Istio Inbound HTTP 请求的 IdleTimeout 问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年10月09日)</span></li><li id="li-rels"><a href="/2022/09/09/proxy-egress-tcp-traffic-by-istio/">通过 Istio 代理出方向的 TCP 流量</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年09月09日)</span></li><li id="li-rels"><a href="/2022/08/15/istio-pods-crash-cause-full-push/">Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年08月15日)</span></li><li id="li-rels"><a href="/2022/07/17/ignore-prometheus-scrape-error-by-custom-metrics-tag/">通过自定义 metrics tag 忽略 prometheus 抓取错误</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月17日)</span></li><li id="li-rels"><a href="/2022/07/13/headless-service-cause-istiod-overloading/">Headless Service 导致 Istio 控制面负载过高</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月13日)</span></li><li id="li-rels"><a href="/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/">应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年07月07日)</span></li><li id="li-rels"><a href="/2022/06/01/istio-control-plane-config-push-optimization/">Istio 控制面配置推送分析与优化</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年06月01日)</span></li><li id="li-rels"><a href="/2022/05/22/istio-dns-proxying/">Istio DNS Proxying</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年05月22日)</span></li><li id="li-rels"><a href="/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/">Istio sidecar TCP 空闲连接 1 小时自动断开</a>&nbsp;&nbsp;<span class="post-date" style="font-size:14px">&nbsp;(2022年04月18日)</span></li></ul>
+            </aside>
+                
+            
+            <footer>
+                <nav>
+                    <ul class="pager">
+
+                        
+                        <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Prev</a></li>
+                        
+
+                        <li><a href="/post/">All Posts</a></li>
+
+                        
+                        <li class="next"><a href="/2023/08/25/debug-minikube-cant-visit-external-network/">Next <span aria-hidden="true">&rarr;</span></a></li>
+                        
+
+                    </ul>
+                </nav>
+            </footer>
+
+        </article>
+    </div>
+    <div class="col-md-4">
+        
+<aside>
+        <div class="toc panel panel-default hidden-xs hidden-sm affix-top" data-spy="affix" data-offset-top="125" data-offset-bottom="300">
+            <div class="panel-heading">
+                <h2 class="panel-title">Catalog</h2>
+            </div>
+
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#概述">概述</a></li>
+    <li><a href="#创建-k8s-集群">创建 K8s 集群</a></li>
+    <li><a href="#部署-istio">部署 Istio</a></li>
+    <li><a href="#打通两个-minikube-集群的-pod-网络">打通两个 minikube 集群的 Pod 网络</a></li>
+    <li><a href="#通过-istioctl-启用对端集群的服务发现">通过 istioctl 启用对端集群的服务发现</a></li>
+    <li><a href="#测试">测试</a></li>
+    <li><a href="#问题">问题</a>
+      <ul>
+        <li><a href="#dns-解析">DNS 解析</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+</aside>
+
+    </div>
+</div>
+
+</div>
+<hr>
+
+<footer class="container copy">
+    <p>&copy; 2023  fatedier blog </p>
+	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+</footer>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?ace3ec99de96c4080ead1eb8d52db3b3";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92600390-2', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+

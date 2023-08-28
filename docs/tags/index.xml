@@ -7,22 +7,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Fri, 25 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 26 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>istio</title>
+      <link>https://blog.fatedier.com/tags/istio/</link>
+      <pubDate>Sat, 26 Aug 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/tags/istio/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>network</title>
       <link>https://blog.fatedier.com/tags/network/</link>
       <pubDate>Fri, 25 Aug 2023 00:00:00 +0000</pubDate>
       
       <guid>https://blog.fatedier.com/tags/network/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>istio</title>
-      <link>https://blog.fatedier.com/tags/istio/</link>
-      <pubDate>Tue, 11 Oct 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.fatedier.com/tags/istio/</guid>
       <description></description>
     </item>
     

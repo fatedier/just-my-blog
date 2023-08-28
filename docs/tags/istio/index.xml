@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Tue, 11 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/istio/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 26 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/istio/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>通过 minikube 测试 Istio 多主集群架构</title>
+      <link>https://blog.fatedier.com/2023/08/26/use-minikube-test-istio-multi-primary/</link>
+      <pubDate>Sat, 26 Aug 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.fatedier.com/2023/08/26/use-minikube-test-istio-multi-primary/</guid>
+      <description>&lt;p&gt;minikube 可以很方便地在本地创建用于测试的持久化的 K8s 集群，能够很方便地测试 Istio 多主集群架构。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Istio GRPC Gateway 禁用 HTTP1.1 请求</title>
       <link>https://blog.fatedier.com/2022/10/11/istio-grpc-gateway-disable-http1/</link>

@@ -1,48 +1,41 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>docker on fatedier blog</title>
+    <title>Docker on fatedier blog</title>
     <link>https://blog.fatedier.com/tags/docker/</link>
-    <description>Recent content in docker on fatedier blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Docker on fatedier blog</description>
+    <generator>Hugo</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Sun, 16 Jul 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 16 Jul 2017 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.fatedier.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>记一次mesos集群停容器时间过长的问题排查</title>
       <link>https://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</link>
       <pubDate>Sun, 16 Jul 2017 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</guid>
       <description>&lt;p&gt;公司 mesos 集群某个 app 已经有数千的实例数，每次做滚动升级时，由于总资源不足，需要分批操作，每次起一批新版本实例，再停一批旧版本实例。目前停容器的策略是，先从服务发现中摘除需要停掉的节点，等待 60 秒后再停止容器，释放资源，但是实际上每次从发送停止容器的请求到容器资源被实际释放需要长达 6 分钟，导致滚动升级耗时过长。经过排查，最终确认问题出在我们使用 docker 的方式上，这里记录下分析和解决问题的过程。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>kubernetes 初探及部署实践</title>
       <link>https://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment/</link>
       <pubDate>Fri, 24 Jun 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/06/24/demystifying-kubernetes-and-deployment/</guid>
       <description>&lt;p&gt;Kubernetes 是 Google 开源的容器集群管理系统，作为 Go 语言开发的热门项目之一，它提供了应用部署、维护、 扩展机制等功能，利用 Kubernetes 能够方便地管理跨机器运行的容器化应用，目前主要是针对 Docker 的管理。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>搭建私有docker仓库</title>
       <link>https://blog.fatedier.com/2016/05/16/install-private-docker-registry/</link>
       <pubDate>Mon, 16 May 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/05/16/install-private-docker-registry/</guid>
       <description>&lt;p&gt;docker 使用起来确实非常方便，易于部署，但是在国内如果要从 DockerHub 上下载镜像实在是一件非常吃力的事，而且公司内部环境使用或者搭建类似 kubernetes 集群的话就需要搭建一个私有的 docker 镜像仓库，方便在集群上快速部署 docker 服务。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>利用docker搭建gitlab及持续集成模块</title>
       <link>https://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</link>
       <pubDate>Tue, 05 Apr 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</guid>
       <description>&lt;p&gt;版本控制的重要性应该是毋庸置疑了，git 作为现在最流行的版本控制工具，各种规模的公司都在用。通常开源项目都会放在 github 上，基础功能是免费的，私有项目收费。对于一个小团队来说，gitlab 就是另外一个替代品，可以用来搭建自己私有的git服务器。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

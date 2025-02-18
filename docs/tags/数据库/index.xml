@@ -4,91 +4,73 @@
     <title>数据库 on fatedier blog</title>
     <link>https://blog.fatedier.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
     <description>Recent content in 数据库 on fatedier blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Mon, 15 Aug 2016 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 15 Aug 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.fatedier.com/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>InfluxDB详解之TSM存储引擎解析（二）</title>
       <link>https://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</link>
       <pubDate>Mon, 15 Aug 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/08/15/detailed-in-influxdb-tsm-storage-engine-two/</guid>
       <description>&lt;p&gt;上一篇文章主要介绍了 TSM 存储引擎一些相关的概念、组件以及数据存储的目录结构，文件组成结构等内容。这一篇将会尽量从 InfluxDB 源码的角度，深入讲解数据插入、查询、合并等操作的具体流程以及内部数据结构的设计。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>InfluxDB详解之TSM存储引擎解析（一）</title>
       <link>https://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</link>
       <pubDate>Fri, 05 Aug 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one/</guid>
       <description>&lt;p&gt;InfluxDB 项目更新比较快，google 了一下网上的一些文档基本上都是简单介绍了一下，而且很多都已经过时了，比如其中使用的 TSM 存储引擎，甚至官方文档上的内容都不是最新的。在源码里的 README 中有最新的设计实现的一些概要说明。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>InfluxDB 与 OpenTSDB 对比测试</title>
       <link>https://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb/</link>
       <pubDate>Wed, 06 Jul 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb/</guid>
       <description>&lt;p&gt;通过调研，在时间序列数据库的选择上，从社区活跃度，易用程度，综合性能上来看比较合适的就是 OpenTSDB 和 InfluxDB，所以对这两个数据库进行了一个简单测试。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>时间序列数据库调研之InfluxDB</title>
       <link>https://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</link>
       <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/07/05/research-of-time-series-database-influxdb/</guid>
       <description>&lt;p&gt;基于 Go 语言开发，社区非常活跃，项目更新速度很快，日新月异，关注度高。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>时间序列数据库调研之OpenTSDB</title>
       <link>https://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</link>
       <pubDate>Mon, 04 Jul 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</guid>
       <description>&lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>OpenTSDB部署与使用</title>
       <link>https://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</link>
       <pubDate>Sat, 12 Mar 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</guid>
       <description>&lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>codis 2.x版本环境搭建与测试</title>
       <link>https://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</link>
       <pubDate>Wed, 07 Oct 2015 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</guid>
       <description>&lt;p&gt;Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Redis集群调研</title>
       <link>https://blog.fatedier.com/2015/09/15/redis-cluster-survey/</link>
       <pubDate>Tue, 15 Sep 2015 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2015/09/15/redis-cluster-survey/</guid>
-      <description>&lt;p&gt;Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。&lt;/p&gt;
-&lt;p&gt;单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。&lt;/p&gt;</description>
+      <description>&lt;p&gt;Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。&lt;/p&gt;&#xA;&lt;p&gt;单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>MongoDB常用命令</title>
       <link>https://blog.fatedier.com/2015/06/05/common-commands-of-mongodb/</link>
       <pubDate>Fri, 05 Jun 2015 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2015/06/05/common-commands-of-mongodb/</guid>
       <description>&lt;p&gt;MongoDB 是一个基于分布式文件存储的数据库，由C++编写，介于关系数据库和非关系数据库之间的产品，所以在很多业务上可以取代 mysql，提供更高的性能以及更好的扩展性。虽然 MongoDB 不支持 sql 语法，但是从常用的操作命令上来说和 sql 的用法相类似。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

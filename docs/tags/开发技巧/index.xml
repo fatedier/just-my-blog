@@ -4,36 +4,31 @@
     <title>开发技巧 on fatedier blog</title>
     <link>https://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7/</link>
     <description>Recent content in 开发技巧 on fatedier blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Fri, 25 Mar 2016 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 25 Mar 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.fatedier.com/tags/%E5%BC%80%E5%8F%91%E6%8A%80%E5%B7%A7/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>简记用sed对文件执行批量替换字符串的方法</title>
       <link>https://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</link>
       <pubDate>Fri, 25 Mar 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/03/25/using-sed-to-batch-replace-strings-in-files/</guid>
       <description>&lt;p&gt;每次要进行一些批量的文本处理，例如 sed, awk 处理数据或者涉及到正则表达式的时候，都需要临时去再查一遍资料，看一下怎么用。这里简要记录一下对大量文件进行正则匹配后批量替换文本的方法，方便以后要用的时候回顾一下。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>gem 源被屏蔽的解决方法</title>
       <link>https://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</link>
       <pubDate>Sun, 06 Dec 2015 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2015/12/06/the-solution-when-gem-source-is-shielded/</guid>
       <description>&lt;p&gt;由于国内的网络环境比较特殊，使用 gem install 安装 ruby 包的时候，往往不能成功，我们可以手动替换成阿里提供的镜像源来进行下载。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>关于vim的一些小技巧</title>
       <link>https://blog.fatedier.com/2015/07/30/some-skills-about-vim/</link>
       <pubDate>Thu, 30 Jul 2015 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2015/07/30/some-skills-about-vim/</guid>
       <description>&lt;p&gt;记录一下关于 vim 中一些使用频率也许并不高的小技巧。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

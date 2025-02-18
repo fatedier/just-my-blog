@@ -95,19 +95,19 @@
 <p>代码中的结构如下：</p>
 <div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">type</span> Series <span style="color:#00cd00">struct</span> {
 </span></span><span style="display:flex;"><span>    mu          sync.RWMutex
-</span></span><span style="display:flex;"><span>    Key         <span style="color:#00cd00">string</span>              <span style="color:#000080">// series key
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    Tags        <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">string</span>   <span style="color:#000080">// tags
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    id          <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// id
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    measurement <span style="color:#39c">*</span>Measurement        <span style="color:#000080">// measurement
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>}
+</span></span><span style="display:flex;"><span>    Key         <span style="color:#00cd00">string</span>              <span style="color:#000080">// series key</span>
+</span></span><span style="display:flex;"><span>    Tags        <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#00cd00">string</span>   <span style="color:#000080">// tags</span>
+</span></span><span style="display:flex;"><span>    id          <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// id</span>
+</span></span><span style="display:flex;"><span>    measurement <span style="color:#39c">*</span>Measurement        <span style="color:#000080">// measurement</span>
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><h4 id="shard">Shard</h4>
 <p>shard 在 InfluxDB 中是一个比较重要的概念，它和 retention policy 相关联。每一个存储策略下会存在许多 shard，每一个 shard 存储一个指定时间段内的数据，并且不重复，例如 7点-8点 的数据落入 shard0 中，8点-9点的数据则落入 shard1 中。每一个 shard 都对应一个底层的 tsm 存储引擎，有独立的 cache、wal、tsm file。</p>
 <p>创建数据库时会自动创建一个默认存储策略，永久保存数据，对应的在此存储策略下的 shard 所保存的数据的时间段为 7 天，计算的函数如下：</p>
 <div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">func</span> shardGroupDuration(d time.Duration) time.Duration {
-</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> d <span style="color:#39c">&gt;=</span> <span style="color:#cd00cd">180</span><span style="color:#39c">*</span><span style="color:#cd00cd">24</span><span style="color:#39c">*</span>time.Hour <span style="color:#39c">||</span> d <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span> { <span style="color:#000080">// 6 months or 0
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">7</span> <span style="color:#39c">*</span> <span style="color:#cd00cd">24</span> <span style="color:#39c">*</span> time.Hour
-</span></span><span style="display:flex;"><span>    } <span style="color:#cdcd00">else</span> <span style="color:#cdcd00">if</span> d <span style="color:#39c">&gt;=</span> <span style="color:#cd00cd">2</span><span style="color:#39c">*</span><span style="color:#cd00cd">24</span><span style="color:#39c">*</span>time.Hour { <span style="color:#000080">// 2 days
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> <span style="color:#cd00cd">24</span> <span style="color:#39c">*</span> time.Hour
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> d <span style="color:#39c">&gt;=</span> <span style="color:#cd00cd">180</span><span style="color:#39c">*</span><span style="color:#cd00cd">24</span><span style="color:#39c">*</span>time.Hour <span style="color:#39c">||</span> d <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span> { <span style="color:#000080">// 6 months or 0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">7</span> <span style="color:#39c">*</span> <span style="color:#cd00cd">24</span> <span style="color:#39c">*</span> time.Hour
+</span></span><span style="display:flex;"><span>    } <span style="color:#cdcd00">else</span> <span style="color:#cdcd00">if</span> d <span style="color:#39c">&gt;=</span> <span style="color:#cd00cd">2</span><span style="color:#39c">*</span><span style="color:#cd00cd">24</span><span style="color:#39c">*</span>time.Hour { <span style="color:#000080">// 2 days</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> <span style="color:#cd00cd">24</span> <span style="color:#39c">*</span> time.Hour
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> <span style="color:#cd00cd">1</span> <span style="color:#39c">*</span> time.Hour
 </span></span><span style="display:flex;"><span>}
@@ -125,19 +125,19 @@
 </span></span><span style="display:flex;"><span>    commit  sync.Mutex
 </span></span><span style="display:flex;"><span>    mu      sync.RWMutex
 </span></span><span style="display:flex;"><span>    store   <span style="color:#00cd00">map</span>[<span style="color:#00cd00">string</span>]<span style="color:#39c">*</span>entry
-</span></span><span style="display:flex;"><span>    size    <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// 当前使用内存的大小
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    maxSize <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// 缓存最大值
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// snapshots are the cache objects that are currently being written to tsm files
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// they&#39;re kept in memory while flushing so they can be queried along with the cache.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// they are read only and should never be modified
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// memtable 快照，用于写入 tsm 文件，只读
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    snapshot     <span style="color:#39c">*</span>Cache
+</span></span><span style="display:flex;"><span>    size    <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// 当前使用内存的大小</span>
+</span></span><span style="display:flex;"><span>    maxSize <span style="color:#00cd00">uint64</span>              <span style="color:#000080">// 缓存最大值</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// snapshots are the cache objects that are currently being written to tsm files</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// they&#39;re kept in memory while flushing so they can be queried along with the cache.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// they are read only and should never be modified</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// memtable 快照，用于写入 tsm 文件，只读</span>
+</span></span><span style="display:flex;"><span>    snapshot     <span style="color:#39c">*</span>Cache
 </span></span><span style="display:flex;"><span>    snapshotSize <span style="color:#00cd00">uint64</span>
 </span></span><span style="display:flex;"><span>    snapshotting <span style="color:#00cd00">bool</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// This number is the number of pending or failed WriteSnaphot attempts since the last successful one.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    snapshotAttempts <span style="color:#00cd00">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// This number is the number of pending or failed WriteSnaphot attempts since the last successful one.</span>
+</span></span><span style="display:flex;"><span>    snapshotAttempts <span style="color:#00cd00">int</span>
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    stats        <span style="color:#39c">*</span>CacheStatistics
 </span></span><span style="display:flex;"><span>    lastSnapshot time.Time
@@ -373,7 +373,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

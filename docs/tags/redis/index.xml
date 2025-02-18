@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>redis on fatedier blog</title>
+    <title>Redis on fatedier blog</title>
     <link>https://blog.fatedier.com/tags/redis/</link>
-    <description>Recent content in redis on fatedier blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Redis on fatedier blog</description>
+    <generator>Hugo</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Wed, 07 Oct 2015 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/redis/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 07 Oct 2015 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.fatedier.com/tags/redis/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>codis 2.x版本环境搭建与测试</title>
       <link>https://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</link>
       <pubDate>Wed, 07 Oct 2015 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2015/10/07/installation-and-testing-of-codis-version-two/</guid>
       <description>&lt;p&gt;Codis 是一个分布式 Redis 解决方案, 对于上层的应用来说, 连接到 Codis Proxy 和连接原生的 Redis Server 没有明显的区别（有一些命令不支持），上层应用可以像使用单机的 Redis 一样，Codis 底层会处理请求的转发。Codis 支持不停机进行数据迁移, 对于前面的客户端来说是透明的, 可以简单的认为后面连接的是一个内存无限大的 Redis 服务。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Redis集群调研</title>
       <link>https://blog.fatedier.com/2015/09/15/redis-cluster-survey/</link>
       <pubDate>Tue, 15 Sep 2015 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2015/09/15/redis-cluster-survey/</guid>
-      <description>&lt;p&gt;Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。&lt;/p&gt;
-&lt;p&gt;单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。&lt;/p&gt;</description>
+      <description>&lt;p&gt;Redis作为一个使用场景很高的NoSQL数据库，支持了较为丰富的数据类型，相比于其他关系型数据库在性能方面优势明显。互联网公司通常更加倾向于将一些热点数据放入Redis中来承载高吞吐量的访问。&lt;/p&gt;&#xA;&lt;p&gt;单机Redis在普通的服务器上通常ops上限在5w左右，开启pipeline的情况下在20-30w左右。对于大多数中小公司来说，通常单机的Redis已经足够，最多根据不同业务分散到多台Redis。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

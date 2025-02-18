@@ -1,49 +1,41 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>git on fatedier blog</title>
+    <title>Git on fatedier blog</title>
     <link>https://blog.fatedier.com/tags/git/</link>
-    <description>Recent content in git on fatedier blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Git on fatedier blog</description>
+    <generator>Hugo</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Tue, 05 Apr 2016 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/git/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 05 Apr 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.fatedier.com/tags/git/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>利用docker搭建gitlab及持续集成模块</title>
       <link>https://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</link>
       <pubDate>Tue, 05 Apr 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/04/05/install-gitlab-supporting-ci-with-docker/</guid>
       <description>&lt;p&gt;版本控制的重要性应该是毋庸置疑了，git 作为现在最流行的版本控制工具，各种规模的公司都在用。通常开源项目都会放在 github 上，基础功能是免费的，私有项目收费。对于一个小团队来说，gitlab 就是另外一个替代品，可以用来搭建自己私有的git服务器。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Git常用命令</title>
       <link>https://blog.fatedier.com/2014/10/17/git-usually-command/</link>
       <pubDate>Fri, 17 Oct 2014 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2014/10/17/git-usually-command/</guid>
       <description>&lt;p&gt;在用Git进行项目管理的时候有一些经常会遇到的问题处理起来比较复杂，本文记录了一些常用的命令和操作。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Git使用备忘</title>
       <link>https://blog.fatedier.com/2014/10/16/git-use-for-remind/</link>
       <pubDate>Thu, 16 Oct 2014 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2014/10/16/git-use-for-remind/</guid>
-      <description>&lt;p&gt;Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。&lt;/p&gt;
-&lt;p&gt;Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。&lt;/p&gt;</description>
+      <description>&lt;p&gt;Git是一款免费、开源的分布式版本控制系统，由于 GitHub 的存在，我们很方便的用于管理我们平时的开发项目。&lt;/p&gt;&#xA;&lt;p&gt;Git的命令较多，虽然大多数都不是很常用，但是还是需要记下来方便日后查看。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>学习Git的常用网站</title>
       <link>https://blog.fatedier.com/2014/10/16/learn-git-website/</link>
       <pubDate>Thu, 16 Oct 2014 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2014/10/16/learn-git-website/</guid>
       <description>&lt;p&gt;学习Git的使用的过程中参考了很多的网站，主要是两个地方讲的比较清楚，例子也很丰富，特别记录一下。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

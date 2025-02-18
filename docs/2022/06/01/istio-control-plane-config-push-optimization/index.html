@@ -412,24 +412,24 @@
 <p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-pprof-iterate.jpg" alt="pprof-iterate"></p>
 <p>从图中可以看出来，mapiternext 占用了不少 cpu 资源，说明 selectVirtualServices 这个函数的循环次数可能非常多。</p>
 <p>对应的代码</p>
-<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000080">// selectVirtualServices 会遍历出匹配 service 的所有的 vs
-</span></span></span><span style="display:flex;"><span><span style="color:#000080">// 例如 service host 是 istio-test-server.infra，那么 vs host 也是 istio-test-server.infra 就匹配
-</span></span></span><span style="display:flex;"><span><span style="color:#000080">// 需要考虑到泛域名的情况
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> selectVirtualServices(virtualServices []config.Config, servicesByName <span style="color:#00cd00">map</span>[host.Name]<span style="color:#39c">*</span>model.Service) []config.Config {
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000080">// selectVirtualServices 会遍历出匹配 service 的所有的 vs</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// 例如 service host 是 istio-test-server.infra，那么 vs host 也是 istio-test-server.infra 就匹配</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// 需要考虑到泛域名的情况</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> selectVirtualServices(virtualServices []config.Config, servicesByName <span style="color:#00cd00">map</span>[host.Name]<span style="color:#39c">*</span>model.Service) []config.Config {
 </span></span><span style="display:flex;"><span>    out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]config.Config, <span style="color:#cd00cd">0</span>)
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> _, c <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> virtualServices {
 </span></span><span style="display:flex;"><span>        rule <span style="color:#39c">:=</span> c.Spec.(<span style="color:#39c">*</span>networking.VirtualService)
 </span></span><span style="display:flex;"><span>        <span style="color:#00cd00">var</span> match <span style="color:#00cd00">bool</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Selection algorithm:
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// virtualservices have a list of hosts in the API spec
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// if any host in the list matches one service hostname, select the virtual service
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// and break out of the loop.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">for</span> _, h <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> rule.Hosts {
-</span></span><span style="display:flex;"><span>            <span style="color:#000080">// TODO: This is a bug. VirtualServices can have many hosts
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#000080">// while the user might be importing only a single host
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#000080">// We need to generate a new VirtualService with just the matched host
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#cdcd00">if</span> servicesByName[host.Name(h)] <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Selection algorithm:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// virtualservices have a list of hosts in the API spec</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// if any host in the list matches one service hostname, select the virtual service</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// and break out of the loop.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> _, h <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> rule.Hosts {
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">// TODO: This is a bug. VirtualServices can have many hosts</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">// while the user might be importing only a single host</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">// We need to generate a new VirtualService with just the matched host</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> servicesByName[host.Name(h)] <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
 </span></span><span style="display:flex;"><span>                match = <span style="color:#cdcd00">true</span>
 </span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">break</span>
 </span></span><span style="display:flex;"><span>            }
@@ -460,8 +460,8 @@
 <p>优化后，事先把泛域名的 service host 保存下来，在之后的循环中，如果 vs 的 host 也是 FQDN host，则只需要去匹配泛域名的 service host。由于这个 case 才是主要的使用场景，所以实际优化的效果会非常好，可以减少掉大部分的循环次数。</p>
 <div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#00cd00">func</span> selectVirtualServices(virtualServices []config.Config, servicesByName <span style="color:#00cd00">map</span>[host.Name]<span style="color:#39c">*</span>model.Service) []config.Config {
 </span></span><span style="display:flex;"><span>    out <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]config.Config, <span style="color:#cd00cd">0</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Pre-compute wildcarded service hosts to reduce loop count.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    wildCardedSvcHosts <span style="color:#39c">:=</span> []host.Name{}
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Pre-compute wildcarded service hosts to reduce loop count.</span>
+</span></span><span style="display:flex;"><span>    wildCardedSvcHosts <span style="color:#39c">:=</span> []host.Name{}
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">for</span> svcHost <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> servicesByName {
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> svcHost.IsWildCarded() {
 </span></span><span style="display:flex;"><span>            wildCardedSvcHosts = <span style="color:#cd00cd">append</span>(wildCardedSvcHosts, svcHost)
@@ -472,15 +472,15 @@
 </span></span><span style="display:flex;"><span>        rule <span style="color:#39c">:=</span> virtualServices[i].Spec.(<span style="color:#39c">*</span>networking.VirtualService)
 </span></span><span style="display:flex;"><span>        <span style="color:#00cd00">var</span> match <span style="color:#00cd00">bool</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Selection algorithm:
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// virtualservices have a list of hosts in the API spec
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// if any host in the list matches one service hostname, select the virtual service
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// and break out of the loop.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">for</span> _, h <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> rule.Hosts {
-</span></span><span style="display:flex;"><span>            <span style="color:#000080">// TODO: This is a bug. VirtualServices can have many hosts
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#000080">// while the user might be importing only a single host
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#000080">// We need to generate a new VirtualService with just the matched host
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#cdcd00">if</span> servicesByName[host.Name(h)] <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Selection algorithm:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// virtualservices have a list of hosts in the API spec</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// if any host in the list matches one service hostname, select the virtual service</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// and break out of the loop.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> _, h <span style="color:#39c">:=</span> <span style="color:#cdcd00">range</span> rule.Hosts {
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">// TODO: This is a bug. VirtualServices can have many hosts</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">// while the user might be importing only a single host</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#000080">// We need to generate a new VirtualService with just the matched host</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> servicesByName[host.Name(h)] <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
 </span></span><span style="display:flex;"><span>                match = <span style="color:#cdcd00">true</span>
 </span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">break</span>
 </span></span><span style="display:flex;"><span>            }
@@ -519,8 +519,8 @@
 <p><img src="https://image.fatedier.com/pic/2022/2022-06-01-istio-control-plane-config-push-optimization-pprof-convert.jpg" alt="pprof-convert"></p>
 <p>retry.CovertPolicy 也耗费了不少的资源，看上去让人比较费解，大部分的消耗还在 retry.parseRetryOn 上。</p>
 <p>代码:</p>
-<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000080">// 给所有没有对应 VirtualService 的 service 创建默认的 VirtualHosts
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> buildSidecarVirtualHostsForService(
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#000080">// 给所有没有对应 VirtualService 的 service 创建默认的 VirtualHosts</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> buildSidecarVirtualHostsForService(
 </span></span><span style="display:flex;"><span>    serviceRegistry <span style="color:#00cd00">map</span>[host.Name]<span style="color:#39c">*</span>model.Service,
 </span></span><span style="display:flex;"><span>    hashByService <span style="color:#00cd00">map</span>[host.Name]<span style="color:#00cd00">map</span>[<span style="color:#00cd00">int</span>]<span style="color:#39c">*</span>networking.LoadBalancerSettings_ConsistentHashLB,
 </span></span><span style="display:flex;"><span>    mesh <span style="color:#39c">*</span>meshconfig.MeshConfig,
@@ -531,11 +531,11 @@
 </span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">if</span> port.Protocol.IsHTTP() <span style="color:#39c">||</span> util.IsProtocolSniffingEnabledForPort(port) {
 </span></span><span style="display:flex;"><span>                cluster <span style="color:#39c">:=</span> model.BuildSubsetKey(model.TrafficDirectionOutbound, <span style="color:#cd0000">&#34;&#34;</span>, svc.Hostname, port.Port)
 </span></span><span style="display:flex;"><span>                traceOperation <span style="color:#39c">:=</span> util.TraceOperation(<span style="color:#cd00cd">string</span>(svc.Hostname), port.Port)
-</span></span><span style="display:flex;"><span>                <span style="color:#000080">// 创建默认的 outbound 的 Route
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>                httpRoute <span style="color:#39c">:=</span> BuildDefaultHTTPOutboundRoute(cluster, traceOperation, mesh)
+</span></span><span style="display:flex;"><span>                <span style="color:#000080">// 创建默认的 outbound 的 Route</span>
+</span></span><span style="display:flex;"><span>                httpRoute <span style="color:#39c">:=</span> BuildDefaultHTTPOutboundRoute(cluster, traceOperation, mesh)
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>                <span style="color:#000080">// if this host has no virtualservice, the consistentHash on its destinationRule will be useless
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>                <span style="color:#cdcd00">if</span> hashByPort, ok <span style="color:#39c">:=</span> hashByService[svc.Hostname]; ok {
+</span></span><span style="display:flex;"><span>                <span style="color:#000080">// if this host has no virtualservice, the consistentHash on its destinationRule will be useless</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">if</span> hashByPort, ok <span style="color:#39c">:=</span> hashByService[svc.Hostname]; ok {
 </span></span><span style="display:flex;"><span>                    hashPolicy <span style="color:#39c">:=</span> consistentHashToHashPolicy(hashByPort[port.Port])
 </span></span><span style="display:flex;"><span>                    <span style="color:#cdcd00">if</span> hashPolicy <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
 </span></span><span style="display:flex;"><span>                        httpRoute.GetRoute().HashPolicy = []<span style="color:#39c">*</span>route.RouteAction_HashPolicy{hashPolicy}
@@ -552,28 +552,28 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> out
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#000080">// BuildDefaultHTTPOutboundRoute builds a default outbound route, including a retry policy.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> BuildDefaultHTTPOutboundRoute(clusterName <span style="color:#00cd00">string</span>, operation <span style="color:#00cd00">string</span>, mesh <span style="color:#39c">*</span>meshconfig.MeshConfig) <span style="color:#39c">*</span>route.Route {
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Start with the same configuration as for inbound.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    out <span style="color:#39c">:=</span> BuildDefaultHTTPInboundRoute(clusterName, operation)
+</span></span><span style="display:flex;"><span><span style="color:#000080">// BuildDefaultHTTPOutboundRoute builds a default outbound route, including a retry policy.</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> BuildDefaultHTTPOutboundRoute(clusterName <span style="color:#00cd00">string</span>, operation <span style="color:#00cd00">string</span>, mesh <span style="color:#39c">*</span>meshconfig.MeshConfig) <span style="color:#39c">*</span>route.Route {
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Start with the same configuration as for inbound.</span>
+</span></span><span style="display:flex;"><span>    out <span style="color:#39c">:=</span> BuildDefaultHTTPInboundRoute(clusterName, operation)
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Add a default retry policy for outbound routes.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// 由于是默认的 Route，直接用全局的 mesh 级别的 retry policy
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    out.GetRoute().RetryPolicy = retry.ConvertPolicy(mesh.GetDefaultHttpRetryPolicy())
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Add a default retry policy for outbound routes.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 由于是默认的 Route，直接用全局的 mesh 级别的 retry policy</span>
+</span></span><span style="display:flex;"><span>    out.GetRoute().RetryPolicy = retry.ConvertPolicy(mesh.GetDefaultHttpRetryPolicy())
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> out
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#000080">// 将 istio 中的 HTTPRetry 转化为对应的 envoy 中使用的 RetryPolicy
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> ConvertPolicy(in <span style="color:#39c">*</span>networking.HTTPRetry) <span style="color:#39c">*</span>route.RetryPolicy {
+</span></span><span style="display:flex;"><span><span style="color:#000080">// 将 istio 中的 HTTPRetry 转化为对应的 envoy 中使用的 RetryPolicy</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> ConvertPolicy(in <span style="color:#39c">*</span>networking.HTTPRetry) <span style="color:#39c">*</span>route.RetryPolicy {
 </span></span><span style="display:flex;"><span>    out <span style="color:#39c">:=</span> DefaultPolicy()
 </span></span><span style="display:flex;"><span>    out.NumRetries = <span style="color:#39c">&amp;</span>wrappers.UInt32Value{Value: <span style="color:#cd00cd">uint32</span>(in.Attempts)}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> in.RetryOn <span style="color:#39c">!=</span> <span style="color:#cd0000">&#34;&#34;</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Allow the incoming configuration to specify both Envoy RetryOn and RetriableStatusCodes. Any integers are
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#000080">// assumed to be status codes.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        out.RetryOn, out.RetriableStatusCodes = parseRetryOn(in.RetryOn)
-</span></span><span style="display:flex;"><span>        <span style="color:#000080">// If user has just specified HTTP status codes in retryOn but have not specified &#34;retriable-status-codes&#34;, let us add it.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">if</span> <span style="color:#cd00cd">len</span>(out.RetriableStatusCodes) &gt; <span style="color:#cd00cd">0</span> <span style="color:#39c">&amp;&amp;</span> !strings.Contains(out.RetryOn, <span style="color:#cd0000">&#34;retriable-status-codes&#34;</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Allow the incoming configuration to specify both Envoy RetryOn and RetriableStatusCodes. Any integers are</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// assumed to be status codes.</span>
+</span></span><span style="display:flex;"><span>        out.RetryOn, out.RetriableStatusCodes = parseRetryOn(in.RetryOn)
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// If user has just specified HTTP status codes in retryOn but have not specified &#34;retriable-status-codes&#34;, let us add it.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> <span style="color:#cd00cd">len</span>(out.RetriableStatusCodes) &gt; <span style="color:#cd00cd">0</span> <span style="color:#39c">&amp;&amp;</span> !strings.Contains(out.RetryOn, <span style="color:#cd0000">&#34;retriable-status-codes&#34;</span>) {
 </span></span><span style="display:flex;"><span>            out.RetryOn <span style="color:#39c">+=</span> <span style="color:#cd0000">&#34;,retriable-status-codes&#34;</span>
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    }
@@ -582,9 +582,9 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> out
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#000080">// 解析 Istio VirtualService 中的 retryOn 字段为 envoy 中的 retryOn 和重试 code 列表
-</span></span></span><span style="display:flex;"><span><span style="color:#000080">// 主要是字符串相关的操作，由于循环次数较多，实际占用的资源也不少
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> parseRetryOn(retryOn <span style="color:#00cd00">string</span>) (<span style="color:#00cd00">string</span>, []<span style="color:#00cd00">uint32</span>) {
+</span></span><span style="display:flex;"><span><span style="color:#000080">// 解析 Istio VirtualService 中的 retryOn 字段为 envoy 中的 retryOn 和重试 code 列表</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// 主要是字符串相关的操作，由于循环次数较多，实际占用的资源也不少</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> parseRetryOn(retryOn <span style="color:#00cd00">string</span>) (<span style="color:#00cd00">string</span>, []<span style="color:#00cd00">uint32</span>) {
 </span></span><span style="display:flex;"><span>    codes <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#00cd00">uint32</span>, <span style="color:#cd00cd">0</span>)
 </span></span><span style="display:flex;"><span>    tojoin <span style="color:#39c">:=</span> <span style="color:#cd00cd">make</span>([]<span style="color:#00cd00">string</span>, <span style="color:#cd00cd">0</span>)
 </span></span><span style="display:flex;"><span>
@@ -595,8 +595,8 @@
 </span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">continue</span>
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Try converting it to an integer to see if it&#39;s a valid HTTP status code.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        i, err <span style="color:#39c">:=</span> strconv.Atoi(part)
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Try converting it to an integer to see if it&#39;s a valid HTTP status code.</span>
+</span></span><span style="display:flex;"><span>        i, err <span style="color:#39c">:=</span> strconv.Atoi(part)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> err <span style="color:#39c">==</span> <span style="color:#cdcd00">nil</span> <span style="color:#39c">&amp;&amp;</span> http.StatusText(i) <span style="color:#39c">!=</span> <span style="color:#cd0000">&#34;&#34;</span> {
 </span></span><span style="display:flex;"><span>            codes = <span style="color:#cd00cd">append</span>(codes, <span style="color:#cd00cd">uint32</span>(i))
@@ -884,7 +884,7 @@ BenchmarkString2Slice2-16        4706086               255.0 ns/op             0
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

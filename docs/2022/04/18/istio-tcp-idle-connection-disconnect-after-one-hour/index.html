@@ -82,15 +82,14 @@
 <p>idle_timeout</p>
 <p>(Duration) The idle timeout for connections. The idle timeout is defined as the period in which there are no active requests. When the idle timeout is reached the connection will be closed. If the connection is an HTTP/2 downstream connection a drain sequence will occur prior to closing the connection, see drain_timeout. Note that request based timeouts mean that HTTP/2 PINGs will not keep the connection alive. If not specified, this defaults to 1 hour. To disable idle timeouts explicitly set this to 0.
 Warning</p>
-<p>Disabling this timeout has a highly likelihood of yielding connection leaks due to lost TCP FIN packets, etc.</p>
-</blockquote>
+<p>Disabling this timeout has a highly likelihood of yielding connection leaks due to lost TCP FIN packets, etc.</p></blockquote>
 <p>从文档说明中来看，目的应该是，解决一些由于底层网络原因可能会导致的连接泄露的问题。对我们来说理论上应该影响不大，可以设置成 0s，关闭这个功能。</p>
 <p><strong>更新: 看起来可能因为 envoy 实现的问题，即使不是底层网络原因，也存在连接泄露的可能，所以建议不要修改为 0，可以按需将这个值调整为 2 天之类的。</strong></p>
 <h3 id="解决方案">解决方案</h3>
 <h4 id="pod-annotation">Pod Annotation</h4>
 <div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span>proxy.istio.io/config: |-<span style="color:#cd0000">
 </span></span></span><span style="display:flex;"><span><span style="color:#cd0000">  proxyMetadata:
-</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">    ISTIO_META_IDLE_TIMEOUT: &#34;0s&#34;</span>  
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">    ISTIO_META_IDLE_TIMEOUT: &#34;0s&#34;</span>
 </span></span></code></pre></div><p>proxyMetadata 中的内容会作为环境变量注入到 istio-proxy 容器中。</p>
 <p><code>ISTIO_META_IDLE_TIMEOUT</code> 目前只作用于内部服务，对 PassthroughCluster 无效，我们当前的访问外部数据库的就是 PassthroughCluster 的场景。</p>
 <p><a href="https://github.com/istio/istio/issues/38413">https://github.com/istio/istio/issues/38413</a> 已经提了 issue，社区在跟进。</p>
@@ -211,7 +210,7 @@ Warning</p>
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

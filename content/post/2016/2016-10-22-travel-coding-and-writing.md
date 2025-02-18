@@ -2,7 +2,7 @@
 categories:
     - "诗与远方"
 tags:
-    - "感悟"
+    - "读后感"
 date: 2016-10-22
 title: "旅行、编程与写作"
 url: "/2016/10/22/travel-coding-and-writing"

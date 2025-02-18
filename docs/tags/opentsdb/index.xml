@@ -1,30 +1,27 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>opentsdb on fatedier blog</title>
+    <title>Opentsdb on fatedier blog</title>
     <link>https://blog.fatedier.com/tags/opentsdb/</link>
-    <description>Recent content in opentsdb on fatedier blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Opentsdb on fatedier blog</description>
+    <generator>Hugo</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Mon, 04 Jul 2016 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/opentsdb/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Jul 2016 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.fatedier.com/tags/opentsdb/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>时间序列数据库调研之OpenTSDB</title>
       <link>https://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</link>
       <pubDate>Mon, 04 Jul 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/07/04/research-of-time-series-database-opentsdb/</guid>
       <description>&lt;p&gt;Java 项目，基于 HBase（2.3版本貌似开始支持 Google BigTable 和 Cassandra） 的一个时间序列数据库，被广泛应用于监控系统中。很多大公司都在使用，社区较为活跃。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>OpenTSDB部署与使用</title>
       <link>https://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</link>
       <pubDate>Sat, 12 Mar 2016 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2016/03/12/install-and-use-opentsdb/</guid>
       <description>&lt;p&gt;OpenTSDB 是基于 HBase 存储时间序列数据的一个开源数据库，对于存储监控系统采集的数据来说非常合适，不仅在写入查询上有很高的效率，而且节省存储空间。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

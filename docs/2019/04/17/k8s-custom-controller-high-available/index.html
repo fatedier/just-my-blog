@@ -95,8 +95,8 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> main() {
 </span></span><span style="display:flex;"><span>    run <span style="color:#39c">:=</span> <span style="color:#00cd00">func</span>(ctx context.Context) {
-</span></span><span style="display:flex;"><span>        <span style="color:#000080">// controller handler here
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">for</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// controller handler here</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">for</span> {
 </span></span><span style="display:flex;"><span>            log.Println(<span style="color:#cd0000">&#34;I&#39;m working...&#34;</span>)
 </span></span><span style="display:flex;"><span>            time.Sleep(<span style="color:#cd00cd">5</span><span style="color:#39c">*</span>time.Second)
 </span></span><span style="display:flex;"><span>        }
@@ -116,8 +116,8 @@
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        id = id <span style="color:#39c">+</span> <span style="color:#cd0000">&#34;_&#34;</span> <span style="color:#39c">+</span> uuid.New().String()
-</span></span><span style="display:flex;"><span>        rl, err <span style="color:#39c">:=</span> resourcelock.New(<span style="color:#cd0000">&#34;endpoints&#34;</span>, <span style="color:#000080">// support endpoints and configmaps
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>            <span style="color:#cd0000">&#34;default&#34;</span>,
+</span></span><span style="display:flex;"><span>        rl, err <span style="color:#39c">:=</span> resourcelock.New(<span style="color:#cd0000">&#34;endpoints&#34;</span>, <span style="color:#000080">// support endpoints and configmaps</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cd0000">&#34;default&#34;</span>,
 </span></span><span style="display:flex;"><span>            <span style="color:#cd0000">&#34;test-controller&#34;</span>,
 </span></span><span style="display:flex;"><span>            kubecli.CoreV1(),
 </span></span><span style="display:flex;"><span>            kubecli.CoordinationV1(),
@@ -165,24 +165,24 @@
 <h3 id="原理分析">原理分析</h3>
 <p>leaderelection 的代码实现并不复杂。</p>
 <p>主要的工作原理是，通过 kubernetes 的 endpoints 或 configmaps 实现一个分布式锁，抢到锁的节点成为 leader，并定期更新，而抢不到的节点会一直等待。当 leader 因为某些异常原因挂掉后，租约到期，其他节点会尝试抢锁，成为新的 leader。</p>
-<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span>rl, err <span style="color:#39c">:=</span> resourcelock.New(<span style="color:#cd0000">&#34;endpoints&#34;</span>, <span style="color:#000080">// 实现锁的资源类型，支持 endpoints 或 configmaps
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cd0000">&#34;default&#34;</span>, <span style="color:#000080">// 创建资源的 namespace
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cd0000">&#34;test-controller&#34;</span>, <span style="color:#000080">// 锁的资源名称，这里会在 default namespace 下创建一个名为 test-controller 的 endpoint
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    kubecli.CoreV1(),
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span>rl, err <span style="color:#39c">:=</span> resourcelock.New(<span style="color:#cd0000">&#34;endpoints&#34;</span>, <span style="color:#000080">// 实现锁的资源类型，支持 endpoints 或 configmaps</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cd0000">&#34;default&#34;</span>, <span style="color:#000080">// 创建资源的 namespace</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cd0000">&#34;test-controller&#34;</span>, <span style="color:#000080">// 锁的资源名称，这里会在 default namespace 下创建一个名为 test-controller 的 endpoint</span>
+</span></span><span style="display:flex;"><span>    kubecli.CoreV1(),
 </span></span><span style="display:flex;"><span>    kubecli.CoordinationV1(),
 </span></span><span style="display:flex;"><span>    resourcelock.ResourceLockConfig{
-</span></span><span style="display:flex;"><span>        Identity: id, <span style="color:#000080">// 锁持有者的标志
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    })
+</span></span><span style="display:flex;"><span>        Identity: id, <span style="color:#000080">// 锁持有者的标志</span>
+</span></span><span style="display:flex;"><span>    })
 </span></span></code></pre></div><p>上面的代码可以看出 leaderelection 其实是利用 kubernetes 的 resource 来实现分布式锁。在对应 resource 的 annotations 中会更新 <code>control-plane.alpha.kubernetes.io/leader</code> 这个字段的值，更新成功的就是 leader。其中的内容是下面这个结构体的序列化结果:</p>
 <div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#00cd00">type</span> LeaderElectionRecord <span style="color:#00cd00">struct</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Holder 的 ID，如果为空，表示没有 Holder
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    HolderIdentity       <span style="color:#00cd00">string</span>      <span style="color:#cd0000">`json:&#34;holderIdentity&#34;`</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 租约期限
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    LeaseDurationSeconds <span style="color:#00cd00">int</span>         <span style="color:#cd0000">`json:&#34;leaseDurationSeconds&#34;`</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 获取租约的时间
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    AcquireTime          metav1.Time <span style="color:#cd0000">`json:&#34;acquireTime&#34;`</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 更新租约的时间
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    RenewTime            metav1.Time <span style="color:#cd0000">`json:&#34;renewTime&#34;`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Holder 的 ID，如果为空，表示没有 Holder</span>
+</span></span><span style="display:flex;"><span>    HolderIdentity       <span style="color:#00cd00">string</span>      <span style="color:#cd0000">`json:&#34;holderIdentity&#34;`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 租约期限</span>
+</span></span><span style="display:flex;"><span>    LeaseDurationSeconds <span style="color:#00cd00">int</span>         <span style="color:#cd0000">`json:&#34;leaseDurationSeconds&#34;`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 获取租约的时间</span>
+</span></span><span style="display:flex;"><span>    AcquireTime          metav1.Time <span style="color:#cd0000">`json:&#34;acquireTime&#34;`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 更新租约的时间</span>
+</span></span><span style="display:flex;"><span>    RenewTime            metav1.Time <span style="color:#cd0000">`json:&#34;renewTime&#34;`</span>
 </span></span><span style="display:flex;"><span>    LeaderTransitions    <span style="color:#00cd00">int</span>         <span style="color:#cd0000">`json:&#34;leaderTransitions&#34;`</span>
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p><code>leaderelection.RunOrDie</code> 函数会调用创建好的 LeaderElector 的 Run 函数。</p>
@@ -192,8 +192,8 @@
 </span></span><span style="display:flex;"><span>        le.config.Callbacks.OnStoppedLeading()
 </span></span><span style="display:flex;"><span>    }()
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> !le.acquire(ctx) {
-</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#000080">// ctx signalled done
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    }
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#000080">// ctx signalled done</span>
+</span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    ctx, cancel <span style="color:#39c">:=</span> context.WithCancel(ctx)
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">defer</span> cancel()
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">go</span> le.config.Callbacks.OnStartedLeading(ctx)
@@ -205,19 +205,19 @@
 <p><code>le.renew</code> 则相反，成功则继续，失败则退出。</p>
 <div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#00cd00">func</span> (le <span style="color:#39c">*</span>LeaderElector) tryAcquireOrRenew() <span style="color:#00cd00">bool</span> {
 </span></span><span style="display:flex;"><span>    now <span style="color:#39c">:=</span> metav1.Now()
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 这个结构体就是 endpoint 或 configmap 中 annotations `control-plane.alpha.kubernetes.io/leader` 的值
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    leaderElectionRecord <span style="color:#39c">:=</span> rl.LeaderElectionRecord{
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 这个结构体就是 endpoint 或 configmap 中 annotations `control-plane.alpha.kubernetes.io/leader` 的值</span>
+</span></span><span style="display:flex;"><span>    leaderElectionRecord <span style="color:#39c">:=</span> rl.LeaderElectionRecord{
 </span></span><span style="display:flex;"><span>        HolderIdentity:       le.config.Lock.Identity(),
 </span></span><span style="display:flex;"><span>        LeaseDurationSeconds: <span style="color:#cd00cd">int</span>(le.config.LeaseDuration <span style="color:#39c">/</span> time.Second),
 </span></span><span style="display:flex;"><span>        RenewTime:            now,
 </span></span><span style="display:flex;"><span>        AcquireTime:          now,
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 1. 获取或创建对应的 endpoint 或 configmap
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    oldLeaderElectionRecord, err <span style="color:#39c">:=</span> le.config.Lock.Get()
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 1. 获取或创建对应的 endpoint 或 configmap</span>
+</span></span><span style="display:flex;"><span>    oldLeaderElectionRecord, err <span style="color:#39c">:=</span> le.config.Lock.Get()
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#000080">// 其他错误，返回 false，如果是不存在的错误，创建一个新的
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        <span style="color:#cdcd00">if</span> !errors.IsNotFound(err) {
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// 其他错误，返回 false，如果是不存在的错误，创建一个新的</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> !errors.IsNotFound(err) {
 </span></span><span style="display:flex;"><span>            klog.Errorf(<span style="color:#cd0000">&#34;error retrieving resource lock %v: %v&#34;</span>, le.config.Lock.Describe(), err)
 </span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">false</span>
 </span></span><span style="display:flex;"><span>        }
@@ -230,31 +230,31 @@
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">true</span>
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 2. 获取到了锁的信息，检查锁的持有者和更新时间
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> !reflect.DeepEqual(le.observedRecord, <span style="color:#39c">*</span>oldLeaderElectionRecord) {
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 2. 获取到了锁的信息，检查锁的持有者和更新时间</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> !reflect.DeepEqual(le.observedRecord, <span style="color:#39c">*</span>oldLeaderElectionRecord) {
 </span></span><span style="display:flex;"><span>        le.observedRecord = <span style="color:#39c">*</span>oldLeaderElectionRecord
 </span></span><span style="display:flex;"><span>        le.observedTime = le.clock.Now()
 </span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 当前持有锁的人不是自己且距上一次观察时间还没有超过租约的时间则认为当前锁被他人正常持有，直接返回 false
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> <span style="color:#cd00cd">len</span>(oldLeaderElectionRecord.HolderIdentity) &gt; <span style="color:#cd00cd">0</span> <span style="color:#39c">&amp;&amp;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 当前持有锁的人不是自己且距上一次观察时间还没有超过租约的时间则认为当前锁被他人正常持有，直接返回 false</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> <span style="color:#cd00cd">len</span>(oldLeaderElectionRecord.HolderIdentity) &gt; <span style="color:#cd00cd">0</span> <span style="color:#39c">&amp;&amp;</span>
 </span></span><span style="display:flex;"><span>        le.observedTime.Add(le.config.LeaseDuration).After(now.Time) <span style="color:#39c">&amp;&amp;</span>
 </span></span><span style="display:flex;"><span>        !le.IsLeader() {
 </span></span><span style="display:flex;"><span>        klog.V(<span style="color:#cd00cd">4</span>).Infof(<span style="color:#cd0000">&#34;lock is held by %v and has not yet expired&#34;</span>, oldLeaderElectionRecord.HolderIdentity)
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">false</span>
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 3. leaderElectionRecord 在函数开始的地方设置了默认值，这里根据自己是否是 leader 来更新相关的设置
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> le.IsLeader() {
-</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Renew 操作，AcquireTime 使用旧的值，LeaderTransitions 保持不变
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        leaderElectionRecord.AcquireTime = oldLeaderElectionRecord.AcquireTime
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 3. leaderElectionRecord 在函数开始的地方设置了默认值，这里根据自己是否是 leader 来更新相关的设置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> le.IsLeader() {
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Renew 操作，AcquireTime 使用旧的值，LeaderTransitions 保持不变</span>
+</span></span><span style="display:flex;"><span>        leaderElectionRecord.AcquireTime = oldLeaderElectionRecord.AcquireTime
 </span></span><span style="display:flex;"><span>        leaderElectionRecord.LeaderTransitions = oldLeaderElectionRecord.LeaderTransitions
 </span></span><span style="display:flex;"><span>    } <span style="color:#cdcd00">else</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#000080">// 有 leader 切换，LeaderTransitions 值 + 1
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        leaderElectionRecord.LeaderTransitions = oldLeaderElectionRecord.LeaderTransitions <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// 有 leader 切换，LeaderTransitions 值 + 1</span>
+</span></span><span style="display:flex;"><span>        leaderElectionRecord.LeaderTransitions = oldLeaderElectionRecord.LeaderTransitions <span style="color:#39c">+</span> <span style="color:#cd00cd">1</span>
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 更新锁资源，这里如果在 Get 和 Update 之间有变化，将会更新失败
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> err = le.config.Lock.Update(leaderElectionRecord); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// 更新锁资源，这里如果在 Get 和 Update 之间有变化，将会更新失败</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> err = le.config.Lock.Update(leaderElectionRecord); err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
 </span></span><span style="display:flex;"><span>        klog.Errorf(<span style="color:#cd0000">&#34;Failed to update lock: %v&#34;</span>, err)
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span> <span style="color:#cdcd00">false</span>
 </span></span><span style="display:flex;"><span>    }
@@ -339,7 +339,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

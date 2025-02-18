@@ -3,18 +3,27 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://blog.fatedier.com/categories/</loc>
-    <lastmod>2023-08-26T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/</loc>
-    <lastmod>2023-08-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/tags/istio/</loc>
-    <lastmod>2023-08-26T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/post/</loc>
-    <lastmod>2023-08-26T00:00:00+00:00</lastmod>
+    <lastmod>2025-02-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/tags/</loc>
+    <lastmod>2025-02-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.fatedier.com/2025/02/18/at-thirty-firm-at-forty-clear/</loc>
+    <lastmod>2025-02-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.fatedier.com/categories/%E8%AF%97%E4%B8%8E%E8%BF%9C%E6%96%B9/</loc>
+    <lastmod>2025-02-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.fatedier.com/tags/%E8%AF%BB%E5%90%8E%E6%84%9F/</loc>
+    <lastmod>2025-02-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.fatedier.com/tags/istio/</loc>
     <lastmod>2023-08-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/</loc>
@@ -152,14 +161,14 @@
     <loc>https://blog.fatedier.com/2018/09/01/yan-ran/</loc>
     <lastmod>2018-09-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://blog.fatedier.com/categories/%E8%AF%97%E4%B8%8E%E8%BF%9C%E6%96%B9/</loc>
-    <lastmod>2018-09-01T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://blog.fatedier.com/tags/docker/</loc>
     <lastmod>2017-07-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/2017/07/16/record-problem-resolve-for-docker-stop-slow/</loc>
     <lastmod>2017-07-16T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://blog.fatedier.com/tags/c/cpp/</loc>
+    <lastmod>2017-03-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/tags/linux/</loc>
     <lastmod>2017-03-03T00:00:00+00:00</lastmod>
@@ -172,9 +181,6 @@
   </url><url>
     <loc>https://blog.fatedier.com/2017/01/01/golang-cross-compile/</loc>
     <lastmod>2017-01-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/tags/%E6%84%9F%E6%82%9F/</loc>
-    <lastmod>2016-10-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/2016/10/22/travel-coding-and-writing/</loc>
     <lastmod>2016-10-22T00:00:00+00:00</lastmod>
@@ -207,9 +213,6 @@
     <lastmod>2016-07-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/2016/07/10/from-zero-to-one-just-a-dream/</loc>
-    <lastmod>2016-07-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/tags/%E5%88%9B%E4%B8%9A/</loc>
     <lastmod>2016-07-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://blog.fatedier.com/2016/07/06/test-influxdb-and-opentsdb/</loc>
@@ -376,7 +379,5 @@
   </url><url>
     <loc>https://blog.fatedier.com/2014/09/08/learn-to-write-makefile-01/</loc>
     <lastmod>2014-09-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://blog.fatedier.com/tags/c/cpp/</loc>
   </url>
 </urlset>

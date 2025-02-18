@@ -155,11 +155,9 @@
 </span></span></code></pre></div><p>手动向 PID 为 1 的进程发送 SIGTERM 信号，结果无响应，到这一步已经定位到问题所在了。</p>
 <p>通过 Google 搜索后了解到原因。</p>
 <blockquote>
-<p>如果 pid 为 1 的进程，无法向其子进程传递信号，可能导致容器发送 SIGTERM 信号之后，父进程等待子进程退出。此时，如果父进程不能将信号传递到子进程，则整个容器就将无法正常退出，除非向父进程发送 SIGKILL 信号，使其强行退出。</p>
-</blockquote>
+<p>如果 pid 为 1 的进程，无法向其子进程传递信号，可能导致容器发送 SIGTERM 信号之后，父进程等待子进程退出。此时，如果父进程不能将信号传递到子进程，则整个容器就将无法正常退出，除非向父进程发送 SIGKILL 信号，使其强行退出。</p></blockquote>
 <blockquote>
-<p>考虑如下进程树：</p>
-</blockquote>
+<p>考虑如下进程树：</p></blockquote>
 <blockquote>
 <ul>
 <li>bash（PID 1）
@@ -167,11 +165,9 @@
 <li>app（PID2）</li>
 </ul>
 </li>
-</ul>
-</blockquote>
+</ul></blockquote>
 <blockquote>
-<p>bash 进程在接受到 SIGTERM 信号的时候，不会向 app 进程传递这个信号，这会导致 app 进程仍然不会退出。对于传统 Linux 系统（bash 进程 PID 不为 1），在 bash进程退出之后，app进程的父进程会被 init 进程（PID 为 1）接管，成为其父进程。但是在容器环境中，这样的行为会使 app 进程失去父进程，因此 bash 进程不会退出。</p>
-</blockquote>
+<p>bash 进程在接受到 SIGTERM 信号的时候，不会向 app 进程传递这个信号，这会导致 app 进程仍然不会退出。对于传统 Linux 系统（bash 进程 PID 不为 1），在 bash进程退出之后，app进程的父进程会被 init 进程（PID 为 1）接管，成为其父进程。但是在容器环境中，这样的行为会使 app 进程失去父进程，因此 bash 进程不会退出。</p></blockquote>
 <h3 id="解决方案">解决方案</h3>
 <p>最后找到了一个解决 init 问题的项目 <a href="https://github.com/krallin/tini">tini</a>。而对于我们遇到的问题，目前想到的解决方案有三个：</p>
 <ul>
@@ -266,7 +262,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

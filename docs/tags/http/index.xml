@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>http on fatedier blog</title>
+    <title>Http on fatedier blog</title>
     <link>https://blog.fatedier.com/tags/http/</link>
-    <description>Recent content in http on fatedier blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Http on fatedier blog</description>
+    <generator>Hugo</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Mon, 27 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/http/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 27 Dec 2021 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.fatedier.com/tags/http/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>HTTP Server IdleConneTimeout 配置导致偶发性请求失败的问题</title>
       <link>https://blog.fatedier.com/2021/12/27/http-server-idle-conn-timeout-cause-occasional-requests-fail/</link>
       <pubDate>Mon, 27 Dec 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2021/12/27/http-server-idle-conn-timeout-cause-occasional-requests-fail/</guid>
       <description>&lt;p&gt;服务接入 Istio 后，观测到有极少量的 503 错误。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

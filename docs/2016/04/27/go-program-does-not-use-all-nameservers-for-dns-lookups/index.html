@@ -134,8 +134,8 @@
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> addrs, err, ok <span style="color:#39c">:=</span> cgoLookupHost(host); ok {
 </span></span><span style="display:flex;"><span>            <span style="color:#cdcd00">return</span> addrs, err
 </span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        <span style="color:#000080">// cgo not available (or netgo); fall back to Go&#39;s DNS resolver
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        order = hostLookupFilesDNS
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// cgo not available (or netgo); fall back to Go&#39;s DNS resolver</span>
+</span></span><span style="display:flex;"><span>        order = hostLookupFilesDNS
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">return</span> goLookupHostOrder(host, order)
 </span></span><span style="display:flex;"><span>}
@@ -358,7 +358,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

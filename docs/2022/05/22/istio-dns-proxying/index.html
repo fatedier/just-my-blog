@@ -83,7 +83,7 @@
 </span></span><span style="display:flex;"><span>    annotations:
 </span></span><span style="display:flex;"><span>      proxy.istio.io/config: |<span style="color:#cd0000">
 </span></span></span><span style="display:flex;"><span><span style="color:#cd0000">        proxyMetadata:
-</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">          ISTIO_META_DNS_CAPTURE: &#34;true&#34;</span>        
+</span></span></span><span style="display:flex;"><span><span style="color:#cd0000">          ISTIO_META_DNS_CAPTURE: &#34;true&#34;</span>
 </span></span></code></pre></div><p>另外，还有一个参数 <code>ISTIO_META_DNS_AUTO_ALLOCATE: &quot;true&quot;</code>，开启了之后会给 ServiceEntry 中定义的 host 自动分配一个 istio 内部的虚拟 IP，主要用于解决 TCP 类型的连接没有域名信息等的问题，无法实现端口复用的路由规则。但是一般来说不建议开启，因为会影响到 ServiceEntry 中声明的域名，如果业务应用访问没有定义的端口，会连接失败。</p>
 <h3 id="优点">优点</h3>
 <ul>
@@ -176,7 +176,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

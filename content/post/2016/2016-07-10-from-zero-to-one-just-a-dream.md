@@ -2,7 +2,7 @@
 categories:
     - "诗与远方"
 tags:
-    - "创业"
+    - "读后感"
 date: 2016-07-10
 title: "从0到1：遥远的理想国"
 url: "/2016/07/10/from-zero-to-one-just-a-dream"

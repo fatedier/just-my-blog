@@ -4,18 +4,17 @@
     <title>设计模式 on fatedier blog</title>
     <link>https://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</link>
     <description>Recent content in 设计模式 on fatedier blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Wed, 04 Mar 2015 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 04 Mar 2015 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.fatedier.com/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>在C&#43;&#43;中利用反射和简单工厂模式实现业务模块解耦</title>
       <link>https://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</link>
       <pubDate>Wed, 04 Mar 2015 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2015/03/04/decoupling-by-using-reflect-and-simple-factory-pattern-in-cpp/</guid>
       <description>&lt;p&gt;在设计一个系统框架的时候往往需要划分各个模块、组件，抽象出公共的部分，尽量避免耦合，以利于以后的扩展和复用。在这方面，JAVA的很多特性在利用各种设计模式的时候会非常容易，而在C++中就需要自己去一步步实现。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

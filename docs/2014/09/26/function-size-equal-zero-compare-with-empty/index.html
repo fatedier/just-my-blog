@@ -74,8 +74,7 @@
                 <p>最近开发公司项目的时候发现大量用到了STL模板库，而且很多地方都需要判断一个容器是否为空，看到了两种写法，分别使用了容器的 size() 函数和 empty()函数。</p>
 <p>我觉得很好奇，这两种写法有什么区别呢？在网上查阅了一些资料，发现说empty()效率更高的占大多数。又查看了SGI STL的帮助文档，里面有一句话：</p>
 <blockquote>
-<p>If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.</p>
-</blockquote>
+<p>If you are testing whether a container is empty, you should always write c.empty()instead of c.size() == 0. The two expressions are equivalent, but the formermay be much faster.</p></blockquote>
 <p>大致上的意思就是在检测容器是否为空的时候，推荐用empty()代替使用size() == 0，两者的含义是相等的，但是前者可能会更快一些。</p>
 <p>之后又在stackoverflow上看到有人提了一个类似的问题，并且贴出了STL的实现源码：</p>
 <div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#00cd00">bool</span> empty()<span style="color:#cdcd00">const</span>
@@ -370,7 +369,7 @@ empty() msec: 304
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

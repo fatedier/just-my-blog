@@ -101,10 +101,10 @@
 </span></span><span style="display:flex;"><span>    ErrTCPConn          = errors.New(<span style="color:#cd0000">&#34;not a valid TCPConn&#34;</span>)
 </span></span><span style="display:flex;"><span>)
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#000080">// For transparent proxy.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080">// Get REDIRECT package&#39;s originial dst address.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080">// Note: it may be only support linux.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> GetOriginalDstAddr(conn <span style="color:#39c">*</span>net.TCPConn) (addr net.Addr, c <span style="color:#39c">*</span>net.TCPConn, err <span style="color:#00cd00">error</span>) {
+</span></span><span style="display:flex;"><span><span style="color:#000080">// For transparent proxy.</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// Get REDIRECT package&#39;s originial dst address.</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// Note: it may be only support linux.</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> GetOriginalDstAddr(conn <span style="color:#39c">*</span>net.TCPConn) (addr net.Addr, c <span style="color:#39c">*</span>net.TCPConn, err <span style="color:#00cd00">error</span>) {
 </span></span><span style="display:flex;"><span>    fc, errRet <span style="color:#39c">:=</span> conn.File()
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> errRet <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
 </span></span><span style="display:flex;"><span>        conn.Close()
@@ -122,8 +122,8 @@
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span>
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// only support ipv4
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    ip <span style="color:#39c">:=</span> net.IPv4(mreq.Multiaddr[<span style="color:#cd00cd">4</span>], mreq.Multiaddr[<span style="color:#cd00cd">5</span>], mreq.Multiaddr[<span style="color:#cd00cd">6</span>], mreq.Multiaddr[<span style="color:#cd00cd">7</span>])
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// only support ipv4</span>
+</span></span><span style="display:flex;"><span>    ip <span style="color:#39c">:=</span> net.IPv4(mreq.Multiaddr[<span style="color:#cd00cd">4</span>], mreq.Multiaddr[<span style="color:#cd00cd">5</span>], mreq.Multiaddr[<span style="color:#cd00cd">6</span>], mreq.Multiaddr[<span style="color:#cd00cd">7</span>])
 </span></span><span style="display:flex;"><span>    port <span style="color:#39c">:=</span> <span style="color:#cd00cd">uint16</span>(mreq.Multiaddr[<span style="color:#cd00cd">2</span>])<span style="color:#39c">&lt;&lt;</span><span style="color:#cd00cd">8</span> <span style="color:#39c">+</span> <span style="color:#cd00cd">uint16</span>(mreq.Multiaddr[<span style="color:#cd00cd">3</span>])
 </span></span><span style="display:flex;"><span>    addr, err = net.ResolveTCPAddr(<span style="color:#cd0000">&#34;tcp4&#34;</span>, fmt.Sprintf(<span style="color:#cd0000">&#34;%s:%d&#34;</span>, ip.String(), port))
 </span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> err <span style="color:#39c">!=</span> <span style="color:#cdcd00">nil</span> {
@@ -344,7 +344,7 @@ iptables -t nat -A OUTPUT -p tcp -d 172.17.0.0/16 -j REDIRECT --to-port 30000
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

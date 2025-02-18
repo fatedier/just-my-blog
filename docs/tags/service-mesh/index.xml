@@ -1,227 +1,174 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>service mesh on fatedier blog</title>
+    <title>Service Mesh on fatedier blog</title>
     <link>https://blog.fatedier.com/tags/service-mesh/</link>
-    <description>Recent content in service mesh on fatedier blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <description>Recent content in Service Mesh on fatedier blog</description>
+    <generator>Hugo</generator>
     <language>zh-CN</language>
     <copyright>Copyright (c) 2020. All rights reserved.</copyright>
-    <lastBuildDate>Tue, 11 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.fatedier.com/tags/service-mesh/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 11 Oct 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.fatedier.com/tags/service-mesh/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Istio GRPC Gateway 禁用 HTTP1.1 请求</title>
       <link>https://blog.fatedier.com/2022/10/11/istio-grpc-gateway-disable-http1/</link>
       <pubDate>Tue, 11 Oct 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2022/10/11/istio-grpc-gateway-disable-http1/</guid>
-      <description>&lt;p&gt;有一组专门用于 grpc 请求的 istio-gateway 网关，但是会被通过 HTTP1.1 的请求做漏洞扫描，istio gateway 仍然能够处理，并且会将这个请求转发给后端的服务，后端服务由于协议不匹配，会直接断开连接，istio gateway 就会返回 503。&lt;/p&gt;
-&lt;p&gt;这样会误触发告警，并且也会影响观测正常的监控。&lt;/p&gt;</description>
+      <description>&lt;p&gt;有一组专门用于 grpc 请求的 istio-gateway 网关，但是会被通过 HTTP1.1 的请求做漏洞扫描，istio gateway 仍然能够处理，并且会将这个请求转发给后端的服务，后端服务由于协议不匹配，会直接断开连接，istio gateway 就会返回 503。&lt;/p&gt;&#xA;&lt;p&gt;这样会误触发告警，并且也会影响观测正常的监控。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Istio Inbound HTTP 请求的 IdleTimeout 问题</title>
       <link>https://blog.fatedier.com/2022/10/09/istio-inbound-http-request-idletimeout/</link>
       <pubDate>Sun, 09 Oct 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2022/10/09/istio-inbound-http-request-idletimeout/</guid>
       <description>&lt;p&gt;istio sidecar inbound HTTP 请求的 idle timeout 配置默认为 1h。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>通过 Istio 代理出方向的 TCP 流量</title>
       <link>https://blog.fatedier.com/2022/09/09/proxy-egress-tcp-traffic-by-istio/</link>
       <pubDate>Fri, 09 Sep 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2022/09/09/proxy-egress-tcp-traffic-by-istio/</guid>
       <description>&lt;p&gt;通过 Istio 可以劫持出方向的 HTTP/HTTPS 流量到特定的 Egress Gateway。通过固定 Egress Gateway 的节点可以实现线路优化，固定出口 IP，安全审计等等功能。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Istio 中服务实例频繁 crash 导致一直触发 Full Push 的问题</title>
       <link>https://blog.fatedier.com/2022/08/15/istio-pods-crash-cause-full-push/</link>
       <pubDate>Mon, 15 Aug 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2022/08/15/istio-pods-crash-cause-full-push/</guid>
       <description>&lt;p&gt;测试环境发现 istiod 有持续的 Push 时间较长的问题。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>通过自定义 metrics tag 忽略 prometheus 抓取错误</title>
       <link>https://blog.fatedier.com/2022/07/17/ignore-prometheus-scrape-error-by-custom-metrics-tag/</link>
       <pubDate>Sun, 17 Jul 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2022/07/17/ignore-prometheus-scrape-error-by-custom-metrics-tag/</guid>
       <description>&lt;p&gt;由于接入 istio 后，所有的入请求会被 istio sidecar 劫持，并在 accesslog 和 metrics 中记录请求的状态。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Headless Service 导致 Istio 控制面负载过高</title>
       <link>https://blog.fatedier.com/2022/07/13/headless-service-cause-istiod-overloading/</link>
       <pubDate>Wed, 13 Jul 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2022/07/13/headless-service-cause-istiod-overloading/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>应用侧返回 Duplicated Transfer-Encoding 导致接入 Istio 后请求 502</title>
       <link>https://blog.fatedier.com/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/</link>
       <pubDate>Thu, 07 Jul 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2022/07/07/istio-duplicated-transfer-encoding-causes-request-502/</guid>
-      <description>&lt;p&gt;有用户反馈新增的接口调用后返回 upstream connect error or disconnect/reset before headers. reset reason: protocol error。&lt;/p&gt;
-&lt;p&gt;但是同一个接口，在未登录时，返回未认证的 json 是正常的。只有在登录后，返回接口才不正常。&lt;/p&gt;</description>
+      <description>&lt;p&gt;有用户反馈新增的接口调用后返回 upstream connect error or disconnect/reset before headers. reset reason: protocol error。&lt;/p&gt;&#xA;&lt;p&gt;但是同一个接口，在未登录时，返回未认证的 json 是正常的。只有在登录后，返回接口才不正常。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Istio 控制面配置推送分析与优化</title>
       <link>https://blog.fatedier.com/2022/06/01/istio-control-plane-config-push-optimization/</link>
       <pubDate>Wed, 01 Jun 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2022/06/01/istio-control-plane-config-push-optimization/</guid>
-      <description>&lt;p&gt;Istio 主要分为控制面和数据面，控制面负责从数据源（通常是 K8s）获取变更内容，渲染成 envoy 使用的配置文件，推送到各个 Sidecar 和 Gateway 节点。&lt;/p&gt;
-&lt;p&gt;如果对 K8s 比较熟悉的话，可以和 K8s controller 类比，只是需要计算的内容更多。&lt;/p&gt;</description>
+      <description>&lt;p&gt;Istio 主要分为控制面和数据面，控制面负责从数据源（通常是 K8s）获取变更内容，渲染成 envoy 使用的配置文件，推送到各个 Sidecar 和 Gateway 节点。&lt;/p&gt;&#xA;&lt;p&gt;如果对 K8s 比较熟悉的话，可以和 K8s controller 类比，只是需要计算的内容更多。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Istio DNS Proxying</title>
       <link>https://blog.fatedier.com/2022/05/22/istio-dns-proxying/</link>
       <pubDate>Sun, 22 May 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2022/05/22/istio-dns-proxying/</guid>
-      <description>&lt;p&gt;原理就是通过 iptables 劫持 DNS 查询请求到 sidecar ，由 sidecar 提供 DNS 请求的响应和转发。&lt;/p&gt;
-&lt;p&gt;对于 K8s 内部的 service 名称解析，会直接返回结果。&lt;/p&gt;
-&lt;p&gt;对于外部的域名，会转发给上游的 DNS Server 查询。&lt;/p&gt;</description>
+      <description>&lt;p&gt;原理就是通过 iptables 劫持 DNS 查询请求到 sidecar ，由 sidecar 提供 DNS 请求的响应和转发。&lt;/p&gt;&#xA;&lt;p&gt;对于 K8s 内部的 service 名称解析，会直接返回结果。&lt;/p&gt;&#xA;&lt;p&gt;对于外部的域名，会转发给上游的 DNS Server 查询。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Istio sidecar TCP 空闲连接 1 小时自动断开</title>
       <link>https://blog.fatedier.com/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/</link>
       <pubDate>Mon, 18 Apr 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2022/04/18/istio-tcp-idle-connection-disconnect-after-one-hour/</guid>
-      <description>&lt;p&gt;部分服务连接 redis 会经常出现连接被断开，导致从连接池中取出连接发送请求时会失败。&lt;/p&gt;
-&lt;p&gt;从 istio accesslog 中观测到到 redis 的连接，断开时间通常是 3600s 即一个小时。&lt;/p&gt;</description>
+      <description>&lt;p&gt;部分服务连接 redis 会经常出现连接被断开，导致从连接池中取出连接发送请求时会失败。&lt;/p&gt;&#xA;&lt;p&gt;从 istio accesslog 中观测到到 redis 的连接，断开时间通常是 3600s 即一个小时。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Istio 服务请求外部域名持续出错，切换 DNS 后也无法恢复</title>
       <link>https://blog.fatedier.com/2022/01/11/istio-service-send-request-failed-even-dns-switched/</link>
       <pubDate>Tue, 11 Jan 2022 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2022/01/11/istio-service-send-request-failed-even-dns-switched/</guid>
-      <description>&lt;p&gt;假设 K8s 集群内的服务会以串行的方式不断请求一个外部域名的 80 端口。这个域名通过 DNS 解析到一个固定 IP。当某个时间段，这个 IP 上绑定的服务突然不可用，端口无法访问。内部服务会持续的得到 HTTP 503 的响应。&lt;/p&gt;
-&lt;p&gt;此时即使将这个域名的 DNS 切到一个正常的 IP，服务仍然会得到持续的 503 错误，一直无法恢复。&lt;/p&gt;</description>
+      <description>&lt;p&gt;假设 K8s 集群内的服务会以串行的方式不断请求一个外部域名的 80 端口。这个域名通过 DNS 解析到一个固定 IP。当某个时间段，这个 IP 上绑定的服务突然不可用，端口无法访问。内部服务会持续的得到 HTTP 503 的响应。&lt;/p&gt;&#xA;&lt;p&gt;此时即使将这个域名的 DNS 切到一个正常的 IP，服务仍然会得到持续的 503 错误，一直无法恢复。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>减少 Istio 控制面下发的配置</title>
       <link>https://blog.fatedier.com/2021/12/24/reduce-istio-control-panel-push-config/</link>
       <pubDate>Fri, 24 Dec 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2021/12/24/reduce-istio-control-panel-push-config/</guid>
-      <description>&lt;p&gt;默认情况下，istiod 会 watch 集群中所有的 namespace，生成对应的配置，实时的通过 xDS 协议，推送给所有实例的 sidecar 容器。&lt;/p&gt;
-&lt;p&gt;业务实例会被分发到大量不相关的配置，根本用不到，不仅增加 istiod 分发配置的时效性，也增加了 sidecar 的资源消耗。&lt;/p&gt;</description>
+      <description>&lt;p&gt;默认情况下，istiod 会 watch 集群中所有的 namespace，生成对应的配置，实时的通过 xDS 协议，推送给所有实例的 sidecar 容器。&lt;/p&gt;&#xA;&lt;p&gt;业务实例会被分发到大量不相关的配置，根本用不到，不仅增加 istiod 分发配置的时效性，也增加了 sidecar 的资源消耗。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>让 Istio sidecar 优雅终止</title>
       <link>https://blog.fatedier.com/2021/12/16/istio-sidecar-graceful-shutdown/</link>
       <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2021/12/16/istio-sidecar-graceful-shutdown/</guid>
       <description>&lt;p&gt;在 &lt;a href=&#34;https://blog.fatedier.com/2021/08/26/istio-sidecar-container-start-and-stop-problem/&#34;&gt;Istio sidecar 容器启动停止问题&lt;/a&gt; 这篇文章中，描述了 Istio sidecar 的启动停止顺序的问题，但是实际接入服务的过程中，仍然发现存在一些异常的情况发生，需要进一步的优化。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>通过 WebAssembly 扩展 Istio 和 Envoy</title>
       <link>https://blog.fatedier.com/2021/09/17/extend-istio-and-envoy-by-wasm/</link>
       <pubDate>Fri, 17 Sep 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2021/09/17/extend-istio-and-envoy-by-wasm/</guid>
       <description>&lt;p&gt;Istio 在 1.5 版本(2020年5月)中宣布支持 WebAssembly 扩展，通过定制化的 envoy 实现。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Istio Gateway 支持 gzip</title>
       <link>https://blog.fatedier.com/2021/09/07/istio-gateway-support-gzip/</link>
       <pubDate>Tue, 07 Sep 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2021/09/07/istio-gateway-support-gzip/</guid>
       <description>&lt;p&gt;目前使用的 Ingress Nginx 中开启了 gzip 压缩。在将服务网关从 Ingress Nginx 迁移到 Istio Gateway 后，也需要相应支持这个能力。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Istio 1.9 升级 1.10 ExternalAuthorization 失效的问题</title>
       <link>https://blog.fatedier.com/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/</link>
       <pubDate>Thu, 02 Sep 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2021/09/02/istio-upgrade-from-1-19-to-1-20-external-authorization-invalid/</guid>
       <description>&lt;p&gt;近期在将 Istio 1.9.1 升级到 1.10.4。发现原来在 1.9 版本中生效的 ExternalAuthorization 的功能在控制面升级到 1.10，数据面保持在 1.9 版本时，会失效。所有的请求都不需要鉴权就能访问到后端服务。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Istio sidecar 容器启动停止问题</title>
       <link>https://blog.fatedier.com/2021/08/26/istio-sidecar-container-start-and-stop-problem/</link>
       <pubDate>Thu, 26 Aug 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2021/08/26/istio-sidecar-container-start-and-stop-problem/</guid>
       <description>&lt;p&gt;由于引入了 sidecar，会通过 iptables 规则将流量劫持到 sidecar 中的进程。但是 K8s 上并没有精确控制 sidecar 的能力，导致由于 sidecar 与主容器的启停顺序问题会引起一些非预期的行为。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Istio TCP 健康检查无效的问题</title>
       <link>https://blog.fatedier.com/2021/08/24/istio-tcp-health-probe-invalid/</link>
       <pubDate>Tue, 24 Aug 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2021/08/24/istio-tcp-health-probe-invalid/</guid>
       <description>&lt;p&gt;1.9，1.10 的官方文档对这个问题的表述不是很清楚，都没有提到 TCP 的健康检查无效的问题。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Istio 对 Service port name 的要求</title>
       <link>https://blog.fatedier.com/2021/07/29/istio-service-port-name-requirements/</link>
       <pubDate>Thu, 29 Jul 2021 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2021/07/29/istio-service-port-name-requirements/</guid>
       <description>&lt;p&gt;由于 Istio 需要在七层解析流量，所以劫持服务流量后需要知道协议类型才能用合适的协议规则来解析。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Service Mesh 探索之升级 HTTP/2 协议</title>
       <link>https://blog.fatedier.com/2019/01/12/service-mesh-explore-upgrade-http2/</link>
       <pubDate>Sat, 12 Jan 2019 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2019/01/12/service-mesh-explore-upgrade-http2/</guid>
       <description>&lt;p&gt;HTTP/2 是 HTTP/1.1 的升级，在请求方法、状态码乃至 URI 和绝大多数 HTTP 头部字段等方面保持高度兼容性，同时能够减少网络延迟和连接资源占用。Service Mesh 架构中，由于两个服务之间的通信由 proxy 介入，对于依靠 HTTP/1.1 通信的服务来说，可以无缝升级到 HTTP/2 协议。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Service Mesh 探索之优先本地访问</title>
       <link>https://blog.fatedier.com/2018/12/01/service-mesh-explore-local-node-lb/</link>
       <pubDate>Sat, 01 Dec 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2018/12/01/service-mesh-explore-local-node-lb/</guid>
       <description>&lt;p&gt;在设计 Service Mesh 架构方案时，考虑到有一些基础服务，访问频率高，流量大，如果在 kubernetes 平台上采用 DaemonSet 的部署方式，每一个机器部署一个实例，访问方能够优先访问同一个节点上的该服务，则可以极大地减少网络开销和延迟。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Service Mesh 探索之流量劫持</title>
       <link>https://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/</link>
       <pubDate>Wed, 21 Nov 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2018/11/21/service-mesh-traffic-hijack/</guid>
       <description>&lt;p&gt;Istio 的项目中有一个亮点就是可以将旧的应用无缝接入到 Service Mesh 的平台上来，不用修改一行代码。实现这个功能，目前主要是通过 iptables 来截获流量转发给 proxy。&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Service Mesh 自研实践</title>
       <link>https://blog.fatedier.com/2018/10/15/self-designed-service-mesh/</link>
       <pubDate>Mon, 15 Oct 2018 00:00:00 +0000</pubDate>
-      
       <guid>https://blog.fatedier.com/2018/10/15/self-designed-service-mesh/</guid>
       <description>&lt;p&gt;最近都在做自研 Service Mesh 方案的落地和后续迭代优化，目前稳定承接了旧系统的大部分流量，这里分享一下这套架构，以及过程中的思考和遇到的一些问题。&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

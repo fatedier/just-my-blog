@@ -118,10 +118,10 @@ curl http://127.0.0.1:9100 --http2
 You tell HTTP/2.0
 </code></pre><p>之所以能够在同一个端口上同时支持这两个协议，是因为 <code>h2c.NewHandler</code> 这个函数的封装。这个函数会在连接建立时先检测 <code>Request</code> 的内容，h2c 要求连接以 <code>PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n</code> 开头，如果匹配成功则交给 h2c 的 Handler 处理，否则交给 HTTP/1.1 的 Handler 处理。</p>
 <p>h2c 这部分的源码如下:</p>
-<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#000080">// ServeHTTP implement the h2c support that is enabled by h2c.GetH2CHandler.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> (s h2cHandler) ServeHTTP(w http.ResponseWriter, r <span style="color:#39c">*</span>http.Request) {
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Handle h2c with prior knowledge (RFC 7540 Section 3.4)
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> r.Method <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;PRI&#34;</span> <span style="color:#39c">&amp;&amp;</span> <span style="color:#cd00cd">len</span>(r.Header) <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span> <span style="color:#39c">&amp;&amp;</span> r.URL.Path <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;*&#34;</span> <span style="color:#39c">&amp;&amp;</span> r.Proto <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;HTTP/2.0&#34;</span> {
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#000080">// ServeHTTP implement the h2c support that is enabled by h2c.GetH2CHandler.</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> (s h2cHandler) ServeHTTP(w http.ResponseWriter, r <span style="color:#39c">*</span>http.Request) {
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Handle h2c with prior knowledge (RFC 7540 Section 3.4)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> r.Method <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;PRI&#34;</span> <span style="color:#39c">&amp;&amp;</span> <span style="color:#cd00cd">len</span>(r.Header) <span style="color:#39c">==</span> <span style="color:#cd00cd">0</span> <span style="color:#39c">&amp;&amp;</span> r.URL.Path <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;*&#34;</span> <span style="color:#39c">&amp;&amp;</span> r.Proto <span style="color:#39c">==</span> <span style="color:#cd0000">&#34;HTTP/2.0&#34;</span> {
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">if</span> http2VerboseLogs {
 </span></span><span style="display:flex;"><span>            log.Print(<span style="color:#cd0000">&#34;h2c: attempting h2c with prior knowledge.&#34;</span>)
 </span></span><span style="display:flex;"><span>        }
@@ -137,8 +137,8 @@ You tell HTTP/2.0
 </span></span><span style="display:flex;"><span>        s.s.ServeConn(conn, <span style="color:#39c">&amp;</span>http2.ServeConnOpts{Handler: s.Handler})
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">return</span>
 </span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Handle Upgrade to h2c (RFC 7540 Section 3.2)
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#cdcd00">if</span> conn, err <span style="color:#39c">:=</span> h2cUpgrade(w, r); err <span style="color:#39c">==</span> <span style="color:#cdcd00">nil</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// Handle Upgrade to h2c (RFC 7540 Section 3.2)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cdcd00">if</span> conn, err <span style="color:#39c">:=</span> h2cUpgrade(w, r); err <span style="color:#39c">==</span> <span style="color:#cdcd00">nil</span> {
 </span></span><span style="display:flex;"><span>        <span style="color:#cdcd00">defer</span> conn.Close()
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        s.s.ServeConn(conn, <span style="color:#39c">&amp;</span>http2.ServeConnOpts{Handler: s.Handler})
@@ -165,8 +165,8 @@ You tell HTTP/2.0
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> main() {
 </span></span><span style="display:flex;"><span>    client <span style="color:#39c">:=</span> http.Client{
-</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Skip TLS dial
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>        Transport: <span style="color:#39c">&amp;</span>http2.Transport{
+</span></span><span style="display:flex;"><span>        <span style="color:#000080">// Skip TLS dial</span>
+</span></span><span style="display:flex;"><span>        Transport: <span style="color:#39c">&amp;</span>http2.Transport{
 </span></span><span style="display:flex;"><span>            AllowHTTP: <span style="color:#cdcd00">true</span>,
 </span></span><span style="display:flex;"><span>            DialTLS: <span style="color:#00cd00">func</span>(network, addr <span style="color:#00cd00">string</span>, cfg <span style="color:#39c">*</span>tls.Config) (net.Conn, <span style="color:#00cd00">error</span>) {
 </span></span><span style="display:flex;"><span>                <span style="color:#cdcd00">return</span> net.Dial(network, addr)
@@ -274,7 +274,7 @@ You tell HTTP/2.0
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

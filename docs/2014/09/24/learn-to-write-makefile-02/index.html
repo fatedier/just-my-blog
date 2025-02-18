@@ -105,7 +105,7 @@
 <p>set–e 的作用是如果命令执行出错就直接退出。$@的含义之前已经说过，这里rm –f $@的意思就是删除所有的目标文件。</p>
 <h5 id="g--mm----">g++ -MM $&lt; &gt; $@.$$$$; \</h5>
 <p>$&lt; 的含义是第一个依赖项的名称，&gt; 是重定向符号，将输出结果重定向到指定文件中。$@.$$$$ 就是这个文件的文件名，其中“$$$$”表示一个随机的编号，例如如果有目标文件是w1.d，那么“$@.$$$$”一个可能的结果就是w1.d.12345。那么，这句话的含义就是将g++ -MM w1.cpp的输出结果重定向到w1.d.12345这个文件中。</p>
-<h5 id="sed-so-objo-depd--g----">sed &rsquo;s/$<em>.o[ :]</em>/obj/$<em>.o dep/$</em>.d : /g&rsquo; &lt; $@.$$$$ &gt; $@;\</h5>
+<h5 id="sed-soobjo-depd--g----">sed &rsquo;s/$<em>.o[ :]</em>/obj/$<em>.o dep/$</em>.d : /g&rsquo; &lt; $@.$$$$ &gt; $@;\</h5>
 <p>这里使用了sed这个工具对文本进行替换处理，单引号中的规则是’s/old/new/g’，s表示替换，末尾的g代表全局的意思，对文本中所有符合要求的字符串进行替换，sed会将符合old模式的字符串替换为new，具体的使用方法可以查阅一下sed这个工具的帮助文档。</p>
 <pre><code>&lt;$@$$$$，将这个文件的内容作为sed工具的输入。
 
@@ -390,7 +390,7 @@
             <li><a href="#if-test---d-dep-then">@if test ! -d &ldquo;dep&rdquo;; then\</a></li>
             <li><a href="#set--e-rm--f-">set -e; rm -f $@;</a></li>
             <li><a href="#g--mm----">g++ -MM $&lt; &gt; $@.$$$$; \</a></li>
-            <li><a href="#sed-so-objo-depd--g----">sed &rsquo;s/$<em>.o[ :]</em>/obj/$<em>.o dep/$</em>.d : /g&rsquo; &lt; $@.$$$$ &gt; $@;\</a></li>
+            <li><a href="#sed-soobjo-depd--g----">sed &rsquo;s/$<em>.o[ :]</em>/obj/$<em>.o dep/$</em>.d : /g&rsquo; &lt; $@.$$$$ &gt; $@;\</a></li>
             <li><a href="#rm--f-">rm -f $@.$$$$</a></li>
           </ul>
         </li>
@@ -423,7 +423,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

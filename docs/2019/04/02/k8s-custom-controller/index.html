@@ -105,10 +105,10 @@
 </span></span><span style="display:flex;"><span>    metav1 <span style="color:#cd0000">&#34;k8s.io/apimachinery/pkg/apis/meta/v1&#34;</span>
 </span></span><span style="display:flex;"><span>)
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#000080">// +genclient
-</span></span></span><span style="display:flex;"><span><span style="color:#000080">// +genclient:noStatus
-</span></span></span><span style="display:flex;"><span><span style="color:#000080">// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// +genclient</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// +genclient:noStatus</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object</span>
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#00cd00">type</span> Scaling <span style="color:#00cd00">struct</span> {
 </span></span><span style="display:flex;"><span>    metav1.TypeMeta   <span style="color:#cd0000">`json:&#34;,inline&#34;`</span>
 </span></span><span style="display:flex;"><span>    metav1.ObjectMeta <span style="color:#cd0000">`json:&#34;metadata,omitempty&#34;`</span>
@@ -126,8 +126,8 @@
 </span></span><span style="display:flex;"><span>    ScaleDown        <span style="color:#00cd00">int</span>    <span style="color:#cd0000">`json:&#34;scaleDown&#34;`</span>
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#000080">// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object</span>
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#00cd00">type</span> ScalingList <span style="color:#00cd00">struct</span> {
 </span></span><span style="display:flex;"><span>    metav1.TypeMeta <span style="color:#cd0000">`json:&#34;,inline&#34;`</span>
 </span></span><span style="display:flex;"><span>    metav1.ListMeta <span style="color:#cd0000">`json:&#34;metadata,omitempty&#34;`</span>
@@ -142,9 +142,9 @@
 <li><strong>+k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object</strong>: 为结构体生成 deepcopy 的代码，实现了 runtime.Object 的 Interface。</li>
 </ul>
 <p>创建 doc 文件，<code>pkg/apis/control/v1/doc.go</code>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#000080">// +k8s:deepcopy-gen=package
-</span></span></span><span style="display:flex;"><span><span style="color:#000080">// +groupName=control.example.com
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>
+<div class="highlight"><pre tabindex="0" style="color:#ccc;background-color:#000;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-golang" data-lang="golang"><span style="display:flex;"><span><span style="color:#000080">// +k8s:deepcopy-gen=package</span>
+</span></span><span style="display:flex;"><span><span style="color:#000080">// +groupName=control.example.com</span>
+</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#cd00cd">package</span> v1
 </span></span></code></pre></div><p>最后 client 对于自定义资源结构还需要一些接口，例如 <code>AddToScheme</code> 和 <code>Resource</code>，这些函数负责将结构体注册到 schemes 中去。</p>
 <p>为此创建 <code>pkg/apis/control/v1/register.go</code> 文件:</p>
@@ -168,21 +168,21 @@
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#00cd00">var</span> (
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// localSchemeBuilder and AddToScheme will stay in k8s.io/kubernetes.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    SchemeBuilder      runtime.SchemeBuilder
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// localSchemeBuilder and AddToScheme will stay in k8s.io/kubernetes.</span>
+</span></span><span style="display:flex;"><span>    SchemeBuilder      runtime.SchemeBuilder
 </span></span><span style="display:flex;"><span>    localSchemeBuilder = <span style="color:#39c">&amp;</span>SchemeBuilder
 </span></span><span style="display:flex;"><span>    AddToScheme        = localSchemeBuilder.AddToScheme
 </span></span><span style="display:flex;"><span>)
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> init() {
-</span></span><span style="display:flex;"><span>    <span style="color:#000080">// We only register manually written functions here. The registration of the
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// generated functions takes place in the generated files. The separation
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    <span style="color:#000080">// makes the code compile even when the generated files are missing.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span>    localSchemeBuilder.Register(addKnownTypes)
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// We only register manually written functions here. The registration of the</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// generated functions takes place in the generated files. The separation</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#000080">// makes the code compile even when the generated files are missing.</span>
+</span></span><span style="display:flex;"><span>    localSchemeBuilder.Register(addKnownTypes)
 </span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#000080">// Adds the list of known types to api.Scheme.
-</span></span></span><span style="display:flex;"><span><span style="color:#000080"></span><span style="color:#00cd00">func</span> addKnownTypes(scheme <span style="color:#39c">*</span>runtime.Scheme) <span style="color:#00cd00">error</span> {
+</span></span><span style="display:flex;"><span><span style="color:#000080">// Adds the list of known types to api.Scheme.</span>
+</span></span><span style="display:flex;"><span><span style="color:#00cd00">func</span> addKnownTypes(scheme <span style="color:#39c">*</span>runtime.Scheme) <span style="color:#00cd00">error</span> {
 </span></span><span style="display:flex;"><span>    scheme.AddKnownTypes(SchemeGroupVersion,
 </span></span><span style="display:flex;"><span>        <span style="color:#39c">&amp;</span>Scaling{},
 </span></span><span style="display:flex;"><span>        <span style="color:#39c">&amp;</span>ScalingList{},
@@ -341,7 +341,7 @@
 <hr>
 
 <footer class="container copy">
-    <p>&copy; 2023  fatedier blog </p>
+    <p>&copy; 2025  fatedier blog </p>
 	<p>Powered by <a href="https://gohugo.io" target="_blank">Hugo</a></p>
 </footer>
 

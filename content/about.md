@@ -14,7 +14,7 @@ fatedier，程序员，热衷于技术研究。
 * 性能魔方: APM 性能监控相关开发，服务器及网站监控，包括数据的采集、处理以及后端存储的设计开发。基础平台研究，分布式系统、存储相关开发。
 * 七牛: 多媒体数据处理平台，ServiceMesh 相关系统设计与实践。
 * 拼多多: Kubernetes 相关系统开发。
-* TapTap: K8s, ServiceMesh(Istio)。
+* TapTap: K8s, ServiceMesh(Istio)，AI Agent。
 
 #### 技能
 
